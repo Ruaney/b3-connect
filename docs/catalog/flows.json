@@ -805,6 +805,48 @@
         "implemented": "src/buyin_failure_management.py",
         "tested_locally": "tests/test_buyin_failure_management.py"
       }
+    },
+    {
+      "id": "FL-039",
+      "name": "Processar Opções Listadas B3: Prêmio D+1, Cobertura 2306-6, Barreira e Exercício no Vencimento (D+2)",
+      "system": "PUMA Trading System & Câmara B3",
+      "interface": "Motor de Exercício de Opções, Cobertura e Atribuição Pro-Rata",
+      "sources": [
+        "SRC-033"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Liquidação de prêmio D+1, validação de cobertura na subconta 2306-6 vs margem CORE, barreira (Contrary Instruction) e atribuição pro-rata determinística com geração de negócios à vista D+2 implementados com sucesso. Pendente homologação na Câmara B3.",
+      "evidence": {
+        "documented": "docs/layout-listed-options-exercise.md",
+        "implemented": "src/listed_options_exercise.py",
+        "tested_locally": "tests/test_listed_options_exercise.py"
+      }
+    },
+    {
+      "id": "FL-040",
+      "name": "Registrar e liquidar Derivativos de Balcão NoMe: Contratos de Swap (CDI/Pré/Dólar) e Termo de Moeda NDF",
+      "system": "Balcão B3 (NoMe Derivativos)",
+      "interface": "Mensageria de Registro e Liquidação de Swaps e NDFs (Resolução CMN 4.952)",
+      "sources": [
+        "SRC-034"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Cálculo de fatores acumulados em 8 casas decimais (CDI, Pré, Cupom Cambial, IPCA), ajuste de NDF por PTAX D-1, conservação bilateral soma-zero e retenção de IRRF implementados com sucesso. Pendente homologação no NoMe B3.",
+      "evidence": {
+        "documented": "docs/layout-otc-derivatives-swap-ndf.md",
+        "implemented": "src/otc_derivatives_swap_ndf.py",
+        "tested_locally": "tests/test_otc_derivatives_swap_ndf.py"
+      }
     }
   ]
 }

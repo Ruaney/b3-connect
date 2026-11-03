@@ -49,6 +49,8 @@ from src.etf_creation_redemption import EtfPrimaryMarketEngine
 from src.cbio_carbon_energy import CbioPlatformEngine
 from src.lien_collateral_registry import LienCollateralRegistryEngine
 from src.buyin_failure_management import BuyInFailureEngine
+from src.listed_options_exercise import ListedOptionsEngine
+from src.otc_derivatives_swap_ndf import OtcDerivativesEngine
 
 
 class InvariantViolationError(AssertionError):
@@ -587,7 +589,7 @@ def verify_buyin_failure_management_invariants(fixtures_dir: Path):
     1. Shortfall == Obrigação - Entregue - Regularizado_BTC >= 0.
     2. Diferencial debitado do vendedor inadimplente >= 0 (vendedor arca com prejuízo, mas não recebe ganho).
     """
-    print("[22/22] Verificando Invariante de Falha de Entrega D+2 e Buy-In D+3 (FL-038)...")
+    print("[22/24] Verificando Invariante de Falha de Entrega D+2 e Buy-In D+3 (FL-038)...")
     engine = BuyInFailureEngine()
     res = engine.evaluate_fixture(fixtures_dir / "buyin_settlement_failures.json")
     check(res["total_cases"] == 4, "Total de casos de falha D+2 diverge da fixture")
@@ -601,6 +603,38 @@ def verify_buyin_failure_management_invariants(fixtures_dir: Path):
         "Débito total de falha e Buy-In diverge da soma de multas e diferenciais",
     )
     print("      ✓ Identidade de Shortfall D+2, reversão BTC e diferencial assimétrico de Buy-In comprovados.")
+
+
+def verify_listed_options_expiration_invariants(fixtures_dir: Path):
+    """
+    Lei 23: Conservação de Posições e Exercício/Atribuição de Opções Listadas (FL-039)
+    1. Total Posição Titular Aberta == Total Posição Lançadora Aberta por série.
+    2. Total Quantidade Exercida pelos Titulares == Total Quantidade Atribuída (Assigned) aos Lançadores.
+    """
+    print("[23/24] Verificando Invariante de Exercício e Atribuição de Opções Listadas (FL-039)...")
+    engine = ListedOptionsEngine()
+    res = engine.evaluate_fixture(fixtures_dir / "listed_options_expiration.json")
+    check(res["conservation_invariant_satisfied"], "Invariante de conservação Titular vs Lançador de opções violada")
+    check(
+        res["total_exercised_quantity"] == res["total_assigned_quantity"],
+        "Quantidade exercida por titulares diverge da quantidade atribuída a lançadores",
+    )
+    print("      ✓ Conservação física Titular/Lançador, Barreira e geração de exercício D+2 comprovadas.")
+
+
+def verify_otc_derivatives_swap_ndf_invariants(fixtures_dir: Path):
+    """
+    Lei 24: Conservação Bilateral Soma-Zero em Derivativos de Balcão Swap & NDF (FL-040)
+    1. Em todo contrato de Swap ou NDF: Ajuste_Bruto_Parte_A + Ajuste_Bruto_Parte_B == 0.00.
+    2. Balanço líquido pós-IRRF: Liquido_A + Liquido_B + IRRF_Total == 0.00.
+    """
+    print("[24/24] Verificando Invariante Soma-Zero de Derivativos de Balcão Swap e NDF (FL-040)...")
+    engine = OtcDerivativesEngine.from_json_fixture(fixtures_dir / "otc_swap_ndf_contracts.json")
+    summary = engine.portfolio_summary()
+    check(summary["total_contracts"] == 6, "Total de contratos de Swap e NDF diverge da fixture")
+    check(summary["all_zero_sum_conserved"], "Conservação bilateral soma-zero violada em Swap ou NDF")
+    check(summary["all_cashflow_balanced"], "Balanço contábil pós-IRRF violado em Swap ou NDF")
+    print("      ✓ Conservação bilateral soma-zero (Swap/NDF) e balanço pós-IRRF no NoMe comprovados.")
 
 
 def main():
@@ -637,9 +671,11 @@ def main():
         verify_cbio_carbon_retirement_invariants(fixtures_dir)
         verify_lien_collateral_waterfall_invariants(fixtures_dir)
         verify_buyin_failure_management_invariants(fixtures_dir)
+        verify_listed_options_expiration_invariants(fixtures_dir)
+        verify_otc_derivatives_swap_ndf_invariants(fixtures_dir)
         
         print("\n" + "=" * 70)
-        print("✓ TODAS AS 22 LEIS DE CONSERVAÇÃO E INVARIANTES DA B3 FORAM PROVADAS!")
+        print("✓ TODAS AS 24 LEIS DE CONSERVAÇÃO E INVARIANTES DA B3 FORAM PROVADAS!")
         print("  Garantia matemática de consistência em todas as fixtures e módulos.")
         print("=" * 70)
         sys.exit(0)
