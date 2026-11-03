@@ -700,6 +700,111 @@
         "implemented": "src/public_offerings_cvm160.py",
         "tested_locally": "tests/test_public_offerings_cvm160.py"
       }
+    },
+    {
+      "id": "FL-034",
+      "name": "Processar emissão, cancelamento internacional e dividendos PTAX de BDRs (CVM 182)",
+      "system": "Central Depositária B3 / Internacional",
+      "interface": "Mensageria de Conversão BDR & Custodiante Internacional (DTC/Euroclear)",
+      "sources": [
+        "SRC-028"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Motor de emissão e cancelamento de BDRs Patrocinados (Níveis I/II/III) e Não Patrocinados, validação de paridade inteira de lastro internacional e cálculo de dividendos em USD convertidos via PTAX (com Withholding Tax, IOF e taxa do depositário) implementados com sucesso. Pendente homologação B3.",
+      "evidence": {
+        "documented": "docs/layout-bdr-conversion.md",
+        "implemented": "src/bdr_conversion.py",
+        "tested_locally": "tests/test_bdr_conversion.py"
+      }
+    },
+    {
+      "id": "FL-035",
+      "name": "Executar integralização (Creation) e resgate (Redemption) in-kind de ETFs no mercado primário (PCF)",
+      "system": "Central Depositária & Câmara B3",
+      "interface": "Arquivo de Composição de Carteira (PCF) & Ordens Primárias de Agente Autorizado (AP)",
+      "sources": [
+        "SRC-029"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Validação de Portfolio Composition File (PCF), múltiplos exatos de Creation Unit, entrega in-kind da cesta de ações + Cash Component e conservação patrimonial implementados com sucesso. Pendente homologação B3.",
+      "evidence": {
+        "documented": "docs/layout-etf-creation-redemption.md",
+        "implemented": "src/etf_creation_redemption.py",
+        "tested_locally": "tests/test_etf_creation_redemption.py"
+      }
+    },
+    {
+      "id": "FL-036",
+      "name": "Escriturar, negociar e aposentar Créditos de Descarbonização CBIO (RenovaBio / ANP)",
+      "system": "Balcão B3 / Plataforma CBIO",
+      "interface": "Mensageria de Emissão, Transferência e Aposentadoria Definitiva CBIO",
+      "sources": [
+        "SRC-030"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Ciclo completo de escrituração primária ANP, negociação secundária, aposentadoria definitiva (Retirement) com bloqueio anti-dupla contagem e apuração de meta compulsória de distribuidoras implementados com sucesso. Pendente homologação no Balcão B3.",
+      "evidence": {
+        "documented": "docs/layout-cbio-carbon-energy.md",
+        "implemented": "src/cbio_carbon_energy.py",
+        "tested_locally": "tests/test_cbio_carbon_energy.py"
+      }
+    },
+    {
+      "id": "FL-037",
+      "name": "Constituir, averbar prelazia multi-grau e excutir gravames e garantias (Marco Legal Lei 14.711/2023)",
+      "system": "Central de Garantias & Depositária B3",
+      "interface": "Sistema de Gravames, Ônus Reais e Cessão Fiduciária",
+      "sources": [
+        "SRC-031"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Constituição de penhor, alienação e cessão fiduciária em múltiplos graus de prioridade (1º, 2º e 3º graus), bloqueio na subconta 2901-8 e cascata determinística de excussão implementados com sucesso. Pendente homologação na B3.",
+      "evidence": {
+        "documented": "docs/layout-lien-collateral-registry.md",
+        "implemented": "src/lien_collateral_registry.py",
+        "tested_locally": "tests/test_lien_collateral_registry.py"
+      }
+    },
+    {
+      "id": "FL-038",
+      "name": "Gerir falhas de entrega D+2, reversão via BTC e execução de recompra compulsória (Buy-In D+3)",
+      "system": "Câmara B3 Clearing",
+      "interface": "Sistema de Gestão de Falhas de Entrega & Ordens de Buy-In",
+      "sources": [
+        "SRC-032"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Apuração de falha de entrega em D+2, janela de regularização via empréstimo BTC, ordem de recompra compulsória Buy-In em D+3, multa regulamentar e alocação de diferencial financeiro implementados com sucesso. Pendente homologação na Câmara B3.",
+      "evidence": {
+        "documented": "docs/layout-buyin-failure-management.md",
+        "implemented": "src/buyin_failure_management.py",
+        "tested_locally": "tests/test_buyin_failure_management.py"
+      }
     }
   ]
 }

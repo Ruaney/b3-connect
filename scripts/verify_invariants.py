@@ -44,6 +44,11 @@ from src.nome_agro import (
 from src.tesouro_direto import TesouroDiretoEngine
 from src.bmf_futures_settlement import BmfFuturesSettlementEngine
 from src.public_offerings_cvm160 import PublicOfferingEngine
+from src.bdr_conversion import BdrConversionEngine
+from src.etf_creation_redemption import EtfPrimaryMarketEngine
+from src.cbio_carbon_energy import CbioPlatformEngine
+from src.lien_collateral_registry import LienCollateralRegistryEngine
+from src.buyin_failure_management import BuyInFailureEngine
 
 
 class InvariantViolationError(AssertionError):
@@ -503,6 +508,101 @@ def verify_public_offerings_cvm160_invariants(fixtures_dir: Path):
     print("      ✓ Corte holandês uniforme, prioridade de lock-up e conservação de rateio CVM 160 comprovados.")
 
 
+def verify_bdr_conversion_invariants(fixtures_dir: Path):
+    """
+    Lei 18: Conservação Internacional de Lastro e Paridade de BDRs (FL-034)
+    1. Para todo programa BDR: Ações-Lastro Bloqueadas * Paridade == BDRs Emitidos * Bloco-Lastro.
+    2. Repasse de Dividendos: Bruto_USD - Withholding_Tax == Liquido_Estrangeiro_USD.
+    """
+    print("[18/22] Verificando Invariante de Paridade Internacional e Dividendos BDR (FL-034)...")
+    engine, conversions, dividends = BdrConversionEngine.load_and_process_fixture(
+        fixtures_dir / "bdr_conversion_requests.json"
+    )
+    check(len(conversions) == 5, "Total de conversões BDR diverge da fixture")
+    check(len(dividends) == 2, "Total de eventos de dividendos BDR diverge da fixture")
+    check(engine.verify_global_conservation(), "Conservação global de lastro internacional BDR violada")
+    print("      ✓ Paridade inteira DTC/Euroclear vs B3 e repasse PTAX de dividendos BDR comprovados.")
+
+
+def verify_etf_primary_basket_invariants(fixtures_dir: Path):
+    """
+    Lei 19: Identidade Contábil do PCF e Entrega In-Kind no Mercado Primário de ETFs (FL-035)
+    1. Valor das Ações da Cesta + Cash Component == Creation_Unit_Size * NAV_per_Quota.
+    2. Todas as ordens primárias são múltiplos exatos do Lote Mínimo (Creation Unit).
+    """
+    print("[19/22] Verificando Invariante de Cesta PCF e Criação/Resgate de ETFs (FL-035)...")
+    engine = EtfPrimaryMarketEngine.from_json(fixtures_dir / "etf_primary_basket.json")
+    check(engine.pcf.validate_nav_parity(), "Paridade patrimonial do PCF (Cesta + Caixa == Lote * NAV) violada")
+    instructions = engine.process_batch()
+    check(len(instructions) == 4, "Total de instruções primárias de ETF diverge da fixture")
+    for inst in instructions:
+        check(
+            inst.basket_equities_value + inst.cash_component_amount == inst.total_nav_value,
+            f"Identidade patrimonial violada na instrução {inst.order_id}",
+        )
+    print("      ✓ Identidade contábil do PCF (Cesta + Cash == NAV) e entrega in-kind de ETFs comprovadas.")
+
+
+def verify_cbio_carbon_retirement_invariants(fixtures_dir: Path):
+    """
+    Lei 20: Conservação Ambiental e Prevenção de Dupla Contagem de CBIOs (FL-036)
+    1. Total Emitidos == Total em Circulação + Total Aposentados.
+    2. CBIO aposentado jamais retorna à circulação (estado absorvente terminal).
+    """
+    print("[20/22] Verificando Invariante de Conservação e Aposentadoria de CBIOs (FL-036)...")
+    engine = CbioPlatformEngine()
+    summary = engine.process_batch_file(fixtures_dir / "cbio_retirement_batch.json")
+    check(summary.conservation_invariant_ok, "Equação de conservação CBIO (Emitidos == Circulação + Aposentados) violada")
+    check(
+        summary.total_issued_cbios == summary.total_in_circulation_cbios + summary.total_retired_cbios,
+        "Soma de CBIOs em circulação e aposentados diverge do total escriturado",
+    )
+    print("      ✓ Conservação de CBIOs (RenovaBio/ANP) e bloqueio anti-dupla contagem comprovados.")
+
+
+def verify_lien_collateral_waterfall_invariants(fixtures_dir: Path):
+    """
+    Lei 21: Prelazia Multi-Grau e Conservação de Excussão de Garantias (FL-037 — Lei 14.711/2023)
+    1. Soma dos gravames ativos num pool <= Valor Líquido de Avaliação (pós-haircut).
+    2. Na excussão: Valor Bruto Arrecadado == Custos + Soma(Pagamentos aos Credores por Grau) + Saldo Devolvido ao Devedor.
+    """
+    print("[21/22] Verificando Invariante de Prelazia e Excussão de Garantias (FL-037)...")
+    engine = LienCollateralRegistryEngine.from_fixture(
+        fixtures_dir / "lien_collateral_registry.json", execute_events=True
+    )
+    check(len(engine.excussion_history) == 1, "Histórico de excussão diverge da fixture")
+    exc = engine.excussion_history[0]
+    total_paid = sum(p.paid_amount_brl for p in exc.allocations)
+    check(
+        exc.gross_proceeds_brl == exc.execution_costs_brl + total_paid + exc.grantor_surplus_returned_brl,
+        "Conservação financeira violada na cascata de excussão de garantias",
+    )
+    check(exc.prelacy_order_respected, "Ordem de prelazia entre graus violada na excussão")
+    print("      ✓ Ordem de prelazia multi-grau (Lei 14.711/2023) e conservação na excussão comprovadas.")
+
+
+def verify_buyin_failure_management_invariants(fixtures_dir: Path):
+    """
+    Lei 22: Identidade de Shortfall D+2 e Alocação Assimétrica de Buy-In D+3 (FL-038)
+    1. Shortfall == Obrigação - Entregue - Regularizado_BTC >= 0.
+    2. Diferencial debitado do vendedor inadimplente >= 0 (vendedor arca com prejuízo, mas não recebe ganho).
+    """
+    print("[22/22] Verificando Invariante de Falha de Entrega D+2 e Buy-In D+3 (FL-038)...")
+    engine = BuyInFailureEngine()
+    res = engine.evaluate_fixture(fixtures_dir / "buyin_settlement_failures.json")
+    check(res["total_cases"] == 4, "Total de casos de falha D+2 diverge da fixture")
+    check(
+        res["total_shortfall_quantity"]
+        == res["total_obligated_quantity"] - res["total_delivered_quantity"] - res["total_btc_regularized_quantity"],
+        "Identidade quantitativa de Shortfall D+2 violada",
+    )
+    check(
+        res["total_debited_from_sellers_brl"] == res["total_penalties_brl"] + res["total_price_differentials_brl"],
+        "Débito total de falha e Buy-In diverge da soma de multas e diferenciais",
+    )
+    print("      ✓ Identidade de Shortfall D+2, reversão BTC e diferencial assimétrico de Buy-In comprovados.")
+
+
 def main():
     print("=" * 70)
     print(" B3 INTEGRATION ATLAS — VERIFICAÇÃO FORMAL DE INVARIANTES")
@@ -532,9 +632,14 @@ def main():
         verify_tesouro_direto_invariants(fixtures_dir)
         verify_bmf_futures_settlement_invariants(fixtures_dir)
         verify_public_offerings_cvm160_invariants(fixtures_dir)
+        verify_bdr_conversion_invariants(fixtures_dir)
+        verify_etf_primary_basket_invariants(fixtures_dir)
+        verify_cbio_carbon_retirement_invariants(fixtures_dir)
+        verify_lien_collateral_waterfall_invariants(fixtures_dir)
+        verify_buyin_failure_management_invariants(fixtures_dir)
         
         print("\n" + "=" * 70)
-        print("✓ TODAS AS 17 LEIS DE CONSERVAÇÃO E INVARIANTES DA B3 FORAM PROVADAS!")
+        print("✓ TODAS AS 22 LEIS DE CONSERVAÇÃO E INVARIANTES DA B3 FORAM PROVADAS!")
         print("  Garantia matemática de consistência em todas as fixtures e módulos.")
         print("=" * 70)
         sys.exit(0)

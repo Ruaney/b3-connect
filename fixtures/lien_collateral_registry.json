@@ -1,0 +1,190 @@
+{
+  "schema_version": "1.0.0",
+  "flow_code": "FL-037",
+  "system": "B3_CENTRAL_GARANTIAS_GRAVAMES_NOME_RTC",
+  "reference_date": "2026-11-03",
+  "regulatory_framework": [
+    "LEI_14711_2023_MARCO_LEGAL_GARANTIAS",
+    "RESOLUCAO_BCB_264_2022",
+    "LEI_4728_1965_ART_66B"
+  ],
+  "collateral_pools": [
+    {
+      "pool_id": "POOL-CDB-2026-001",
+      "asset_type": "CDB",
+      "ticker_or_cetip_code": "CDB22600981",
+      "isin": "BRCDB2DBS001",
+      "grantor_document": "12345678000190",
+      "grantor_name": "USINA SANTA LUZIA BIOENERGIA S.A.",
+      "custodian_participant_code": "00114",
+      "total_quantity": "1000.0000",
+      "unit_market_price": "1050.00",
+      "haircut_pct": "0.0500",
+      "currency": "BRL",
+      "custody_account_free": "2101-6",
+      "custody_account_encumbered": "2901-8"
+    },
+    {
+      "pool_id": "POOL-DEB-2026-002",
+      "asset_type": "DEBENTURE",
+      "ticker_or_cetip_code": "VALE38",
+      "isin": "BRVALEDBS038",
+      "grantor_document": "33445566000122",
+      "grantor_name": "INFRAESTRUTURA LOGISTICA BRASIL S.A.",
+      "custodian_participant_code": "00208",
+      "total_quantity": "500.0000",
+      "unit_market_price": "2000.00",
+      "haircut_pct": "0.1000",
+      "currency": "BRL",
+      "custody_account_free": "2101-6",
+      "custody_account_encumbered": "2901-8"
+    },
+    {
+      "pool_id": "POOL-ACAO-2026-003",
+      "asset_type": "ACAO",
+      "ticker_or_cetip_code": "ITUB4",
+      "isin": "BRITUBACNPR1",
+      "grantor_document": "55667788000155",
+      "grantor_name": "HOLDING PATRIMONIAL IBIRAPUERA LTDA.",
+      "custodian_participant_code": "00303",
+      "total_quantity": "50000.0000",
+      "unit_market_price": "35.00",
+      "haircut_pct": "0.2000",
+      "currency": "BRL",
+      "custody_account_free": "2101-6",
+      "custody_account_encumbered": "2901-8"
+    }
+  ],
+  "lien_registrations": [
+    {
+      "lien_id": "GRV-2026-000101",
+      "pool_id": "POOL-CDB-2026-001",
+      "modality": "CESSAO_FIDUCIARIA",
+      "priority_rank": "PRIMEIRO_GRAU",
+      "status": "ATIVO_BLOQUEADO",
+      "creditor_document": "60701190000104",
+      "creditor_name": "ITAU UNIBANCO S.A.",
+      "contract_reference": "CCB-CORP-2026-8841",
+      "secured_amount_brl": "600000.00",
+      "earmarked_quantity": "600.0000",
+      "registration_timestamp": "2026-11-01T10:15:00Z",
+      "legal_framework": "LEI_14711_2023_BCB_264",
+      "notes": "Cessão fiduciária sênior de 1º grau sobre CDB DI para giro corporativo."
+    },
+    {
+      "lien_id": "GRV-2026-000102",
+      "pool_id": "POOL-CDB-2026-001",
+      "modality": "CESSAO_FIDUCIARIA",
+      "priority_rank": "SEGUNDO_GRAU",
+      "status": "ATIVO_BLOQUEADO",
+      "creditor_document": "00000000000191",
+      "creditor_name": "BANCO DO BRASIL S.A.",
+      "contract_reference": "CCB-AGRO-2026-3109",
+      "secured_amount_brl": "250000.00",
+      "earmarked_quantity": "250.0000",
+      "registration_timestamp": "2026-11-02T14:30:00Z",
+      "legal_framework": "LEI_14711_2023_BCB_264",
+      "notes": "Extensão de garantia em 2º grau (subordinada) sobre o excedente de avaliação do CDB."
+    },
+    {
+      "lien_id": "GRV-2026-000201",
+      "pool_id": "POOL-DEB-2026-002",
+      "modality": "ALIENACAO_FIDUCIARIA",
+      "priority_rank": "PRIMEIRO_GRAU",
+      "status": "ATIVO_BLOQUEADO",
+      "creditor_document": "33000167000101",
+      "creditor_name": "BANCO BTG PACTUAL S.A.",
+      "contract_reference": "ESC-FIN-2026-4401",
+      "secured_amount_brl": "500000.00",
+      "earmarked_quantity": "280.0000",
+      "registration_timestamp": "2026-11-01T09:00:00Z",
+      "legal_framework": "LEI_14711_2023_BCB_264",
+      "notes": "Alienação fiduciária de 1º grau sobre debêntures incentivadas VALE38."
+    },
+    {
+      "lien_id": "GRV-2026-000202",
+      "pool_id": "POOL-DEB-2026-002",
+      "modality": "PENHOR",
+      "priority_rank": "SEGUNDO_GRAU",
+      "status": "ATIVO_BLOQUEADO",
+      "creditor_document": "90400888000142",
+      "creditor_name": "BANCO SANTANDER (BRASIL) S.A.",
+      "contract_reference": "CONT-DERIV-2026-992",
+      "secured_amount_brl": "250000.00",
+      "earmarked_quantity": "140.0000",
+      "registration_timestamp": "2026-11-01T16:45:00Z",
+      "legal_framework": "LEI_14711_2023_BCB_264",
+      "notes": "Penhor mercantil de 2º grau subordinado à alienação fiduciária sênior."
+    },
+    {
+      "lien_id": "GRV-2026-000203",
+      "pool_id": "POOL-DEB-2026-002",
+      "modality": "PENHOR",
+      "priority_rank": "TERCEIRO_GRAU",
+      "status": "ATIVO_BLOQUEADO",
+      "creditor_document": "60746948000112",
+      "creditor_name": "BANCO BRADESCO S.A.",
+      "contract_reference": "CCB-MEZ-2026-771",
+      "secured_amount_brl": "100000.00",
+      "earmarked_quantity": "60.0000",
+      "registration_timestamp": "2026-11-02T11:20:00Z",
+      "legal_framework": "LEI_14711_2023_BCB_264",
+      "notes": "Penhor de 3º grau (júnior) aproveitando o colchão residual da debênture."
+    },
+    {
+      "lien_id": "GRV-2026-000301",
+      "pool_id": "POOL-ACAO-2026-003",
+      "modality": "PENHOR",
+      "priority_rank": "PRIMEIRO_GRAU",
+      "status": "ATIVO_BLOQUEADO",
+      "creditor_document": "02332886000104",
+      "creditor_name": "XP INVESTIMENTOS CCTVM S.A.",
+      "contract_reference": "LOMBARD-2026-5501",
+      "secured_amount_brl": "900000.00",
+      "earmarked_quantity": "35000.0000",
+      "registration_timestamp": "2026-11-01T11:00:00Z",
+      "legal_framework": "LEI_14711_2023_BCB_264",
+      "notes": "Penhor de ações ITUB4 em 1º grau para linha de crédito Lombard."
+    },
+    {
+      "lien_id": "GRV-2026-000302",
+      "pool_id": "POOL-ACAO-2026-003",
+      "modality": "USUFRUTO",
+      "priority_rank": "SEGUNDO_GRAU",
+      "status": "ATIVO_BLOQUEADO",
+      "creditor_document": "11223344000199",
+      "creditor_name": "FUNDO DE INVESTIMENTO EM DIREITOS CREDITORIOS ALPHA",
+      "contract_reference": "INST-USUF-2026-104",
+      "secured_amount_brl": "300000.00",
+      "earmarked_quantity": "15000.0000",
+      "registration_timestamp": "2026-11-02T09:30:00Z",
+      "legal_framework": "LEI_14711_2023_BCB_264",
+      "notes": "Gravame de usufruto econômico de dividendos/JCP em 2º grau."
+    }
+  ],
+  "excussion_events": [
+    {
+      "event_id": "EXC-2026-0001",
+      "pool_id": "POOL-CDB-2026-001",
+      "trigger_lien_id": "GRV-2026-000101",
+      "execution_timestamp": "2026-11-03T16:00:00Z",
+      "gross_liquidation_proceeds_brl": "980000.00",
+      "execution_costs_brl": "5000.00",
+      "expected_net_proceeds_brl": "975000.00",
+      "expected_senior_payout_brl": "600000.00",
+      "expected_subordinated_payout_brl": "250000.00",
+      "expected_grantor_surplus_returned_brl": "125000.00",
+      "reason": "Inadimplemento da CCB-CORP-2026-8841 com vencimento antecipado cruzado e liquidação em cascata."
+    }
+  ],
+  "release_events": [
+    {
+      "release_id": "BX-2026-0001",
+      "lien_id": "GRV-2026-000301",
+      "pool_id": "POOL-ACAO-2026-003",
+      "release_timestamp": "2026-11-03T17:30:00Z",
+      "creditor_authorization_token": "AUTH-XP-20261103-99812",
+      "reason": "Quitação integral antecipada da linha de crédito Lombard LOMBARD-2026-5501."
+    }
+  ]
+}

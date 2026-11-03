@@ -1,0 +1,153 @@
+{
+  "pcf_id": "PCF-BOVA11-20261103",
+  "system": "B3 Central Depositária - Mercado Primário de ETFs (FL-035)",
+  "etf_ticker": "BOVA11",
+  "etf_isin": "BRBOVACTF003",
+  "etf_name": "ISHARES IBOVESPA FUNDO DE ÍNDICE",
+  "benchmark_index": "IBOV",
+  "administrator_cnpj": "60.746.948/0001-12",
+  "fund_custody_account": "99001-0",
+  "reference_date": "2026-11-03",
+  "settlement_date": "2026-11-05",
+  "creation_unit_size": 50000,
+  "nav_per_quota": "125.50",
+  "unit_nav_value": "6275000.00",
+  "basket_equities_value_per_unit": "6273000.00",
+  "cash_component_per_unit": "2000.00",
+  "components": [
+    {
+      "ticker": "VALE3",
+      "isin": "BRVALEACNOR0",
+      "company_name": "VALE S.A.",
+      "quantity_per_unit": 30000,
+      "closing_price": "62.40",
+      "component_value_per_unit": "1872000.00",
+      "theoretical_weight_pct": "29.8327"
+    },
+    {
+      "ticker": "PETR4",
+      "isin": "BRPETRACNPR6",
+      "company_name": "PETRÓLEO BRASILEIRO S.A. - PETROBRAS",
+      "quantity_per_unit": 35000,
+      "closing_price": "38.20",
+      "component_value_per_unit": "1337000.00",
+      "theoretical_weight_pct": "21.3068"
+    },
+    {
+      "ticker": "ITUB4",
+      "isin": "BRITUBACNPR1",
+      "company_name": "ITAÚ UNIBANCO HOLDING S.A.",
+      "quantity_per_unit": 32000,
+      "closing_price": "34.50",
+      "component_value_per_unit": "1104000.00",
+      "theoretical_weight_pct": "17.5936"
+    },
+    {
+      "ticker": "WEGE3",
+      "isin": "BRWEGEACNOR0",
+      "company_name": "WEG S.A.",
+      "quantity_per_unit": 15000,
+      "closing_price": "52.80",
+      "component_value_per_unit": "792000.00",
+      "theoretical_weight_pct": "12.6215"
+    },
+    {
+      "ticker": "BBDC4",
+      "isin": "BRBBDCACNPR8",
+      "company_name": "BANCO BRADESCO S.A.",
+      "quantity_per_unit": 45000,
+      "closing_price": "15.20",
+      "component_value_per_unit": "684000.00",
+      "theoretical_weight_pct": "10.9004"
+    },
+    {
+      "ticker": "B3SA3",
+      "isin": "BRB3SAACNOR6",
+      "company_name": "B3 S.A. - BRASIL, BOLSA, BALCÃO",
+      "quantity_per_unit": 40000,
+      "closing_price": "12.10",
+      "component_value_per_unit": "484000.00",
+      "theoretical_weight_pct": "7.7131"
+    }
+  ],
+  "orders": [
+    {
+      "order_id": "ORD-ETF-CREATE-001",
+      "order_type": "CREATION",
+      "etf_ticker": "BOVA11",
+      "ap_participant_code": "0114",
+      "ap_name": "CORRETORA ATLAS DTVM S.A.",
+      "ap_custody_account": "0114-00010-1",
+      "quotas_quantity": 100000,
+      "timestamp": "2026-11-03T16:15:00Z",
+      "available_equities": {
+        "VALE3": 65000,
+        "PETR4": 75000,
+        "ITUB4": 70000,
+        "WEGE3": 35000,
+        "BBDC4": 95000,
+        "B3SA3": 85000
+      },
+      "available_etf_quotas": 10000,
+      "expected_creation_units": 2,
+      "expected_basket_value": "12546000.00",
+      "expected_cash_component": "4000.00",
+      "expected_total_nav_value": "12550000.00"
+    },
+    {
+      "order_id": "ORD-ETF-REDEEM-001",
+      "order_type": "REDEMPTION",
+      "etf_ticker": "BOVA11",
+      "ap_participant_code": "0120",
+      "ap_name": "BANCO ALPHA DE INVESTIMENTO S.A.",
+      "ap_custody_account": "0120-00020-9",
+      "quotas_quantity": 50000,
+      "timestamp": "2026-11-03T16:40:00Z",
+      "available_equities": {},
+      "available_etf_quotas": 80000,
+      "expected_creation_units": 1,
+      "expected_basket_value": "6273000.00",
+      "expected_cash_component": "2000.00",
+      "expected_total_nav_value": "6275000.00"
+    },
+    {
+      "order_id": "ORD-ETF-CREATE-002",
+      "order_type": "CREATION",
+      "etf_ticker": "BOVA11",
+      "ap_participant_code": "0135",
+      "ap_name": "INSTITUCIONAL QUANT CORRETORA S.A.",
+      "ap_custody_account": "0135-00030-5",
+      "quotas_quantity": 150000,
+      "timestamp": "2026-11-03T17:05:00Z",
+      "available_equities": {
+        "VALE3": 90000,
+        "PETR4": 105000,
+        "ITUB4": 96000,
+        "WEGE3": 45000,
+        "BBDC4": 135000,
+        "B3SA3": 120000
+      },
+      "available_etf_quotas": 0,
+      "expected_creation_units": 3,
+      "expected_basket_value": "18819000.00",
+      "expected_cash_component": "6000.00",
+      "expected_total_nav_value": "18825000.00"
+    },
+    {
+      "order_id": "ORD-ETF-REDEEM-002",
+      "order_type": "REDEMPTION",
+      "etf_ticker": "BOVA11",
+      "ap_participant_code": "0114",
+      "ap_name": "CORRETORA ATLAS DTVM S.A.",
+      "ap_custody_account": "0114-00010-1",
+      "quotas_quantity": 100000,
+      "timestamp": "2026-11-03T17:20:00Z",
+      "available_equities": {},
+      "available_etf_quotas": 120000,
+      "expected_creation_units": 2,
+      "expected_basket_value": "12546000.00",
+      "expected_cash_component": "4000.00",
+      "expected_total_nav_value": "12550000.00"
+    }
+  ]
+}

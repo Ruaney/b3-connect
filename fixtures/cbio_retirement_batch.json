@@ -1,0 +1,196 @@
+{
+  "platform": "B3_BALCAO_CBIO_RENOVABIO",
+  "flow_code": "FL-036",
+  "reference_date": "2026-12-31",
+  "compliance_year": 2026,
+  "penalty_reference_per_cbio_brl": "100.00",
+  "primary_issuances": [
+    {
+      "batch_id": "CBIO-2026-0001",
+      "issuer_id": "USINA-SM-01",
+      "issuer_name": "São Martinho S.A. Usina Boa Vista",
+      "issuer_cnpj": "51466860000156",
+      "issuer_role": "EMISSOR_PRIMARIO",
+      "bookkeeper_id": "BANCO-ITAU-ESC-01",
+      "bookkeeper_name": "Itaú Corretora de Valores S.A. - Escriturador CBIO",
+      "bookkeeper_cnpj": "61194353000164",
+      "anp_certificate_code": "ANP-CERT-2026-ETANOL-0089",
+      "nfe_key": "35261051466860000156550010001234561001234567",
+      "biofuel_type": "ETANOL_HIDRATADO",
+      "energy_efficiency_note_gco2_mj": "61.45",
+      "quantity": 12000,
+      "reference_unit_price_brl": "95.50",
+      "issuance_timestamp": "2026-03-15T10:30:00Z"
+    },
+    {
+      "batch_id": "CBIO-2026-0002",
+      "issuer_id": "USINA-RAIZEN-02",
+      "issuer_name": "Raízen Energia S.A. - Unidade Costa Pinto",
+      "issuer_cnpj": "33453598000123",
+      "issuer_role": "EMISSOR_PRIMARIO",
+      "bookkeeper_id": "BANCO-BRADESCO-ESC-02",
+      "bookkeeper_name": "Banco Bradesco S.A. - Custódia e Escrituração CBIO",
+      "bookkeeper_cnpj": "60746948000112",
+      "anp_certificate_code": "ANP-CERT-2026-ETANOL-0142",
+      "nfe_key": "35261033453598000123550010006543211006543218",
+      "biofuel_type": "ETANOL_ANIDRO",
+      "energy_efficiency_note_gco2_mj": "63.10",
+      "quantity": 8000,
+      "reference_unit_price_brl": "96.00",
+      "issuance_timestamp": "2026-04-10T14:15:00Z"
+    },
+    {
+      "batch_id": "CBIO-2026-0003",
+      "issuer_id": "USINA-BE8-03",
+      "issuer_name": "Be8 S.A. Biocombustíveis Passo Fundo",
+      "issuer_cnpj": "07388609000161",
+      "issuer_role": "EMISSOR_PRIMARIO",
+      "bookkeeper_id": "BANCO-BB-ESC-03",
+      "bookkeeper_name": "Banco do Brasil S.A. - Escrituração RenovaBio",
+      "bookkeeper_cnpj": "00000000000191",
+      "anp_certificate_code": "ANP-CERT-2026-BIODIESEL-0211",
+      "nfe_key": "43261007388609000161550010000987651000987654",
+      "biofuel_type": "BIODIESEL",
+      "energy_efficiency_note_gco2_mj": "58.80",
+      "quantity": 5000,
+      "reference_unit_price_brl": "98.25",
+      "issuance_timestamp": "2026-06-22T11:00:00Z"
+    },
+    {
+      "batch_id": "CBIO-2026-0004",
+      "issuer_id": "USINA-GEO-04",
+      "issuer_name": "Geo Biogás & Tech S.A.",
+      "issuer_cnpj": "18923456000189",
+      "issuer_role": "EMISSOR_PRIMARIO",
+      "bookkeeper_id": "BANCO-ITAU-ESC-01",
+      "bookkeeper_name": "Itaú Corretora de Valores S.A. - Escriturador CBIO",
+      "bookkeeper_cnpj": "61194353000164",
+      "anp_certificate_code": "ANP-CERT-2026-BIOMETANO-0305",
+      "nfe_key": "41261018923456000189550010000112231000112239",
+      "biofuel_type": "BIOMETANO",
+      "energy_efficiency_note_gco2_mj": "74.20",
+      "quantity": 3000,
+      "reference_unit_price_brl": "102.00",
+      "issuance_timestamp": "2026-08-05T15:45:00Z"
+    }
+  ],
+  "secondary_trades": [
+    {
+      "trade_id": "TRD-CBIO-2026-01",
+      "batch_id": "CBIO-2026-0001",
+      "new_batch_id": "CBIO-2026-0001-S1",
+      "seller_id": "USINA-SM-01",
+      "buyer_id": "DIST-VIBRA-01",
+      "buyer_name": "Vibra Energia S.A.",
+      "buyer_cnpj": "34274233000102",
+      "buyer_role": "PARTE_OBRIGADA",
+      "quantity": 10000,
+      "unit_price_brl": "98.50",
+      "trade_timestamp": "2026-09-12T11:20:00Z"
+    },
+    {
+      "trade_id": "TRD-CBIO-2026-02",
+      "batch_id": "CBIO-2026-0002",
+      "new_batch_id": null,
+      "seller_id": "USINA-RAIZEN-02",
+      "buyer_id": "DIST-IPIRANGA-02",
+      "buyer_name": "Ipiranga Produtos de Petróleo S.A.",
+      "buyer_cnpj": "33337122000127",
+      "buyer_role": "PARTE_OBRIGADA",
+      "quantity": 8000,
+      "unit_price_brl": "99.00",
+      "trade_timestamp": "2026-10-03T16:10:00Z"
+    },
+    {
+      "trade_id": "TRD-CBIO-2026-03",
+      "batch_id": "CBIO-2026-0003",
+      "new_batch_id": "CBIO-2026-0003-S1",
+      "seller_id": "USINA-BE8-03",
+      "buyer_id": "DIST-ALESAT-03",
+      "buyer_name": "Ale Combustíveis S.A.",
+      "buyer_cnpj": "02762115000147",
+      "buyer_role": "PARTE_OBRIGADA",
+      "quantity": 4000,
+      "unit_price_brl": "100.20",
+      "trade_timestamp": "2026-11-18T10:05:00Z"
+    },
+    {
+      "trade_id": "TRD-CBIO-2026-04",
+      "batch_id": "CBIO-2026-0004",
+      "new_batch_id": "CBIO-2026-0004-S1",
+      "seller_id": "USINA-GEO-04",
+      "buyer_id": "FUNDO-ESG-VERDE-01",
+      "buyer_name": "Fundo ESG Carbono Neutro Multimercado",
+      "buyer_cnpj": "44556677000199",
+      "buyer_role": "INVESTIDOR_NAO_OBRIGADO",
+      "quantity": 1500,
+      "unit_price_brl": "104.00",
+      "trade_timestamp": "2026-11-25T14:50:00Z"
+    }
+  ],
+  "retirement_instructions": [
+    {
+      "instruction_id": "RET-CBIO-2026-01",
+      "receipt_id": "CERT-RET-B3-2026-0001",
+      "batch_id": "CBIO-2026-0001-S1",
+      "holder_id": "DIST-VIBRA-01",
+      "quantity": 10000,
+      "compliance_year": 2026,
+      "beneficiary_justification": "Cumprimento integral de meta compulsória anual RenovaBio ANP 2026 - Vibra Energia S.A.",
+      "retirement_timestamp": "2026-12-15T17:00:00Z"
+    },
+    {
+      "instruction_id": "RET-CBIO-2026-02",
+      "receipt_id": "CERT-RET-B3-2026-0002",
+      "batch_id": "CBIO-2026-0002",
+      "holder_id": "DIST-IPIRANGA-02",
+      "quantity": 7200,
+      "compliance_year": 2026,
+      "beneficiary_justification": "Cumprimento parcial (90%) de meta compulsória anual RenovaBio ANP 2026 com uso de carry-over legal de 10%.",
+      "retirement_timestamp": "2026-12-18T17:30:00Z"
+    },
+    {
+      "instruction_id": "RET-CBIO-2026-03",
+      "receipt_id": "CERT-RET-B3-2026-0003",
+      "batch_id": "CBIO-2026-0003-S1",
+      "holder_id": "DIST-ALESAT-03",
+      "quantity": 2500,
+      "compliance_year": 2026,
+      "beneficiary_justification": "Aposentadoria parcial para meta compulsória RenovaBio ANP 2026 - Ale Combustíveis S.A.",
+      "retirement_timestamp": "2026-12-20T16:40:00Z"
+    },
+    {
+      "instruction_id": "RET-CBIO-2026-04",
+      "receipt_id": "CERT-RET-B3-2026-0004",
+      "batch_id": "CBIO-2026-0004-S1",
+      "holder_id": "FUNDO-ESG-VERDE-01",
+      "quantity": 1500,
+      "compliance_year": 2026,
+      "beneficiary_justification": "Neutralização voluntária de emissões Escopo 1 e 2 (Descarbonização Voluntária ESG).",
+      "retirement_timestamp": "2026-12-22T12:00:00Z"
+    }
+  ],
+  "anp_mandatory_targets": [
+    {
+      "distributor_id": "DIST-VIBRA-01",
+      "distributor_name": "Vibra Energia S.A.",
+      "cnpj": "34274233000102",
+      "compliance_year": 2026,
+      "mandatory_target_cbios": 10000
+    },
+    {
+      "distributor_id": "DIST-IPIRANGA-02",
+      "distributor_name": "Ipiranga Produtos de Petróleo S.A.",
+      "cnpj": "33337122000127",
+      "compliance_year": 2026,
+      "mandatory_target_cbios": 8000
+    },
+    {
+      "distributor_id": "DIST-ALESAT-03",
+      "distributor_name": "Ale Combustíveis S.A.",
+      "cnpj": "02762115000147",
+      "compliance_year": 2026,
+      "mandatory_target_cbios": 4000
+    }
+  ]
+}

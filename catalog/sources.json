@@ -217,6 +217,46 @@
       "status": "localizada",
       "kind": "manual_tecnico",
       "limitation": "Formação de livro eletrônico, apuração de preço/taxa de corte uniforme, lock-up e rateio proporcional."
+    },
+    {
+      "id": "SRC-028",
+      "title": "B3 Central Depositária — Manual de Emissão, Cancelamento e Eventos de BDRs (Resolução CVM 182)",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/negociacao/renda-variavel/bdrs/",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Paridade Lastro Internacional vs BDR, mensageria DTC/Euroclear e repasse de dividendos via PTAX."
+    },
+    {
+      "id": "SRC-029",
+      "title": "B3 ETFs (Resolução CVM 175 Anexo V) — Manual de Integralização e Resgate no Mercado Primário (PCF)",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/negociacao/renda-variavel/etf/",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Estrutura do Portfolio Composition File (PCF), Creation Units por Agentes Autorizados (APs) e entrega in-kind."
+    },
+    {
+      "id": "SRC-030",
+      "title": "B3 Balcão NoMe — Manual Operacional de Créditos de Descarbonização CBIO (RenovaBio / Lei 13.576)",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/registro/cbio/",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Escrituração primária ANP, negociação secundária, aposentadoria definitiva (Retirement) e metas compulsórias."
+    },
+    {
+      "id": "SRC-031",
+      "title": "B3 Central de Garantias e Gravames — Manual de Constituição, Prelazia Multi-Grau e Excussão (Lei 14.711/2023)",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/central-depositaria/servicos-da-central-depositaria/gravames-e-onus/",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Constituição de penhor/alienação/cessão fiduciária em múltiplos graus de prioridade e cascata de excussão."
+    },
+    {
+      "id": "SRC-032",
+      "title": "B3 Câmara de Compensação — Manual de Procedimentos Operacionais: Falha de Entrega D+2 e Buy-In D+3",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/compensacao-e-liquidacao/clearing/",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Apuração de falha de entrega em D+2, reversão via BTC, recompra compulsória Buy-In e diferencial financeiro."
     }
   ]
 }
