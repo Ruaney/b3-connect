@@ -193,6 +193,30 @@
       "status": "localizada",
       "kind": "regulamento",
       "limitation": "Diretrizes de trilha de auditoria, identificação de beneficiário final e prevenção a spoofing/layering."
+    },
+    {
+      "id": "SRC-025",
+      "title": "B3 Tesouro Direto — Manual de Integração API Hub de Varejo e Agentes de Custódia",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/tesouro-direto/",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Regras de aplicação, recompra, fração mínima de 0,01 título e taxa de custódia B3 pro-rata die."
+    },
+    {
+      "id": "SRC-026",
+      "title": "B3 Derivativos Listados BM&F — Caderno de Fórmulas de PU e Ajuste Diário (DI1, DOL, IND, WIN, WDO)",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/negociacao/juros/",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Metodologia de cálculo exponencial DU/252 de PU de DI1, correção por CDI over e ajuste diário D+1."
+    },
+    {
+      "id": "SRC-027",
+      "title": "B3 Ofertas Públicas (Resolução CVM 160) — Manual Operacional de Reserva e Bookbuilding",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/solucoes-para-emissores/ofertas-publicas/",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Formação de livro eletrônico, apuração de preço/taxa de corte uniforme, lock-up e rateio proporcional."
     }
   ]
 }
