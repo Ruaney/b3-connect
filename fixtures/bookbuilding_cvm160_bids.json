@@ -1,0 +1,126 @@
+{
+  "offering_id": "OFR-CVM160-2026-001",
+  "issuer_name": "ATLAS INFRAESTRUTURA E ENERGIA S.A.",
+  "ticker": "ATLS3",
+  "isin": "BRATLSACNOR1",
+  "offering_type": "IPO",
+  "cvm_rite": "ORDINARY",
+  "total_offered_quantity": 10000,
+  "min_price_or_rate": "18.00",
+  "max_price_or_rate": "24.00",
+  "retail_tranche_pct": "0.20",
+  "lockup_priority_enabled": true,
+  "settlement_date": "2026-11-06",
+  "bids": [
+    {
+      "bid_id": "BID-INST-001",
+      "investor_id": "11.222.333/0001-81",
+      "participant_id": 101,
+      "investor_category": "PROFESSIONAL",
+      "quantity": 3500,
+      "limit_price_or_rate": "23.50",
+      "lockup_days": 180,
+      "timestamp": "2026-11-03T10:05:00Z"
+    },
+    {
+      "bid_id": "BID-INST-002",
+      "investor_id": "22.333.444/0001-92",
+      "participant_id": 102,
+      "investor_category": "PROFESSIONAL",
+      "quantity": 2500,
+      "limit_price_or_rate": "22.00",
+      "lockup_days": 90,
+      "timestamp": "2026-11-03T10:12:30Z"
+    },
+    {
+      "bid_id": "BID-QUAL-001",
+      "investor_id": "33.444.555/0001-03",
+      "participant_id": 105,
+      "investor_category": "QUALIFIED",
+      "quantity": 1500,
+      "limit_price_or_rate": "21.00",
+      "lockup_days": 90,
+      "timestamp": "2026-11-03T11:00:00Z"
+    },
+    {
+      "bid_id": "BID-INST-003",
+      "investor_id": "44.555.666/0001-14",
+      "participant_id": 101,
+      "investor_category": "PROFESSIONAL",
+      "quantity": 2000,
+      "limit_price_or_rate": "21.00",
+      "lockup_days": 0,
+      "timestamp": "2026-11-03T11:15:00Z"
+    },
+    {
+      "bid_id": "BID-INST-004",
+      "investor_id": "55.666.777/0001-25",
+      "participant_id": 108,
+      "investor_category": "PROFESSIONAL",
+      "quantity": 2000,
+      "limit_price_or_rate": "21.00",
+      "lockup_days": 0,
+      "timestamp": "2026-11-03T11:20:00Z"
+    },
+    {
+      "bid_id": "BID-RET-001",
+      "investor_id": "123.456.789-01",
+      "participant_id": 110,
+      "investor_category": "RETAIL",
+      "quantity": 800,
+      "limit_price_or_rate": "24.00",
+      "lockup_days": 90,
+      "timestamp": "2026-11-03T09:30:00Z"
+    },
+    {
+      "bid_id": "BID-RET-002",
+      "investor_id": "234.567.890-12",
+      "participant_id": 110,
+      "investor_category": "RETAIL",
+      "quantity": 700,
+      "limit_price_or_rate": "22.50",
+      "lockup_days": 90,
+      "timestamp": "2026-11-03T09:45:00Z"
+    },
+    {
+      "bid_id": "BID-RET-003",
+      "investor_id": "345.678.901-23",
+      "participant_id": 115,
+      "investor_category": "RETAIL",
+      "quantity": 600,
+      "limit_price_or_rate": "21.00",
+      "lockup_days": 0,
+      "timestamp": "2026-11-03T10:00:00Z"
+    },
+    {
+      "bid_id": "BID-RET-004",
+      "investor_id": "456.789.012-34",
+      "participant_id": 115,
+      "investor_category": "RETAIL",
+      "quantity": 400,
+      "limit_price_or_rate": "21.00",
+      "lockup_days": 0,
+      "timestamp": "2026-11-03T10:30:00Z"
+    },
+    {
+      "bid_id": "BID-INST-005",
+      "investor_id": "66.777.888/0001-36",
+      "participant_id": 120,
+      "investor_category": "PROFESSIONAL",
+      "quantity": 3000,
+      "limit_price_or_rate": "19.50",
+      "lockup_days": 180,
+      "timestamp": "2026-11-03T14:00:00Z"
+    },
+    {
+      "bid_id": "BID-RET-005",
+      "investor_id": "567.890.123-45",
+      "participant_id": 110,
+      "investor_category": "RETAIL",
+      "quantity": 500,
+      "limit_price_or_rate": "20.00",
+      "lockup_days": 90,
+      "timestamp": "2026-11-03T15:00:00Z"
+    }
+  ]
+}

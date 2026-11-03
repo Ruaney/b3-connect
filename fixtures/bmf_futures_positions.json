@@ -1,0 +1,102 @@
+{
+  "portfolio_id": "BMF-PORT-20261103-001",
+  "participant_code": "00114",
+  "account_id": "998877-6",
+  "trade_date": "2026-11-03",
+  "settlement_date": "2026-11-04",
+  "cdi_overnight_rate_pct": "11.15",
+  "positions": [
+    {
+      "position_id": "POS-DI1-001",
+      "ticker": "DI1F27",
+      "contract_family": "DI1",
+      "maturity_date": "2027-01-04",
+      "business_days_to_maturity": 42,
+      "position_type": "CARRIED",
+      "side": "BUY",
+      "quantity": 100,
+      "previous_settlement_rate_pct": "11.50",
+      "previous_settlement_pu": "98202.12",
+      "current_settlement_rate_pct": "11.65",
+      "current_settlement_pu": "98180.12",
+      "apply_cdi_correction": false,
+      "description": "Posição carregada D-1 comprada em taxa (vendida em PU) em DI1F27; alta de taxa de 11,50% para 11,65% gera ajuste positivo."
+    },
+    {
+      "position_id": "POS-DI1-002",
+      "ticker": "DI1F27",
+      "contract_family": "DI1",
+      "maturity_date": "2027-01-04",
+      "business_days_to_maturity": 42,
+      "position_type": "DAY_TRADE",
+      "side": "BUY",
+      "quantity": 50,
+      "entry_rate_pct": "11.40",
+      "exit_rate_pct": "11.60",
+      "current_settlement_rate_pct": "11.65",
+      "description": "Day-trade em DI1F27: compra em taxa a 11,40% (PU 98.216,80) e venda em taxa a 11,60% (PU 98.187,45)."
+    },
+    {
+      "position_id": "POS-DOL-001",
+      "ticker": "DOLZ26",
+      "contract_family": "DOL",
+      "maturity_date": "2026-12-01",
+      "position_type": "CARRIED",
+      "side": "BUY",
+      "quantity": 10,
+      "previous_settlement_price": "5780.00",
+      "current_settlement_price": "5805.50",
+      "description": "Posição carregada D-1 comprada em 10 contratos de Dólar Cheio (DOLZ26)."
+    },
+    {
+      "position_id": "POS-DOL-002",
+      "ticker": "DOLZ26",
+      "contract_family": "DOL",
+      "maturity_date": "2026-12-01",
+      "position_type": "DAY_TRADE",
+      "side": "BUY",
+      "quantity": 5,
+      "entry_price": "5790.00",
+      "exit_price": "5802.00",
+      "current_settlement_price": "5805.50",
+      "description": "Day-trade em 5 contratos de DOLZ26: compra a 5.790,00 e venda a 5.802,00."
+    },
+    {
+      "position_id": "POS-WDO-001",
+      "ticker": "WDOZ26",
+      "contract_family": "WDO",
+      "maturity_date": "2026-12-01",
+      "position_type": "CARRIED",
+      "side": "SELL",
+      "quantity": 25,
+      "previous_settlement_price": "5780.00",
+      "current_settlement_price": "5805.50",
+      "description": "Posição carregada D-1 vendida em 25 minicontratos de Dólar (WDOZ26)."
+    },
+    {
+      "position_id": "POS-IND-001",
+      "ticker": "INDZ26",
+      "contract_family": "IND",
+      "maturity_date": "2026-12-16",
+      "position_type": "CARRIED",
+      "side": "BUY",
+      "quantity": 5,
+      "previous_settlement_price": "129500.00",
+      "current_settlement_price": "130250.00",
+      "description": "Posição carregada D-1 comprada em 5 contratos de Ibovespa Cheio (INDZ26)."
+    },
+    {
+      "position_id": "POS-WIN-001",
+      "ticker": "WINZ26",
+      "contract_family": "WIN",
+      "maturity_date": "2026-12-16",
+      "position_type": "DAY_TRADE",
+      "side": "SELL",
+      "quantity": 40,
+      "entry_price": "130400.00",
+      "exit_price": "129900.00",
+      "current_settlement_price": "130250.00",
+      "description": "Day-trade em 40 minicontratos de Índice (WINZ26): venda a 130.400 e recompra a 129.900 pontos."
+    }
+  ]
+}

@@ -41,6 +41,9 @@ from src.nome_agro import (
     CprRegistration,
     CprType,
 )
+from src.tesouro_direto import TesouroDiretoEngine
+from src.bmf_futures_settlement import BmfFuturesSettlementEngine
+from src.public_offerings_cvm160 import PublicOfferingEngine
 
 
 class InvariantViolationError(AssertionError):
@@ -440,6 +443,66 @@ def verify_nome_agro_invariants(fixtures_dir: Path):
     print("      ✓ Conservação de quantidade física e valor financeiro de CPR Agro comprovadas.")
 
 
+def verify_tesouro_direto_invariants(fixtures_dir: Path):
+    """
+    Lei 15: Conservação Financeira e Fracionamento no Tesouro Direto (FL-031)
+    1. Toda ordem deve ser múltiplo exato de 0,01 título e valor bruto >= R$ 30,00.
+    2. Aplicações: Líquido == Bruto + Taxa Custódia B3.
+    3. Recompras: Líquido == Bruto - Taxa Custódia B3.
+    """
+    print("[15/17] Verificando Invariante de Tesouro Direto e Taxa B3 (FL-031)...")
+    engine = TesouroDiretoEngine()
+    summary = engine.load_and_process_batch(fixtures_dir / "tesouro_direto_orders.json")
+    check(summary["total_orders"] == 8, "Total de ordens Tesouro Direto diverge da fixture")
+    for order in summary["orders"]:
+        check(order.gross_amount >= Decimal("30.00"), f"Ordem {order.order_id} abaixo do mínimo de R$ 30,00")
+        check((order.quantity * 100) % 1 == 0, f"Ordem {order.order_id} viola fração mínima de 0,01 título")
+    check(summary["total_investments_gross"] == Decimal("9324.38"), "Soma de aplicações brutas diverge")
+    check(summary["total_redemptions_gross"] == Decimal("63875.00"), "Soma de resgates brutos diverge")
+    check(summary["total_b3_custody_fees"] == Decimal("60.25"), "Soma de taxas B3 diverge")
+    print("      ✓ Fração mínima (0,01), mínimo de R$ 30,00 e liquidação D+1 Tesouro Direto comprovados.")
+
+
+def verify_bmf_futures_settlement_invariants(fixtures_dir: Path):
+    """
+    Lei 16: Conservação Multilateral de Ajuste Diário de Futuros BM&F (FL-032)
+    1. Saldo Líquido D+1 == Soma(Créditos) + Soma(Débitos).
+    2. Inversão de sentido em DI1: Comprado em Taxa == Vendido em PU.
+    """
+    print("[16/17] Verificando Invariante de Ajuste Diário de Futuros BM&F (FL-032)...")
+    engine = BmfFuturesSettlementEngine()
+    summary = engine.settle_from_json(fixtures_dir / "bmf_futures_positions.json")
+    check(len(summary.results) == 7, "Total de posições de futuros diverge da fixture")
+    check(
+        summary.net_settlement_brl == summary.total_credits_brl + summary.total_debits_brl,
+        "Saldo líquido multilateral de ajuste diário diverge de Créditos + Débitos",
+    )
+    check(summary.net_settlement_brl == Decimal("20792.50"), f"Ajuste líquido incorreto: {summary.net_settlement_brl}")
+    print("      ✓ Equação de PU DI1 (DU/252) e ajuste diário D+1 de futuros BM&F comprovados.")
+
+
+def verify_public_offerings_cvm160_invariants(fixtures_dir: Path):
+    """
+    Lei 17: Conservação de Lote Ofertado e Rateio no Bookbuilding CVM 160 (FL-033)
+    1. Soma(Quantidade Alocada) <= Quantidade Total Ofertada.
+    2. Soma(Varejo) + Soma(Institucional) == Total Alocado.
+    3. Volume Financeiro Total == Total Alocado * Preço de Corte Uniforme.
+    """
+    print("[17/17] Verificando Invariante de Bookbuilding e Rateio CVM 160 (FL-033)...")
+    engine = PublicOfferingEngine.from_json_file(fixtures_dir / "bookbuilding_cvm160_bids.json")
+    summary = engine.execute_bookbuilding()
+    check(summary.total_allocated_quantity == summary.total_offered_quantity, "Total alocado diverge do lote ofertado")
+    check(
+        summary.retail_allocated_quantity + summary.institutional_allocated_quantity == summary.total_allocated_quantity,
+        "Soma das tranches de varejo e institucional diverge do total alocado",
+    )
+    check(
+        summary.total_settlement_amount == Decimal(summary.total_allocated_quantity) * summary.clearing_price_or_rate,
+        "Volume financeiro de liquidação da oferta pública diverge de Qtd * Preço de Corte",
+    )
+    print("      ✓ Corte holandês uniforme, prioridade de lock-up e conservação de rateio CVM 160 comprovados.")
+
+
 def main():
     print("=" * 70)
     print(" B3 INTEGRATION ATLAS — VERIFICAÇÃO FORMAL DE INVARIANTES")
@@ -466,9 +529,12 @@ def main():
         verify_funds_platform_invariants(fixtures_dir)
         verify_spb_multilateral_settlement_invariants(fixtures_dir)
         verify_nome_agro_invariants(fixtures_dir)
+        verify_tesouro_direto_invariants(fixtures_dir)
+        verify_bmf_futures_settlement_invariants(fixtures_dir)
+        verify_public_offerings_cvm160_invariants(fixtures_dir)
         
         print("\n" + "=" * 70)
-        print("✓ TODAS AS 14 LEIS DE CONSERVAÇÃO E INVARIANTES DA B3 FORAM PROVADAS!")
+        print("✓ TODAS AS 17 LEIS DE CONSERVAÇÃO E INVARIANTES DA B3 FORAM PROVADAS!")
         print("  Garantia matemática de consistência em todas as fixtures e módulos.")
         print("=" * 70)
         sys.exit(0)

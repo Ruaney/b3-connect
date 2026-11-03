@@ -637,6 +637,69 @@
         "implemented": "src/bsm_surveillance.py",
         "tested_locally": "tests/test_bsm_surveillance.py"
       }
+    },
+    {
+      "id": "FL-031",
+      "name": "Integrar ordens de aplicação, recompra e custódia no Tesouro Direto (Hub Varejo B3)",
+      "system": "Tesouro Direto B3",
+      "interface": "API REST Hub de Varejo / Tesouro Direto",
+      "sources": [
+        "SRC-025"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Motor completo das 7 modalidades do Tesouro Direto (Selic, Prefixado, IPCA+, Renda+, Educa+), validação de fração mínima (0,01), mínimo de R$ 30,00, teto mensal por CPF e taxa de custódia B3 (0,20% a.a.) implementados com sucesso. Pendente homologação no Hub Varejo B3.",
+      "evidence": {
+        "documented": "docs/layout-tesouro-direto.md",
+        "implemented": "src/tesouro_direto.py",
+        "tested_locally": "tests/test_tesouro_direto.py"
+      }
+    },
+    {
+      "id": "FL-032",
+      "name": "Calcular PU e ajuste diário (Variation Margin D+1) de futuros listados BM&F (DI1, DOL, IND, WIN, WDO)",
+      "system": "Câmara B3 / BM&F",
+      "interface": "Caderno de Fórmulas & Posições de Derivativos Listados",
+      "sources": [
+        "SRC-026"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Cálculo exato de PU exponencial DU/252 para DI1 (com inversão Taxa vs PU e correção por fator CDI over), ajuste diário de Dólar (DOL/WDO) e Índice (IND/WIN) para posições carregadas e day-trade implementados com sucesso. Pendente validação com arquivo oficial de ajustes da Câmara B3.",
+      "evidence": {
+        "documented": "docs/layout-bmf-futures-settlement.md",
+        "implemented": "src/bmf_futures_settlement.py",
+        "tested_locally": "tests/test_bmf_futures_settlement.py"
+      }
+    },
+    {
+      "id": "FL-033",
+      "name": "Processar reservas, bookbuilding holandês e rateio proporcional de Ofertas Públicas (CVM 160)",
+      "system": "Ofertas Públicas B3",
+      "interface": "Sistema de Reserva Eletrônica & Bookbuilding CVM 160",
+      "sources": [
+        "SRC-027"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Formação de livro de intenções (IPO, Follow-On, CRI/CRA, Debêntures), apuração determinística do preço/taxa de corte uniforme, prioridade de lock-up e rateio proporcional exato implementados com sucesso. Pendente homologação operacional na B3.",
+      "evidence": {
+        "documented": "docs/layout-public-offerings-cvm160.md",
+        "implemented": "src/public_offerings_cvm160.py",
+        "tested_locally": "tests/test_public_offerings_cvm160.py"
+      }
     }
   ]
 }
