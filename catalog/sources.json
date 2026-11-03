@@ -257,6 +257,22 @@
       "status": "localizada",
       "kind": "manual_tecnico",
       "limitation": "Apuração de falha de entrega em D+2, reversão via BTC, recompra compulsória Buy-In e diferencial financeiro."
+    },
+    {
+      "id": "SRC-033",
+      "title": "B3 Câmara de Compensação — Manual de Operações de Opções Listadas sobre Ações e Índices (Prêmio D+1, Cobertura 2306-6 e Exercício no Vencimento)",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/negociacao/renda-variavel/opcoes-sobre-acoes.htm",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Apuração de prêmio D+1, cobertura na carteira 2306-6, barreira (Contrary Instruction) e atribuição pro-rata no vencimento com liquidação D+2."
+    },
+    {
+      "id": "SRC-034",
+      "title": "B3 Balcão / NoMe — Manual de Registro e Liquidação de Derivativos de Balcão (Contratos de Swap e Termo de Moeda NDF — Resolução CMN 4.952)",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/registro/derivativos-de-balcao/",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Registro escritural NoMe de Swaps (CDI/Pré/Dólar/IPCA) e NDFs liquidados por PTAX com invariante soma-zero bilateral e IRRF."
     }
   ]
 }
