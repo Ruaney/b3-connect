@@ -1,0 +1,127 @@
+{
+  "description": "Conjunto de regras de roteamento e give-up institucional homologadas (FL-020 e FL-018)",
+  "version": "1.0.0",
+  "generated_at": "2026-11-03T18:00:00Z",
+  "rules": [
+    {
+      "rule_id": "RULE-PUMA-PNP-88-DIRECT",
+      "source_participant_id": 88,
+      "target_system": "PUMA",
+      "clearing_member_id": 88,
+      "custodian_id": 88,
+      "allowed_accounts": ["88000", "88001", "88002", "88003", "*"],
+      "allow_give_up": false,
+      "give_up_parties": [],
+      "active": true,
+      "description": "Roteamento direto de ordens PUMA para o participante pleno 88 com autoliquidação"
+    },
+    {
+      "rule_id": "RULE-PUMA-PN-105-VIA-PL3",
+      "source_participant_id": 105,
+      "target_system": "PUMA",
+      "clearing_member_id": 3,
+      "custodian_id": 3,
+      "allowed_accounts": ["10500", "10501", "10502", "*"],
+      "allow_give_up": false,
+      "give_up_parties": [],
+      "active": true,
+      "description": "Roteamento obrigatório de ordens PUMA da corretora PN 105 via membro liquidante PL 3"
+    },
+    {
+      "rule_id": "RULE-PUMA-PN-114-VIA-PL40",
+      "source_participant_id": 114,
+      "target_system": "PUMA",
+      "clearing_member_id": 40,
+      "custodian_id": 40,
+      "allowed_accounts": ["11400", "11401", "*"],
+      "allow_give_up": false,
+      "give_up_parties": [],
+      "active": true,
+      "description": "Roteamento obrigatório de ordens PUMA da corretora PN 114 via membro liquidante PL 40"
+    },
+    {
+      "rule_id": "RULE-PUMA-PNP-308-VIA-PL72",
+      "source_participant_id": 308,
+      "target_system": "PUMA",
+      "clearing_member_id": 72,
+      "custodian_id": 72,
+      "allowed_accounts": ["30800", "30801", "30802", "*"],
+      "allow_give_up": false,
+      "give_up_parties": [],
+      "active": true,
+      "description": "Roteamento de ordens PUMA do participante pleno 308 com liquidação delegada ao PL 72"
+    },
+    {
+      "rule_id": "RULE-PUMA-PL-3-DIRECT",
+      "source_participant_id": 3,
+      "target_system": "PUMA",
+      "clearing_member_id": 3,
+      "custodian_id": 3,
+      "allowed_accounts": ["03000", "03001", "03002", "03003", "*"],
+      "allow_give_up": false,
+      "give_up_parties": [],
+      "active": true,
+      "description": "Roteamento direto de ordens PUMA para o membro liquidante titular PL 3"
+    },
+    {
+      "rule_id": "RULE-RTC-GIVEUP-88-TO-PL3",
+      "source_participant_id": 88,
+      "target_system": "RTC",
+      "clearing_member_id": 3,
+      "custodian_id": 1001,
+      "allowed_accounts": ["88801", "88802"],
+      "allow_give_up": true,
+      "give_up_parties": [3],
+      "active": true,
+      "description": "Autorização de Give-Up e alocação do broker 88 para o liquidante 3 e custodiante 1001 para fundos da Atlas AM"
+    },
+    {
+      "rule_id": "RULE-RTC-GIVEUP-88-TO-PL72",
+      "source_participant_id": 88,
+      "target_system": "RTC",
+      "clearing_member_id": 72,
+      "custodian_id": 1001,
+      "allowed_accounts": ["88803"],
+      "allow_give_up": true,
+      "give_up_parties": [72],
+      "active": true,
+      "description": "Autorização de Give-Up do broker 88 para o liquidante 72 e custodiante 1001 para Atlas Previdência"
+    },
+    {
+      "rule_id": "RULE-RTC-GIVEUP-105-TO-PL3",
+      "source_participant_id": 105,
+      "target_system": "RTC",
+      "clearing_member_id": 3,
+      "custodian_id": 1001,
+      "allowed_accounts": ["10501"],
+      "allow_give_up": true,
+      "give_up_parties": [3],
+      "active": true,
+      "description": "Autorização de Give-Up do broker PN 105 para o liquidante 3 e custodiante 1001 para Atlas Hedge"
+    },
+    {
+      "rule_id": "RULE-NOME-PL-3-REGISTRATION",
+      "source_participant_id": 3,
+      "target_system": "NOME",
+      "clearing_member_id": 3,
+      "custodian_id": 3,
+      "allowed_accounts": ["03000", "*"],
+      "allow_give_up": false,
+      "give_up_parties": [],
+      "active": true,
+      "description": "Registro de contratos derivativos e balcão NoMe pelo membro liquidante PL 3"
+    },
+    {
+      "rule_id": "RULE-NOME-PN-105-VIA-PL3",
+      "source_participant_id": 105,
+      "target_system": "NOME",
+      "clearing_member_id": 3,
+      "custodian_id": 3,
+      "allowed_accounts": ["10500", "*"],
+      "allow_give_up": false,
+      "give_up_parties": [],
+      "active": true,
+      "description": "Registro de balcão NoMe pelo PN 105 com garantia e liquidação vinculadas ao PL 3"
+    }
+  ]
+}

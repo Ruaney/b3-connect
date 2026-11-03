@@ -1,0 +1,290 @@
+{
+  "description": "Catálogo sintético de participantes da B3 para validação de governança e roteamento (FL-020 e FL-018)",
+  "version": "1.0.0",
+  "generated_at": "2026-11-03T18:00:00Z",
+  "participants": [
+    {
+      "participant_id": 88,
+      "name": "Corretora Alfa de Investimentos CVM",
+      "participant_type": "PNP",
+      "active": true,
+      "permitted_systems": ["PUMA", "RTC", "NOME"],
+      "clearing_member_id": 88,
+      "default_settlement_account": "00088-0",
+      "master_account": "88000",
+      "custody_account": "CUST-0088",
+      "can_settle_directly": true,
+      "can_execute_trades": true,
+      "segregated_accounts": ["88001", "88002", "88003"],
+      "connectivity": {
+        "mtls_enabled": true,
+        "certificate_cn": "alfa.corretora.b3.com.br",
+        "ipsec_tunnel_id": "VPN-ALFA-01",
+        "rcc_circuit_id": "RCC-SP-0088",
+        "ip_allowlist": ["10.88.0.0/24", "192.168.88.10"]
+      },
+      "metadata": {
+        "market_segment": "BMF_BOVESPA",
+        "compliance_tier": "PLENO"
+      }
+    },
+    {
+      "participant_id": 105,
+      "name": "Beta DTVM e Corretora de Valores",
+      "participant_type": "PN",
+      "active": true,
+      "permitted_systems": ["PUMA", "RTC", "NOME"],
+      "clearing_member_id": 3,
+      "default_settlement_account": "00105-0",
+      "master_account": "10500",
+      "custody_account": "CUST-0105",
+      "can_settle_directly": false,
+      "can_execute_trades": true,
+      "segregated_accounts": ["10501", "10502"],
+      "connectivity": {
+        "mtls_enabled": true,
+        "certificate_cn": "beta.corretora.b3.com.br",
+        "ipsec_tunnel_id": "VPN-BETA-01",
+        "rcc_circuit_id": "RCC-SP-0105",
+        "ip_allowlist": ["10.105.0.0/24"]
+      },
+      "metadata": {
+        "market_segment": "BOVESPA",
+        "clearing_contract_ref": "CONTR-CLR-3-105-2024"
+      }
+    },
+    {
+      "participant_id": 114,
+      "name": "Gama CTVM Ltda",
+      "participant_type": "PN",
+      "active": true,
+      "permitted_systems": ["PUMA", "RTC"],
+      "clearing_member_id": 40,
+      "default_settlement_account": "00114-0",
+      "master_account": "11400",
+      "custody_account": "CUST-0114",
+      "can_settle_directly": false,
+      "can_execute_trades": true,
+      "segregated_accounts": ["11401"],
+      "connectivity": {
+        "mtls_enabled": true,
+        "certificate_cn": "gama.corretora.b3.com.br",
+        "ipsec_tunnel_id": "VPN-GAMA-01",
+        "rcc_circuit_id": "RCC-RJ-0114",
+        "ip_allowlist": ["10.114.0.0/24"]
+      },
+      "metadata": {
+        "market_segment": "BOVESPA",
+        "clearing_contract_ref": "CONTR-CLR-40-114-2025"
+      }
+    },
+    {
+      "participant_id": 308,
+      "name": "Delta Institucional Corretora de Valores",
+      "participant_type": "PNP",
+      "active": true,
+      "permitted_systems": ["PUMA", "RTC"],
+      "clearing_member_id": 72,
+      "default_settlement_account": "00308-0",
+      "master_account": "30800",
+      "custody_account": "CUST-0308",
+      "can_settle_directly": false,
+      "can_execute_trades": true,
+      "segregated_accounts": ["30801", "30802"],
+      "connectivity": {
+        "mtls_enabled": true,
+        "certificate_cn": "delta.corretora.b3.com.br",
+        "ipsec_tunnel_id": "VPN-DELTA-01",
+        "rcc_circuit_id": "RCC-SP-0308",
+        "ip_allowlist": ["10.308.0.0/24"]
+      },
+      "metadata": {
+        "delegated_clearing": true,
+        "clearing_contract_ref": "CONTR-CLR-72-308-2025"
+      }
+    },
+    {
+      "participant_id": 3,
+      "name": "Banco Liquidante Ômega S.A.",
+      "participant_type": "PL",
+      "active": true,
+      "permitted_systems": ["PUMA", "RTC", "NOME"],
+      "clearing_member_id": 3,
+      "default_settlement_account": "00003-9",
+      "master_account": "03000",
+      "custody_account": "CUST-0003",
+      "can_settle_directly": true,
+      "can_execute_trades": true,
+      "segregated_accounts": ["03001", "03002", "03003", "88801", "88802", "10501"],
+      "connectivity": {
+        "mtls_enabled": true,
+        "certificate_cn": "omega.clearing.b3.com.br",
+        "ipsec_tunnel_id": "VPN-OMEGA-01",
+        "rcc_circuit_id": "RCC-SP-0003-PRI",
+        "ip_allowlist": ["10.3.0.0/16", "172.16.3.0/24"]
+      },
+      "metadata": {
+        "settlement_bank_code": "003",
+        "ispb": "00000003",
+        "ccp_category": "FULL_CLEARING_MEMBER"
+      }
+    },
+    {
+      "participant_id": 40,
+      "name": "Banco de Compensação Sigma S.A.",
+      "participant_type": "PL",
+      "active": true,
+      "permitted_systems": ["PUMA", "RTC", "NOME"],
+      "clearing_member_id": 40,
+      "default_settlement_account": "00040-1",
+      "master_account": "40000",
+      "custody_account": "CUST-0040",
+      "can_settle_directly": true,
+      "can_execute_trades": true,
+      "segregated_accounts": ["40001", "40002", "11401"],
+      "connectivity": {
+        "mtls_enabled": true,
+        "certificate_cn": "sigma.clearing.b3.com.br",
+        "ipsec_tunnel_id": "VPN-SIGMA-01",
+        "rcc_circuit_id": "RCC-SP-0040",
+        "ip_allowlist": ["10.40.0.0/16"]
+      },
+      "metadata": {
+        "settlement_bank_code": "040",
+        "ispb": "00000040",
+        "ccp_category": "FULL_CLEARING_MEMBER"
+      }
+    },
+    {
+      "participant_id": 72,
+      "name": "Banco Custódia & Clearing Kappa S.A.",
+      "participant_type": "PL",
+      "active": true,
+      "permitted_systems": ["PUMA", "RTC", "NOME"],
+      "clearing_member_id": 72,
+      "default_settlement_account": "00072-5",
+      "master_account": "72000",
+      "custody_account": "CUST-0072",
+      "can_settle_directly": true,
+      "can_execute_trades": true,
+      "segregated_accounts": ["72001", "30801", "88803"],
+      "connectivity": {
+        "mtls_enabled": true,
+        "certificate_cn": "kappa.clearing.b3.com.br",
+        "ipsec_tunnel_id": "VPN-KAPPA-01",
+        "rcc_circuit_id": "RCC-SP-0072",
+        "ip_allowlist": ["10.72.0.0/16"]
+      },
+      "metadata": {
+        "settlement_bank_code": "072",
+        "ispb": "00000072",
+        "ccp_category": "FULL_CLEARING_MEMBER"
+      }
+    },
+    {
+      "participant_id": 1001,
+      "name": "Custódia Central Prime S.A. DTVM",
+      "participant_type": "CUSTODIAN",
+      "active": true,
+      "permitted_systems": ["RTC", "NOME"],
+      "clearing_member_id": null,
+      "default_settlement_account": "01001-0",
+      "master_account": null,
+      "custody_account": "CSD-1001-CENTRAL",
+      "can_settle_directly": true,
+      "can_execute_trades": false,
+      "segregated_accounts": ["88801", "88802", "88803", "77701", "77702"],
+      "connectivity": {
+        "mtls_enabled": true,
+        "certificate_cn": "prime.custody.b3.com.br",
+        "ipsec_tunnel_id": "VPN-PRIME-01",
+        "rcc_circuit_id": "RCC-DF-1001",
+        "ip_allowlist": ["10.101.0.0/16"]
+      },
+      "metadata": {
+        "csd_participant_type": "CENTRAL_DEPOSITARY_AGENT",
+        "cvm_custody_license": "CUST-CVM-2020-001"
+      }
+    },
+    {
+      "participant_id": 9001,
+      "name": "Atlas Asset Management Gestão de Recursos Ltda",
+      "participant_type": "ASSET_MANAGER",
+      "active": true,
+      "permitted_systems": ["RTC"],
+      "clearing_member_id": null,
+      "default_settlement_account": null,
+      "master_account": "M9001",
+      "custody_account": null,
+      "can_settle_directly": false,
+      "can_execute_trades": false,
+      "segregated_accounts": ["88801", "88802", "88803", "10501"],
+      "connectivity": {
+        "mtls_enabled": true,
+        "certificate_cn": "atlas.asset.b3.com.br",
+        "ipsec_tunnel_id": "VPN-ATLAS-01",
+        "rcc_circuit_id": "RCC-SP-9001",
+        "ip_allowlist": ["192.168.90.0/24"]
+      },
+      "metadata": {
+        "cvm_code": "AM-2026-9001",
+        "manager_type": "GESTORA_FIDUCIARIA_CVM_175",
+        "funds": [
+          {"code": "88801", "name": "Atlas Institutional Equities FIA", "cnpj": "12.345.678/0001-90"},
+          {"code": "88802", "name": "Atlas Long Biased FIM", "cnpj": "12.345.678/0001-91"},
+          {"code": "88803", "name": "Atlas Previdência FIC FIM", "cnpj": "12.345.678/0001-92"},
+          {"code": "10501", "name": "Atlas Hedge FIA", "cnpj": "12.345.678/0001-93"}
+        ]
+      }
+    },
+    {
+      "participant_id": 9002,
+      "name": "Horizon Capital Gestora de Recursos Ltda",
+      "participant_type": "ASSET_MANAGER",
+      "active": true,
+      "permitted_systems": ["RTC"],
+      "clearing_member_id": null,
+      "default_settlement_account": null,
+      "master_account": "M9002",
+      "custody_account": null,
+      "can_settle_directly": false,
+      "can_execute_trades": false,
+      "segregated_accounts": ["77701", "77702"],
+      "connectivity": {
+        "mtls_enabled": true,
+        "certificate_cn": "horizon.asset.b3.com.br",
+        "ipsec_tunnel_id": "VPN-HORIZON-01",
+        "rcc_circuit_id": null,
+        "ip_allowlist": ["192.168.92.0/24"]
+      },
+      "metadata": {
+        "cvm_code": "AM-2025-9002",
+        "manager_type": "GESTORA_FIDUCIARIA_CVM_175"
+      }
+    },
+    {
+      "participant_id": 999,
+      "name": "Mock Corretora Suspensa B3",
+      "participant_type": "PNP",
+      "active": false,
+      "permitted_systems": ["PUMA"],
+      "clearing_member_id": null,
+      "default_settlement_account": "00999-9",
+      "master_account": "99900",
+      "custody_account": null,
+      "can_settle_directly": false,
+      "can_execute_trades": true,
+      "segregated_accounts": [],
+      "connectivity": {
+        "mtls_enabled": false,
+        "certificate_cn": "mock.suspensa.b3.com.br",
+        "ipsec_tunnel_id": null,
+        "rcc_circuit_id": null,
+        "ip_allowlist": []
+      },
+      "metadata": {
+        "suspension_reason": "Inadimplência de chamadas de margem"
+      }
+    }
+  ]
+}

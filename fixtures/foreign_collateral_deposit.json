@@ -1,0 +1,66 @@
+{
+  "lote_id": "DEP-20261103-001",
+  "codigo_participante": 105,
+  "codigo_conta_custodia": 987654,
+  "data_deposito": "2026-11-03",
+  "margem_requerida_brl": "1500000.00",
+  "itens": [
+    {
+      "item_id": "DEP-ITEM-01",
+      "tipo_ativo": "USD_CASH",
+      "ticker": "USD_CASH",
+      "isin": "US000000USD0",
+      "descricao": "Dólar em Espécie na Conta de Liquidação Citibank NY",
+      "quantidade": "100000.00",
+      "preco_unitario": "1.00",
+      "moeda": "USD",
+      "local_custodia": "CITIBANK_NY",
+      "haircut": {
+        "tipo_ativo": "USD_CASH",
+        "fx_haircut": "0.1000",
+        "volatility_haircut": "0.0000",
+        "liquidity_haircut": "0.0000",
+        "total_haircut": "0.1000",
+        "descricao": "Haircut regulatório cambial B3 de 10%"
+      }
+    },
+    {
+      "item_id": "DEP-ITEM-02",
+      "tipo_ativo": "US_TREASURY_BILL",
+      "ticker": "TBILL_2027",
+      "isin": "US912797HR42",
+      "descricao": "US Treasury Bill Vencimento Curto (<1 ano)",
+      "quantidade": "2000.00",
+      "preco_unitario": "98.50",
+      "moeda": "USD",
+      "local_custodia": "DTCC",
+      "haircut": {
+        "tipo_ativo": "US_TREASURY_BILL",
+        "fx_haircut": "0.0000",
+        "volatility_haircut": "0.0300",
+        "liquidity_haircut": "0.0200",
+        "total_haircut": "0.0500",
+        "descricao": "Haircut consolidado de T-Bills de 5%"
+      }
+    },
+    {
+      "item_id": "DEP-ITEM-03",
+      "tipo_ativo": "GOLD_OZ1D",
+      "ticker": "OZ1D",
+      "isin": "BROZ1DMULT01",
+      "descricao": "Lingote de Ouro Físico 250g Cofre Central B3",
+      "quantidade": "3.00",
+      "preco_unitario": "112500.00",
+      "moeda": "BRL",
+      "local_custodia": "B3_VAULT_SP",
+      "haircut": {
+        "tipo_ativo": "GOLD_OZ1D",
+        "fx_haircut": "0.0000",
+        "volatility_haircut": "0.1200",
+        "liquidity_haircut": "0.0300",
+        "total_haircut": "0.1500",
+        "descricao": "Haircut regulatório de volatilidade de commodity de 15%"
+      }
+    }
+  ]
+}

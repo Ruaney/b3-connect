@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DOC xmlns="http://www.bcb.gov.br/SPB/LDL0001.xsd">
+  <BCMSG>
+    <IdentdEmissor>00997185</IdentdEmissor>
+    <IdentdDestinatario>12345678</IdentdDestinatario>
+    <IdentdContg>N</IdentdContg>
+    <IdentdOperad>OPERATLAS01</IdentdOperad>
+    <Grupo_Seq>
+      <NumSeq>1</NumSeq>
+      <IndrCont>N</IndrCont>
+    </Grupo_Seq>
+    <DomSist>SPB01</DomSist>
+    <NUOp>20261104000000001234</NUOp>
+  </BCMSG>
+  <SISMSG>
+    <LDL0001>
+      <CodMsg>LDL0001</CodMsg>
+      <NumCtrlLDL>2026110400000001</NumCtrlLDL>
+      <NumCtrlSTR>20261104STR000012345</NumCtrlSTR>
+      <ISPBCamara>00997185</ISPBCamara>
+      <ISPBIF>12345678</ISPBIF>
+      <TpDeb_Cred>C</TpDeb_Cred>
+      <VlrLiqd>23500.00</VlrLiqd>
+      <DtLiqd>2026-11-04</DtLiqd>
+      <TpCt>CC</TpCt>
+      <NumCt>0000123456</NumCt>
+      <AgLanc>0001</AgLanc>
+      <CodCamara>B3</CodCamara>
+    </LDL0001>
+  </SISMSG>
+</DOC>

@@ -1,0 +1,58 @@
+{
+  "statement_id": "EXT-NOME-20261103-00001050",
+  "participant_id": "00001050",
+  "reference_date": "2026-11-03",
+  "generation_timestamp": "2026-11-03T20:30:00Z",
+  "total_records": 4,
+  "total_financial_amount": 9922365.25,
+  "positions": [
+    {
+      "custody_account": 105001,
+      "asset_code": "CDB-ITAU-202811",
+      "instrument_type": "CDB",
+      "issuer_cnpj": "60701190000104",
+      "issuer_name": "BANCO ITAU UNIBANCO S.A.",
+      "available_quantity": 5000,
+      "blocked_quantity": 0,
+      "total_quantity": 5000,
+      "unit_price": 1000.00000000,
+      "financial_amount": 5000000.00
+    },
+    {
+      "custody_account": 105002,
+      "asset_code": "DEB-VALE-203012",
+      "instrument_type": "DEBENTURE",
+      "issuer_cnpj": "33592510000154",
+      "issuer_name": "VALE S.A.",
+      "available_quantity": 2500,
+      "blocked_quantity": 0,
+      "total_quantity": 2500,
+      "unit_price": 1045.50210000,
+      "financial_amount": 2613755.25
+    },
+    {
+      "custody_account": 105001,
+      "asset_code": "LCI-BBDC-202705",
+      "instrument_type": "LCI",
+      "issuer_cnpj": "60746948000112",
+      "issuer_name": "BANCO BRADESCO S.A.",
+      "available_quantity": 1200,
+      "blocked_quantity": 200,
+      "total_quantity": 1400,
+      "unit_price": 1020.15000000,
+      "financial_amount": 1428210.00
+    },
+    {
+      "custody_account": 105003,
+      "asset_code": "CRI-KINE-203208",
+      "instrument_type": "CRI",
+      "issuer_cnpj": "08756082000100",
+      "issuer_name": "KINEA SECURITIZADORA S.A.",
+      "available_quantity": 800,
+      "blocked_quantity": 0,
+      "total_quantity": 800,
+      "unit_price": 1100.50000000,
+      "financial_amount": 880400.00
+    }
+  ]
+}

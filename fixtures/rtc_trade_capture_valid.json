@@ -1,0 +1,59 @@
+{
+  "batch_id": "RTC-BATCH-20261103-001",
+  "source": "RTC_PUMA",
+  "timestamp": "2026-11-03T17:30:00Z",
+  "total_records": 3,
+  "records": [
+    {
+      "TradeID": "RTC20261103-00000001",
+      "TradeDate": "2026-11-03",
+      "TradeTime": "10:15:22",
+      "Symbol": "VALE3",
+      "ISIN": "BRVALEACNOR0",
+      "MarketType": "EQUITY",
+      "Side": "BUY",
+      "Quantity": 50000,
+      "Price": "62.50",
+      "Counterparty": "00000088",
+      "ExecutingBroker": "105",
+      "ClearingBroker": "105",
+      "BlockTradeFlag": true,
+      "AllocationStatus": "Unallocated",
+      "ExecID": "PUMA-EXEC-VALE3-001"
+    },
+    {
+      "TradeID": "RTC20261103-00000002",
+      "TradeDate": "2026-11-03",
+      "TradeTime": "11:42:05",
+      "Symbol": "PETR4",
+      "ISIN": "BRPETRACNPR6",
+      "MarketType": "EQUITY",
+      "Side": "SELL",
+      "Quantity": 100000,
+      "Price": "38.40",
+      "Counterparty": "00000072",
+      "ExecutingBroker": "105",
+      "ClearingBroker": "105",
+      "BlockTradeFlag": true,
+      "AllocationStatus": "Pending",
+      "ExecID": "PUMA-EXEC-PETR4-002"
+    },
+    {
+      "TradeID": "RTC20261103-00000003",
+      "TradeDate": "2026-11-03",
+      "TradeTime": "14:08:49",
+      "Symbol": "PETRL350",
+      "ISIN": "BRPETR350001",
+      "MarketType": "OPTIONS",
+      "Side": "BUY",
+      "Quantity": 200000,
+      "Price": "1.85",
+      "Counterparty": "00000015",
+      "ExecutingBroker": "105",
+      "ClearingBroker": "105",
+      "BlockTradeFlag": true,
+      "AllocationStatus": "Allocated",
+      "ExecID": "PUMA-EXEC-PETRL350-003"
+    }
+  ]
+}

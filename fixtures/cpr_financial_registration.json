@@ -1,0 +1,44 @@
+{
+  "cpr_id": "CPR-2026-SOJA-001",
+  "cpr_type": "FINANCEIRA",
+  "issuer": {
+    "name": "Agropecuária Fazenda Primavera Ltda",
+    "document": "12345678000195",
+    "party_type": "PJ",
+    "city": "Sorriso",
+    "state": "MT"
+  },
+  "creditor": {
+    "name": "Banco Agro Investimentos S.A.",
+    "document": "98765432000198",
+    "party_type": "PJ",
+    "city": "São Paulo",
+    "state": "SP"
+  },
+  "commodity": "SOJA",
+  "quantity": 10000,
+  "unit": "SACAS_60KG",
+  "crop_year": "2026/2027",
+  "issue_date": "2026-05-10",
+  "maturity_date": "2026-11-20",
+  "price_index": "CEPEA_PARANAGUA",
+  "unit_price": "138.50",
+  "spread_percentage": "0.00",
+  "interest_rate_annual": "0.00",
+  "currency": "BRL",
+  "guarantees": [
+    {
+      "guarantee_type": "ALIENACAO_FIDUCIARIA_IMOVEL",
+      "description": "Alienação fiduciária de fração de imóvel rural devidamente registrada no SICAR",
+      "car_code": "MT-5107909-E8B1A2C3D4E5F6789012345678901234",
+      "property_name": "Fazenda Boa Esperança",
+      "land_registry_number": "45.120",
+      "registry_office": "1º Cartório de Registro de Imóveis de Sorriso/MT",
+      "city": "Sorriso",
+      "state": "MT",
+      "guarantee_value": "3200000.00",
+      "coverage_percentage": "100.00"
+    }
+  ],
+  "status": "PENDING_APPROVAL"
+}

@@ -1,0 +1,50 @@
+{
+  "batch_id": "BATCH-20261103-0002",
+  "parent_trade": {
+    "trade_ref_id": "TRD-20261103-008892",
+    "symbol": "PETR4",
+    "executing_broker": 88,
+    "parent_trade_quantity": 10000,
+    "parent_trade_price": "38.50",
+    "trade_date": "2026-11-03",
+    "side": "BUY"
+  },
+  "instructions": [
+    {
+      "allocation_id": "ALLOC-20261103-0002-01",
+      "trade_ref_id": "TRD-20261103-008892",
+      "target_account": 100201,
+      "target_clearing_member": 105,
+      "allocated_quantity": 5000,
+      "allocation_price": "38.50",
+      "allocation_role": "GIVE_UP",
+      "status": "SUBMITTED",
+      "investor_name": "FUNDO ALFA FIA",
+      "reason_code": null
+    },
+    {
+      "allocation_id": "ALLOC-20261103-0002-02",
+      "trade_ref_id": "TRD-20261103-008892",
+      "target_account": 100202,
+      "target_clearing_member": 105,
+      "allocated_quantity": 4000,
+      "allocation_price": "38.50",
+      "allocation_role": "GIVE_UP",
+      "status": "SUBMITTED",
+      "investor_name": "FUNDO BETA MULTIMERCADO FIM",
+      "reason_code": null
+    },
+    {
+      "allocation_id": "ALLOC-20261103-0002-03",
+      "trade_ref_id": "TRD-20261103-008892",
+      "target_account": 100203,
+      "target_clearing_member": 105,
+      "allocated_quantity": 2000,
+      "allocation_price": "38.50",
+      "allocation_role": "GIVE_UP",
+      "status": "SUBMITTED",
+      "investor_name": "FUNDO GAMA PREVIDENCIA FIFE",
+      "reason_code": null
+    }
+  ]
+}

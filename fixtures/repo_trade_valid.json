@@ -1,0 +1,41 @@
+{
+  "trade_id": "REPO-NTNB-20261103-001",
+  "modality": "PUBLIC_TERM",
+  "collateral_right": "COM_LIVRE_MOVIMENTACAO",
+  "status": "MATCHED",
+  "trade_date": "2026-11-03",
+  "settlement_date_ida": "2026-11-03",
+  "settlement_date_volta": "2026-12-16",
+  "business_days": 30,
+  "collateral": {
+    "asset_code": "NTNB-20350515",
+    "asset_type": "NTNB",
+    "issuer": "TESOURO NACIONAL",
+    "maturity_date": "2035-05-15",
+    "is_public": true,
+    "description": "Nota do Tesouro Nacional Série B (IPCA + 6.00% a.a.)"
+  },
+  "quantity": 1000,
+  "unit_price_ida": 4125.50000000,
+  "financial_amount_ida": 4125500.00,
+  "rate": {
+    "rate_type": "CDI_PERCENT",
+    "rate_value": 100.00,
+    "spread": 0.00,
+    "benchmark_annual_rate": 11.25
+  },
+  "unit_price_volta": 4178.19249495,
+  "financial_amount_volta": 4178192.49,
+  "seller": {
+    "participant_id": "00000033",
+    "custody_account": "330001",
+    "settlement_account": "00000339911",
+    "name": "BANCO CEDENTE S.A."
+  },
+  "buyer": {
+    "participant_id": "00001050",
+    "custody_account": "105001",
+    "settlement_account": "00010508823",
+    "name": "CORRETORA CESSIONARIA S.A."
+  }
+}

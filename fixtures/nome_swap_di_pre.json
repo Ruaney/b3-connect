@@ -1,0 +1,38 @@
+{
+  "contract_id": "SWP-20261103-0001",
+  "contract_type": "SWAP",
+  "trade_date": "2026-11-03",
+  "start_date": "2026-11-04",
+  "maturity_date": "2027-11-04",
+  "business_days": 252,
+  "calendar_days": 365,
+  "notional_amount": "10000000.00",
+  "quantity": 100,
+  "pu_initial": "100000.00",
+  "currency": "BRL",
+  "foreign_currency": null,
+  "initial_fx_rate": null,
+  "guarantee_type": "WITH_CCP_GUARANTEE",
+  "clearing_member_active": 105,
+  "clearing_member_passive": 88,
+  "party_active": "PART-BR-00105",
+  "party_passive": "PART-BR-00088",
+  "periodic_adjustments": false,
+  "status": "SUBMITTED",
+  "active_leg": {
+    "leg_type": "ACTIVE",
+    "indexer": "CDI",
+    "day_count_convention": "DU/252",
+    "rate_or_spread": "1.0000",
+    "pu_initial": "100000.00",
+    "currency": "BRL"
+  },
+  "passive_leg": {
+    "leg_type": "PASSIVE",
+    "indexer": "PRE",
+    "day_count_convention": "DU/252",
+    "rate_or_spread": "0.1250",
+    "pu_initial": "100000.00",
+    "currency": "BRL"
+  }
+}

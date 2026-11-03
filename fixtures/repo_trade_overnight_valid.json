@@ -1,0 +1,41 @@
+{
+  "trade_id": "REPO-LFT-20261103-002",
+  "modality": "PUBLIC_OVERNIGHT",
+  "collateral_right": "SEM_LIVRE_MOVIMENTACAO",
+  "status": "MATCHED",
+  "trade_date": "2026-11-03",
+  "settlement_date_ida": "2026-11-03",
+  "settlement_date_volta": "2026-11-04",
+  "business_days": 1,
+  "collateral": {
+    "asset_code": "LFT-20290301",
+    "asset_type": "LFT",
+    "issuer": "TESOURO NACIONAL",
+    "maturity_date": "2029-03-01",
+    "is_public": true,
+    "description": "Letra Financeira do Tesouro (Selic)"
+  },
+  "quantity": 500,
+  "unit_price_ida": 15200.00000000,
+  "financial_amount_ida": 7600000.00,
+  "rate": {
+    "rate_type": "CDI_PERCENT",
+    "rate_value": 100.00,
+    "spread": 0.00,
+    "benchmark_annual_rate": 11.25
+  },
+  "unit_price_volta": 15206.43172800,
+  "financial_amount_volta": 7603215.86,
+  "seller": {
+    "participant_id": "00000033",
+    "custody_account": "330001",
+    "settlement_account": "00000339911",
+    "name": "BANCO CEDENTE S.A."
+  },
+  "buyer": {
+    "participant_id": "00001050",
+    "custody_account": "105001",
+    "settlement_account": "00010508823",
+    "name": "CORRETORA CESSIONARIA S.A."
+  }
+}

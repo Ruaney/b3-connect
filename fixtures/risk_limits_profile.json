@@ -1,0 +1,81 @@
+{
+  "description": "Parametrização sintética de limites operacionais de risco pré-trading B3 PUMA (FL-028)",
+  "version": "1.0.0",
+  "generated_at": "2026-11-03T18:30:00Z",
+  "standard": "B3 PUMA Risk Gateway Pre-Trade Controls",
+  "profiles": [
+    {
+      "account": "88001",
+      "name": "Conta HFT Institucional Market Maker - Alpha Desk",
+      "desk_id": "MESA_HFT_01",
+      "participant_id": 88,
+      "max_order_qty": 50000,
+      "max_order_value": 5000000.0,
+      "max_gross_exposure": 50000000.0,
+      "max_net_exposure": 20000000.0,
+      "allow_short_selling": true,
+      "max_short_position": 200000,
+      "active": true,
+      "custody_inventory": {
+        "PETR4": 150000,
+        "VALE3": 80000,
+        "ITUB4": 120000
+      }
+    },
+    {
+      "account": "10501",
+      "name": "Conta Varejo Pessoa Física - Trader Individual",
+      "desk_id": "HOME_BROKER_01",
+      "participant_id": 105,
+      "max_order_qty": 5000,
+      "max_order_value": 100000.0,
+      "max_gross_exposure": 300000.0,
+      "max_net_exposure": 150000.0,
+      "allow_short_selling": false,
+      "max_short_position": 0,
+      "active": true,
+      "custody_inventory": {
+        "PETR4": 1000,
+        "VALE3": 500,
+        "ITUB4": 0
+      }
+    }
+  ],
+  "price_bands": [
+    {
+      "symbol": "PETR4",
+      "reference_price": 36.50,
+      "static_lower_limit": 32.85,
+      "static_upper_limit": 40.15,
+      "dynamic_reference_price": 36.50,
+      "dynamic_lower_limit": 35.405,
+      "dynamic_upper_limit": 37.595,
+      "auction_on_dynamic_breach": true
+    },
+    {
+      "symbol": "VALE3",
+      "reference_price": 62.00,
+      "static_lower_limit": 55.80,
+      "static_upper_limit": 68.20,
+      "dynamic_reference_price": 62.00,
+      "dynamic_lower_limit": 60.14,
+      "dynamic_upper_limit": 63.86,
+      "auction_on_dynamic_breach": true
+    },
+    {
+      "symbol": "ITUB4",
+      "reference_price": 33.00,
+      "static_lower_limit": 29.70,
+      "static_upper_limit": 36.30,
+      "dynamic_reference_price": 33.00,
+      "dynamic_lower_limit": 32.01,
+      "dynamic_upper_limit": 33.99,
+      "auction_on_dynamic_breach": true
+    }
+  ],
+  "security_id_map": {
+    "1001": "PETR4",
+    "1002": "VALE3",
+    "1003": "ITUB4"
+  }
+}

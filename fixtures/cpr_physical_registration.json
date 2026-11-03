@@ -1,0 +1,45 @@
+{
+  "cpr_id": "CPR-2026-MILHO-002",
+  "cpr_type": "FISICA",
+  "issuer": {
+    "name": "Cooperativa Agroindustrial do Centro-Oeste",
+    "document": "12345678000195",
+    "party_type": "PJ",
+    "city": "Rio Verde",
+    "state": "GO"
+  },
+  "creditor": {
+    "name": "Trading Commodities Brasil S.A.",
+    "document": "98765432000198",
+    "party_type": "PJ",
+    "city": "Santos",
+    "state": "SP"
+  },
+  "commodity": "MILHO",
+  "quantity": 20000,
+  "unit": "SACAS_60KG",
+  "crop_year": "2026/2027",
+  "issue_date": "2026-06-01",
+  "maturity_date": "2026-10-15",
+  "delivery_location": {
+    "warehouse_name": "Terminal Graneleiro Rio Verde - Armazéns Gerais",
+    "address": "Rodovia GO-174, Km 05, Distrito Agroindustrial",
+    "city": "Rio Verde",
+    "state": "GO",
+    "ibge_code": "5218805",
+    "warehouse_cnpj": "98765432000198",
+    "delivery_start_date": "2026-09-01",
+    "delivery_end_date": "2026-10-15"
+  },
+  "guarantees": [
+    {
+      "guarantee_type": "PENHOR_AGRICOLA",
+      "description": "Penhor agrícola de primeiro grau sobre a safra de milho 2026/2027",
+      "city": "Rio Verde",
+      "state": "GO",
+      "guarantee_value": "1500000.00",
+      "coverage_percentage": "100.00"
+    }
+  ],
+  "status": "PENDING_APPROVAL"
+}

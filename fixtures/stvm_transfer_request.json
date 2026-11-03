@@ -1,0 +1,35 @@
+{
+  "request_id": "STVM-20261103-000105",
+  "protocol": "STVM-20261103-000105",
+  "transfer_reason": "MESMA_TITULARIDADE",
+  "investor_id": "12345678900",
+  "investor_name": "CARLOS EDUARDO SILVA",
+  "source_participant": 105,
+  "source_account": "105001",
+  "target_participant": 88,
+  "target_account": "88001",
+  "target_investor_id": "12345678900",
+  "target_investor_name": "CARLOS EDUARDO SILVA",
+  "items": [
+    {
+      "symbol": "PETR4",
+      "isin": "BRPETRACNPR6",
+      "quantity": 500,
+      "asset_type": "ACAO",
+      "declared_unit_cost": "38.50"
+    },
+    {
+      "symbol": "VALE3",
+      "isin": "BRVALEACNOR0",
+      "quantity": 200,
+      "asset_type": "ACAO",
+      "declared_unit_cost": "62.30"
+    }
+  ],
+  "status": "SOLICITADA",
+  "created_at": "2026-11-03T10:00:00",
+  "regulatory_deadline": "2026-11-05",
+  "supporting_documents": [],
+  "rejection_code": null,
+  "rejection_reason": null
+}

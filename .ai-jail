@@ -1,0 +1,27 @@
+# ai-jail sandbox configuration
+# https://github.com/akitaonrails/ai-jail
+# Edit freely. Regenerate with: ai-jail --clean --init
+
+command = [
+    "bash",
+    "/mnt/j/Documents/github/ai-jail/start-codex-project-jail.sh",
+    "-a",
+    "never",
+]
+rw_maps = [
+    "/mnt/j/Documents/github/b3-integration-atlas",
+    "~/.codex",
+]
+ro_maps = [
+    "/mnt/j/Documents/github/ai-jail",
+    "~/.local/share/ai-memory",
+]
+no_docker = true
+allow_hosts = [
+    "api.openai.com",
+    "auth.openai.com",
+    "chatgpt.com",
+    "openai.com",
+]
+agent_state = true
+audit_log = true

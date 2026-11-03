@@ -1,0 +1,32 @@
+{
+  "trade_id": "REG-CDB-20261103-0001",
+  "trade_date": "2026-11-03",
+  "settlement_date": "2026-11-03",
+  "settlement_type": "GROSS_STR",
+  "match_status": "MATCHED",
+  "asset": {
+    "asset_code": "CDB-ITAU-202811",
+    "instrument_type": "CDB",
+    "issuer_cnpj": "60701190000104",
+    "issuer_name": "BANCO ITAU UNIBANCO S.A.",
+    "issue_date": "2026-11-03",
+    "maturity_date": "2028-11-03",
+    "indexer": "DI",
+    "indexer_percentage": 105.00,
+    "rate_spread": 0.0,
+    "emission_unit_price": 1000.00000000
+  },
+  "quantity": 5000,
+  "unit_price": 1000.00000000,
+  "financial_amount": 5000000.00,
+  "buyer": {
+    "participant_id": "00001050",
+    "custody_account": 105001,
+    "settlement_account": "00010508823"
+  },
+  "seller": {
+    "participant_id": "00000033",
+    "custody_account": 330001,
+    "settlement_account": "00000339911"
+  }
+}

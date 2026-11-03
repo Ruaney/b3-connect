@@ -1,0 +1,189 @@
+{
+  "statement_id": "STMT-B3-FUNDS-20261103-001",
+  "system": "B3 Fundos - Plataforma de Registro de Cotas",
+  "position_date": "2026-11-03",
+  "generation_timestamp": "2026-11-03T20:15:00Z",
+  "participant_code": "105",
+  "participant_name": "BANCO LIQUIDADOR E CUSTODIANTE BRASIL S.A.",
+  "total_funds_reported": 4,
+  "total_positions_reported": 7,
+  "funds": [
+    {
+      "fund_id": "11.222.333/0001-44",
+      "ticker": "HGLG11",
+      "isin": "BRHGLGCTF001",
+      "fund_name": "CSHG LOGISTICA FII",
+      "category": "FII",
+      "administrator": "CREDIT SUISSE HEDGING-GRIFFO CORRETORA DE VALORES S.A.",
+      "total_issued_quotas": "33787584.00000000",
+      "quota_nav": "165.25000000",
+      "nav_date": "2026-11-03",
+      "total_fund_equity": "5583398256.00",
+      "positions": [
+        {
+          "custody_account": "105001",
+          "investor_id": "123.456.789-00",
+          "investor_name": "CARLOS EDUARDO PEREIRA",
+          "quota_class": "UNICA",
+          "quota_quantity": "10000.00000000",
+          "blocked_quantity": "0.00000000",
+          "pending_settlement_quantity": "0.00000000",
+          "available_quantity": "10000.00000000",
+          "quota_nav": "165.25000000",
+          "total_equity_value": "1652500.00"
+        },
+        {
+          "custody_account": "105002",
+          "investor_id": "987.654.321-99",
+          "investor_name": "MARIA HELENA SANTOS",
+          "quota_class": "UNICA",
+          "quota_quantity": "25000.00000000",
+          "blocked_quantity": "5000.00000000",
+          "pending_settlement_quantity": "0.00000000",
+          "available_quantity": "20000.00000000",
+          "quota_nav": "165.25000000",
+          "total_equity_value": "4131250.00"
+        }
+      ],
+      "recent_events": [
+        {
+          "event_id": "EVT-HGLG11-202610-01",
+          "event_type": "INCOME_DISTRIBUTION",
+          "record_date": "2026-10-31",
+          "ex_date": "2026-11-01",
+          "payment_date": "2026-11-14",
+          "rate_per_quota": "1.10000000",
+          "tax_rate": "0.0000",
+          "description": "Rendimentos mensais de locação de galpões logísticos"
+        }
+      ]
+    },
+    {
+      "fund_id": "34.567.890/0001-12",
+      "ticker": "CFCR11",
+      "isin": "BRCFCRACTF01",
+      "fund_name": "CREDIT FLOW FIDC MULTISSETORIAL",
+      "category": "FIDC",
+      "administrator": "BRL TRUST DISTRIBUIDORA DE TITULOS E VALORES MOBILIARIOS S.A.",
+      "total_issued_quotas": "100000.00000000",
+      "quota_nav": "924.50000000",
+      "nav_date": "2026-11-03",
+      "total_fund_equity": "92450000.00",
+      "positions": [
+        {
+          "custody_account": "105003",
+          "investor_id": "11.222.333/0001-88",
+          "investor_name": "ALPHA CAPITAL ASSET MANAGEMENT LTDA",
+          "quota_class": "SENIOR",
+          "quota_quantity": "5000.00000000",
+          "blocked_quantity": "0.00000000",
+          "pending_settlement_quantity": "0.00000000",
+          "available_quantity": "5000.00000000",
+          "quota_nav": "924.50000000",
+          "total_equity_value": "4622500.00"
+        },
+        {
+          "custody_account": "105004",
+          "investor_id": "22.333.444/0001-77",
+          "investor_name": "BETA PREVIDENCIA PRIVADA S.A.",
+          "quota_class": "SENIOR",
+          "quota_quantity": "12000.00000000",
+          "blocked_quantity": "2000.00000000",
+          "pending_settlement_quantity": "0.00000000",
+          "available_quantity": "10000.00000000",
+          "quota_nav": "924.50000000",
+          "total_equity_value": "11094000.00"
+        },
+        {
+          "custody_account": "105005",
+          "investor_id": "33.444.555/0001-66",
+          "investor_name": "DELTA CONSULTORIA E PARTICIPACOES S.A.",
+          "quota_class": "SUBORDINATED",
+          "quota_quantity": "3000.00000000",
+          "blocked_quantity": "0.00000000",
+          "pending_settlement_quantity": "0.00000000",
+          "available_quantity": "3000.00000000",
+          "quota_nav": "1050.00000000",
+          "total_equity_value": "3150000.00"
+        }
+      ],
+      "recent_events": [
+        {
+          "event_id": "EVT-CFCR11-202610-01",
+          "event_type": "AMORTIZATION",
+          "record_date": "2026-10-25",
+          "ex_date": "2026-10-26",
+          "payment_date": "2026-10-31",
+          "rate_per_quota": "75.50000000",
+          "tax_rate": "0.1500",
+          "description": "Amortizacao periodica programada de principal da cota senior"
+        }
+      ]
+    },
+    {
+      "fund_id": "41.123.456/0001-78",
+      "ticker": "RZAG11",
+      "isin": "BRRZAGCTF003",
+      "fund_name": "RIZOMA AGRO FIAGRO-IMOBILIARIO",
+      "category": "FIAGRO",
+      "administrator": "BANCO GENIAL S.A.",
+      "total_issued_quotas": "50000000.00000000",
+      "quota_nav": "9.85000000",
+      "nav_date": "2026-11-03",
+      "total_fund_equity": "492500000.00",
+      "positions": [
+        {
+          "custody_account": "105006",
+          "investor_id": "444.555.666-11",
+          "investor_name": "FERNANDO ALBUQUERQUE",
+          "quota_class": "UNICA",
+          "quota_quantity": "50000.00000000",
+          "blocked_quantity": "0.00000000",
+          "pending_settlement_quantity": "0.00000000",
+          "available_quantity": "50000.00000000",
+          "quota_nav": "9.85000000",
+          "total_equity_value": "492500.00"
+        }
+      ],
+      "recent_events": [
+        {
+          "event_id": "EVT-RZAG11-202610-01",
+          "event_type": "INCOME_DISTRIBUTION",
+          "record_date": "2026-10-31",
+          "ex_date": "2026-11-01",
+          "payment_date": "2026-11-10",
+          "rate_per_quota": "0.11000000",
+          "tax_rate": "0.0000",
+          "description": "Distribuicao mensal de rendimentos CRA e arrendamento agro"
+        }
+      ]
+    },
+    {
+      "fund_id": "10.406.511/0001-61",
+      "ticker": "BOVA11",
+      "isin": "BRBOVACTF001",
+      "fund_name": "ISHARES IBOVESPA FUNDO DE INDICE - ETF",
+      "category": "ETF",
+      "administrator": "BNY MELLON SERVICOS FINANCEIROS DTVM S.A.",
+      "total_issued_quotas": "125000000.00000000",
+      "quota_nav": "128.40000000",
+      "nav_date": "2026-11-03",
+      "total_fund_equity": "16050000000.00",
+      "positions": [
+        {
+          "custody_account": "105007",
+          "investor_id": "55.666.777/0001-55",
+          "investor_name": "OMEGA INVESTIMENTOS QUANTITATIVOS LTDA",
+          "quota_class": "UNICA",
+          "quota_quantity": "8000.00000000",
+          "blocked_quantity": "0.00000000",
+          "pending_settlement_quantity": "0.00000000",
+          "available_quantity": "8000.00000000",
+          "quota_nav": "128.40000000",
+          "total_equity_value": "1027200.00"
+        }
+      ],
+      "recent_events": []
+    }
+  ]
+}

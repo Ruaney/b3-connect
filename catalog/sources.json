@@ -1,0 +1,198 @@
+{
+  "version": "0.2.0",
+  "consulted_on": "2026-11-03",
+  "sources": [
+    {
+      "id": "SRC-001",
+      "title": "iMercado — Documentos",
+      "url": "https://www.b3.com.br/pt_br/solucoes/plataformas/middle-e-backoffice/imercado/documentos/",
+      "status": "consultada",
+      "kind": "indice_documental",
+      "limitation": "Página pública lida; anexos e vigência técnica não revisados."
+    },
+    {
+      "id": "SRC-002",
+      "title": "Clientes B3 — Captura em bloco",
+      "url": "https://clientes.b3.com.br/w/captura-em-bloco",
+      "status": "consultada",
+      "kind": "projeto",
+      "limitation": "Página cita materiais de 2021–2023; não estabelece versão vigente dos catálogos. Download dos anexos não verificado."
+    },
+    {
+      "id": "SRC-003",
+      "title": "iMercado — Painel de atualizações",
+      "url": "https://b3.com.br/pt_br/solucoes/plataformas/middle-e-backoffice/imercado/painel-de-atualizacoes/",
+      "status": "consultada",
+      "kind": "atualizacoes",
+      "limitation": "Página consultada não comprova ausência de mudanças posteriores às exibidas."
+    },
+    {
+      "id": "SRC-004",
+      "title": "API iMercado Conciliação — catálogo técnico v1.1",
+      "url": "https://www.b3.com.br/data/files/54/B7/9C/95/95701810C493CD08AC094EA8/Catalogo%20Tecnico%20API%20iMercado%20Conciliacao%20IMBARQ_v1.1.pdf",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Localizada em busca oficial; leitura integral, hash e versão vigente pendentes."
+    },
+    {
+      "id": "SRC-005",
+      "title": "iMercado — Sobre",
+      "url": "https://www.b3.com.br/pt_br/solucoes/plataformas/middle-e-backoffice/imercado/sobre-imercado/",
+      "status": "localizada",
+      "kind": "produto",
+      "limitation": "Localizada em busca; leitura integral pendente."
+    },
+    {
+      "id": "SRC-006",
+      "title": "B3 Puma Trading System — Especificação de Conectividade FIX Entrypoint",
+      "url": "https://www.b3.com.br/pt_br/solucoes/plataformas/puma-trading-system/para-desenvolvedores/roteamento-de-ordens/entrypoint/",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Documentação de conectividade FIX 4.4 e FIX 5.0 SP2; dicionário específico de tags customizadas B3 e regras de túnel pendentes de consolidação."
+    },
+    {
+      "id": "SRC-007",
+      "title": "B3 Puma Trading System — Manual de Conectividade Drop Copy",
+      "url": "https://www.b3.com.br/pt_br/solucoes/plataformas/puma-trading-system/para-desenvolvedores/roteamento-de-ordens/drop-copy/",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Documentação oficial de fluxo passivo de mensagens de execução; parametrização de compIDs autorizados e homologação em simulador pendentes."
+    },
+    {
+      "id": "SRC-008",
+      "title": "B3 Puma Trading System — Binary Entrypoint Protocol Specification",
+      "url": "https://www.b3.com.br/pt_br/solucoes/plataformas/puma-trading-system/para-desenvolvedores/roteamento-de-ordens/binary-entrypoint/",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Documentação e schemas SBE para negociação binária de baixa latência; acesso a arquivos de schema e layout binário pendente."
+    },
+    {
+      "id": "SRC-009",
+      "title": "B3 NoMe — Manual de Operações e Mensageria Balcão (Renda Fixa)",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/registro/renda-fixa/",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Portal de produtos e especificações de registro de balcão NoMe; schemas XSD de emissão e negociação bilateral pendentes de extração."
+    },
+    {
+      "id": "SRC-010",
+      "title": "B3 Balcão — Ativos de Dívida Corporativa e Securitização (Debêntures, CRI e CRA)",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/registro/divida-corporativa-e-securitizacao/",
+      "status": "localizada",
+      "kind": "produto",
+      "limitation": "Regras de registro e eventos corporativos de títulos de crédito corporativo e securitização; rotinas de custódia balcão pendentes de validação."
+    },
+    {
+      "id": "SRC-011",
+      "title": "B3 NoMe — Registro e Liquidação de Derivativos de Balcão (Swaps, Termo e Opções)",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/registro/derivativos-de-balcao/",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Catálogo de derivativos de balcão registrados; modelos de margem e garantias da câmara CCP pendentes de detalhamento."
+    },
+    {
+      "id": "SRC-012",
+      "title": "B3 Conectividade — Guia de Infraestrutura, RCC e Acesso Seguro à B3",
+      "url": "https://www.b3.com.br/pt_br/solucoes/plataformas/puma-trading-system/conectividade/",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Especificações de infraestrutura física, canais RCC, colocation e túneis IPSec/mTLS com certificados digitais ICP-Brasil."
+    },
+    {
+      "id": "SRC-013",
+      "title": "B3 NoMe — Layouts de Arquivos e Relatórios Operacionais de Balcão",
+      "url": "https://www.b3.com.br/pt_br/solucoes/plataformas/middle-e-backoffice/relatorios-de-balcao/",
+      "status": "localizada",
+      "kind": "layout_posicional",
+      "limitation": "Especificações de relatórios e extratos de posição de balcão; layouts atualizados pendentes de consolidação com o motor do Atlas."
+    },
+    {
+      "id": "SRC-014",
+      "title": "B3 Regulamento Operacional da Câmara de Compensação e Manual de Acesso de Participantes",
+      "url": "https://www.b3.com.br/pt_br/regulacao/estrutura-normativa/regulamentos-e-manuais/",
+      "status": "localizada",
+      "kind": "regulamento",
+      "limitation": "Estrutura normativa oficial da B3 definindo responsabilidades e segregação de perfis de participantes (PN, PNP, PL e Custodiantes)."
+    },
+    {
+      "id": "SRC-015",
+      "title": "B3 Market Data — Unified Market Data Feed (UMDF) e Conectividade Multicast",
+      "url": "https://www.b3.com.br/pt_br/solucoes/plataformas/puma-trading-system/market-data/",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Especificações de feeds SBE Multicast UDP canais A/B e snapshots de livro de ofertas."
+    },
+    {
+      "id": "SRC-016",
+      "title": "B3 Clearing — Manual de Administração de Risco e Garantias Internacionais",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/compensacao-e-liquidacao/camara-b3/administracao-de-risco/garantias/",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Modelos de aceitação de colateral em moeda estrangeira, Treasuries, Ouro e tabela de haircuts."
+    },
+    {
+      "id": "SRC-017",
+      "title": "B3 Renda Fixa — Manual de Registro e Liquidação de Operações Compromissadas",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/registro/renda-fixa/compromissadas/",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Regras operacionais para compromissadas com títulos públicos e privados, overnight e a prazo."
+    },
+    {
+      "id": "SRC-018",
+      "title": "B3 Depositária — Manual de Transferência de Custódia e Portabilidade STVM",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/depositaria/transferencia-de-custodia/",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Instruções normativas CVM 505/175 para portabilidade digital de custódia entre participantes."
+    },
+    {
+      "id": "SRC-019",
+      "title": "B3 Banco de Títulos (BTC) — Manual de Empréstimo Eletrônico de Ativos",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/emprestimo-de-ativos/",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Mecanismos de casamento de ofertas de empréstimo em tela no Puma e ciclo de registro D0."
+    },
+    {
+      "id": "SRC-020",
+      "title": "B3 Agronegócio — Manual de Registro de CPR, CDCA e Títulos do Agro",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/registro/agronegocio/",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Modelos de mensageria para registro escritural de CPR física/financeira e títulos agropecuários."
+    },
+    {
+      "id": "SRC-021",
+      "title": "B3 Compensação e Liquidação — Catálogo de Mensageria SPB e Liquidação Bruta",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/compensacao-e-liquidacao/spb/",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Mensageria com o Catálogo do Sistema de Pagamentos Brasileiro (STR/LDL) para liquidação Bacen."
+    },
+    {
+      "id": "SRC-022",
+      "title": "B3 Puma Trading — Manual de Risco Pré-Trading e Gestão de Limites",
+      "url": "https://www.b3.com.br/pt_br/solucoes/plataformas/puma-trading-system/gestao-de-risco/",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Configuração de túneis de rejeição, limites de lote e fat-finger prevention no Entrypoint."
+    },
+    {
+      "id": "SRC-023",
+      "title": "B3 Fundos de Investimento — Manual de Registro e Distribuição de Cotas",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/registro/fundos/",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Plataforma de registro e custódia escritural de cotas de fundos (FIDC, FII, FIAGRO, ETF)."
+    },
+    {
+      "id": "SRC-024",
+      "title": "BSM Supervisão de Mercados — Manual de Auditoria e Prevenção a Abusos de Mercado",
+      "url": "https://www.b3.com.br/pt_br/regulacao/bsm/",
+      "status": "localizada",
+      "kind": "regulamento",
+      "limitation": "Diretrizes de trilha de auditoria, identificação de beneficiário final e prevenção a spoofing/layering."
+    }
+  ]
+}
