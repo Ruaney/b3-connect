@@ -1,0 +1,153 @@
+{
+  "clearing_house": "CAMARA_B3",
+  "framework": "CPMI_IOSCO_PFMI_PRINCIPLE_4_AND_7",
+  "regulatory_reference": "Regulamento da Camara B3 Capitulo VII e Lei 10.214/2001",
+  "b3_safeguards": {
+    "skin_in_the_game_brl": "500000000.00",
+    "additional_b3_capital_brl": "250000000.00"
+  },
+  "clearing_members": [
+    {
+      "member_id": "MC-00105",
+      "member_name": "XP Investimentos CCTVM",
+      "deposited_margins": "300000000.00",
+      "default_fund_contribution": "150000000.00",
+      "assessment_call_cap": "150000000.00",
+      "risk_weight": "0.15"
+    },
+    {
+      "member_id": "MC-00088",
+      "member_name": "BTG Pactual CTVM",
+      "deposited_margins": "400000000.00",
+      "default_fund_contribution": "100000000.00",
+      "assessment_call_cap": "100000000.00",
+      "risk_weight": "0.15"
+    },
+    {
+      "member_id": "MC-00033",
+      "member_name": "Santander CCTVM",
+      "deposited_margins": "250000000.00",
+      "default_fund_contribution": "100000000.00",
+      "assessment_call_cap": "100000000.00",
+      "risk_weight": "0.15"
+    },
+    {
+      "member_id": "MC-00237",
+      "member_name": "Bradesco BBI CTVM",
+      "deposited_margins": "500000000.00",
+      "default_fund_contribution": "250000000.00",
+      "assessment_call_cap": "250000000.00",
+      "risk_weight": "0.25"
+    },
+    {
+      "member_id": "MC-00341",
+      "member_name": "Itau Corretora de Valores",
+      "deposited_margins": "600000000.00",
+      "default_fund_contribution": "300000000.00",
+      "assessment_call_cap": "300000000.00",
+      "risk_weight": "0.30"
+    }
+  ],
+  "scenarios": [
+    {
+      "scenario_id": "SCENARIO_SMALL_DEFAULT",
+      "event_id": "DEF-20261104-001",
+      "defaulter_member_id": "MC-00105",
+      "gross_loss_amount": "120000000.00",
+      "timestamp": "2026-11-04T10:15:00Z",
+      "stress_scenario_name": "Pequeno Descolamento Operacional",
+      "description": "Default intraday com perda de R$ 120M, absorvido 100% pelas margens proprias do MC-00105 no Nivel 1. Niveis 2 a 5 intocados.",
+      "expected_max_layer_reached": "LEVEL_1_DEFAULTER_MARGINS",
+      "expected_residual_deficit": "0.00",
+      "expected_total_absorbed": "120000000.00",
+      "expected_is_fully_absorbed": true,
+      "expected_layer_absorptions": {
+        "LEVEL_1_DEFAULTER_MARGINS": "120000000.00",
+        "LEVEL_2_DEFAULTER_FUND_CONTRIBUTION": "0.00",
+        "LEVEL_3_B3_SKIN_IN_THE_GAME": "0.00",
+        "LEVEL_4_MUTUALIZED_DEFAULT_FUND": "0.00",
+        "LEVEL_5_ADDITIONAL_B3_ASSESSMENT_CALLS": "0.00"
+      }
+    },
+    {
+      "scenario_id": "SCENARIO_MEDIUM_DEFAULT",
+      "event_id": "DEF-20261104-002",
+      "defaulter_member_id": "MC-00033",
+      "gross_loss_amount": "510000000.00",
+      "timestamp": "2026-11-04T10:15:00Z",
+      "stress_scenario_name": "Medio Default - Quebra de Mesa Proprietaria",
+      "description": "Perda bruta de R$ 510M. Exaure margens proprias (R$ 250M), exaure cota do inadimplente no fundo (R$ 100M), e consome R$ 160M do Skin-in-the-Game da B3 no Nivel 3. Membros adimplentes permanecem 100% intocados.",
+      "expected_max_layer_reached": "LEVEL_3_B3_SKIN_IN_THE_GAME",
+      "expected_residual_deficit": "0.00",
+      "expected_total_absorbed": "510000000.00",
+      "expected_is_fully_absorbed": true,
+      "expected_layer_absorptions": {
+        "LEVEL_1_DEFAULTER_MARGINS": "250000000.00",
+        "LEVEL_2_DEFAULTER_FUND_CONTRIBUTION": "100000000.00",
+        "LEVEL_3_B3_SKIN_IN_THE_GAME": "160000000.00",
+        "LEVEL_4_MUTUALIZED_DEFAULT_FUND": "0.00",
+        "LEVEL_5_ADDITIONAL_B3_ASSESSMENT_CALLS": "0.00"
+      }
+    },
+    {
+      "scenario_id": "SCENARIO_SEVERE_SYSTEMIC_DEFAULT",
+      "event_id": "DEF-20261104-003",
+      "defaulter_member_id": "MC-00088",
+      "gross_loss_amount": "1600000000.00",
+      "timestamp": "2026-11-04T10:15:00Z",
+      "stress_scenario_name": "Severo Sistemico - Estresse de Liquidez e Queda de Mercado",
+      "description": "Perda bruta de R$ 1,600 Bilhao. Exaure margens do faltoso (R$ 400M), exaure cota do faltoso (R$ 100M), exaure Skin-in-the-Game B3 (R$ 500M) e consome R$ 600M do Fundo Mutuo de Membros Adimplentes (Nivel 4) distribuido pro-rata.",
+      "expected_max_layer_reached": "LEVEL_4_MUTUALIZED_DEFAULT_FUND",
+      "expected_residual_deficit": "0.00",
+      "expected_total_absorbed": "1600000000.00",
+      "expected_is_fully_absorbed": true,
+      "expected_layer_absorptions": {
+        "LEVEL_1_DEFAULTER_MARGINS": "400000000.00",
+        "LEVEL_2_DEFAULTER_FUND_CONTRIBUTION": "100000000.00",
+        "LEVEL_3_B3_SKIN_IN_THE_GAME": "500000000.00",
+        "LEVEL_4_MUTUALIZED_DEFAULT_FUND": "600000000.00",
+        "LEVEL_5_ADDITIONAL_B3_ASSESSMENT_CALLS": "0.00"
+      }
+    },
+    {
+      "scenario_id": "SCENARIO_EXTREME_CATASTROPHIC",
+      "event_id": "DEF-20261104-004",
+      "defaulter_member_id": "MC-00237",
+      "gross_loss_amount": "2300000000.00",
+      "timestamp": "2026-11-04T10:15:00Z",
+      "stress_scenario_name": "Catastrofico com Chamada Extraordinaria de Aval",
+      "description": "Perda extrema de R$ 2,300 Bilhoes. Exaure N1 a N4 e mobiliza N5 (SITG adicional B3 e chamadas extraordinarias de aval pro-rata).",
+      "expected_max_layer_reached": "LEVEL_5_ADDITIONAL_B3_ASSESSMENT_CALLS",
+      "expected_residual_deficit": "0.00",
+      "expected_total_absorbed": "2300000000.00",
+      "expected_is_fully_absorbed": true,
+      "expected_layer_absorptions": {
+        "LEVEL_1_DEFAULTER_MARGINS": "500000000.00",
+        "LEVEL_2_DEFAULTER_FUND_CONTRIBUTION": "250000000.00",
+        "LEVEL_3_B3_SKIN_IN_THE_GAME": "500000000.00",
+        "LEVEL_4_MUTUALIZED_DEFAULT_FUND": "650000000.00",
+        "LEVEL_5_ADDITIONAL_B3_ASSESSMENT_CALLS": "400000000.00"
+      }
+    },
+    {
+      "scenario_id": "SCENARIO_EXHAUSTED_UNCOVERED_DEFICIT",
+      "event_id": "DEF-20261104-005",
+      "defaulter_member_id": "MC-00237",
+      "gross_loss_amount": "3000000000.00",
+      "timestamp": "2026-11-04T10:15:00Z",
+      "stress_scenario_name": "Colapso Hiper-Sistemico com Deficit Residual Descoberto",
+      "description": "Perda de R$ 3,000 Bilhoes excede a capacidade total das salvaguardas (R$ 2,800 Bi), gerando deficit residual de R$ 200 Milhoes a ser tratado pelo plano de recuperacao da CCP.",
+      "expected_max_layer_reached": "LEVEL_5_ADDITIONAL_B3_ASSESSMENT_CALLS",
+      "expected_residual_deficit": "200000000.00",
+      "expected_total_absorbed": "2800000000.00",
+      "expected_is_fully_absorbed": false,
+      "expected_layer_absorptions": {
+        "LEVEL_1_DEFAULTER_MARGINS": "500000000.00",
+        "LEVEL_2_DEFAULTER_FUND_CONTRIBUTION": "250000000.00",
+        "LEVEL_3_B3_SKIN_IN_THE_GAME": "500000000.00",
+        "LEVEL_4_MUTUALIZED_DEFAULT_FUND": "650000000.00",
+        "LEVEL_5_ADDITIONAL_B3_ASSESSMENT_CALLS": "900000000.00"
+      }
+    }
+  ]
+}

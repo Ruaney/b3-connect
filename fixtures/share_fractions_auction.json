@@ -1,0 +1,111 @@
+{
+  "metadata": {
+    "flow_id": "FL-052",
+    "description": "Cenário de Grupamento de Ações (10:1), Apuração de Sobras Fracionárias na Central Depositária e Leilão Especial de Sobras no PUMA Trading System com Repasse Financeiro Pro-Rata",
+    "reference_date": "2026-11-04",
+    "settlement_cycle": "D+2"
+  },
+  "event": {
+    "event_id": "EVT-GRUP-2026-MGLU3",
+    "ticker": "MGLU3",
+    "isin": "BRMGLUACNOR2",
+    "company_name": "MAGAZINE LUIZA S.A.",
+    "ratio_from": 10,
+    "ratio_to": 1,
+    "event_type": "REVERSE_SPLIT",
+    "approval_date": "2026-09-15",
+    "cutoff_date": "2026-10-20",
+    "adjustment_period_days": 30,
+    "trading_ex_date": "2026-10-21",
+    "auction_date": "2026-10-23",
+    "settlement_date": "2026-10-27"
+  },
+  "holders": [
+    {
+      "investor_account": "1001-1",
+      "participant_code": "0008",
+      "investor_name": "ANA SILVA PEREIRA",
+      "document_id": "123.456.789-01",
+      "original_shares": 137,
+      "expected_whole_shares": 13,
+      "expected_fraction_share": "0.7",
+      "expected_cash_credit_gross": "31.50",
+      "expected_fee_deduction": "0.05",
+      "expected_cash_credit_net": "31.45"
+    },
+    {
+      "investor_account": "1002-2",
+      "participant_code": "0008",
+      "investor_name": "CARLOS EDUARDO SANTOS",
+      "document_id": "234.567.890-12",
+      "original_shares": 254,
+      "expected_whole_shares": 25,
+      "expected_fraction_share": "0.4",
+      "expected_cash_credit_gross": "18.00",
+      "expected_fee_deduction": "0.03",
+      "expected_cash_credit_net": "17.97"
+    },
+    {
+      "investor_account": "2003-3",
+      "participant_code": "0072",
+      "investor_name": "BEATRIZ LIMA CASTRO",
+      "document_id": "345.678.901-23",
+      "original_shares": 88,
+      "expected_whole_shares": 8,
+      "expected_fraction_share": "0.8",
+      "expected_cash_credit_gross": "36.00",
+      "expected_fee_deduction": "0.05",
+      "expected_cash_credit_net": "35.95"
+    },
+    {
+      "investor_account": "2004-4",
+      "participant_code": "0072",
+      "investor_name": "DANIEL OLIVEIRA ALVES",
+      "document_id": "456.789.012-34",
+      "original_shares": 316,
+      "expected_whole_shares": 31,
+      "expected_fraction_share": "0.6",
+      "expected_cash_credit_gross": "27.00",
+      "expected_fee_deduction": "0.04",
+      "expected_cash_credit_net": "26.96"
+    },
+    {
+      "investor_account": "3005-5",
+      "participant_code": "0114",
+      "investor_name": "EDUARDO SOUZA RIBEIRO",
+      "document_id": "567.890.123-45",
+      "original_shares": 145,
+      "expected_whole_shares": 14,
+      "expected_fraction_share": "0.5",
+      "expected_cash_credit_gross": "22.50",
+      "expected_fee_deduction": "0.03",
+      "expected_cash_credit_net": "22.47"
+    }
+  ],
+  "auction": {
+    "auction_id": "AUC-20261023-MGLU3",
+    "shares_auctioned": 3,
+    "gross_price_per_share": "45.00",
+    "gross_total_amount": "135.00",
+    "trading_fees": "0.04",
+    "clearing_fees": "0.01",
+    "brokerage_fees": "0.15",
+    "other_fees": "0.00",
+    "total_fees": "0.20",
+    "net_total_amount": "134.80",
+    "net_price_per_share": "44.93333333",
+    "auction_date": "2026-10-23",
+    "settlement_date": "2026-10-27"
+  },
+  "expected_invariants": {
+    "total_original_shares": 940,
+    "total_whole_shares_allocated": 91,
+    "total_fractional_shares": "3.0",
+    "auction_whole_shares": 3,
+    "residual_unauctioned_fraction": "0.0",
+    "sum_cash_credit_gross": "135.00",
+    "sum_fee_deductions": "0.20",
+    "sum_cash_credit_net": "134.80",
+    "conservation_satisfied": true
+  }
+}

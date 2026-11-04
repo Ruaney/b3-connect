@@ -1,0 +1,187 @@
+{
+  "description": "Lote de Ordens Avançadas e Algorítmicas no PUMA Trading System da B3 (FL-056)",
+  "reference_symbol": "PETR4",
+  "initial_market_price": "38.00",
+  "orders": [
+    {
+      "order_id": "ORD-ICEBERG-001",
+      "cl_ord_id": "CL-ICE-001",
+      "symbol": "PETR4",
+      "side": "BUY",
+      "order_type": "ICEBERG",
+      "quantity": 10000,
+      "display_qty": 2000,
+      "price": "38.00",
+      "stop_px": null,
+      "trail_amount": null,
+      "account": "10001",
+      "participant_code": 88,
+      "timestamp": "2026-11-04T10:00:00Z"
+    },
+    {
+      "order_id": "ORD-ICEBERG-002",
+      "cl_ord_id": "CL-ICE-002",
+      "symbol": "PETR4",
+      "side": "SELL",
+      "order_type": "ICEBERG",
+      "quantity": 5500,
+      "display_qty": 1500,
+      "price": "38.50",
+      "stop_px": null,
+      "trail_amount": null,
+      "account": "20002",
+      "participant_code": 88,
+      "timestamp": "2026-11-04T10:01:00Z"
+    },
+    {
+      "order_id": "ORD-STOP-LOSS-001",
+      "cl_ord_id": "CL-STP-001",
+      "symbol": "PETR4",
+      "side": "SELL",
+      "order_type": "STOP_LOSS",
+      "quantity": 1000,
+      "display_qty": null,
+      "price": null,
+      "stop_px": "37.50",
+      "trail_amount": null,
+      "account": "10001",
+      "participant_code": 88,
+      "timestamp": "2026-11-04T10:02:00Z"
+    },
+    {
+      "order_id": "ORD-STOP-LIMIT-001",
+      "cl_ord_id": "CL-STL-001",
+      "symbol": "PETR4",
+      "side": "BUY",
+      "order_type": "STOP_LIMIT",
+      "quantity": 2000,
+      "display_qty": null,
+      "price": "39.10",
+      "stop_px": "39.00",
+      "trail_amount": null,
+      "account": "30003",
+      "participant_code": 114,
+      "timestamp": "2026-11-04T10:03:00Z"
+    },
+    {
+      "order_id": "ORD-TRAILING-STOP-SELL-001",
+      "cl_ord_id": "CL-TRS-001",
+      "symbol": "PETR4",
+      "side": "SELL",
+      "order_type": "TRAILING_STOP",
+      "quantity": 3000,
+      "display_qty": null,
+      "price": null,
+      "stop_px": "37.50",
+      "trail_amount": "0.50",
+      "account": "10001",
+      "participant_code": 88,
+      "timestamp": "2026-11-04T10:04:00Z"
+    },
+    {
+      "order_id": "ORD-TRAILING-STOP-BUY-001",
+      "cl_ord_id": "CL-TRB-001",
+      "symbol": "PETR4",
+      "side": "BUY",
+      "order_type": "TRAILING_STOP",
+      "quantity": 1500,
+      "display_qty": null,
+      "price": null,
+      "stop_px": "38.50",
+      "trail_amount": "0.40",
+      "account": "40004",
+      "participant_code": 114,
+      "timestamp": "2026-11-04T10:05:00Z"
+    }
+  ],
+  "market_ticks": [
+    {
+      "tick_id": "TCK-001",
+      "symbol": "PETR4",
+      "price": "38.00",
+      "quantity": 2000,
+      "timestamp": "2026-11-04T10:10:00Z",
+      "description": "Negócio a 38.00 consumindo a primeira tranche visível da ordem Iceberg ORD-ICEBERG-001"
+    },
+    {
+      "tick_id": "TCK-002",
+      "symbol": "PETR4",
+      "price": "38.00",
+      "quantity": 2000,
+      "timestamp": "2026-11-04T10:11:00Z",
+      "description": "Segundo negócio consumindo a segunda tranche renovada da ordem Iceberg"
+    },
+    {
+      "tick_id": "TCK-003",
+      "symbol": "PETR4",
+      "price": "38.40",
+      "quantity": 500,
+      "timestamp": "2026-11-04T10:15:00Z",
+      "description": "Preço avança para 38.40. Trailing Stop Sell ajusta StopPx para 38.40 - 0.50 = 37.90"
+    },
+    {
+      "tick_id": "TCK-004",
+      "symbol": "PETR4",
+      "price": "38.90",
+      "quantity": 1000,
+      "timestamp": "2026-11-04T10:20:00Z",
+      "description": "Preço sobe para 38.90. Trailing Stop Sell ajusta StopPx para 38.90 - 0.50 = 38.40"
+    },
+    {
+      "tick_id": "TCK-005",
+      "symbol": "PETR4",
+      "price": "39.05",
+      "quantity": 1500,
+      "timestamp": "2026-11-04T10:25:00Z",
+      "description": "Preço atinge 39.05 >= 39.00. Dispara Stop-Limit ORD-STOP-LIMIT-001 inserindo compra a 39.10. Trailing Stop Sell ajusta StopPx para 39.05 - 0.50 = 38.55"
+    },
+    {
+      "tick_id": "TCK-006",
+      "symbol": "PETR4",
+      "price": "39.20",
+      "quantity": 800,
+      "timestamp": "2026-11-04T10:30:00Z",
+      "description": "Topo em 39.20. Trailing Stop Sell ajusta StopPx para 39.20 - 0.50 = 38.70"
+    },
+    {
+      "tick_id": "TCK-007",
+      "symbol": "PETR4",
+      "price": "38.90",
+      "quantity": 500,
+      "timestamp": "2026-11-04T10:32:00Z",
+      "description": "Mercado recua para 38.90. Trailing Stop Sell congela StopPx em 38.70"
+    },
+    {
+      "tick_id": "TCK-008",
+      "symbol": "PETR4",
+      "price": "38.65",
+      "quantity": 1200,
+      "timestamp": "2026-11-04T10:35:00Z",
+      "description": "Mercado cai para 38.65 <= 38.70. DISPARO do Trailing Stop Sell ORD-TRAILING-STOP-SELL-001!"
+    },
+    {
+      "tick_id": "TCK-009",
+      "symbol": "PETR4",
+      "price": "37.50",
+      "quantity": 2500,
+      "timestamp": "2026-11-04T10:45:00Z",
+      "description": "Queda atinge 37.50 <= 37.50. DISPARO do Stop-Loss ORD-STOP-LOSS-001!"
+    },
+    {
+      "tick_id": "TCK-010",
+      "symbol": "PETR4",
+      "price": "37.20",
+      "quantity": 1000,
+      "timestamp": "2026-11-04T10:50:00Z",
+      "description": "Fundo em 37.20. Trailing Stop Buy ajusta StopPx para 37.20 + 0.40 = 37.60"
+    },
+    {
+      "tick_id": "TCK-011",
+      "symbol": "PETR4",
+      "price": "37.65",
+      "quantity": 800,
+      "timestamp": "2026-11-04T10:55:00Z",
+      "description": "Rebote atinge 37.65 >= 37.60. DISPARO do Trailing Stop Buy ORD-TRAILING-STOP-BUY-001!"
+    }
+  ]
+}

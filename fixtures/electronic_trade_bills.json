@@ -1,0 +1,206 @@
+{
+  "schema_version": "1.0.0",
+  "flow_code": "FL-051",
+  "system": "B3_BALCAO_NOME_DUPLICATAS_ESCRITURAIS",
+  "description": "Lote de duplicatas mercantis eletrônicas escrituradas a partir de NF-e, cessões translativas para FIDC, mandatos de cobrança bancária, bloqueios de duplicidade anti-fraude e quitação via SPB/Pix",
+  "reference_date": "2026-11-03",
+  "regulatory_framework": [
+    "LEI_13775_2018_DUPLICATA_ESCRITURAL",
+    "CIRCULAR_BCB_4016_2020",
+    "RESOLUCAO_CMN_4815_2020",
+    "RESOLUCAO_BCB_339_2023",
+    "LEI_5474_1968_DUPLICATAS"
+  ],
+  "trade_bills": [
+    {
+      "trade_bill_id": "TBILL-2026-NFE001-01",
+      "nfe_access_key": "35261112345678000195550010001234561123456789",
+      "installment_number": 1,
+      "total_installments": 3,
+      "issuer_document": "12345678000195",
+      "issuer_name": "INDÚSTRIA DE ALIMENTOS PAULISTANA LTDA",
+      "drawee_document": "98765432000198",
+      "drawee_name": "REDE DE SUPERMERCADOS BRASIL S.A.",
+      "face_value": "50000.00",
+      "issue_date": "2026-11-01",
+      "due_date": "2026-12-01",
+      "registration_timestamp": "2026-11-01T09:00:00Z",
+      "status": "LIQUIDADA",
+      "registrar_code": "B3_NOME",
+      "endorsements": [
+        {
+          "endorsement_id": "END-2026-001-01",
+          "endorsement_type": "TRANSLATIVO",
+          "endorser_document": "12345678000195",
+          "endorser_name": "INDÚSTRIA DE ALIMENTOS PAULISTANA LTDA",
+          "endorsee_document": "11223344000186",
+          "endorsee_name": "FIDC ALPHA RECEBÍVEIS MULTISSETORIAL",
+          "timestamp": "2026-11-02T10:30:00Z",
+          "amount": "50000.00",
+          "digital_signature_hash": "a1b2c3d4e5f60718293a4b5c6d7e8f90123456789abcdef0123456789abcdef0",
+          "notes": "Cessão translativa definitiva de direitos creditórios para lastro de cotas sênior FIDC"
+        }
+      ],
+      "settlement": {
+        "settlement_id": "SETTL-2026-001",
+        "method": "PIX",
+        "payer_document": "98765432000198",
+        "receiver_document": "11223344000186",
+        "principal_amount": "50000.00",
+        "interest_amount": "0.00",
+        "fine_amount": "0.00",
+        "discount_amount": "500.00",
+        "settled_amount": "49500.00",
+        "settlement_timestamp": "2026-11-28T14:15:00Z",
+        "channel_transaction_id": "E12345678202611281415A9876543210",
+        "notes": "Liquidação Pix com desconto comercial de pontualidade"
+      }
+    },
+    {
+      "trade_bill_id": "TBILL-2026-NFE001-02",
+      "nfe_access_key": "35261112345678000195550010001234561123456789",
+      "installment_number": 2,
+      "total_installments": 3,
+      "issuer_document": "12345678000195",
+      "issuer_name": "INDÚSTRIA DE ALIMENTOS PAULISTANA LTDA",
+      "drawee_document": "98765432000198",
+      "drawee_name": "REDE DE SUPERMERCADOS BRASIL S.A.",
+      "face_value": "50000.00",
+      "issue_date": "2026-11-01",
+      "due_date": "2027-01-01",
+      "registration_timestamp": "2026-11-01T09:00:00Z",
+      "status": "EM_COBRANCA",
+      "registrar_code": "B3_NOME",
+      "endorsements": [
+        {
+          "endorsement_id": "END-2026-001-02-A",
+          "endorsement_type": "TRANSLATIVO",
+          "endorser_document": "12345678000195",
+          "endorser_name": "INDÚSTRIA DE ALIMENTOS PAULISTANA LTDA",
+          "endorsee_document": "11223344000186",
+          "endorsee_name": "FIDC ALPHA RECEBÍVEIS MULTISSETORIAL",
+          "timestamp": "2026-11-02T10:30:00Z",
+          "amount": "50000.00",
+          "digital_signature_hash": "b2c3d4e5f60718293a4b5c6d7e8f90123456789abcdef0123456789abcdef01",
+          "notes": "Cessão translativa de recebível para carteira do FIDC"
+        },
+        {
+          "endorsement_id": "END-2026-001-02-B",
+          "endorsement_type": "MANDATO",
+          "endorser_document": "11223344000186",
+          "endorser_name": "FIDC ALPHA RECEBÍVEIS MULTISSETORIAL",
+          "endorsee_document": "60701190000104",
+          "endorsee_name": "BANCO ITAÚ UNIBANCO S.A.",
+          "timestamp": "2026-11-03T11:00:00Z",
+          "amount": "50000.00",
+          "digital_signature_hash": "c3d4e5f60718293a4b5c6d7e8f90123456789abcdef0123456789abcdef012",
+          "notes": "Endosso-mandato para cobrança bancária simples com emissão de boleto registrado"
+        }
+      ]
+    },
+    {
+      "trade_bill_id": "TBILL-2026-NFE001-03",
+      "nfe_access_key": "35261112345678000195550010001234561123456789",
+      "installment_number": 3,
+      "total_installments": 3,
+      "issuer_document": "12345678000195",
+      "issuer_name": "INDÚSTRIA DE ALIMENTOS PAULISTANA LTDA",
+      "drawee_document": "98765432000198",
+      "drawee_name": "REDE DE SUPERMERCADOS BRASIL S.A.",
+      "face_value": "50000.00",
+      "issue_date": "2026-11-01",
+      "due_date": "2027-02-01",
+      "registration_timestamp": "2026-11-01T09:00:00Z",
+      "status": "EM_COBRANCA",
+      "registrar_code": "B3_NOME",
+      "endorsements": [
+        {
+          "endorsement_id": "END-2026-001-03",
+          "endorsement_type": "MANDATO",
+          "endorser_document": "12345678000195",
+          "endorser_name": "INDÚSTRIA DE ALIMENTOS PAULISTANA LTDA",
+          "endorsee_document": "60701190000104",
+          "endorsee_name": "BANCO ITAÚ UNIBANCO S.A.",
+          "timestamp": "2026-11-03T11:15:00Z",
+          "amount": "50000.00",
+          "digital_signature_hash": "d4e5f60718293a4b5c6d7e8f90123456789abcdef0123456789abcdef0123",
+          "notes": "Endosso-mandato direto do cedente originador para cobrança bancária"
+        }
+      ]
+    },
+    {
+      "trade_bill_id": "TBILL-2026-NFE002-01",
+      "nfe_access_key": "31261155667788000186550020000889901876543213",
+      "installment_number": 1,
+      "total_installments": 1,
+      "issuer_document": "55667788000186",
+      "issuer_name": "MINERAÇÃO E METALÚRGICA MINEIRA S.A.",
+      "drawee_document": "33445566000186",
+      "drawee_name": "SIDERÚRGICA NACIONAL BRASILEIRA S.A.",
+      "face_value": "125000.00",
+      "issue_date": "2026-11-01",
+      "due_date": "2026-11-20",
+      "registration_timestamp": "2026-11-01T10:00:00Z",
+      "status": "LIQUIDADA",
+      "registrar_code": "B3_NOME",
+      "endorsements": [],
+      "settlement": {
+        "settlement_id": "SETTL-2026-002",
+        "method": "SPB",
+        "payer_document": "33445566000186",
+        "receiver_document": "55667788000186",
+        "principal_amount": "125000.00",
+        "interest_amount": "1250.00",
+        "fine_amount": "0.00",
+        "discount_amount": "0.00",
+        "settled_amount": "126250.00",
+        "settlement_timestamp": "2026-11-20T16:45:00Z",
+        "channel_transaction_id": "STR202611200000491823",
+        "notes": "Liquidação financeira via STR/SPB com juros contratuais de mora pró-rata"
+      }
+    },
+    {
+      "trade_bill_id": "TBILL-2026-NFE003-01",
+      "nfe_access_key": "35261112345678000195550010009998881998877662",
+      "installment_number": 1,
+      "total_installments": 2,
+      "issuer_document": "12345678000195",
+      "issuer_name": "INDÚSTRIA DE ALIMENTOS PAULISTANA LTDA",
+      "drawee_document": "98765432000198",
+      "drawee_name": "REDE DE SUPERMERCADOS BRASIL S.A.",
+      "face_value": "80000.00",
+      "issue_date": "2026-11-03",
+      "due_date": "2026-12-15",
+      "registration_timestamp": "2026-11-03T08:30:00Z",
+      "status": "REGISTRADA",
+      "registrar_code": "B3_NOME",
+      "endorsements": []
+    }
+  ],
+  "blocked_duplicate_attempts": [
+    {
+      "attempt_id": "DUP-ATTEMPT-001",
+      "source_registradora": "REGISTRADORA_CERC_SISTEMA_EXTERNO",
+      "source_participant": "PARTICIPANTE_EXTERNO_00450",
+      "nfe_access_key": "35261112345678000195550010001234561123456789",
+      "installment_number": 1,
+      "face_value": "50000.00",
+      "issuer_document": "12345678000195",
+      "drawee_document": "98765432000198",
+      "expected_rejection_code": "DUPLICATE_BALLAST_DETECTED",
+      "reason": "Tentativa de duplicidade de lastro: Parcela 1 da NF-e 35261112345678000195550010001234561123456789 já escriturada no NoMe Balcão B3 sob ID TBILL-2026-NFE001-01."
+    },
+    {
+      "attempt_id": "DUP-ATTEMPT-002",
+      "source_registradora": "B3_NOME",
+      "source_participant": "PARTICIPANTE_BANCO_00889",
+      "nfe_access_key": "35261112345678000195550010001234561123456789",
+      "installment_number": 2,
+      "face_value": "50000.00",
+      "issuer_document": "12345678000195",
+      "drawee_document": "98765432000198",
+      "expected_rejection_code": "DUPLICATE_BALLAST_DETECTED",
+      "reason": "Tentativa de re-escrituração da Parcela 2 já ativa sob tutela do FIDC Alpha Recebíveis."
+    }
+  ]
+}

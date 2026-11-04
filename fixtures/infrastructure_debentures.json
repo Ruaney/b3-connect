@@ -1,0 +1,224 @@
+{
+  "description": "B3 Balcão NoMe & Central Depositária - Emissões de Debêntures Incentivadas e de Infraestrutura (FL-057)",
+  "version": "1.0.0",
+  "emissions": [
+    {
+      "asset_code": "TRAN11",
+      "isin": "BRTRAN4DBS11",
+      "issuer_name": "Transmissora Paulista de Energia Solar S.A.",
+      "issuer_cnpj": "12.345.678/0001-90",
+      "sector": "ENERGIA",
+      "legal_framework": "LEI_12431_2011",
+      "amortization_type": "CONSTANT",
+      "emission_date": "2024-05-15",
+      "maturity_date": "2028-05-15",
+      "issued_quantity": "50000",
+      "circulating_quantity": "50000",
+      "nominal_original_value": "1000.00",
+      "nominal_escalonado_value": "1000.00",
+      "annual_coupon_rate": "0.05850000",
+      "indexer": "IPCA",
+      "payment_schedule": [
+        {
+          "event_id": "EVT-TRAN11-01",
+          "event_date": "2024-11-15",
+          "event_type": "COUPON",
+          "inflation_rate": "0.02150000",
+          "coupon_rate": "0.02883300",
+          "amortization_percentage": "0.00000000"
+        },
+        {
+          "event_id": "EVT-TRAN11-02",
+          "event_date": "2025-05-15",
+          "event_type": "COUPON_AND_AMORTIZATION",
+          "inflation_rate": "0.02400000",
+          "coupon_rate": "0.02883300",
+          "amortization_percentage": "0.25000000"
+        },
+        {
+          "event_id": "EVT-TRAN11-03",
+          "event_date": "2025-11-15",
+          "event_type": "COUPON",
+          "inflation_rate": "0.01950000",
+          "coupon_rate": "0.02883300",
+          "amortization_percentage": "0.00000000"
+        },
+        {
+          "event_id": "EVT-TRAN11-04",
+          "event_date": "2026-05-15",
+          "event_type": "COUPON_AND_AMORTIZATION",
+          "inflation_rate": "0.02100000",
+          "coupon_rate": "0.02883300",
+          "amortization_percentage": "0.33333333"
+        }
+      ],
+      "custody_positions": [
+        {
+          "account_id": "CUST-00101-PF",
+          "investor_name": "Mariana Silva Ribeiro",
+          "investor_document": "111.222.333-44",
+          "investor_tax_category": "INDIVIDUAL_PF",
+          "quantity": "20000"
+        },
+        {
+          "account_id": "CUST-00202-INR",
+          "investor_name": "Global Infrastructure Sovereign Fund LP",
+          "investor_document": "US-INV-987654",
+          "investor_tax_category": "NON_RESIDENT_INR",
+          "quantity": "15000"
+        },
+        {
+          "account_id": "CUST-00303-PJ",
+          "investor_name": "Alpha Asset Gestão de Recursos Corporativos S.A.",
+          "investor_document": "98.765.432/0001-10",
+          "investor_tax_category": "CORPORATE_PJ",
+          "quantity": "15000"
+        }
+      ]
+    },
+    {
+      "asset_code": "RODO21",
+      "isin": "BRRODO4DBS21",
+      "issuer_name": "Concessionária Rodovias do Centro-Oeste S.A.",
+      "issuer_cnpj": "23.456.789/0001-01",
+      "sector": "TRANSPORTE",
+      "legal_framework": "LEI_14801_2024",
+      "amortization_type": "BULLET",
+      "emission_date": "2024-06-01",
+      "maturity_date": "2028-06-01",
+      "issued_quantity": "10000",
+      "circulating_quantity": "10000",
+      "nominal_original_value": "10000.00",
+      "nominal_escalonado_value": "10000.00",
+      "annual_coupon_rate": "0.06200000",
+      "indexer": "IPCA",
+      "payment_schedule": [
+        {
+          "event_id": "EVT-RODO21-01",
+          "event_date": "2024-12-01",
+          "event_type": "COUPON",
+          "inflation_rate": "0.02300000",
+          "coupon_rate": "0.03053400",
+          "amortization_percentage": "0.00000000"
+        },
+        {
+          "event_id": "EVT-RODO21-02",
+          "event_date": "2025-06-01",
+          "event_type": "COUPON",
+          "inflation_rate": "0.02100000",
+          "coupon_rate": "0.03053400",
+          "amortization_percentage": "0.00000000"
+        },
+        {
+          "event_id": "EVT-RODO21-03",
+          "event_date": "2025-12-01",
+          "event_type": "COUPON",
+          "inflation_rate": "0.02500000",
+          "coupon_rate": "0.03053400",
+          "amortization_percentage": "0.00000000"
+        },
+        {
+          "event_id": "EVT-RODO21-04",
+          "event_date": "2028-06-01",
+          "event_type": "COUPON_AND_AMORTIZATION",
+          "inflation_rate": "0.02000000",
+          "coupon_rate": "0.03053400",
+          "amortization_percentage": "1.00000000"
+        }
+      ],
+      "custody_positions": [
+        {
+          "account_id": "CUST-00404-EFPC",
+          "investor_name": "Fundação Previdência dos Ferroviários",
+          "investor_document": "33.444.555/0001-66",
+          "investor_tax_category": "CORPORATE_PJ",
+          "quantity": "6000",
+          "holding_days": 735
+        },
+        {
+          "account_id": "CUST-00505-PF",
+          "investor_name": "Carlos Eduardo Pereira de Almeida",
+          "investor_document": "444.555.666-77",
+          "investor_tax_category": "INDIVIDUAL_PF",
+          "quantity": "4000",
+          "holding_days": 735
+        }
+      ]
+    },
+    {
+      "asset_code": "SANE31",
+      "isin": "BRSANE4DBS31",
+      "issuer_name": "Águas do Brasil Saneamento Ambiental S.A.",
+      "issuer_cnpj": "34.567.890/0001-12",
+      "sector": "SANEAMENTO",
+      "legal_framework": "LEI_12431_2011",
+      "amortization_type": "VARIABLE",
+      "emission_date": "2024-03-01",
+      "maturity_date": "2027-03-01",
+      "issued_quantity": "25000",
+      "circulating_quantity": "25000",
+      "nominal_original_value": "1000.00",
+      "nominal_escalonado_value": "1000.00",
+      "annual_coupon_rate": "0.05500000",
+      "indexer": "IPCA",
+      "payment_schedule": [
+        {
+          "event_id": "EVT-SANE31-01",
+          "event_date": "2024-09-01",
+          "event_type": "COUPON",
+          "inflation_rate": "0.02000000",
+          "coupon_rate": "0.02713000",
+          "amortization_percentage": "0.00000000"
+        },
+        {
+          "event_id": "EVT-SANE31-02",
+          "event_date": "2025-03-01",
+          "event_type": "COUPON_AND_AMORTIZATION",
+          "inflation_rate": "0.02200000",
+          "coupon_rate": "0.02713000",
+          "amortization_percentage": "0.20000000"
+        },
+        {
+          "event_id": "EVT-SANE31-03",
+          "event_date": "2025-09-01",
+          "event_type": "COUPON_AND_AMORTIZATION",
+          "inflation_rate": "0.01800000",
+          "coupon_rate": "0.02713000",
+          "amortization_percentage": "0.25000000"
+        },
+        {
+          "event_id": "EVT-SANE31-04",
+          "event_date": "2026-03-01",
+          "event_type": "COUPON_AND_AMORTIZATION",
+          "inflation_rate": "0.01900000",
+          "coupon_rate": "0.02713000",
+          "amortization_percentage": "0.30000000"
+        },
+        {
+          "event_id": "EVT-SANE31-05",
+          "event_date": "2026-09-01",
+          "event_type": "COUPON_AND_AMORTIZATION",
+          "inflation_rate": "0.02100000",
+          "coupon_rate": "0.02713000",
+          "amortization_percentage": "1.00000000"
+        }
+      ],
+      "custody_positions": [
+        {
+          "account_id": "CUST-00601-PF",
+          "investor_name": "Beatriz Mendonça Fontes",
+          "investor_document": "555.666.777-88",
+          "investor_tax_category": "INDIVIDUAL_PF",
+          "quantity": "15000"
+        },
+        {
+          "account_id": "CUST-00602-PJ",
+          "investor_name": "Saneamento Infra Fundo de Investimento em Debêntures (FI-Infra)",
+          "investor_document": "55.666.777/0001-88",
+          "investor_tax_category": "CORPORATE_PJ",
+          "quantity": "10000"
+        }
+      ]
+    }
+  ]
+}

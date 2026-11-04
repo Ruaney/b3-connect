@@ -1,0 +1,345 @@
+{
+  "account_id": "CORE_PORTFOLIO_ALPHA_01",
+  "participant_id": "PNP_0088_CLEARING",
+  "as_of_date": "2026-11-04T14:30:00Z",
+  "regulatory_parameters": {
+    "regulatory_tolerance_pct": "0.05",
+    "regulatory_tolerance_min_brl": "5000.00",
+    "liquidity_addon_rate": "0.005",
+    "concentration_threshold_pct": "0.40",
+    "concentration_addon_rate": "0.015"
+  },
+  "positions": [
+    {
+      "position_id": "POS_PETR4_EQUITY",
+      "symbol": "PETR4",
+      "asset_category": "EQUITY",
+      "underlying_symbol": "PETR4",
+      "quantity": "10000",
+      "current_price": "36.50",
+      "contract_multiplier": "1.0"
+    },
+    {
+      "position_id": "POS_VALE3_EQUITY",
+      "symbol": "VALE3",
+      "asset_category": "EQUITY",
+      "underlying_symbol": "VALE3",
+      "quantity": "-5000",
+      "current_price": "62.00",
+      "contract_multiplier": "1.0"
+    },
+    {
+      "position_id": "POS_DI1F27_FUTURE",
+      "symbol": "DI1F27",
+      "asset_category": "FUTURE_DI",
+      "underlying_symbol": "PRE_CURVE",
+      "quantity": "50",
+      "current_price": "11.75",
+      "annual_rate": "0.1175",
+      "business_days": 252,
+      "contract_multiplier": "1.0"
+    },
+    {
+      "position_id": "POS_DOLZ26_FUTURE",
+      "symbol": "DOLZ26",
+      "asset_category": "FUTURE_DOL",
+      "underlying_symbol": "USD_BRL",
+      "quantity": "-15",
+      "current_price": "5350.00",
+      "contract_multiplier": "50.0"
+    },
+    {
+      "position_id": "POS_PETRL360_CALL",
+      "symbol": "PETRL360",
+      "asset_category": "OPTION_CALL",
+      "underlying_symbol": "PETR4",
+      "quantity": "-5000",
+      "current_price": "36.50",
+      "strike": "37.00",
+      "maturity_years": "0.25",
+      "implied_vol": "0.30",
+      "risk_free_rate": "0.1175",
+      "contract_multiplier": "1.0"
+    },
+    {
+      "position_id": "POS_PETRX360_PUT",
+      "symbol": "PETRX360",
+      "asset_category": "OPTION_PUT",
+      "underlying_symbol": "PETR4",
+      "quantity": "5000",
+      "current_price": "36.50",
+      "strike": "36.00",
+      "maturity_years": "0.25",
+      "implied_vol": "0.32",
+      "risk_free_rate": "0.1175",
+      "contract_multiplier": "1.0"
+    }
+  ],
+  "stress_scenarios": [
+    {
+      "scenario_id": "SCN_CRASH_EQUITY_20",
+      "name": "Crash Sistêmico de Risco (-20% Ações)",
+      "description": "Queda de 20% em PETR4, 15% em VALE3, alta de vol +30%, juros +150 bps e alta de dólar +10%",
+      "equity_shocks": {
+        "PETR4": "-0.20",
+        "VALE3": "-0.15"
+      },
+      "volatility_shocks": {
+        "PETR4": "0.30"
+      },
+      "interest_rate_shocks": {
+        "PRE_CURVE": "0.0150"
+      },
+      "fx_shocks": {
+        "USD_BRL": "0.10"
+      },
+      "probability_weight": "1.0"
+    },
+    {
+      "scenario_id": "SCN_RALLY_EQUITY_20",
+      "name": "Rally Geral de Ações (+20% Ações)",
+      "description": "Alta de 20% em PETR4, 15% em VALE3, queda de vol -20%, juros -100 bps e dólar -5%",
+      "equity_shocks": {
+        "PETR4": "0.20",
+        "VALE3": "0.15"
+      },
+      "volatility_shocks": {
+        "PETR4": "-0.20"
+      },
+      "interest_rate_shocks": {
+        "PRE_CURVE": "-0.0100"
+      },
+      "fx_shocks": {
+        "USD_BRL": "-0.05"
+      },
+      "probability_weight": "1.0"
+    },
+    {
+      "scenario_id": "SCN_STRESS_EQUITY_10",
+      "name": "Queda Moderada de Ações (-10%)",
+      "description": "Queda de 10% nas ações com vol +15%, juros +75 bps e dólar +5%",
+      "equity_shocks": {
+        "PETR4": "-0.10",
+        "VALE3": "-0.10"
+      },
+      "volatility_shocks": {
+        "PETR4": "0.15"
+      },
+      "interest_rate_shocks": {
+        "PRE_CURVE": "0.0075"
+      },
+      "fx_shocks": {
+        "USD_BRL": "0.05"
+      },
+      "probability_weight": "1.0"
+    },
+    {
+      "scenario_id": "SCN_UP_EQUITY_10",
+      "name": "Alta Moderada de Ações (+10%)",
+      "description": "Alta de 10% nas ações com vol -10%, juros -50 bps e dólar -3%",
+      "equity_shocks": {
+        "PETR4": "0.10",
+        "VALE3": "0.10"
+      },
+      "volatility_shocks": {
+        "PETR4": "-0.10"
+      },
+      "interest_rate_shocks": {
+        "PRE_CURVE": "-0.0050"
+      },
+      "fx_shocks": {
+        "USD_BRL": "-0.03"
+      },
+      "probability_weight": "1.0"
+    },
+    {
+      "scenario_id": "SCN_SPIKE_RATES_200",
+      "name": "Alta Acentuada de Juros (+200 bps)",
+      "description": "Choque de +200 bps na curva pré, ações em queda e dólar em alta",
+      "equity_shocks": {
+        "PETR4": "-0.10",
+        "VALE3": "-0.05"
+      },
+      "volatility_shocks": {
+        "PETR4": "0.20"
+      },
+      "interest_rate_shocks": {
+        "PRE_CURVE": "0.0200"
+      },
+      "fx_shocks": {
+        "USD_BRL": "0.05"
+      },
+      "probability_weight": "1.0"
+    },
+    {
+      "scenario_id": "SCN_DROP_RATES_200",
+      "name": "Queda Acentuada de Juros (-200 bps)",
+      "description": "Choque de -200 bps na curva pré, ações em alta e dólar em baixa",
+      "equity_shocks": {
+        "PETR4": "0.10",
+        "VALE3": "0.05"
+      },
+      "volatility_shocks": {
+        "PETR4": "-0.15"
+      },
+      "interest_rate_shocks": {
+        "PRE_CURVE": "-0.0200"
+      },
+      "fx_shocks": {
+        "USD_BRL": "-0.05"
+      },
+      "probability_weight": "1.0"
+    },
+    {
+      "scenario_id": "SCN_FX_DEVALUATION_15",
+      "name": "Desvalorização Cambial Severa (+15% USD)",
+      "description": "Alta de 15% no dólar com pressão em juros e ações defensivas",
+      "equity_shocks": {
+        "PETR4": "-0.05",
+        "VALE3": "0.02"
+      },
+      "volatility_shocks": {
+        "PETR4": "0.15"
+      },
+      "interest_rate_shocks": {
+        "PRE_CURVE": "0.0100"
+      },
+      "fx_shocks": {
+        "USD_BRL": "0.15"
+      },
+      "probability_weight": "1.0"
+    },
+    {
+      "scenario_id": "SCN_FX_APPRECIATION_10",
+      "name": "Apreciação Cambial Relevante (-10% USD)",
+      "description": "Queda de 10% no dólar com alívio na curva de juros",
+      "equity_shocks": {
+        "PETR4": "0.05",
+        "VALE3": "-0.02"
+      },
+      "volatility_shocks": {
+        "PETR4": "-0.10"
+      },
+      "interest_rate_shocks": {
+        "PRE_CURVE": "-0.0050"
+      },
+      "fx_shocks": {
+        "USD_BRL": "-0.10"
+      },
+      "probability_weight": "1.0"
+    },
+    {
+      "scenario_id": "SCN_VOL_SPIKE_SHORT_GAMMA",
+      "name": "Choque Puro de Volatilidade (+40% Vol)",
+      "description": "Salto de 40% na volatilidade com preços à vista e juros inalterados",
+      "equity_shocks": {
+        "PETR4": "0.00",
+        "VALE3": "0.00"
+      },
+      "volatility_shocks": {
+        "PETR4": "0.40"
+      },
+      "interest_rate_shocks": {
+        "PRE_CURVE": "0.0000"
+      },
+      "fx_shocks": {
+        "USD_BRL": "0.00"
+      },
+      "probability_weight": "1.0"
+    },
+    {
+      "scenario_id": "SCN_VOL_CRUSH",
+      "name": "Esmagamento de Volatilidade (-30% Vol)",
+      "description": "Queda de 30% na volatilidade implícita com preços estáveis",
+      "equity_shocks": {
+        "PETR4": "0.00",
+        "VALE3": "0.00"
+      },
+      "volatility_shocks": {
+        "PETR4": "-0.30"
+      },
+      "interest_rate_shocks": {
+        "PRE_CURVE": "0.0000"
+      },
+      "fx_shocks": {
+        "USD_BRL": "0.00"
+      },
+      "probability_weight": "1.0"
+    },
+    {
+      "scenario_id": "SCN_SECTOR_ASYMMETRY",
+      "name": "Descolamento Setorial PETR4 vs VALE3",
+      "description": "Queda de 20% em PETR4 e alta de 10% em VALE3 com alta cambial",
+      "equity_shocks": {
+        "PETR4": "-0.20",
+        "VALE3": "0.10"
+      },
+      "volatility_shocks": {
+        "PETR4": "0.25"
+      },
+      "interest_rate_shocks": {
+        "PRE_CURVE": "0.0050"
+      },
+      "fx_shocks": {
+        "USD_BRL": "0.05"
+      },
+      "probability_weight": "1.0"
+    },
+    {
+      "scenario_id": "SCN_CORRELATION_BREAK",
+      "name": "Quebra de Correlação Inversa",
+      "description": "Alta de 15% em PETR4 e queda de 15% em VALE3 com juros em alta",
+      "equity_shocks": {
+        "PETR4": "0.15",
+        "VALE3": "-0.15"
+      },
+      "volatility_shocks": {
+        "PETR4": "-0.10"
+      },
+      "interest_rate_shocks": {
+        "PRE_CURVE": "0.0075"
+      },
+      "fx_shocks": {
+        "USD_BRL": "-0.02"
+      },
+      "probability_weight": "1.0"
+    }
+  ],
+  "collateral_items": [
+    {
+      "collateral_id": "COL_CASH_BRL_01",
+      "collateral_type": "CASH_BRL",
+      "description": "Moeda Nacional em Conta de Liquidação SPB",
+      "nominal_value": "150000.00",
+      "haircut_pct": "0.00"
+    },
+    {
+      "collateral_id": "COL_TPF_LFT_01",
+      "collateral_type": "FEDERAL_BONDS_LFT",
+      "description": "LFT 2027 Título Público Federal Selic",
+      "nominal_value": "250000.00",
+      "haircut_pct": "0.02"
+    },
+    {
+      "collateral_id": "COL_TPF_LTN_01",
+      "collateral_type": "FEDERAL_BONDS_LTN",
+      "description": "LTN 2028 Título Público Federal Pré",
+      "nominal_value": "150000.00",
+      "haircut_pct": "0.035"
+    }
+  ],
+  "expected_benchmark": {
+    "worst_case_scenario_id": "SCN_FX_DEVALUATION_15",
+    "worst_case_loss": "657829.30",
+    "liquidity_addon": "47633.86",
+    "concentration_addon": "12980.32",
+    "total_margin_required": "718443.48",
+    "total_collateral_deposited": "550000.00",
+    "total_collateral_available": "539750.00",
+    "risk_deficit": "178693.48",
+    "regulatory_tolerance": "35922.17",
+    "margin_call_triggered": true,
+    "margin_call_amount": "178693.48",
+    "status": "MARGIN_CALL_REQUIRED"
+  }
+}
