@@ -441,6 +441,46 @@
       "status": "localizada",
       "kind": "manual_tecnico",
       "limitation": "Espelhamento de custódia fiduciária CSD B3, smart contracts ERC-1155, liquidação DvP atômica e des-tokenização."
+    },
+    {
+      "id": "SRC-056",
+      "title": "B3 PUMA Trading System & CVM 35/505 — Melhores Práticas de Roteamento de Ordens (Smart Order Router) e Best Execution",
+      "url": "https://www.b3.com.br/pt_br/solucoes/plataformas/puma-trading-system/regras-de-negociacao/roteamento-sor.htm",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Agregação de liquidez multi-mercado, prevenção de trade-through, priorização dark/midpoint e conservação de lotes."
+    },
+    {
+      "id": "SRC-057",
+      "title": "B3 Balcão NoMe & Sustentabilidade — Manual de Registro e Certificação de Títulos ESG (Green Bonds e SLBs)",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/registro/renda-fixa/titulos-esg.htm",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Regras de Taxonomia Verde (Use of Proceeds), governança de metas corporativas (KPI/SPT), monitoramento de gatilho de Step-Up e relatórios de alocação/impacto."
+    },
+    {
+      "id": "SRC-058",
+      "title": "B3 Índices — Manual de Metodologia e Critérios de Ponderação dos Índices de Ações (Ibovespa, IBrX-100, SMLL, IDIV)",
+      "url": "https://www.b3.com.br/pt_br/market-data-e-indices/indices/indices-amplos/indice-ibovespa-ibovespa-metodologia.htm",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Cálculo do Índice de Negociabilidade (IN), corte dos 85% de representatividade, teto regulatório de concentração (capping de 20%) e ciclo quadrimestral de prévias."
+    },
+    {
+      "id": "SRC-059",
+      "title": "B3 Câmara — Manual de Procedimentos Operacionais: Garantias Internacionais e Convênios de Custódia (Euroclear e DTC)",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/compensacao-e-liquidacao/garantias/garantias-internacionais.htm",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Matriz de haircuts de títulos soberanos (US Treasuries e Bunds), buffer de volatilidade cambial e conciliação Euroclear/DTC."
+    },
+    {
+      "id": "SRC-060",
+      "title": "B3 PUMA Trading System & Câmara — Manual de Operações Estruturadas de Volatilidade e Opções Combinadas (Multi-Leg Trading & CORE Spread Haircuts)",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/negociacao/renda-variavel/estrategias-de-opcoes.htm",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Validador estrutural de pernas, execução atômica All-or-None, Lei de Conservação de Razão de Pernas e desconto de margem CORE por spread de volatilidade."
     }
   ]
 }

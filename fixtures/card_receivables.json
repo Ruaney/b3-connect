@@ -1,0 +1,231 @@
+{
+  "schema_version": "1.0.0",
+  "flow_code": "FL-069",
+  "system": "B3_BALCAO_NOME_RECEBIVEIS_CARTAO",
+  "regulatory_framework": [
+    "RESOLUCAO_CMN_4734_2019",
+    "CIRCULAR_BCB_3952_2019",
+    "RESOLUCAO_BCB_264_2022"
+  ],
+  "reference_date": "2026-11-04",
+  "acquirers": [
+    {
+      "acquirer_code": "CIELO",
+      "name": "CIELO S.A. - INSTITUICAO DE PAGAMENTO",
+      "cnpj": "01027058000191"
+    },
+    {
+      "acquirer_code": "REDE",
+      "name": "REDECARD S.A. - INSTITUICAO DE PAGAMENTO",
+      "cnpj": "01425787000104"
+    },
+    {
+      "acquirer_code": "STONE",
+      "name": "STONE INSTITUICAO DE PAGAMENTO S.A.",
+      "cnpj": "16501555000157"
+    },
+    {
+      "acquirer_code": "PAGBANK",
+      "name": "PAGSEGURO INTERNET S.A.",
+      "cnpj": "08561701000101"
+    }
+  ],
+  "merchants": [
+    {
+      "document": "12345678000190",
+      "name": "MAGAZINE LITORAL ELETRODOMESTICOS S.A.",
+      "default_account": {
+        "ispb": "60701190",
+        "bank_name": "ITAU UNIBANCO S.A.",
+        "branch": "0057",
+        "account_number": "12345-6",
+        "account_type": "CONTA_CORRENTE",
+        "holder_document": "12345678000190"
+      }
+    },
+    {
+      "document": "98765432000111",
+      "name": "DROGARIA E FARMACIA NOVA ESPERANCA LTDA.",
+      "default_account": {
+        "ispb": "60746948",
+        "bank_name": "BANCO BRADESCO S.A.",
+        "branch": "1420",
+        "account_number": "98765-4",
+        "account_type": "CONTA_CORRENTE",
+        "holder_document": "98765432000111"
+      }
+    },
+    {
+      "document": "45678901000122",
+      "name": "CONFECCOES E VESTUARIO BELLA PAULISTA LTDA.",
+      "default_account": {
+        "ispb": "60701190",
+        "bank_name": "ITAU UNIBANCO S.A.",
+        "branch": "3388",
+        "account_number": "45678-9",
+        "account_type": "CONTA_CORRENTE",
+        "holder_document": "45678901000122"
+      }
+    },
+    {
+      "document": "33445566000177",
+      "name": "SUPERMERCADO ALVORADA CENTRAL LTDA.",
+      "default_account": {
+        "ispb": "00000000",
+        "bank_name": "BANCO DO BRASIL S.A.",
+        "branch": "0100",
+        "account_number": "33445-5",
+        "account_type": "CONTA_CORRENTE",
+        "holder_document": "33445566000177"
+      }
+    }
+  ],
+  "consents": [
+    {
+      "merchant_document": "12345678000190",
+      "creditor_ispb": "60701190",
+      "creditor_name": "ITAU UNIBANCO S.A.",
+      "expiration_date": "2027-12-31"
+    },
+    {
+      "merchant_document": "12345678000190",
+      "creditor_ispb": "30306294",
+      "creditor_name": "BANCO BTG PACTUAL S.A.",
+      "expiration_date": "2027-12-31"
+    },
+    {
+      "merchant_document": "98765432000111",
+      "creditor_ispb": "60746948",
+      "creditor_name": "BANCO BRADESCO S.A.",
+      "expiration_date": "2027-12-31"
+    },
+    {
+      "merchant_document": "98765432000111",
+      "creditor_ispb": "00000000",
+      "creditor_name": "BANCO DO BRASIL S.A.",
+      "expiration_date": "2027-12-31"
+    },
+    {
+      "merchant_document": "45678901000122",
+      "creditor_ispb": "60701190",
+      "creditor_name": "ITAU UNIBANCO S.A.",
+      "expiration_date": "2027-12-31"
+    }
+  ],
+  "receivable_transactions": [
+    {
+      "merchant_document": "12345678000190",
+      "acquirer_code": "CIELO",
+      "payment_scheme": "MASTERCARD_CREDITO_A_VISTA",
+      "settlement_date": "2026-12-15",
+      "amount": "150000.00",
+      "transaction_id": "TX-CIELO-MC-001"
+    },
+    {
+      "merchant_document": "98765432000111",
+      "acquirer_code": "REDE",
+      "payment_scheme": "VISA_CREDITO_PARCELADO",
+      "settlement_date": "2026-12-20",
+      "amount": "320000.00",
+      "transaction_id": "TX-REDE-VISA-002"
+    },
+    {
+      "merchant_document": "45678901000122",
+      "acquirer_code": "STONE",
+      "payment_scheme": "MASTERCARD_CREDITO_PARCELADO",
+      "settlement_date": "2026-12-10",
+      "amount": "80000.00",
+      "transaction_id": "TX-STONE-MC-003"
+    },
+    {
+      "merchant_document": "33445566000177",
+      "acquirer_code": "CIELO",
+      "payment_scheme": "VISA_CREDITO_A_VISTA",
+      "settlement_date": "2026-11-10",
+      "amount": "50000.00",
+      "transaction_id": "TX-CIELO-VISA-004"
+    },
+    {
+      "merchant_document": "12345678000190",
+      "acquirer_code": "REDE",
+      "payment_scheme": "VISA_CREDITO_A_VISTA",
+      "settlement_date": "2026-12-18",
+      "amount": "95000.00",
+      "transaction_id": "TX-REDE-VISA-005"
+    }
+  ],
+  "initial_liens": [
+    {
+      "ur_id": "UR-20261215-CIELO-000190-E801292B",
+      "creditor_ispb": "60701190",
+      "creditor_name": "ITAU UNIBANCO S.A.",
+      "contract_number": "CCB-GIRO-2026-8812",
+      "modality": "CESSAO_FIDUCIARIA",
+      "encumbered_amount": "90000.00",
+      "priority_rank": 1,
+      "lien_id": "GRV-20261215-001-ITAU01",
+      "beneficiary_bank_account": {
+        "ispb": "60701190",
+        "bank_name": "ITAU UNIBANCO S.A.",
+        "branch": "0001",
+        "account_number": "99887-1",
+        "account_type": "CONTA_CORRENTE",
+        "holder_document": "60701190000104"
+      }
+    },
+    {
+      "ur_id": "UR-20261220-REDE-000111-F199FFD5",
+      "creditor_ispb": "60746948",
+      "creditor_name": "BANCO BRADESCO S.A.",
+      "contract_number": "CCB-INVEST-2026-4431",
+      "modality": "CESSAO_FIDUCIARIA",
+      "encumbered_amount": "180000.00",
+      "priority_rank": 1,
+      "lien_id": "GRV-20261220-001-BRAD01",
+      "beneficiary_bank_account": {
+        "ispb": "60746948",
+        "bank_name": "BANCO BRADESCO S.A.",
+        "branch": "0002",
+        "account_number": "77665-2",
+        "account_type": "CONTA_CORRENTE",
+        "holder_document": "60746948000112"
+      }
+    },
+    {
+      "ur_id": "UR-20261220-REDE-000111-F199FFD5",
+      "creditor_ispb": "00000000",
+      "creditor_name": "BANCO DO BRASIL S.A.",
+      "contract_number": "PENHOR-BB-2026-1190",
+      "modality": "PENHOR",
+      "encumbered_amount": "60000.00",
+      "priority_rank": 2,
+      "lien_id": "GRV-20261220-002-BB02",
+      "beneficiary_bank_account": {
+        "ispb": "00000000",
+        "bank_name": "BANCO DO BRASIL S.A.",
+        "branch": "0001",
+        "account_number": "55443-3",
+        "account_type": "CONTA_CORRENTE",
+        "holder_document": "00000000000191"
+      }
+    },
+    {
+      "ur_id": "UR-20261210-STONE-000122-49258578",
+      "creditor_ispb": "60701190",
+      "creditor_name": "ITAU UNIBANCO S.A.",
+      "contract_number": "CCB-GIRO-2026-9901",
+      "modality": "CESSAO_FIDUCIARIA",
+      "encumbered_amount": "80000.00",
+      "priority_rank": 1,
+      "lien_id": "GRV-20261210-001-ITAU02",
+      "beneficiary_bank_account": {
+        "ispb": "60701190",
+        "bank_name": "ITAU UNIBANCO S.A.",
+        "branch": "0001",
+        "account_number": "99887-1",
+        "account_type": "CONTA_CORRENTE",
+        "holder_document": "60701190000104"
+      }
+    }
+  ]
+}

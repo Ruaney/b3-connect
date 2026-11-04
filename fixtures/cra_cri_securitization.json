@@ -1,0 +1,563 @@
+{
+  "schema_version": "1.0.0",
+  "flow_code": "FL-062",
+  "system": "B3_BALCAO_NOME_SECURITIZATION",
+  "description": "Emissão, Securitização, Agregação de Lastros (CPR/CCI), Classes Sênior/Subordinada e Gestão de Fundo de Reserva de CRA e CRI no Balcão NoMe B3",
+  "reference_date": "2026-11-04",
+  "regulatory_framework": [
+    "LEI_11076_2004",
+    "LEI_9514_1997",
+    "RESOLUCAO_CVM_60_2021",
+    "RESOLUCAO_CMN_5118_2024",
+    "LEI_14430_2022_MARCO_LEGAL_SECURITIZACAO"
+  ],
+  "issues": [
+    {
+      "issue_id": "CRA-AGRO-2026-001",
+      "securitization_type": "CRA",
+      "legal_framework": "LEI_11076_2004",
+      "series_number": 1,
+      "issue_date": "2026-01-15",
+      "final_maturity_date": "2031-01-15",
+      "annual_operational_expenses_pct": "0.0015",
+      "pending_inflow": "0.00",
+      "fiduciary_regime": {
+        "regime_id": "REG-CRA-2026-001",
+        "securitizer_name": "ECOAGRO SECURITIZADORA DE DIREITOS CREDITORIOS DO AGRONEGOCIO S.A.",
+        "securitizer_cnpj": "08974833000192",
+        "trustee_name": "PENTAGONO S.A. DISTRIBUIDORA DE TITULOS E VALORES MOBILIARIOS",
+        "trustee_cnpj": "17343682000138",
+        "deed_registry_number": "TERMO-SEC-CRA-2026-042",
+        "registry_date": "2026-01-15",
+        "segregated_cash_balance": "500000.00",
+        "status": "ACTIVE",
+        "reserve_fund": {
+          "fund_id": "RF-CRA-001",
+          "target_balance": "4000000.00",
+          "current_balance": "4000000.00",
+          "minimum_floor": "2000000.00",
+          "yield_rate_annual_pct": "0.1050"
+        }
+      },
+      "tranches": {
+        "CRA-AGRO-26-SR": {
+          "tranche_id": "CRA-AGRO-26-SR",
+          "isin": "BRCRASEN0012",
+          "b3_code": "CRA126B3S",
+          "tranche_class": "SENIOR",
+          "amortization_type": "SAC",
+          "indexer": "CDI",
+          "spread_rate_annual_pct": "0.0125",
+          "original_quantity": 80000,
+          "current_quantity": 80000,
+          "original_unit_price": "1000.00000000",
+          "current_unit_price": "1000.00000000",
+          "accrued_interest": "0.00",
+          "unpaid_interest_deficit": "0.00",
+          "amortization_schedule": {
+            "2026-12-15": "5000000.00",
+            "2027-12-15": "5000000.00"
+          }
+        },
+        "CRA-AGRO-26-SUB": {
+          "tranche_id": "CRA-AGRO-26-SUB",
+          "isin": "BRCRASUB0010",
+          "b3_code": "CRA126B3B",
+          "tranche_class": "SUBORDINATED",
+          "amortization_type": "BULLET",
+          "indexer": "CDI",
+          "spread_rate_annual_pct": "0.0450",
+          "original_quantity": 20000,
+          "current_quantity": 20000,
+          "original_unit_price": "1000.00000000",
+          "current_unit_price": "1000.00000000",
+          "accrued_interest": "0.00",
+          "unpaid_interest_deficit": "0.00",
+          "amortization_schedule": {
+            "2026-12-15": "1000000.00"
+          }
+        }
+      },
+      "collateral_pool": {
+        "CPR-SOJA-MT-001": {
+          "asset_id": "CPR-SOJA-MT-001",
+          "collateral_type": "CPR_FINANCEIRA",
+          "debtor_name": "AGROPECUARIA SANTA FE LTDA",
+          "debtor_doc": "04123456000188",
+          "original_face_value": "35000000.00",
+          "outstanding_balance": "35000000.00",
+          "issue_date": "2026-01-10",
+          "maturity_date": "2030-12-10",
+          "indexer": "CDI",
+          "interest_rate_pct": "0.0200",
+          "status": "PERFORMING",
+          "accrued_interest": "0.00",
+          "delinquency_days": 0,
+          "guarantee_description": "Penhor de safra de soja e hipoteca de imóvel rural em Sorriso/MT"
+        },
+        "CPR-MILHO-GO-002": {
+          "asset_id": "CPR-MILHO-GO-002",
+          "collateral_type": "CPR_FINANCEIRA",
+          "debtor_name": "FAZENDAS REUNIDAS CERRADO S.A.",
+          "debtor_doc": "12987654000100",
+          "original_face_value": "40000000.00",
+          "outstanding_balance": "40000000.00",
+          "issue_date": "2026-01-10",
+          "maturity_date": "2030-12-10",
+          "indexer": "CDI",
+          "interest_rate_pct": "0.0210",
+          "status": "PERFORMING",
+          "accrued_interest": "0.00",
+          "delinquency_days": 0,
+          "guarantee_description": "Penhor agrícola de milho safrinha em Rio Verde/GO"
+        },
+        "CPR-ALGODAO-BA-003": {
+          "asset_id": "CPR-ALGODAO-BA-003",
+          "collateral_type": "CPR_FINANCEIRA",
+          "debtor_name": "AGRONEGOCIOS OESTE BAIANO LTDA",
+          "debtor_doc": "23456789000111",
+          "original_face_value": "30000000.00",
+          "outstanding_balance": "30000000.00",
+          "issue_date": "2026-01-10",
+          "maturity_date": "2030-12-10",
+          "indexer": "CDI",
+          "interest_rate_pct": "0.0195",
+          "status": "PERFORMING",
+          "accrued_interest": "0.00",
+          "delinquency_days": 0,
+          "guarantee_description": "Penhor de pluma de algodão e aval dos sócios controladores em LEM/BA"
+        }
+      }
+    },
+    {
+      "issue_id": "CRI-IMOB-2026-002",
+      "securitization_type": "CRI",
+      "legal_framework": "LEI_9514_1997",
+      "series_number": 2,
+      "issue_date": "2026-02-01",
+      "final_maturity_date": "2036-02-01",
+      "annual_operational_expenses_pct": "0.0020",
+      "pending_inflow": "0.00",
+      "fiduciary_regime": {
+        "regime_id": "REG-CRI-2026-002",
+        "securitizer_name": "VIRGO COMPANHIA DE SECURITIZACAO",
+        "securitizer_cnpj": "08765656000143",
+        "trustee_name": "VORTX DISTRIBUIDORA DE TITULOS E VALORES MOBILIARIOS LTDA",
+        "trustee_cnpj": "22610500000188",
+        "deed_registry_number": "TERMO-SEC-CRI-2026-118",
+        "registry_date": "2026-02-01",
+        "segregated_cash_balance": "200000.00",
+        "status": "ACTIVE",
+        "reserve_fund": {
+          "fund_id": "RF-CRI-002",
+          "target_balance": "2500000.00",
+          "current_balance": "2500000.00",
+          "minimum_floor": "1250000.00",
+          "yield_rate_annual_pct": "0.1000"
+        }
+      },
+      "tranches": {
+        "CRI-IMOB-26-SR": {
+          "tranche_id": "CRI-IMOB-26-SR",
+          "isin": "BRCRISEN0024",
+          "b3_code": "CRI126SR1",
+          "tranche_class": "SENIOR",
+          "amortization_type": "PRICE",
+          "indexer": "IPCA",
+          "spread_rate_annual_pct": "0.0620",
+          "original_quantity": 50000,
+          "current_quantity": 50000,
+          "original_unit_price": "1000.00000000",
+          "current_unit_price": "1000.00000000",
+          "accrued_interest": "0.00",
+          "unpaid_interest_deficit": "0.00",
+          "amortization_schedule": {
+            "2026-12-20": "2500000.00"
+          }
+        },
+        "CRI-IMOB-26-SUB": {
+          "tranche_id": "CRI-IMOB-26-SUB",
+          "isin": "BRCRISUB0022",
+          "b3_code": "CRI126SB1",
+          "tranche_class": "SUBORDINATED",
+          "amortization_type": "BULLET",
+          "indexer": "IPCA",
+          "spread_rate_annual_pct": "0.0950",
+          "original_quantity": 10000,
+          "current_quantity": 10000,
+          "original_unit_price": "1000.00000000",
+          "current_unit_price": "1000.00000000",
+          "accrued_interest": "0.00",
+          "unpaid_interest_deficit": "0.00",
+          "amortization_schedule": {
+            "2026-12-20": "500000.00"
+          }
+        }
+      },
+      "collateral_pool": {
+        "CCI-RES-ALPHAVILLE-01": {
+          "asset_id": "CCI-RES-ALPHAVILLE-01",
+          "collateral_type": "CCI",
+          "debtor_name": "RESIDENCIAL ALPHAVILLE 3 EMPREENDIMENTOS IMOBILIARIOS",
+          "debtor_doc": "33445566000177",
+          "original_face_value": "25000000.00",
+          "outstanding_balance": "25000000.00",
+          "issue_date": "2026-01-20",
+          "maturity_date": "2035-12-20",
+          "indexer": "IPCA",
+          "interest_rate_pct": "0.0750",
+          "status": "PERFORMING",
+          "accrued_interest": "0.00",
+          "delinquency_days": 0,
+          "guarantee_description": "Alienação fiduciária de 80 lotes residenciais matriculados no 2º RGI de Barueri/SP"
+        },
+        "CCI-RES-BARRA-02": {
+          "asset_id": "CCI-RES-BARRA-02",
+          "collateral_type": "CCI",
+          "debtor_name": "BARRA PREMIUM INCORPORACOES SPE LTDA",
+          "debtor_doc": "44556677000188",
+          "original_face_value": "20000000.00",
+          "outstanding_balance": "20000000.00",
+          "issue_date": "2026-01-20",
+          "maturity_date": "2035-12-20",
+          "indexer": "IPCA",
+          "interest_rate_pct": "0.0740",
+          "status": "PERFORMING",
+          "accrued_interest": "0.00",
+          "delinquency_days": 0,
+          "guarantee_description": "Alienação fiduciária de apartamentos no Rio de Janeiro/RJ"
+        },
+        "CCI-COM-FARIALIMA-03": {
+          "asset_id": "CCI-COM-FARIALIMA-03",
+          "collateral_type": "CCI",
+          "debtor_name": "FARIA LIMA CORPORATE TOWERS S.A.",
+          "debtor_doc": "55667788000199",
+          "original_face_value": "18000000.00",
+          "outstanding_balance": "18000000.00",
+          "issue_date": "2026-01-20",
+          "maturity_date": "2035-12-20",
+          "indexer": "IPCA",
+          "interest_rate_pct": "0.0700",
+          "status": "DELINQUENT",
+          "accrued_interest": "0.00",
+          "delinquency_days": 20,
+          "guarantee_description": "Alienação fiduciária de lajes corporativas em São Paulo/SP"
+        }
+      }
+    },
+    {
+      "issue_id": "CRI-BTS-MEZZANINE-2026-003",
+      "securitization_type": "CRI",
+      "legal_framework": "LEI_9514_1997",
+      "series_number": 3,
+      "issue_date": "2026-03-01",
+      "final_maturity_date": "2041-03-01",
+      "annual_operational_expenses_pct": "0.0018",
+      "pending_inflow": "0.00",
+      "fiduciary_regime": {
+        "regime_id": "REG-CRI-2026-003",
+        "securitizer_name": "VIRGO COMPANHIA DE SECURITIZACAO",
+        "securitizer_cnpj": "08765656000143",
+        "trustee_name": "OLIVEIRA TRUST DTVM S.A.",
+        "trustee_cnpj": "36113876000191",
+        "deed_registry_number": "TERMO-SEC-CRI-2026-145",
+        "registry_date": "2026-03-01",
+        "segregated_cash_balance": "300000.00",
+        "status": "ACTIVE",
+        "reserve_fund": {
+          "fund_id": "RF-CRI-003",
+          "target_balance": "3000000.00",
+          "current_balance": "3000000.00",
+          "minimum_floor": "1500000.00",
+          "yield_rate_annual_pct": "0.1000"
+        }
+      },
+      "tranches": {
+        "CRI-BTS-26-SR": {
+          "tranche_id": "CRI-BTS-26-SR",
+          "isin": "BRCRIBRS0030",
+          "b3_code": "CRI2603SR",
+          "tranche_class": "SENIOR",
+          "amortization_type": "SAC",
+          "indexer": "IPCA",
+          "spread_rate_annual_pct": "0.0575",
+          "original_quantity": 60000,
+          "current_quantity": 60000,
+          "original_unit_price": "1000.00000000",
+          "current_unit_price": "1000.00000000",
+          "accrued_interest": "0.00",
+          "unpaid_interest_deficit": "0.00",
+          "amortization_schedule": {
+            "2026-12-30": "3000000.00"
+          }
+        },
+        "CRI-BTS-26-MEZZ": {
+          "tranche_id": "CRI-BTS-26-MEZZ",
+          "isin": "BRCRIBRM0038",
+          "b3_code": "CRI2603MZ",
+          "tranche_class": "MEZZANINE",
+          "amortization_type": "SAC",
+          "indexer": "IPCA",
+          "spread_rate_annual_pct": "0.0750",
+          "original_quantity": 20000,
+          "current_quantity": 20000,
+          "original_unit_price": "1000.00000000",
+          "current_unit_price": "1000.00000000",
+          "accrued_interest": "0.00",
+          "unpaid_interest_deficit": "0.00",
+          "amortization_schedule": {
+            "2026-12-30": "1000000.00"
+          }
+        },
+        "CRI-BTS-26-SUB": {
+          "tranche_id": "CRI-BTS-26-SUB",
+          "isin": "BRCRIBRB0032",
+          "b3_code": "CRI2603SB",
+          "tranche_class": "SUBORDINATED",
+          "amortization_type": "BULLET",
+          "indexer": "IPCA",
+          "spread_rate_annual_pct": "0.1000",
+          "original_quantity": 20000,
+          "current_quantity": 20000,
+          "original_unit_price": "1000.00000000",
+          "current_unit_price": "1000.00000000",
+          "accrued_interest": "0.00",
+          "unpaid_interest_deficit": "0.00",
+          "amortization_schedule": {
+            "2026-12-30": "1000000.00"
+          }
+        }
+      },
+      "collateral_pool": {
+        "BTS-GALPAO-LOGISTICO-01": {
+          "asset_id": "BTS-GALPAO-LOGISTICO-01",
+          "collateral_type": "LOCACAO_ATIPICA_BTS",
+          "debtor_name": "LOGISTICA BRASIL DISTRIBUICAO S.A.",
+          "debtor_doc": "66778899000100",
+          "original_face_value": "70000000.00",
+          "outstanding_balance": "70000000.00",
+          "issue_date": "2026-02-15",
+          "maturity_date": "2041-02-15",
+          "indexer": "IPCA",
+          "interest_rate_pct": "0.0700",
+          "status": "PERFORMING",
+          "accrued_interest": "0.00",
+          "delinquency_days": 0,
+          "guarantee_description": "Contrato Built to Suit atípico de 15 anos com garantia de imóvel logístico em Cajamar/SP"
+        },
+        "CCI-COM-MODERNA-02": {
+          "asset_id": "CCI-COM-MODERNA-02",
+          "collateral_type": "CCI",
+          "debtor_name": "MODERNA EMPREENDIMENTOS S.A.",
+          "debtor_doc": "77889900000122",
+          "original_face_value": "40000000.00",
+          "outstanding_balance": "40000000.00",
+          "issue_date": "2026-02-15",
+          "maturity_date": "2036-02-15",
+          "indexer": "IPCA",
+          "interest_rate_pct": "0.0720",
+          "status": "PERFORMING",
+          "accrued_interest": "0.00",
+          "delinquency_days": 0,
+          "guarantee_description": "Alienação fiduciária de centro de distribuição em Betim/MG"
+        }
+      }
+    },
+    {
+      "issue_id": "CRA-DEFAULT-WRITE-OFF-2026-004",
+      "securitization_type": "CRA",
+      "legal_framework": "LEI_11076_2004",
+      "series_number": 4,
+      "issue_date": "2026-04-01",
+      "final_maturity_date": "2031-04-01",
+      "annual_operational_expenses_pct": "0.0015",
+      "pending_inflow": "0.00",
+      "fiduciary_regime": {
+        "regime_id": "REG-CRA-2026-004",
+        "securitizer_name": "VERT COMPANHIA SECURITIZADORA",
+        "securitizer_cnpj": "25012543000155",
+        "trustee_name": "VORTX DTVM LTDA",
+        "trustee_cnpj": "22610500000188",
+        "deed_registry_number": "TERMO-SEC-CRA-2026-210",
+        "registry_date": "2026-04-01",
+        "segregated_cash_balance": "100000.00",
+        "status": "ACTIVE",
+        "reserve_fund": {
+          "fund_id": "RF-CRA-004",
+          "target_balance": "2000000.00",
+          "current_balance": "2000000.00",
+          "minimum_floor": "1000000.00",
+          "yield_rate_annual_pct": "0.1000"
+        }
+      },
+      "tranches": {
+        "CRA-DEF-26-SR": {
+          "tranche_id": "CRA-DEF-26-SR",
+          "isin": "BRCRADEF0048",
+          "b3_code": "CRA2604SR",
+          "tranche_class": "SENIOR",
+          "amortization_type": "SAC",
+          "indexer": "CDI",
+          "spread_rate_annual_pct": "0.0150",
+          "original_quantity": 40000,
+          "current_quantity": 40000,
+          "original_unit_price": "1000.00000000",
+          "current_unit_price": "1000.00000000",
+          "accrued_interest": "0.00",
+          "unpaid_interest_deficit": "0.00",
+          "amortization_schedule": {}
+        },
+        "CRA-DEF-26-SUB": {
+          "tranche_id": "CRA-DEF-26-SUB",
+          "isin": "BRCRADEF0046",
+          "b3_code": "CRA2604SB",
+          "tranche_class": "SUBORDINATED",
+          "amortization_type": "BULLET",
+          "indexer": "CDI",
+          "spread_rate_annual_pct": "0.0500",
+          "original_quantity": 10000,
+          "current_quantity": 10000,
+          "original_unit_price": "1000.00000000",
+          "current_unit_price": "1000.00000000",
+          "accrued_interest": "0.00",
+          "unpaid_interest_deficit": "0.00",
+          "amortization_schedule": {}
+        }
+      },
+      "collateral_pool": {
+        "CPR-CAFE-MG-001": {
+          "asset_id": "CPR-CAFE-MG-001",
+          "collateral_type": "CPR_FINANCEIRA",
+          "debtor_name": "COOPERATIVA CAFEEIRA SUL DE MINAS",
+          "debtor_doc": "88990011000133",
+          "original_face_value": "30000000.00",
+          "outstanding_balance": "30000000.00",
+          "issue_date": "2026-03-20",
+          "maturity_date": "2031-03-20",
+          "indexer": "CDI",
+          "interest_rate_pct": "0.0210",
+          "status": "PERFORMING",
+          "accrued_interest": "0.00",
+          "delinquency_days": 0,
+          "guarantee_description": "Penhor de sacas de café arábica armazenadas em Varginha/MG"
+        },
+        "CPR-CANA-SP-002": {
+          "asset_id": "CPR-CANA-SP-002",
+          "collateral_type": "CPR_FINANCEIRA",
+          "debtor_name": "USINA AGROINDUSTRIAL PAULISTA LTDA",
+          "debtor_doc": "99001122000144",
+          "original_face_value": "15000000.00",
+          "outstanding_balance": "15000000.00",
+          "issue_date": "2026-03-20",
+          "maturity_date": "2031-03-20",
+          "indexer": "CDI",
+          "interest_rate_pct": "0.0220",
+          "status": "PERFORMING",
+          "accrued_interest": "0.00",
+          "delinquency_days": 0,
+          "guarantee_description": "Penhor de cana-de-açúcar e aval dos sócios em Ribeirão Preto/SP"
+        },
+        "CPR-CITROS-SP-003": {
+          "asset_id": "CPR-CITROS-SP-003",
+          "collateral_type": "CPR_FINANCEIRA",
+          "debtor_name": "CITRICULTURA TRES RIOS LTDA",
+          "debtor_doc": "10112233000155",
+          "original_face_value": "6000000.00",
+          "outstanding_balance": "6000000.00",
+          "issue_date": "2026-03-20",
+          "maturity_date": "2031-03-20",
+          "indexer": "CDI",
+          "interest_rate_pct": "0.0250",
+          "status": "DELINQUENT",
+          "accrued_interest": "0.00",
+          "delinquency_days": 95,
+          "guarantee_description": "Penhor de pomar cítrico em Bebedouro/SP"
+        }
+      }
+    },
+    {
+      "issue_id": "CRI-MATURITY-RESERVE-UNWIND-2026-005",
+      "securitization_type": "CRI",
+      "legal_framework": "LEI_9514_1997",
+      "series_number": 5,
+      "issue_date": "2021-12-01",
+      "final_maturity_date": "2026-12-01",
+      "annual_operational_expenses_pct": "0.0010",
+      "pending_inflow": "0.00",
+      "fiduciary_regime": {
+        "regime_id": "REG-CRI-2026-005",
+        "securitizer_name": "VIRGO COMPANHIA DE SECURITIZACAO",
+        "securitizer_cnpj": "08765656000143",
+        "trustee_name": "VORTX DTVM LTDA",
+        "trustee_cnpj": "22610500000188",
+        "deed_registry_number": "TERMO-SEC-CRI-2021-089",
+        "registry_date": "2021-12-01",
+        "segregated_cash_balance": "0.00",
+        "status": "ACTIVE",
+        "reserve_fund": {
+          "fund_id": "RF-CRI-005",
+          "target_balance": "1000000.00",
+          "current_balance": "1000000.00",
+          "minimum_floor": "0.00",
+          "yield_rate_annual_pct": "0.1000"
+        }
+      },
+      "tranches": {
+        "CRI-MAT-26-SR": {
+          "tranche_id": "CRI-MAT-26-SR",
+          "isin": "BRCRIMAT0052",
+          "b3_code": "CRI2605SR",
+          "tranche_class": "SENIOR",
+          "amortization_type": "BULLET",
+          "indexer": "PREFIXADO",
+          "spread_rate_annual_pct": "0.1100",
+          "original_quantity": 5000,
+          "current_quantity": 5000,
+          "original_unit_price": "1000.00000000",
+          "current_unit_price": "1000.00000000",
+          "accrued_interest": "0.00",
+          "unpaid_interest_deficit": "0.00",
+          "amortization_schedule": {
+            "2026-12-01": "5000000.00"
+          }
+        },
+        "CRI-MAT-26-SUB": {
+          "tranche_id": "CRI-MAT-26-SUB",
+          "isin": "BRCRIMAT0050",
+          "b3_code": "CRI2605SB",
+          "tranche_class": "SUBORDINATED",
+          "amortization_type": "BULLET",
+          "indexer": "PREFIXADO",
+          "spread_rate_annual_pct": "0.1300",
+          "original_quantity": 2000,
+          "current_quantity": 2000,
+          "original_unit_price": "1000.00000000",
+          "current_unit_price": "1000.00000000",
+          "accrued_interest": "0.00",
+          "unpaid_interest_deficit": "0.00",
+          "amortization_schedule": {
+            "2026-12-01": "2000000.00"
+          }
+        }
+      },
+      "collateral_pool": {
+        "CCI-MAT-FINAL-01": {
+          "asset_id": "CCI-MAT-FINAL-01",
+          "collateral_type": "CCI",
+          "debtor_name": "CONSTRUTORA METROPOLITANA S.A.",
+          "debtor_doc": "11223344000166",
+          "original_face_value": "7500000.00",
+          "outstanding_balance": "7500000.00",
+          "issue_date": "2021-11-20",
+          "maturity_date": "2026-12-01",
+          "indexer": "PREFIXADO",
+          "interest_rate_pct": "0.1200",
+          "status": "PERFORMING",
+          "accrued_interest": "0.00",
+          "delinquency_days": 0,
+          "guarantee_description": "Alienação fiduciária integral quitando no vencimento em Santo André/SP"
+        }
+      }
+    }
+  ]
+}

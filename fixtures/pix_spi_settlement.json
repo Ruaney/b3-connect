@@ -1,0 +1,261 @@
+{
+  "version": "1.0.0",
+  "as_of": "2026-11-04",
+  "scope": "Liquidação Instantânea via SPI / Pix no Mercado de Capitais (Resoluções BCB 1/2020 e 269/2022)",
+  "ispb_camara": "00997185",
+  "pi_accounts": [
+    {
+      "ispb": "60701190",
+      "account_number": "PI-ITAU-001",
+      "participant_name": "Banco Itaú Unibanco S.A.",
+      "balance": "50000000.00",
+      "available_limit": "10000000.00"
+    },
+    {
+      "ispb": "60746948",
+      "account_number": "PI-BRAD-001",
+      "participant_name": "Banco Bradesco S.A.",
+      "balance": "45000000.00",
+      "available_limit": "10000000.00"
+    },
+    {
+      "ispb": "30306294",
+      "account_number": "PI-BTG-001",
+      "participant_name": "Banco BTG Pactual S.A.",
+      "balance": "30000000.00",
+      "available_limit": "5000000.00"
+    },
+    {
+      "ispb": "02332886",
+      "account_number": "PI-XP-001",
+      "participant_name": "XP Investimentos CCTVM S.A.",
+      "balance": "25000000.00",
+      "available_limit": "5000000.00"
+    },
+    {
+      "ispb": "00997185",
+      "account_number": "PI-B3-CLEARING",
+      "participant_name": "B3 S.A. - Brasil, Bolsa, Balcão",
+      "balance": "100000000.00",
+      "available_limit": "0.00"
+    }
+  ],
+  "custody_accounts": [
+    {
+      "account_id": "CUST-INV-ITAU-01",
+      "participant_id": "PART-ITAU-01",
+      "participant_name": "Investidor Fundo Alpha Qualificado",
+      "tax_id": "52998224725",
+      "fund_shares": {
+        "HGLG11": "0.00",
+        "KNCR11": "100.00"
+      },
+      "securities": {
+        "BRCDB0012345": 0,
+        "BRDEB0098765": 0
+      }
+    },
+    {
+      "account_id": "CUST-FUND-BTG-01",
+      "participant_id": "PART-BTG-01",
+      "participant_name": "Fundo de Investimento Imobiliário CSHG Logística",
+      "tax_id": "30306294000145",
+      "fund_shares": {
+        "HGLG11": "10000.00",
+        "KNCR11": "0.00"
+      },
+      "securities": {}
+    },
+    {
+      "account_id": "CUST-EMISSOR-BRAD-01",
+      "participant_id": "PART-BRAD-01",
+      "participant_name": "Bradesco Emissões Escriturais",
+      "tax_id": "60746948000112",
+      "fund_shares": {},
+      "securities": {
+        "BRCDB0012345": 5000,
+        "BRDEB0098765": 2000
+      }
+    },
+    {
+      "account_id": "CUST-INV-XP-02",
+      "participant_id": "PART-XP-01",
+      "participant_name": "Investidor Institucional XP",
+      "tax_id": "10045678987",
+      "fund_shares": {
+        "HGLG11": "500.00"
+      },
+      "securities": {
+        "BRCDB0012345": 0,
+        "BRDEB0098765": 0
+      }
+    }
+  ],
+  "pix_keys": [
+    {
+      "key_type": "CNPJ",
+      "key_value": "30306294000145",
+      "holder_name": "FII CSHG Logística - BTG Pactual",
+      "holder_tax_id": "30306294000145",
+      "ispb": "30306294",
+      "branch": "0001",
+      "account_number": "CC-BTG-9988",
+      "account_type": "CACC"
+    },
+    {
+      "key_type": "EMAIL",
+      "key_value": "liquidacao.escritural@bradesco.com.br",
+      "holder_name": "Banco Bradesco Mesa Escritural",
+      "holder_tax_id": "60746948000112",
+      "ispb": "60746948",
+      "branch": "0001",
+      "account_number": "CC-BRAD-4455",
+      "account_type": "CACC"
+    },
+    {
+      "key_type": "CPF",
+      "key_value": "52998224725",
+      "holder_name": "Investidor Qualificado Itaú",
+      "holder_tax_id": "52998224725",
+      "ispb": "60701190",
+      "branch": "0001",
+      "account_number": "CC-ITAU-1122",
+      "account_type": "CACC"
+    },
+    {
+      "key_type": "EVP",
+      "key_value": "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
+      "holder_name": "XP Investimentos Distribuidora",
+      "holder_tax_id": "02332886000104",
+      "ispb": "02332886",
+      "branch": "0001",
+      "account_number": "CC-XP-7788",
+      "account_type": "TRAN"
+    }
+  ],
+  "fund_assets": [
+    {
+      "fund_cnpj": "30306294000145",
+      "ticker": "HGLG11",
+      "isin": "BRHGLGCTF004",
+      "fund_name": "CSHG Logística FII",
+      "quota_value": "165.500000",
+      "category": "FII"
+    },
+    {
+      "fund_cnpj": "02332886000104",
+      "ticker": "KNCR11",
+      "isin": "BRKNCRCTF000",
+      "fund_name": "Kinea Rendimentos Imobiliários FII",
+      "quota_value": "102.250000",
+      "category": "FII"
+    }
+  ],
+  "security_assets": [
+    {
+      "isin": "BRCDB0012345",
+      "security_type": "CDB",
+      "issuer_cnpj": "60746948000112",
+      "issuer_name": "Banco Bradesco S.A.",
+      "unit_price": "1000.00",
+      "maturity_date": "2028-11-04"
+    },
+    {
+      "isin": "BRDEB0098765",
+      "security_type": "DEBENTURE",
+      "issuer_cnpj": "60746948000112",
+      "issuer_name": "Bradesco Securitizadora S.A.",
+      "unit_price": "5000.00",
+      "maturity_date": "2031-12-15"
+    }
+  ],
+  "str_transfers": [
+    {
+      "nu_op": "STR202611040001",
+      "transfer_type": "STR0007_INJECTION",
+      "ispb": "60701190",
+      "amount": "5000000.00",
+      "timestamp": "2026-11-04T07:30:00Z",
+      "description": "Aporte inicial diário STR0007 Reserva -> Conta PI Itaú"
+    },
+    {
+      "nu_op": "STR202611040002",
+      "transfer_type": "STR0007_INJECTION",
+      "ispb": "60746948",
+      "amount": "3000000.00",
+      "timestamp": "2026-11-04T07:35:00Z",
+      "description": "Aporte inicial diário STR0007 Reserva -> Conta PI Bradesco"
+    },
+    {
+      "nu_op": "STR202611040003",
+      "transfer_type": "STR0008_RETURN",
+      "ispb": "02332886",
+      "amount": "2000000.00",
+      "timestamp": "2026-11-04T17:45:00Z",
+      "description": "Nivelamento diário STR0008 Conta PI -> Reserva XP"
+    }
+  ],
+  "sample_scenarios": {
+    "fund_quota_subscription_d0": {
+      "scenario_id": "SCN-FUND-D0-001",
+      "description": "Subscrição imediata D0 de 100 cotas HGLG11 pelo Investidor Itaú com chave Pix do Fundo BTG",
+      "pacs008": {
+        "msg_id": "MSG-SPI-20261104-001",
+        "end_to_end_id": "E60701190202611041000A1B2C3D4E5F",
+        "tx_id": "PIX-SUB-HGLG11-001",
+        "amount": "16550.00",
+        "settlement_date": "2026-11-04",
+        "debtor_ispb": "60701190",
+        "creditor_ispb": "30306294",
+        "seller_custody_account_id": "CUST-FUND-BTG-01",
+        "buyer_custody_account_id": "CUST-INV-ITAU-01",
+        "asset_type": "INVESTMENT_FUND_SHARE",
+        "asset_identifier": "HGLG11",
+        "asset_quantity": "100.00",
+        "asset_unit_price": "165.50"
+      },
+      "expected_status": "ACSC"
+    },
+    "security_secondary_purchase_d0": {
+      "scenario_id": "SCN-SEC-D0-002",
+      "description": "Aquisição imediata D0 de 50 títulos CDB Bradesco pelo Investidor XP",
+      "pacs008": {
+        "msg_id": "MSG-SPI-20261104-002",
+        "end_to_end_id": "E02332886202611041015B2C3D4E5F6A",
+        "tx_id": "PIX-CDB-BRAD-002",
+        "amount": "50000.00",
+        "settlement_date": "2026-11-04",
+        "debtor_ispb": "02332886",
+        "creditor_ispb": "60746948",
+        "seller_custody_account_id": "CUST-EMISSOR-BRAD-01",
+        "buyer_custody_account_id": "CUST-INV-XP-02",
+        "asset_type": "BOOK_ENTRY_SECURITY",
+        "asset_identifier": "BRCDB0012345",
+        "asset_quantity": "50",
+        "asset_unit_price": "1000.00"
+      },
+      "expected_status": "ACSC"
+    },
+    "security_rejected_rollback_d0": {
+      "scenario_id": "SCN-SEC-D0-003",
+      "description": "Tentativa de compra de Debêntures rejeitada pelo SPI (RJCT - Erro cadastral / timeout); reversão atômica de custódia",
+      "pacs008": {
+        "msg_id": "MSG-SPI-20261104-003",
+        "end_to_end_id": "E60701190202611041030C3D4E5F6A7B",
+        "tx_id": "PIX-DEB-BRAD-003",
+        "amount": "25000.00",
+        "settlement_date": "2026-11-04",
+        "debtor_ispb": "60701190",
+        "creditor_ispb": "60746948",
+        "seller_custody_account_id": "CUST-EMISSOR-BRAD-01",
+        "buyer_custody_account_id": "CUST-INV-ITAU-01",
+        "asset_type": "BOOK_ENTRY_SECURITY",
+        "asset_identifier": "BRDEB0098765",
+        "asset_quantity": "5",
+        "asset_unit_price": "5000.00"
+      },
+      "expected_status": "RJCT",
+      "rejection_reason": "AB03"
+    }
+  }
+}

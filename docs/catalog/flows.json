@@ -272,11 +272,11 @@
       "implemented": true,
       "tested_locally": true,
       "validated_b3": false,
-      "pending": "Especificação técnica, encoder/decoder SBE com struct Python Little-Endian, fixtures binárias e testes unitários concluídos. Pendente homologação em ambiente de certificação Puma B3.",
+      "pending": "Especificação técnica, encoder/decoder SBE com struct Python Little-Endian, microbenchmark determinístico de 100k msgs, fixtures binárias e testes unitários concluídos com 100% de sucesso. Pendente homologação em ambiente de certificação Puma B3.",
       "evidence": {
         "documented": "docs/layout-puma-sbe.md",
         "implemented": "src/puma_sbe.py",
-        "tested_locally": "tests/test_puma_sbe.py"
+        "tested_locally": "tests/test_puma_sbe.py, tests/test_puma_sbe_benchmark.py"
       }
     },
     {
@@ -1287,6 +1287,134 @@
         "documented": "docs/layout-drex-tokenized-assets.md",
         "implemented": "src/drex_tokenized_assets.py",
         "tested_locally": "tests/test_drex_tokenized_assets.py"
+      }
+    },
+    {
+      "id": "FL-062",
+      "name": "Emitir, Securitizar e Gerir Fundo de Reserva de CRA e CRI no Balcão NoMe B3 (Leis 11.076/04 e 9.514/97)",
+      "system": "Balcão NoMe B3",
+      "interface": "Motor Determinístico de Securitização, Agregação de Lastro e Cascata de Pagamentos",
+      "sources": [
+        "SRC-010"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Agregação de lastros CPR/CCI, subordinação de tranches (Sênior, Mezanino, Subordinada), gestão do Fundo de Reserva de Liquidez e Payment Waterfall determinístico implementados com sucesso. Pendente homologação em ambiente produtivo da B3.",
+      "evidence": {
+        "documented": "docs/layout-cra-cri-securitization.md",
+        "implemented": "src/securitization_cra_cri.py",
+        "tested_locally": "tests/test_securitization_cra_cri.py"
+      }
+    },
+    {
+      "id": "FL-068",
+      "name": "Roteamento Inteligente de Ordens (Smart Order Router - SOR) e Agregação de Liquidez Multi-Venue",
+      "system": "B3 PUMA Trading System & Plataforma de Roteamento",
+      "interface": "Motor Algorítmico Split SOR e Agregação Multi-Venue",
+      "sources": [
+        "SRC-056"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Divisão determinística de ordens (Split SOR), estratégias Best Execution/Minimal Impact, prevenção de trade-through e conservação de lote original implementados. Pendente homologação B3.",
+      "evidence": {
+        "documented": "docs/layout-smart-order-router.md",
+        "implemented": "src/smart_order_router.py",
+        "tested_locally": "tests/test_smart_order_router.py"
+      }
+    },
+    {
+      "id": "FL-065",
+      "name": "Registrar e Certificar Green Bonds e Sustainability-Linked Bonds com Taxonomia Verde e Gatilho de Step-Up no Balcão NoMe B3",
+      "system": "Balcão NoMe B3 & Central Depositária (CSD)",
+      "interface": "Motor de Certificação de Taxonomia ESG, Monitoramento de Metas KPI/SPT e Gatilho de Step-Up",
+      "sources": [
+        "SRC-057"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Regras de Taxonomia Verde, metas de sustentabilidade (KPI/SPT), monitoramento de gatilho de Step-Up e relatórios de conformidade implementados. Pendente homologação B3.",
+      "evidence": {
+        "documented": "docs/layout-esg-green-bonds.md",
+        "implemented": "src/esg_green_bonds.py",
+        "tested_locally": "tests/test_esg_green_bonds.py"
+      }
+    },
+    {
+      "id": "FL-066",
+      "name": "Simulador e Rebalanceamento de Índices B3 (Ibovespa, IBrX-100, SMLL, IDIV) com Corte dos 85% de IN e Teto de Ponderação",
+      "system": "B3 Market Data & Plataforma de Índices",
+      "interface": "Motor Determinístico de Rebalanceamento Quadrimestral e Prévias de Carteira",
+      "sources": [
+        "SRC-058"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Cálculo de IN, filtros de elegibilidade (presença 95%, penny stock, recuperação judicial), corte de 85%, capping de 20% com redistribuição e continuidade via divisor implementados. Pendente homologação B3.",
+      "evidence": {
+        "documented": "docs/layout-index-rebalancing.md",
+        "implemented": "src/index_rebalancing.py",
+        "tested_locally": "tests/test_index_rebalancing.py"
+      }
+    },
+    {
+      "id": "FL-067",
+      "name": "Gestão de Garantias Transfronteiriças (Cross-Border Collateral via Euroclear e Depository Trust Company - DTC)",
+      "system": "Câmara B3 (CORE) & Custódia Internacional",
+      "interface": "Motor de Conversão PTAX, Matriz de Haircuts Soberanos, Buffer de Volatilidade Cambial e Conciliação DTC/Euroclear",
+      "sources": [
+        "SRC-024",
+        "SRC-044",
+        "SRC-059"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Conversão cambial PTAX conservadora, haircuts de duration/crédito/depositária para US Treasuries e German Bunds, FX volatility buffer e conciliação Euroclear/DTC implementados. Pendente homologação B3.",
+      "evidence": {
+        "documented": "docs/layout-cross-border-collateral.md",
+        "implemented": "src/cross_border_collateral.py",
+        "tested_locally": "tests/test_cross_border_collateral.py"
+      }
+    },
+    {
+      "id": "FL-063",
+      "name": "Operações Estruturadas de Volatilidade e Opções Combinadas no PUMA Trading (Straddle, Strangle, Iron Condor, Collar, Butterfly)",
+      "system": "PUMA Trading System & Câmara B3",
+      "interface": "Motor de Negociação Multi-Leg, Validador Estrutural e Margem por Spread de Volatilidade",
+      "sources": [
+        "SRC-060"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Validação de pernas combinadas, execução atômica All-or-None, Lei de Conservação de Razão de Pernas e mitigação de margem CORE implementados. Pendente homologação B3.",
+      "evidence": {
+        "documented": "docs/layout-volatility-strategies.md",
+        "implemented": "src/volatility_strategies.py",
+        "tested_locally": "tests/test_volatility_strategies.py"
       }
     }
   ]

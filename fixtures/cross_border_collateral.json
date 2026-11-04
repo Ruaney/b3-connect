@@ -1,0 +1,169 @@
+{
+  "version": "1.0.0",
+  "as_of": "2026-11-04",
+  "scope": "B3 Câmara — Gestão de Garantias Transfronteiriças (FL-067)",
+  "ptax_rates": [
+    {
+      "currency": "USD",
+      "bid_rate": "5.6520",
+      "ask_rate": "5.6580",
+      "mid_rate": "5.6550",
+      "bulletin_date": "2026-11-04"
+    },
+    {
+      "currency": "EUR",
+      "bid_rate": "6.1040",
+      "ask_rate": "6.1100",
+      "mid_rate": "6.1070",
+      "bulletin_date": "2026-11-04"
+    },
+    {
+      "currency": "GBP",
+      "bid_rate": "7.3480",
+      "ask_rate": "7.3550",
+      "mid_rate": "7.3515",
+      "bulletin_date": "2026-11-04"
+    }
+  ],
+  "fx_buffer_configs": [
+    {
+      "currency": "USD",
+      "daily_volatility": "0.0120",
+      "confidence_quantile": "2.33",
+      "liquidation_horizon_days": 2,
+      "minimum_floor_buffer": "0.0500"
+    },
+    {
+      "currency": "EUR",
+      "daily_volatility": "0.0140",
+      "confidence_quantile": "2.33",
+      "liquidation_horizon_days": 2,
+      "minimum_floor_buffer": "0.0600"
+    },
+    {
+      "currency": "GBP",
+      "daily_volatility": "0.0160",
+      "confidence_quantile": "2.33",
+      "liquidation_horizon_days": 2,
+      "minimum_floor_buffer": "0.0700"
+    }
+  ],
+  "collateral_positions": [
+    {
+      "position_id": "POS-ITAU-UST-01",
+      "participant_id": "PART-ITAU-01",
+      "account_id": "ACC-ITAU-DTC-001",
+      "pledge_status": "LOCKED",
+      "quantity": "2000.00",
+      "security": {
+        "isin": "US912797HR42",
+        "ticker": "UST-BILL-6M",
+        "name": "US Treasury Bill 6M",
+        "issuer": "US",
+        "bond_type": "US_TREASURY_BILL",
+        "currency": "USD",
+        "depository": "DTC",
+        "credit_rating": "AAA",
+        "maturity_years": "0.50",
+        "unit_price": "98.50"
+      }
+    },
+    {
+      "position_id": "POS-ITAU-BUND-02",
+      "participant_id": "PART-ITAU-01",
+      "account_id": "ACC-ITAU-EUR-002",
+      "pledge_status": "LOCKED",
+      "quantity": "1500.00",
+      "security": {
+        "isin": "DE0001102580",
+        "ticker": "BUND-10Y",
+        "name": "Federal Republic of Germany 10Y Bund",
+        "issuer": "DE",
+        "bond_type": "GERMAN_BUND",
+        "currency": "EUR",
+        "depository": "EUROCLEAR",
+        "credit_rating": "AAA",
+        "maturity_years": "9.50",
+        "unit_price": "97.60"
+      }
+    },
+    {
+      "position_id": "POS-BRAD-NOTE-01",
+      "participant_id": "PART-BRADESCO-02",
+      "account_id": "ACC-BRAD-DTC-001",
+      "pledge_status": "LOCKED",
+      "quantity": "1500.00",
+      "security": {
+        "isin": "US91282CDJ71",
+        "ticker": "UST-NOTE-5Y",
+        "name": "US Treasury Note 5Y",
+        "issuer": "US",
+        "bond_type": "US_TREASURY_NOTE",
+        "currency": "USD",
+        "depository": "DTC",
+        "credit_rating": "AA+",
+        "maturity_years": "4.50",
+        "unit_price": "99.20"
+      }
+    },
+    {
+      "position_id": "POS-BTG-BOBL-01",
+      "participant_id": "PART-BTG-03",
+      "account_id": "ACC-BTG-EUR-001",
+      "pledge_status": "LOCKED",
+      "quantity": "1000.00",
+      "security": {
+        "isin": "DE0001141877",
+        "ticker": "BOBL-5Y",
+        "name": "Federal Republic of Germany 5Y Bobl",
+        "issuer": "DE",
+        "bond_type": "GERMAN_BOBL",
+        "currency": "EUR",
+        "depository": "EUROCLEAR",
+        "credit_rating": "AAA",
+        "maturity_years": "4.20",
+        "unit_price": "101.40"
+      }
+    },
+    {
+      "position_id": "POS-BTG-BOND-02",
+      "participant_id": "PART-BTG-03",
+      "account_id": "ACC-BTG-EUR-002",
+      "pledge_status": "LOCKED",
+      "quantity": "800.00",
+      "security": {
+        "isin": "US912810TL44",
+        "ticker": "UST-BOND-30Y",
+        "name": "US Treasury Bond 30Y",
+        "issuer": "US",
+        "bond_type": "US_TREASURY_BOND",
+        "currency": "USD",
+        "depository": "EUROCLEAR",
+        "credit_rating": "AA+",
+        "maturity_years": "28.00",
+        "unit_price": "94.10"
+      }
+    }
+  ],
+  "depository_external_statements": {
+    "DTC": {
+      "US912797HR42": "2000.00",
+      "US91282CDJ71": "1500.00"
+    },
+    "EUROCLEAR": {
+      "DE0001102580": "1500.00",
+      "DE0001141877": "1000.00",
+      "US912810TL44": "800.00"
+    }
+  },
+  "margin_scenarios": {
+    "PART-ITAU-01": {
+      "required_margin_brl": "1500000.00",
+      "expected_status": "SURPLUS"
+    },
+    "PART-BRADESCO-02": {
+      "required_margin_brl": "1200000.00",
+      "expected_status": "MARGIN_CALL_ISSUED"
+    }
+  }
+}

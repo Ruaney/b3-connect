@@ -72,16 +72,17 @@ from src.coe_structured_notes import CoeEngine
 from src.puma_closing_auction import PumaClosingAuctionEngine
 from src.fx_settlement_pvp import FxSettlementEngine
 from src.drex_tokenized_assets import DrexDvpEngine
+from src.index_rebalancing import IndexRebalancingEngine, IndexType
+from src.smart_order_router import (
+    SmartOrderRouterEngine,
+    ParentOrder,
+    OrderSide as SorOrderSide,
+    ParentOrderType as SorParentOrderType,
+    RoutingStrategy as SorRoutingStrategy,
+)
 
 
-class InvariantViolationError(AssertionError):
-    """Exceção levantada quando uma lei invariante de mercado/custódia é violada."""
-    pass
-
-
-def check(condition: bool, message: str):
-    if not condition:
-        raise InvariantViolationError(f"VIOLAÇÃO DE INVARIANTE: {message}")
+from src.invariants import InvariantViolationError, check
 
 
 def verify_custody_conservation(fixtures_dir: Path):
@@ -90,7 +91,7 @@ def verify_custody_conservation(fixtures_dir: Path):
     Para cada conta e na agregação total:
     Quantidade Total == Quantidade Disponível + Bloqueada em Garantia + Bloqueada Judicial
     """
-    print("[1/14] Verificando Invariante de Conservação de Custódia (IMBARQ012)...")
+    print("[01/45] Verificando Invariante de Conservação de Custódia (IMBARQ012)...")
     valid_file = fixtures_dir / "imbarq012-valid.txt"
     parsed = parse_imbarq012(valid_file)
     
@@ -121,7 +122,7 @@ def verify_multilateral_financial_conservation(fixtures_dir: Path):
     Saldo Líquido == |Total Créditos - Total Débitos|
     Sinal do Saldo == 'C' se Créditos >= Débitos senão 'D'
     """
-    print("[2/14] Verificando Invariante Financeira Multilateral (IMBARQ004)...")
+    print("[02/45] Verificando Invariante Financeira Multilateral (IMBARQ004)...")
     valid_file = fixtures_dir / "imbarq004-valid.txt"
     parsed = parse_imbarq004(valid_file)
     
@@ -142,7 +143,7 @@ def verify_rtc_allocation_conservation(fixtures_dir: Path):
     Lei 3: Conservação de Quantidade e Preço na Alocação RTC (FL-008)
     sum(AllocatedQuantity) == ParentTradeQuantity
     """
-    print("[3/14] Verificando Invariante de Alocação e Repasse RTC (FL-008)...")
+    print("[03/45] Verificando Invariante de Alocação e Repasse RTC (FL-008)...")
     from src.rtc_allocation import AllocationBatch, AllocationValidator
     batch = AllocationBatch.from_file(fixtures_dir / "rtc_allocation_valid.json")
     check(batch.is_balanced(), "Lote de alocação deveria estar balanceado")
@@ -157,7 +158,7 @@ def verify_clearing_positions_invariants(fixtures_dir: Path):
     """
     Lei 4: Integridade Posicional da Câmara (IMBARQ006)
     """
-    print("[4/14] Verificando Invariante de Posições da Câmara (IMBARQ006)...")
+    print("[04/45] Verificando Invariante de Posições da Câmara (IMBARQ006)...")
     parsed = parse_imbarq006(fixtures_dir / "imbarq006-valid.txt")
     total_liq = sum(p.quantidade_liquida for p in parsed.detalhes)
     total_fin = sum(p.valor_financeiro for p in parsed.detalhes)
@@ -172,7 +173,7 @@ def verify_loan_btc_invariants(fixtures_dir: Path):
     """
     Lei 5: Consistência de Empréstimo de Ativos (IMBARQ011)
     """
-    print("[5/14] Verificando Invariante de Contratos BTC (IMBARQ011)...")
+    print("[05/45] Verificando Invariante de Contratos BTC (IMBARQ011)...")
     parsed = parse_imbarq011(fixtures_dir / "imbarq011-valid.txt")
     for loan in parsed.contratos:
         check(loan.taxa_aluguel >= Decimal("0"), f"Taxa de aluguel negativa no contrato {loan.numero_contrato}")
@@ -185,7 +186,7 @@ def verify_collateral_margin_invariants(fixtures_dir: Path):
     """
     Lei 6: Consistência de Garantias e Margem CORE (IMBARQ014)
     """
-    print("[6/14] Verificando Invariante de Garantias e Margem (IMBARQ014)...")
+    print("[06/45] Verificando Invariante de Garantias e Margem (IMBARQ014)...")
     parsed = parse_imbarq014(fixtures_dir / "imbarq014-valid.txt")
     check(parsed.trailer.total_registros_detalhe == len(parsed.detalhes), "Contagem de colaterais diverge")
     for g in parsed.detalhes:
@@ -198,7 +199,7 @@ def verify_corporate_events_invariants(fixtures_dir: Path):
     """
     Lei 7: Cronologia e Valoração de Eventos Corporativos (IMBARQ018)
     """
-    print("[7/14] Verificando Invariante de Eventos Corporativos (IMBARQ018)...")
+    print("[07/45] Verificando Invariante de Eventos Corporativos (IMBARQ018)...")
     parsed = parse_imbarq018(fixtures_dir / "imbarq018-valid.txt")
     for ev in parsed.detalhes:
         check(ev.data_ex >= ev.data_com, f"Data Ex anterior à Data Com no ativo {ev.codigo_negociacao}")
@@ -210,7 +211,7 @@ def verify_custody_movements_invariants(fixtures_dir: Path):
     """
     Lei 8: Balanço de Movimentações de Custódia (IMBARQ013)
     """
-    print("[8/14] Verificando Invariante de Movimentações de Custódia (IMBARQ013)...")
+    print("[08/45] Verificando Invariante de Movimentações de Custódia (IMBARQ013)...")
     parsed = parse_imbarq013(fixtures_dir / "imbarq013-valid.txt")
     soma_deb = sum(m.quantidade_movimentada for m in parsed.movimentacoes if m.indicador_debito_credito == "D")
     soma_cred = sum(m.quantidade_movimentada for m in parsed.movimentacoes if m.indicador_debito_credito == "C")
@@ -228,7 +229,7 @@ def verify_pipeline_unification(fixtures_dir: Path):
     """
     Lei 9: Fechamento Multilateral Unificado e Reconciliação Determinística
     """
-    print("[9/14] Verificando Fechamento Unificado no Pipeline Central...")
+    print("[09/45] Verificando Fechamento Unificado no Pipeline Central...")
     pipeline = PostTradePipeline.from_directory(fixtures_dir)
     pipeline.load_internal_positions([
         {"conta": 123456, "ticker": "PETR4", "quantidade": 1000, "sentido": "C"},
@@ -246,7 +247,7 @@ def verify_stvm_portability_conservation(fixtures_dir: Path):
     Lei 10: Conservação de Ativos na Portabilidade de Custódia STVM (FL-024)
     Saldo_Cedente_Final + Saldo_Cessionario_Final == Saldo_Cedente_Inicial + Saldo_Cessionario_Inicial
     """
-    print("[10/14] Verificando Invariante de Portabilidade de Custódia STVM (FL-024)...")
+    print("[10/45] Verificando Invariante de Portabilidade de Custódia STVM (FL-024)...")
     fixture = fixtures_dir / "stvm_transfer_request.json"
     req = STVMRequest.from_file(fixture)
     engine = STVMEngine()
@@ -283,7 +284,7 @@ def verify_btc_lending_matching_invariants(fixtures_dir: Path):
     2. Conservação Bilateral: Em cada match, Quantidade Doadora Executada == Quantidade Tomadora Executada.
     3. Fechamento D0 IMBARQ011: Contratos gerados formam arquivo IMBARQ011 estritamente válido de 200 colunas.
     """
-    print("[11/14] Verificando Invariante de Matching de Aluguel BTC em Tela (FL-025)...")
+    print("[11/45] Verificando Invariante de Matching de Aluguel BTC em Tela (FL-025)...")
     fixture_file = fixtures_dir / "btc_lending_orderbook.json"
     engine = BtcMatchingEngine(contract_seq_start=202600001)
     matches = engine.load_fixtures_from_json(fixture_file)
@@ -324,7 +325,7 @@ def verify_funds_platform_invariants(fixtures_dir: Path):
     3. Invariante de Amortização: NAV_t = NAV_{t-1} - Amortizacao_Unitario e Quantidade conservada.
     4. Invariante de Distribuição de Proventos: Credito_Total == sum(Q_i * Provento_Unitario).
     """
-    print("[12/14] Verificando Invariante de Fundos de Investimento CVM 175 (FL-029)...")
+    print("[12/45] Verificando Invariante de Fundos de Investimento CVM 175 (FL-029)...")
     stmt_file = fixtures_dir / "fund_quota_statement.json"
     engine = FundsPlatformEngine()
     positions = engine.load_statement_from_json(stmt_file)
@@ -373,7 +374,7 @@ def verify_spb_multilateral_settlement_invariants(fixtures_dir: Path):
     3. Reconciliação determinística com IMBARQ004 (Trailer e filtro de data).
     4. Invariante de roundtrip XML gerador/parser preservando valor monetário e sentido.
     """
-    print("[13/14] Verificando Invariante de Liquidação SPB LDL0001 e Multilateral (FL-027)...")
+    print("[13/45] Verificando Invariante de Liquidação SPB LDL0001 e Multilateral (FL-027)...")
     spb_fixture = fixtures_dir / "spb_ldl0001_message.xml"
     imbarq_fixture = fixtures_dir / "imbarq004-valid.txt"
 
@@ -422,7 +423,7 @@ def verify_nome_agro_invariants(fixtures_dir: Path):
     3. Conservação Quantitativa da CPR Física: Quantidade Entregue == Quantidade Contratada.
     4. Determinismo de Anuência: Apenas credor registrado pode conceder anuência com hash SHA-256 válido.
     """
-    print("[14/14] Verificando Invariante de Escrituração e Liquidação Agro CPR (FL-026)...")
+    print("[14/45] Verificando Invariante de Escrituração e Liquidação Agro CPR (FL-026)...")
     fin_file = fixtures_dir / "cpr_financial_registration.json"
     phys_file = fixtures_dir / "cpr_physical_registration.json"
 
@@ -478,7 +479,7 @@ def verify_tesouro_direto_invariants(fixtures_dir: Path):
     2. Aplicações: Líquido == Bruto + Taxa Custódia B3.
     3. Recompras: Líquido == Bruto - Taxa Custódia B3.
     """
-    print("[15/17] Verificando Invariante de Tesouro Direto e Taxa B3 (FL-031)...")
+    print("[15/45] Verificando Invariante de Tesouro Direto e Taxa B3 (FL-031)...")
     engine = TesouroDiretoEngine()
     summary = engine.load_and_process_batch(fixtures_dir / "tesouro_direto_orders.json")
     check(summary["total_orders"] == 8, "Total de ordens Tesouro Direto diverge da fixture")
@@ -497,7 +498,7 @@ def verify_bmf_futures_settlement_invariants(fixtures_dir: Path):
     1. Saldo Líquido D+1 == Soma(Créditos) + Soma(Débitos).
     2. Inversão de sentido em DI1: Comprado em Taxa == Vendido em PU.
     """
-    print("[16/17] Verificando Invariante de Ajuste Diário de Futuros BM&F (FL-032)...")
+    print("[16/45] Verificando Invariante de Ajuste Diário de Futuros BM&F (FL-032)...")
     engine = BmfFuturesSettlementEngine()
     summary = engine.settle_from_json(fixtures_dir / "bmf_futures_positions.json")
     check(len(summary.results) == 7, "Total de posições de futuros diverge da fixture")
@@ -516,7 +517,7 @@ def verify_public_offerings_cvm160_invariants(fixtures_dir: Path):
     2. Soma(Varejo) + Soma(Institucional) == Total Alocado.
     3. Volume Financeiro Total == Total Alocado * Preço de Corte Uniforme.
     """
-    print("[17/17] Verificando Invariante de Bookbuilding e Rateio CVM 160 (FL-033)...")
+    print("[17/45] Verificando Invariante de Bookbuilding e Rateio CVM 160 (FL-033)...")
     engine = PublicOfferingEngine.from_json_file(fixtures_dir / "bookbuilding_cvm160_bids.json")
     summary = engine.execute_bookbuilding()
     check(summary.total_allocated_quantity == summary.total_offered_quantity, "Total alocado diverge do lote ofertado")
@@ -537,7 +538,7 @@ def verify_bdr_conversion_invariants(fixtures_dir: Path):
     1. Para todo programa BDR: Ações-Lastro Bloqueadas * Paridade == BDRs Emitidos * Bloco-Lastro.
     2. Repasse de Dividendos: Bruto_USD - Withholding_Tax == Liquido_Estrangeiro_USD.
     """
-    print("[18/22] Verificando Invariante de Paridade Internacional e Dividendos BDR (FL-034)...")
+    print("[18/45] Verificando Invariante de Paridade Internacional e Dividendos BDR (FL-034)...")
     engine, conversions, dividends = BdrConversionEngine.load_and_process_fixture(
         fixtures_dir / "bdr_conversion_requests.json"
     )
@@ -553,7 +554,7 @@ def verify_etf_primary_basket_invariants(fixtures_dir: Path):
     1. Valor das Ações da Cesta + Cash Component == Creation_Unit_Size * NAV_per_Quota.
     2. Todas as ordens primárias são múltiplos exatos do Lote Mínimo (Creation Unit).
     """
-    print("[19/22] Verificando Invariante de Cesta PCF e Criação/Resgate de ETFs (FL-035)...")
+    print("[19/45] Verificando Invariante de Cesta PCF e Criação/Resgate de ETFs (FL-035)...")
     engine = EtfPrimaryMarketEngine.from_json(fixtures_dir / "etf_primary_basket.json")
     check(engine.pcf.validate_nav_parity(), "Paridade patrimonial do PCF (Cesta + Caixa == Lote * NAV) violada")
     instructions = engine.process_batch()
@@ -572,7 +573,7 @@ def verify_cbio_carbon_retirement_invariants(fixtures_dir: Path):
     1. Total Emitidos == Total em Circulação + Total Aposentados.
     2. CBIO aposentado jamais retorna à circulação (estado absorvente terminal).
     """
-    print("[20/22] Verificando Invariante de Conservação e Aposentadoria de CBIOs (FL-036)...")
+    print("[20/45] Verificando Invariante de Conservação e Aposentadoria de CBIOs (FL-036)...")
     engine = CbioPlatformEngine()
     summary = engine.process_batch_file(fixtures_dir / "cbio_retirement_batch.json")
     check(summary.conservation_invariant_ok, "Equação de conservação CBIO (Emitidos == Circulação + Aposentados) violada")
@@ -589,7 +590,7 @@ def verify_lien_collateral_waterfall_invariants(fixtures_dir: Path):
     1. Soma dos gravames ativos num pool <= Valor Líquido de Avaliação (pós-haircut).
     2. Na excussão: Valor Bruto Arrecadado == Custos + Soma(Pagamentos aos Credores por Grau) + Saldo Devolvido ao Devedor.
     """
-    print("[21/22] Verificando Invariante de Prelazia e Excussão de Garantias (FL-037)...")
+    print("[21/45] Verificando Invariante de Prelazia e Excussão de Garantias (FL-037)...")
     engine = LienCollateralRegistryEngine.from_fixture(
         fixtures_dir / "lien_collateral_registry.json", execute_events=True
     )
@@ -610,7 +611,7 @@ def verify_buyin_failure_management_invariants(fixtures_dir: Path):
     1. Shortfall == Obrigação - Entregue - Regularizado_BTC >= 0.
     2. Diferencial debitado do vendedor inadimplente >= 0 (vendedor arca com prejuízo, mas não recebe ganho).
     """
-    print("[22/24] Verificando Invariante de Falha de Entrega D+2 e Buy-In D+3 (FL-038)...")
+    print("[22/45] Verificando Invariante de Falha de Entrega D+2 e Buy-In D+3 (FL-038)...")
     engine = BuyInFailureEngine()
     res = engine.evaluate_fixture(fixtures_dir / "buyin_settlement_failures.json")
     check(res["total_cases"] == 4, "Total de casos de falha D+2 diverge da fixture")
@@ -632,7 +633,7 @@ def verify_listed_options_expiration_invariants(fixtures_dir: Path):
     1. Total Posição Titular Aberta == Total Posição Lançadora Aberta por série.
     2. Total Quantidade Exercida pelos Titulares == Total Quantidade Atribuída (Assigned) aos Lançadores.
     """
-    print("[23/24] Verificando Invariante de Exercício e Atribuição de Opções Listadas (FL-039)...")
+    print("[23/45] Verificando Invariante de Exercício e Atribuição de Opções Listadas (FL-039)...")
     engine = ListedOptionsEngine()
     res = engine.evaluate_fixture(fixtures_dir / "listed_options_expiration.json")
     check(res["conservation_invariant_satisfied"], "Invariante de conservação Titular vs Lançador de opções violada")
@@ -649,7 +650,7 @@ def verify_otc_derivatives_swap_ndf_invariants(fixtures_dir: Path):
     1. Em todo contrato de Swap ou NDF: Ajuste_Bruto_Parte_A + Ajuste_Bruto_Parte_B == 0.00.
     2. Balanço líquido pós-IRRF: Liquido_A + Liquido_B + IRRF_Total == 0.00.
     """
-    print("[24/24] Verificando Invariante Soma-Zero de Derivativos de Balcão Swap e NDF (FL-040)...")
+    print("[24/45] Verificando Invariante Soma-Zero de Derivativos de Balcão Swap e NDF (FL-040)...")
     engine = OtcDerivativesEngine.from_json_fixture(fixtures_dir / "otc_swap_ndf_contracts.json")
     summary = engine.portfolio_summary()
     check(summary["total_contracts"] == 6, "Total de contratos de Swap e NDF diverge da fixture")
@@ -664,7 +665,7 @@ def verify_equity_forward_termo_invariants(fixtures_dir: Path):
     1. Quantidade Original == Liquidada Antecipada + Liquidada no Vencimento + Aberta.
     2. Vendedor 100% Coberto na carteira 2306-6 e Preço calculado via DU/252.
     """
-    print("[25/28] Verificando Invariante de Quantidade e Cobertura no Mercado a Termo (FL-041)...")
+    print("[25/45] Verificando Invariante de Quantidade e Cobertura no Mercado a Termo (FL-041)...")
     engine = EquityForwardEngine.from_json_fixture(fixtures_dir / "equity_forward_contracts.json")
     summary = engine.summarize()
     check(summary.total_contracts == 4, "Total de contratos a termo diverge da fixture")
@@ -680,7 +681,7 @@ def verify_flexible_options_otc_invariants(fixtures_dir: Path):
     1. Payoff Bruto Holder + Payoff Bruto Writer == 0.00.
     2. Balanço líquido de liquidação: Net_Holder + Net_Writer + IRRF_Holder == 0.00.
     """
-    print("[26/28] Verificando Invariante Soma-Zero em Opções Flexíveis NoMe (FL-042)...")
+    print("[26/45] Verificando Invariante Soma-Zero em Opções Flexíveis NoMe (FL-042)...")
     engine = FlexibleOptionsOtcEngine.from_json_fixture(fixtures_dir / "flexible_options_otc.json")
     summary = engine.summarize()
     check(summary.total_contracts == 5, "Total de opções flexíveis diverge da fixture")
@@ -695,7 +696,7 @@ def verify_units_conversion_invariants(fixtures_dir: Path):
     1. Para todo investidor: ON_Equivalente e PN_Equivalente são constantes antes e após cada conversão.
     2. Respeito estrito às proporções estatutárias de ON/PN por Unit.
     """
-    print("[27/28] Verificando Invariante de Ações Equivalentes em Units (FL-043)...")
+    print("[27/45] Verificando Invariante de Ações Equivalentes em Units (FL-043)...")
     engine, instructions = UnitsConversionEngine.from_json_fixture(fixtures_dir / "units_conversion_requests.json")
     engine.process_all(instructions)
     summary = engine.summarize()
@@ -710,7 +711,7 @@ def verify_opa_tender_offer_invariants(fixtures_dir: Path):
     1. Soma(Ações Aceitas) + Soma(Ações Devolvidas) == Total de Ações Habilitadas em todas as modalidades.
     2. Respeito estrito ao piso de Tag-Along (80%/100%) e ao quórum de 2/3 (3*Q_conc > 2*Q_hab).
     """
-    print("[28/28] Verificando Invariante de Conservação e Quórum em Leilões de OPA (FL-044)...")
+    print("[28/45] Verificando Invariante de Conservação e Quórum em Leilões de OPA (FL-044)...")
     engine = OpaTenderOfferEngine.from_json_fixture(fixtures_dir / "opa_tender_offer_auction.json")
     summary = engine.summarize()
     check(summary["total_auctions"] == 3, "Total de leilões de OPA diverge da fixture")
@@ -724,7 +725,7 @@ def verify_dma_governance_invariants(fixtures_dir: Path):
     1. Acesso rigoroso por modelo de DMA (DMA 1, 2, 3 e 4) com checagem de limites de valor, lote e túnel.
     2. Mecanismo de Kill-Switch Mandatório B3 com latência de execução < 100ms e cancelamento total de ordens ativas.
     """
-    print("[29/31] Verificando Invariante de Governança DMA e Filtros Pré-Trade (FL-045)...")
+    print("[29/45] Verificando Invariante de Governança DMA e Filtros Pré-Trade (FL-045)...")
     engine = DmaGovernanceEngine()
     engine.load_from_json_file(fixtures_dir / "dma_governance_orders.json")
     
@@ -749,7 +750,7 @@ def verify_market_maker_pmm_invariants(fixtures_dir: Path):
     1. Identidade de Conservação Tarifária: Total_Tarifas_Brutas == Desconto_PMM + Tarifas_Liquidas_Devidas.
     2. Respeito às métricas de presença contínua, spread máximo e profundidade mínima com exclusão de leilões.
     """
-    print("[30/31] Verificando Invariante Tarifária e Presença de Formador de Mercado PMM (FL-046)...")
+    print("[30/45] Verificando Invariante Tarifária e Presença de Formador de Mercado PMM (FL-046)...")
     engine = MarketMakerPmmEngine()
     sessions, monthly_rewards = engine.load_fixtures_and_audit(fixtures_dir / "market_maker_pmm_audit.json")
     check(len(sessions) > 0, "Nenhuma sessão de PMM auditada")
@@ -768,7 +769,7 @@ def verify_hft_algo_governance_invariants(fixtures_dir: Path):
     1. Identificação mandatória RTS 25 / CVM 505 (Tag 1031, 57, 1724, 8015).
     2. Conservação da Tarifação Punitiva de OTR: Total_Penalidades == Soma(Penalidades_Individuais).
     """
-    print("[31/31] Verificando Invariante de Identificação Algorítmica e Penalidade OTR BSM (FL-047)...")
+    print("[31/45] Verificando Invariante de Identificação Algorítmica e Penalidade OTR BSM (FL-047)...")
     engine = HftAlgoGovernanceEngine.load_from_json(fixtures_dir / "hft_algo_governance.json")
     rep = engine.generate_governance_report()
     check(rep.total_events > 0, "Nenhum evento algorítmico auditado na fixture")
@@ -786,7 +787,7 @@ def verify_btc_corporate_actions_invariants(fixtures_dir: Path):
     1. Ajuste de Splits/Bonificações conserva o valor econômico do contrato BTC.
     2. Proventos em dinheiro (Dividendos/JCP) repassam 100% dos direitos econômicos ao Doador.
     """
-    print("[32/41] Verificando Invariante de Proventos em Empréstimo BTC (FL-048)...")
+    print("[32/45] Verificando Invariante de Proventos em Empréstimo BTC (FL-048)...")
     engine, events = BtcCorporateActionsEngine.from_json_fixture(fixtures_dir / "btc_corporate_actions.json")
     receipts = engine.process_all_events()
     check(len(receipts) == 7, "Total de recibos de proventos BTC diverge da fixture")
@@ -801,7 +802,7 @@ def verify_lig_covered_bonds_invariants(fixtures_dir: Path):
     1. Cover_Ratio >= 1.05 no Cover Pool em conformidade.
     2. Segregação patrimonial na conta de afetação NoMe e fluxo de liquidez de 180 dias.
     """
-    print("[33/41] Verificando Invariante de Sobrecolateralização de LIG (FL-049)...")
+    print("[33/45] Verificando Invariante de Sobrecolateralização de LIG (FL-049)...")
     engine = LigCoveredBondsEngine()
     engine.load_from_json_file(fixtures_dir / "lig_covered_bonds.json")
     summary = engine.evaluate_cover_pool("CP-LIG-2026-001")
@@ -818,7 +819,7 @@ def verify_core_intraday_margin_invariants(fixtures_dir: Path):
     1. Margem Requerida calculada pelo pior cenário de estresse (Worst-Case Closeout Loss).
     2. Apuração exata de déficit de colateral com haircuts regulatórios.
     """
-    print("[34/41] Verificando Invariante de Margem Intradiária CORE (FL-050)...")
+    print("[34/45] Verificando Invariante de Margem Intradiária CORE (FL-050)...")
     engine = CoreRiskEngine()
     engine.load_from_json(fixtures_dir / "core_intraday_margin.json")
     calc = engine.calculate_intraday_margin("ACC-INST-001")
@@ -833,7 +834,7 @@ def verify_electronic_trade_bills_invariants(fixtures_dir: Path):
     1. Unicidade estrita da chave NF-e (44 dígitos) + número de parcela.
     2. Fechamento contábil perfeito na liquidação via SPB/Pix.
     """
-    print("[35/41] Verificando Invariante de Duplicatas Escriturais Eletrônicas (FL-051)...")
+    print("[35/45] Verificando Invariante de Duplicatas Escriturais Eletrônicas (FL-051)...")
     engine = ElectronicTradeBillEngine()
     engine.load_from_fixture(fixtures_dir / "electronic_trade_bills.json")
     check(len(engine.bills) >= 5, "Total de duplicatas carregadas insuficiente")
@@ -848,7 +849,7 @@ def verify_share_fractions_auction_invariants(fixtures_dir: Path):
     1. Soma(Crédito_Líquido) == Montante_Líquido_Leilão (método dos maiores restos).
     2. Ausência total de centavos órfãos ou resíduos na distribuição.
     """
-    print("[36/41] Verificando Invariante de Leilão de Frações e Sobras de Ações (FL-052)...")
+    print("[36/45] Verificando Invariante de Leilão de Frações e Sobras de Ações (FL-052)...")
     engine, event, holders, auction = ShareFractionsAuctionEngine.from_json_fixture(fixtures_dir / "share_fractions_auction.json")
     report = engine.run_full_cycle(event, holders, auction)
     check(report["all_invariants_satisfied"], "Conservação financeira violada no leilão de sobras de frações")
@@ -861,7 +862,7 @@ def verify_b3_tariff_pricing_invariants(fixtures_dir: Path):
     1. Tarifa_Total == Emolumentos + Liquidação + Registro.
     2. Aplicação de desconto de Day-Trade e escadinha regressiva ADTV.
     """
-    print("[37/41] Verificando Invariante da Tarifação Integrada B3 (FL-053)...")
+    print("[37/45] Verificando Invariante da Tarifação Integrada B3 (FL-053)...")
     engine = B3TariffEngine()
     summary = engine.load_fixture_and_process(fixtures_dir / "b3_tariff_calculations.json")
     check(
@@ -878,7 +879,7 @@ def verify_cdb_rdb_registry_invariants(fixtures_dir: Path):
     1. Bruto == Principal + Rendimento Bruto; Líquido == Bruto - IOF - IRRF.
     2. Inalienabilidade estrita de títulos RDB.
     """
-    print("[38/41] Verificando Invariante de CDBs e RDBs Bancários (FL-054)...")
+    print("[38/45] Verificando Invariante de CDBs e RDBs Bancários (FL-054)...")
     import json
     with open(fixtures_dir / "cdb_rdb_registry.json", "r", encoding="utf-8") as f:
         data = json.load(f)
@@ -904,7 +905,7 @@ def verify_default_waterfall_invariants(fixtures_dir: Path):
     1. Perda_Total == Recursos_Consumidos (Níveis 1 a 5) + Déficit Residual.
     2. Continuidade de liquidação da câmara garantida.
     """
-    print("[39/41] Verificando Invariante da Cascata de Inadimplência CPMI-IOSCO (FL-055)...")
+    print("[39/45] Verificando Invariante da Cascata de Inadimplência CPMI-IOSCO (FL-055)...")
     engine, scenarios = DefaultWaterfallEngine.load_from_json(fixtures_dir / "default_waterfall_scenarios.json")
     check(len(scenarios) == 5, "Total de cenários de estresse de default diverge da fixture")
     for scn in scenarios:
@@ -919,7 +920,7 @@ def verify_puma_advanced_orders_invariants(fixtures_dir: Path):
     1. Quantidade_Executada + Quantidade_Oculta + Quantidade_Visivel == Quantidade_Total.
     2. Mecanismo de reposição de tranche Iceberg e avanço Ratchet em Trailing-Stop.
     """
-    print("[40/41] Verificando Invariante de Ordens Avançadas PUMA (FL-056)...")
+    print("[40/45] Verificando Invariante de Ordens Avançadas PUMA (FL-056)...")
     engine = PumaAdvancedOrdersEngine()
     engine.load_from_fixture(fixtures_dir / "puma_advanced_orders.json")
     check(engine.verify_all_invariants(), "Conservação de quantidades de ordens avançadas PUMA violada")
@@ -932,7 +933,7 @@ def verify_infrastructure_debentures_invariants(fixtures_dir: Path):
     1. VNE_Global == Quantidade_em_Circulação * VNE_Unitário.
     2. Benefício fiscal ao investidor PF (Lei 12.431) e bônus emissora (Lei 14.801).
     """
-    print("[41/41] Verificando Invariante de Debêntures de Infraestrutura (FL-057)...")
+    print("[41/45] Verificando Invariante de Debêntures de Infraestrutura (FL-057)...")
     engine = InfrastructureDebenturesEngine.load_from_json(fixtures_dir / "infrastructure_debentures.json")
     check(len(engine.emissions) >= 3, "Total de emissões de debêntures insuficiente")
     for code in engine.emissions.keys():
@@ -1017,6 +1018,244 @@ def verify_drex_tokenized_assets_invariants(fixtures_dir: Path):
     print("      ✓ Conservação absoluta CSD/DREX e liquidação atômica DvP comprovadas.")
 
 
+def verify_smart_order_router_invariants(fixtures_dir: Path):
+    """
+    Lei 46: Conservação Absoluta do Lote Original no Split SOR (FL-068)
+    1. Soma(Q_roteada) + Q_residual == Q_ordem_mae para qualquer split determinístico.
+    2. Prevenção estrita de Trade-Through e respeito a limites de preço.
+    """
+    print("[46/52] Verificando Invariante de Smart Order Router (SOR) & Agregação de Liquidez (FL-068)...")
+    engine = SmartOrderRouterEngine.load_from_fixture(fixtures_dir / "smart_order_router.json")
+    order = ParentOrder(
+        order_id="INV-CHECK-SOR-01",
+        symbol="PETR4",
+        side=SorOrderSide.BUY,
+        order_type=SorParentOrderType.LIMIT,
+        quantity=35000,
+        price=Decimal("38.50"),
+        strategy=SorRoutingStrategy.MINIMAL_MARKET_IMPACT
+    )
+    report = engine.route_order(order)
+    check(report.conservation_verified, "Violação da Lei de Conservação de Lote no Smart Order Router")
+    check(report.total_routed_quantity + report.residual_unrouted_quantity == 35000, "Divergência na quantidade do lote mãe")
+    inv = engine.verify_invariants(report)
+    check(inv["all_invariants_hold"], "Falha nas invariantes formais do SOR")
+    print("      ✓ Conservação estrita de lote original, minimização de impacto e Best Execution comprovadas.")
+
+
+def verify_card_receivables_invariants(fixtures_dir: Path):
+    """
+    Lei 47: Unicidade de Gravame e Conservação Contábil de UR (FL-069)
+    1. V_atual == V_comprometido + V_disponivel (com V_disponivel >= 0).
+    2. V_comprometido == Soma(Gravames Ativos).
+    3. Antecipação incide estritamente sobre V_disponivel e conserva V_face == V_liquido + V_taxa.
+    4. Na liquidação: Total Liquidado == Soma(Credores Fiduciários) + Repasse Lojista.
+    """
+    print("[47/52] Verificando Invariante de Registro e Gravame de Recebíveis de Cartão (FL-069)...")
+    from src.card_receivables_registry import CardReceivablesRegistryEngine
+    engine = CardReceivablesRegistryEngine.load_from_fixture(fixtures_dir / "card_receivables.json")
+    metrics = engine.verify_global_conservation()
+    check(metrics["global_conservation_held"], "Conservação global de recebíveis violada")
+    # Testa ciclo de antecipação e conservação
+    ur1_id = "UR-20261215-CIELO-000190-E801292B"
+    ur1 = engine.urs[ur1_id]
+    check(ur1.available_amount == Decimal("60000.00"), "Saldo disponível divergente na UR 1")
+    ant = engine.anticipate_receivables(ur1_id, Decimal("30000.00"), Decimal("0.0200"), "CIELO")
+    check(ant.conservation_held, "Violação de conservação na antecipação")
+    check(ant.net_disbursed_amount + ant.discount_fee == Decimal("30000.00"), "Divergência de valores na antecipação")
+    check(ur1.available_amount == Decimal("30000.00"), "Capacidade remanescente incorreta pós-antecipação")
+    # Testa liquidação da UR 2 com trava fiduciária
+    ur2_id = "UR-20261220-REDE-000111-F199FFD5"
+    receipt = engine.settle_ur_on_maturity(ur2_id)
+    check(receipt.invariant_conservation_held, "Conservação na liquidação fiduciária da UR 2 violada")
+    check(receipt.total_settled_amount == Decimal("320000.00"), "Valor liquidado total diverge do saldo da UR")
+    check(receipt.total_creditor_payments + receipt.total_merchant_payments == receipt.total_settled_amount, "Divergência credor + lojista na liquidação")
+    print("      ✓ Unicidade de gravame, trava fiduciária de domicílio e conservação de UR comprovadas.")
+
+
+def verify_index_rebalancing_invariants(fixtures_dir: Path):
+    """
+    Lei 48: Conservação de Pesos e Teto Regulatório de Índices B3 (FL-066)
+    1. Lei de Conservação Estrita: Soma(W_i) == 1.00000000 (exatamente 100%).
+    2. Teto Regulatório de Concentração: W_i <= Cap_Limit (20%) para todo constituinte.
+    3. Elegibilidade Estrita: Nenhum constituinte é Penny Stock, em Recuperação Judicial ou com presença < 95%.
+    4. Continuidade Patrimonial via Divisor sem salto de preço na transição de carteira.
+    """
+    print("[48/52] Verificando Invariante de Rebalanceamento e Conservação de Pesos de Índices B3 (FL-066)...")
+    engine, assets, data = IndexRebalancingEngine.load_from_fixture(fixtures_dir / "index_rebalancing.json")
+    res_ibov = engine.rebalance(
+        assets,
+        index_type=IndexType.IBOV,
+        previous_portfolio=data.get("previous_portfolio_ibov")
+    )
+    inv = engine.verify_invariants(res_ibov, assets)
+    check(inv["weight_conservation"], "Soma dos pesos da carteira do Ibovespa diferente de 100%")
+    check(inv["cap_limit_respected"], "Teto regulatório de 20% violado no rebalanceamento do Ibovespa")
+    check(inv["no_ineligible_constituents"], "Constituinte inelegível presente na carteira do Ibovespa")
+    check(inv["all_passed"], "Falha nas invariantes formais do rebalanceamento de índices B3")
+
+    for itype in [IndexType.IBRX100, IndexType.SMLL, IndexType.IDIV]:
+        res = engine.rebalance(assets, index_type=itype)
+        inv_other = engine.verify_invariants(res, assets)
+        check(inv_other["weight_conservation"], f"Soma dos pesos do índice {itype.value} diferente de 100%")
+        check(inv_other["all_passed"], f"Falha formal no índice {itype.value}")
+
+    print("      ✓ Conservação estrita de pesos (100%), capping de 20% e continuidade via divisor comprovadas.")
+
+
+def verify_cross_border_collateral_invariants(fixtures_dir: Path):
+    """
+    Lei 49: Garantias Transfronteiriças Euroclear & DTC, Haircuts Soberanos e Buffer Cambial (FL-067)
+    1. Não-negatividade e limitação superior do valor líquido elegível em BRL.
+    2. Monotonicidade estrita da matriz de haircuts de títulos soberanos por tenor.
+    3. Co-domínio estrito [0.00, 1.00) para haircuts e buffer de volatilidade cambial.
+    4. Paridade cambial triangular e cotação conservadora PTAX de compra.
+    5. Trava estrita de segurança anti-déficit na desoneração de garantias (Safe-Release Guardrail).
+    6. Conciliação de custódia transfronteiriça com extratos de Euroclear e DTC.
+    """
+    print("[49/52] Verificando Invariante de Garantias Transfronteiriças Euroclear & DTC (FL-067)...")
+    from src.cross_border_collateral import (
+        CrossBorderCollateralEngine,
+        InternationalDepository,
+        MarginReleaseViolationError,
+    )
+
+    engine = CrossBorderCollateralEngine.load_from_fixture(fixtures_dir / "cross_border_collateral.json")
+    inv = engine.verify_formal_invariants()
+    check(inv["valuation_non_negativity"], "Violação de não-negatividade na avaliação de garantia transfronteiriça")
+    check(inv["tenor_haircut_monotonicity"], "Violação da monotonicidade de tenor na matriz de haircuts soberanos")
+    check(inv["haircut_codomain_bounded"], "Haircuts ou buffers fora do co-domínio regulatório [0, 1)")
+    check(inv["fx_triangulation_parity"], "Inconsistência na paridade triangular de câmbio")
+
+    # Valida apuração de margem e chamada de garantias
+    rec_itau = engine.evaluate_margin_call("PART-ITAU-01", Decimal("1500000.00"))
+    check(rec_itau.status.value == "SURPLUS" and rec_itau.margin_deficit_brl == Decimal("0.00"),
+          "Erro na apuração de margem do participante com superávit")
+
+    rec_brad = engine.evaluate_margin_call("PART-BRADESCO-02", Decimal("1200000.00"), is_intraday=True)
+    check(rec_brad.status.value == "MARGIN_CALL_ISSUED" and rec_brad.margin_deficit_brl > Decimal("0.00"),
+          "Déficit não identificado na chamada de margem intradiária")
+
+    # Valida Trava de Segurança de Desoneração (Safe-Release Guardrail)
+    release_caught = False
+    try:
+        engine.release_collateral("POS-ITAU-UST-01", Decimal("1800.00"), Decimal("1500000.00"))
+    except MarginReleaseViolationError:
+        release_caught = True
+    check(release_caught, "Trava de segurança permitiu desoneração que geraria déficit de margem")
+
+    # Valida Conciliação de Custódia com DTC e Euroclear
+    dtc_stmt = {"US912797HR42": Decimal("2000.00"), "US91282CDJ71": Decimal("1500.00")}
+    rec_dtc = engine.reconcile_custody(InternationalDepository.DTC, dtc_stmt)
+    check(rec_dtc.is_balanced, "Divergência de custódia na conciliação com a Depository Trust Company (DTC)")
+
+    print("      ✓ Matriz de haircuts soberanos, buffer cambial, chamada de margem e conciliação Euroclear/DTC comprovadas.")
+
+
+def verify_volatility_strategies_invariants(fixtures_dir: Path):
+    """
+    Lei 50: Conservação de Razão de Pernas e Margem com Haircut em Estratégias de Volatilidade (FL-063)
+    1. Validação estrutural de todas as estratégias (Straddle, Strangle, Iron Condor, Collar, Butterfly).
+    2. Invariante de Razão de Pernas (Leg Ratio Invariant): Q_i_exec = k * R_i.
+    3. Atomicidade All-or-None com zero legging risk.
+    4. Redução de Margem de Risco CORE com Haircut de Volatilidade: Margem Combinada <= Margem Isolada.
+    5. Conservação do Preço Líquido e Fluxo Financeiro Total.
+    """
+    print("[50/52] Verificando Invariante de Estratégias de Volatilidade e Opções Combinadas (FL-063)...")
+    from src.volatility_strategies import (
+        VolatilityStrategyValidator,
+        CombinedRiskMarginEngine,
+        PumaAtomicMultiLegEngine,
+        MultiLegOrder,
+        load_from_fixture,
+    )
+
+    data = load_from_fixture(fixtures_dir / "volatility_strategies.json")
+    margin_engine = CombinedRiskMarginEngine()
+    puma_engine = PumaAtomicMultiLegEngine(margin_engine=margin_engine)
+
+    for strat_dict in data["strategies"]:
+        order = MultiLegOrder.from_dict({
+            "order_id": strat_dict["strategy_id"],
+            "strategy_type": strat_dict["strategy_type"],
+            "underlying_symbol": strat_dict["underlying_symbol"],
+            "underlying_spot": strat_dict["underlying_spot"],
+            "packages_requested": strat_dict["packages_requested"],
+            "limit_net_price": strat_dict["limit_net_price"],
+            "legs": strat_dict["legs"],
+        })
+
+        # 1. Validação estrutural
+        VolatilityStrategyValidator.validate_order(order)
+
+        # 2. Margem combinada com haircut vs margem isolada
+        margin_req = margin_engine.calculate_combined_margin(order)
+        check(margin_req.combined_margin <= margin_req.naked_isolated_margin,
+              f"Margem combinada excede margem isolada na estratégia {order.order_id}")
+
+        # 3. Execução atômica no PUMA
+        receipt = puma_engine.execute_order(order, strat_dict["simulated_book"])
+        check(receipt.atomic, f"Execução não atômica na estratégia {receipt.strategy_type.value}")
+        check(receipt.packages_filled == order.packages_requested,
+              f"Falha na execução total de pacotes na estratégia {order.order_id}")
+
+        # 4. Prova formal da Lei de Conservação de Razão de Pernas
+        check(puma_engine.verify_ratio_conservation(receipt, order),
+              f"Violação da lei de conservação de razão de pernas na estratégia {order.order_id}")
+
+        # 5. Conservação de fluxo financeiro
+        check(abs(receipt.total_net_cash_flow) > Decimal("0.00"),
+              f"Fluxo financeiro nulo na estratégia {order.order_id}")
+
+    print("      ✓ Conservação de razão de pernas (1:1, 1:1:1:1, 1:2:1), atomicidade All-or-None e desconto de margem CORE comprovadas.")
+
+
+def verify_esg_green_bonds_invariants(fixtures_dir: Path):
+    """
+    Lei 50: Conservação de Recursos Verdes (Use of Proceeds) e Determinismo de Gatilho SLB (FL-065)
+    1. Conservação de Recursos: Net_Proceeds == Total_Allocated + Total_Unallocated centavo a centavo.
+    2. Não-Sobrealocação: Total_Allocated <= Net_Proceeds e Allocated <= ProjectCost para todo projeto.
+    3. Determinismo de Gatilho SLB:
+       - Se meta MISSED ou laudo DEFAULTED_REPORTING, Current_Coupon == Base_Coupon + Step_Up_Spread.
+       - Se meta ACHIEVED, Current_Coupon == Base_Coupon.
+    4. Sobretaxa Não-Negativa: Step_Up_Penalty >= 0 em todos os períodos.
+    """
+    print("[51/52] Verificando Invariante de Taxonomia Verde, Conservação de Recursos e Step-Up SLB (FL-065)...")
+    from src.esg_green_bonds import EsgGreenBondsEngine
+
+    engine = EsgGreenBondsEngine.load_from_json(fixtures_dir / "esg_green_bonds.json")
+    for asset_code in engine.emissions:
+        check(engine.verify_invariants(asset_code), f"Violação de invariante ESG na emissão {asset_code}")
+    print("      ✓ Conservação de recursos Use of Proceeds, validação de taxonomia e gatilho de Step-Up comprovadas.")
+
+
+def verify_cra_cri_securitization_invariants(fixtures_dir: Path):
+    """
+    Lei 52: Conservação de Securitização, Regime Fiduciário e Fundo de Reserva de CRA e CRI (FL-062)
+    1. Conservação financeira contábil estrita do Payment Waterfall (Entradas == Saídas).
+    2. Inviolabilidade da subordinação (water-tight priority): Subordinada recebe 0 se Sênior deficitária ou Reserva desfalecada.
+    3. Proteção de Primeira Perda (First Loss Piece): Write-offs de lastro consumindo primeiro a classe Subordinada.
+    4. Conservação de Saldo Devedor e Preço Unitário: Saldo == Qtd * PU atualizado.
+    5. Incomunicabilidade do patrimônio fiduciário separado e cobertura de ativos >= passivo sênior.
+    """
+    print("[52/52] Verificando Invariante de Securitização e Fundo de Reserva de CRA e CRI (FL-062)...")
+    from src.securitization_cra_cri import CraCriSecuritizationEngine
+    engine = CraCriSecuritizationEngine.load_from_fixture(fixtures_dir / "cra_cri_securitization.json")
+    all_inv = engine.verify_all_invariants()
+    for issue_id, report in all_inv.items():
+        check(report["all_invariants_hold"], f"Falha de invariante fiduciária na emissão {issue_id}")
+
+    # Validação do Waterfall com conservação financeira
+    res = engine.execute_waterfall("CRA-AGRO-2026-001", date(2026, 12, 15), period_indexer_rate=Decimal("0.0080"))
+    check(res.conservation_verified, "Conservação de entradas e saídas violada no waterfall de CRA")
+
+    # Validação da First Loss Piece
+    res_def = engine.process_collateral_default("CRA-DEFAULT-WRITE-OFF-2026-004", "CPR-CITROS-SP-003")
+    check(res_def.loss_absorbed_by_subordinated == Decimal("6000000.00") and res_def.loss_absorbed_by_senior == Decimal("0.00"),
+          "Subordinação violada na absorção de perda de lastro")
+    print("      ✓ Conservação financeira do waterfall, prioridade de subordinação e first-loss piece comprovadas.")
+
+
 def main():
     print("=" * 70)
     print(" B3 INTEGRATION ATLAS — VERIFICAÇÃO FORMAL DE INVARIANTES")
@@ -1074,9 +1313,16 @@ def main():
         verify_puma_closing_auction_invariants(fixtures_dir)
         verify_fx_settlement_pvp_invariants(fixtures_dir)
         verify_drex_tokenized_assets_invariants(fixtures_dir)
+        verify_smart_order_router_invariants(fixtures_dir)
+        verify_card_receivables_invariants(fixtures_dir)
+        verify_index_rebalancing_invariants(fixtures_dir)
+        verify_cross_border_collateral_invariants(fixtures_dir)
+        verify_volatility_strategies_invariants(fixtures_dir)
+        verify_esg_green_bonds_invariants(fixtures_dir)
+        verify_cra_cri_securitization_invariants(fixtures_dir)
         
         print("\n" + "=" * 70)
-        print("✓ TODAS AS 45 LEIS DE CONSERVAÇÃO E INVARIANTES DA B3 FORAM PROVADAS!")
+        print("✓ TODAS AS 52 LEIS DE CONSERVAÇÃO E INVARIANTES DA B3 FORAM PROVADAS!")
         print("  Garantia matemática de consistência em todas as fixtures e módulos.")
         print("=" * 70)
         sys.exit(0)

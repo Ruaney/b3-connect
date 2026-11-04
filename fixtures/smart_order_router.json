@@ -1,0 +1,172 @@
+{
+  "version": "1.0.0",
+  "as_of": "2026-11-04",
+  "scope": "B3 — Roteamento Inteligente de Ordens (Smart Order Router - SOR) e Agregação de Liquidez (FL-068)",
+  "symbol": "PETR4",
+  "venues": [
+    {
+      "venue_id": "VENUE-PUMA-LIT",
+      "venue_name": "B3 PUMA Trading System CLOB",
+      "venue_type": "PUMA_LIT",
+      "symbol": "PETR4",
+      "fee_bps": "1.25",
+      "is_dark": false,
+      "min_slice_qty": 100,
+      "latency_ms": "0.85",
+      "is_active": true,
+      "bids": [
+        { "price": "38.48", "quantity": 12000, "orders_count": 2 },
+        { "price": "38.47", "quantity": 18000, "orders_count": 4 },
+        { "price": "38.46", "quantity": 25000, "orders_count": 5 },
+        { "price": "38.45", "quantity": 30000, "orders_count": 6 }
+      ],
+      "asks": [
+        { "price": "38.50", "quantity": 10000, "orders_count": 3 },
+        { "price": "38.51", "quantity": 20000, "orders_count": 5 },
+        { "price": "38.52", "quantity": 25000, "orders_count": 4 },
+        { "price": "38.53", "quantity": 35000, "orders_count": 8 }
+      ]
+    },
+    {
+      "venue_id": "VENUE-DARK-POOL-01",
+      "venue_name": "B3 Institutional Dark Crossing",
+      "venue_type": "DARK_POOL",
+      "symbol": "PETR4",
+      "fee_bps": "0.70",
+      "is_dark": true,
+      "min_slice_qty": 1000,
+      "latency_ms": "1.20",
+      "is_active": true,
+      "bids": [
+        { "price": "38.49", "quantity": 15000, "orders_count": 1 },
+        { "price": "38.48", "quantity": 10000, "orders_count": 1 }
+      ],
+      "asks": [
+        { "price": "38.49", "quantity": 15000, "orders_count": 1 },
+        { "price": "38.50", "quantity": 20000, "orders_count": 2 }
+      ]
+    },
+    {
+      "venue_id": "VENUE-BALCAO-RLP",
+      "venue_name": "Balcão Organizado B3 / RLP",
+      "venue_type": "ORGANIZED_OTC",
+      "symbol": "PETR4",
+      "fee_bps": "0.50",
+      "is_dark": false,
+      "min_slice_qty": 100,
+      "latency_ms": "0.40",
+      "is_active": true,
+      "bids": [
+        { "price": "38.485", "quantity": 8000, "orders_count": 2 },
+        { "price": "38.48", "quantity": 14000, "orders_count": 3 }
+      ],
+      "asks": [
+        { "price": "38.495", "quantity": 8000, "orders_count": 2 },
+        { "price": "38.50", "quantity": 12000, "orders_count": 3 }
+      ]
+    },
+    {
+      "venue_id": "VENUE-BLOCK-CROSSING",
+      "venue_name": "Rede de Cruzamento de Blocos",
+      "venue_type": "BLOCK_CROSSING",
+      "symbol": "PETR4",
+      "fee_bps": "0.40",
+      "is_dark": true,
+      "min_slice_qty": 5000,
+      "latency_ms": "2.50",
+      "is_active": true,
+      "bids": [
+        { "price": "38.48", "quantity": 40000, "orders_count": 1 }
+      ],
+      "asks": [
+        { "price": "38.50", "quantity": 40000, "orders_count": 1 }
+      ]
+    }
+  ],
+  "test_orders": [
+    {
+      "order_id": "ORD-TC01-BUY-MKT",
+      "symbol": "PETR4",
+      "side": "BUY",
+      "order_type": "MARKET",
+      "quantity": 25000,
+      "price": null,
+      "strategy": "BEST_PRICE_DEPTH",
+      "allow_dark": true,
+      "allow_otc": true,
+      "timestamp_ms": 1730739000100
+    },
+    {
+      "order_id": "ORD-TC02-BUY-DARK-IMPACT",
+      "symbol": "PETR4",
+      "side": "BUY",
+      "order_type": "LIMIT",
+      "quantity": 45000,
+      "price": "38.50",
+      "strategy": "MINIMAL_MARKET_IMPACT",
+      "allow_dark": true,
+      "allow_otc": true,
+      "timestamp_ms": 1730739000200
+    },
+    {
+      "order_id": "ORD-TC03-SELL-FEE-OPT",
+      "symbol": "PETR4",
+      "side": "SELL",
+      "order_type": "MARKET",
+      "quantity": 30000,
+      "price": null,
+      "strategy": "COST_FEE_OPTIMIZED",
+      "allow_dark": true,
+      "allow_otc": true,
+      "timestamp_ms": 1730739000300
+    },
+    {
+      "order_id": "ORD-TC04-BUY-PRO-RATA",
+      "symbol": "PETR4",
+      "side": "BUY",
+      "order_type": "LIMIT",
+      "quantity": 20000,
+      "price": "38.50",
+      "strategy": "PRO_RATA_LIQUIDITY",
+      "allow_dark": true,
+      "allow_otc": true,
+      "timestamp_ms": 1730739000400
+    },
+    {
+      "order_id": "ORD-TC05-BUY-PARTIAL",
+      "symbol": "PETR4",
+      "side": "BUY",
+      "order_type": "LIMIT",
+      "quantity": 150000,
+      "price": "38.50",
+      "strategy": "BEST_PRICE_DEPTH",
+      "allow_dark": true,
+      "allow_otc": true,
+      "timestamp_ms": 1730739000500
+    },
+    {
+      "order_id": "ORD-TC06-BUY-FOK-FAIL",
+      "symbol": "PETR4",
+      "side": "BUY",
+      "order_type": "FOK",
+      "quantity": 200000,
+      "price": "38.495",
+      "strategy": "BEST_PRICE_DEPTH",
+      "allow_dark": true,
+      "allow_otc": true,
+      "timestamp_ms": 1730739000600
+    },
+    {
+      "order_id": "ORD-TC07-BUY-FOK-SUCCESS",
+      "symbol": "PETR4",
+      "side": "BUY",
+      "order_type": "FOK",
+      "quantity": 15000,
+      "price": "38.495",
+      "strategy": "BEST_PRICE_DEPTH",
+      "allow_dark": true,
+      "allow_otc": true,
+      "timestamp_ms": 1730739000700
+    }
+  ]
+}

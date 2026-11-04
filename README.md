@@ -8,6 +8,7 @@ Objetivo: tornar integrações compreensíveis e implementáveis por meio de gui
 
 - [Catálogo de fontes](catalog/sources.json): evidências oficiais e limitações de consulta.
 - [Catálogo de fluxos](catalog/flows.json): inventário inicial, ainda não exaustivo.
+- [Arquitetura Master V2.0](docs/master-architecture-v2.md): especificação técnica global cobrindo os 10 subsistemas, os 61 fluxos de integração, as 45 leis formais de conservação matemática, matriz regulatória (CVM 175, CVM 35, Resolução CMN 5.036, CPMI-IOSCO) e engenharia de resiliência e failover de link RCC.
 - [Roadmap](docs/roadmap.md): frentes técnicas e de operações/back office.
 - [Roadmap de Expansão Arquitetural](docs/expansion-roadmap.md): arquitetura detalhada para Negociação de Listados (Puma FIX Entrypoint, Drop Copy, Binary SBE), Balcão NoMe (Renda Fixa Privada, Derivativos de Balcão e APIs) e Conectividade (RCC, mTLS ICP-Brasil, VPN IPSec e matriz de perfis PN/PNP/PL/Custodiante/Asset).
 - [Método e decisões](docs/method.md): critérios de cobertura, coleta e próximos passos.

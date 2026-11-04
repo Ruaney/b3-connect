@@ -9,12 +9,13 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from enum import IntEnum
 import struct
-from typing import Any, ClassVar, Optional, Union
+from typing import Any, ClassVar, Iterator, Optional, Union
 
 
 # Constantes de Protocolo SBE
 HEADER_FORMAT: str = "<HHHH"
 HEADER_SIZE: int = struct.calcsize(HEADER_FORMAT)  # 8 bytes
+HEADER_STRUCT: struct.Struct = struct.Struct(HEADER_FORMAT)
 PRICE_SCALE: int = 100_000_000  # 10^8 (8 casas decimais)
 DEFAULT_SCHEMA_ID: int = 1
 DEFAULT_SCHEMA_VERSION: int = 1
@@ -77,7 +78,7 @@ class SbeValidationError(PumaSbeError):
     """Disparado quando campos ou valores de negócio violam as regras estritas da B3."""
 
 
-@dataclass
+@dataclass(slots=True)
 class SbeHeader:
     """Cabeçalho canônico SBE (Message Header / Framing Header).
 
@@ -95,11 +96,11 @@ class SbeHeader:
 
     FORMAT: ClassVar[str] = HEADER_FORMAT
     SIZE: ClassVar[int] = HEADER_SIZE
+    STRUCT: ClassVar[struct.Struct] = HEADER_STRUCT
 
     def encode(self) -> bytes:
         """Serializa o cabeçalho em 8 bytes Little-Endian."""
-        return struct.pack(
-            self.FORMAT,
+        return self.STRUCT.pack(
             self.block_length,
             self.template_id,
             self.schema_id,
@@ -107,14 +108,19 @@ class SbeHeader:
         )
 
     @classmethod
-    def decode(cls, data: bytes) -> SbeHeader:
-        """Desserializa o cabeçalho a partir de um buffer de bytes."""
-        if len(data) < cls.SIZE:
+    def decode(
+        cls,
+        data: Union[bytes, bytearray, memoryview],
+        offset: int = 0,
+    ) -> SbeHeader:
+        """Desserializa o cabeçalho a partir de um buffer de bytes sem cópias de heap desnecessárias."""
+        data_len = len(data) - offset
+        if data_len < cls.SIZE:
             raise SbeTruncatedPayloadError(
                 f"Payload truncado para cabeçalho SBE: esperado ao menos {cls.SIZE} bytes, "
-                f"recebido {len(data)} bytes."
+                f"recebido {data_len} bytes."
             )
-        block_length, template_id, schema_id, version = struct.unpack_from(cls.FORMAT, data, 0)
+        block_length, template_id, schema_id, version = cls.STRUCT.unpack_from(data, offset)
         return cls(
             block_length=block_length,
             template_id=template_id,
@@ -123,7 +129,7 @@ class SbeHeader:
         )
 
 
-@dataclass
+@dataclass(slots=True)
 class NewOrderSingleBinary:
     """Mensagem de Inserção de Nova Ordem (TemplateId = 101).
 
@@ -155,6 +161,7 @@ class NewOrderSingleBinary:
     BLOCK_LENGTH: ClassVar[int] = 34
     PAYLOAD_FORMAT: ClassVar[str] = "<QQBIqBI"
     TOTAL_SIZE: ClassVar[int] = HEADER_SIZE + BLOCK_LENGTH  # 42 bytes
+    STRUCT: ClassVar[struct.Struct] = struct.Struct(PAYLOAD_FORMAT)
 
     @property
     def price_scaled(self) -> int:
@@ -167,13 +174,13 @@ class NewOrderSingleBinary:
             raise SbeValidationError(f"ClOrdID deve ser estritamente positivo: {self.cl_ord_id}")
         if self.security_id <= 0:
             raise SbeValidationError(f"SecurityID deve ser estritamente positivo: {self.security_id}")
-        if self.side not in (Side.BUY, Side.SELL):
+        if self.side not in (1, 2):
             raise SbeValidationError(f"Side inválido: {self.side}. Deve ser 1 (Buy) ou 2 (Sell).")
         if self.order_qty <= 0:
             raise SbeValidationError(f"OrderQty deve ser estritamente positivo: {self.order_qty}")
         if self.price <= 0:
             raise SbeValidationError(f"Price deve ser estritamente positivo: {self.price}")
-        if self.time_in_force not in (TimeInForce.DAY, TimeInForce.GTC, TimeInForce.IOC, TimeInForce.FOK):
+        if self.time_in_force not in (0, 1, 3, 4):
             raise SbeValidationError(f"TimeInForce inválido: {self.time_in_force}")
         if self.account <= 0:
             raise SbeValidationError(f"Account deve ser estritamente positivo: {self.account}")
@@ -182,8 +189,7 @@ class NewOrderSingleBinary:
         """Serializa a ordem completa (cabeçalho + payload) em 42 bytes binários."""
         self.validate()
         header_bytes = self.header.encode()
-        payload_bytes = struct.pack(
-            self.PAYLOAD_FORMAT,
+        payload_bytes = self.STRUCT.pack(
             self.cl_ord_id,
             self.security_id,
             int(self.side),
@@ -195,14 +201,31 @@ class NewOrderSingleBinary:
         return header_bytes + payload_bytes
 
     @classmethod
-    def decode(cls, data: bytes) -> NewOrderSingleBinary:
-        """Desserializa a ordem completa a partir de um buffer de bytes."""
-        if len(data) < cls.TOTAL_SIZE:
+    def unpack_raw(
+        cls,
+        data: Union[bytes, bytearray, memoryview],
+        offset: int = 0,
+    ) -> tuple[int, int, int, int, int, int, int]:
+        """Decodificação zero-copy ultrarrápida do payload retornando tupla direta sem alocação de objeto."""
+        return cls.STRUCT.unpack_from(data, offset + HEADER_SIZE)
+
+    @classmethod
+    def decode(
+        cls,
+        data: Union[bytes, bytearray, memoryview],
+        offset: int = 0,
+        header: Optional[SbeHeader] = None,
+        validate: bool = True,
+    ) -> NewOrderSingleBinary:
+        """Desserializa a ordem completa a partir de um buffer de bytes sem cópias de heap desnecessárias."""
+        data_len = len(data) - offset
+        if data_len < cls.TOTAL_SIZE:
             raise SbeTruncatedPayloadError(
                 f"Payload truncado para NewOrderSingle: esperado {cls.TOTAL_SIZE} bytes, "
-                f"recebido {len(data)} bytes."
+                f"recebido {data_len} bytes."
             )
-        header = SbeHeader.decode(data[:HEADER_SIZE])
+        if header is None:
+            header = SbeHeader.decode(data, offset=offset)
         if header.template_id != cls.TEMPLATE_ID:
             raise SbeValidationError(
                 f"TemplateId divergente para NewOrderSingle: esperado {cls.TEMPLATE_ID}, "
@@ -222,7 +245,7 @@ class NewOrderSingleBinary:
             price_scaled,
             time_in_force,
             account,
-        ) = struct.unpack_from(cls.PAYLOAD_FORMAT, data, HEADER_SIZE)
+        ) = cls.STRUCT.unpack_from(data, offset + HEADER_SIZE)
 
         price = price_scaled / PRICE_SCALE
 
@@ -236,11 +259,12 @@ class NewOrderSingleBinary:
             account=account,
             header=header,
         )
-        order.validate()
+        if validate:
+            order.validate()
         return order
 
 
-@dataclass
+@dataclass(slots=True)
 class OrderCancelBinary:
     """Mensagem de Cancelamento de Ordem (TemplateId = 102).
 
@@ -266,6 +290,7 @@ class OrderCancelBinary:
     BLOCK_LENGTH: ClassVar[int] = 28
     PAYLOAD_FORMAT: ClassVar[str] = "<QQQI"
     TOTAL_SIZE: ClassVar[int] = HEADER_SIZE + BLOCK_LENGTH  # 36 bytes
+    STRUCT: ClassVar[struct.Struct] = struct.Struct(PAYLOAD_FORMAT)
 
     def validate(self) -> None:
         """Valida os campos de cancelamento de ordem."""
@@ -282,8 +307,7 @@ class OrderCancelBinary:
         """Serializa o cancelamento de ordem em 36 bytes binários."""
         self.validate()
         header_bytes = self.header.encode()
-        payload_bytes = struct.pack(
-            self.PAYLOAD_FORMAT,
+        payload_bytes = self.STRUCT.pack(
             self.cl_ord_id,
             self.orig_cl_ord_id,
             self.security_id,
@@ -292,14 +316,31 @@ class OrderCancelBinary:
         return header_bytes + payload_bytes
 
     @classmethod
-    def decode(cls, data: bytes) -> OrderCancelBinary:
-        """Desserializa o cancelamento de ordem a partir de bytes."""
-        if len(data) < cls.TOTAL_SIZE:
+    def unpack_raw(
+        cls,
+        data: Union[bytes, bytearray, memoryview],
+        offset: int = 0,
+    ) -> tuple[int, int, int, int]:
+        """Decodificação zero-copy ultrarrápida do payload retornando tupla direta sem alocação de objeto."""
+        return cls.STRUCT.unpack_from(data, offset + HEADER_SIZE)
+
+    @classmethod
+    def decode(
+        cls,
+        data: Union[bytes, bytearray, memoryview],
+        offset: int = 0,
+        header: Optional[SbeHeader] = None,
+        validate: bool = True,
+    ) -> OrderCancelBinary:
+        """Desserializa o cancelamento de ordem a partir de bytes sem overhead de heap desnecessário."""
+        data_len = len(data) - offset
+        if data_len < cls.TOTAL_SIZE:
             raise SbeTruncatedPayloadError(
                 f"Payload truncado para OrderCancel: esperado {cls.TOTAL_SIZE} bytes, "
-                f"recebido {len(data)} bytes."
+                f"recebido {data_len} bytes."
             )
-        header = SbeHeader.decode(data[:HEADER_SIZE])
+        if header is None:
+            header = SbeHeader.decode(data, offset=offset)
         if header.template_id != cls.TEMPLATE_ID:
             raise SbeValidationError(
                 f"TemplateId divergente para OrderCancel: esperado {cls.TEMPLATE_ID}, "
@@ -311,8 +352,8 @@ class OrderCancelBinary:
                 f"recebido {header.block_length}"
             )
 
-        cl_ord_id, orig_cl_ord_id, security_id, account = struct.unpack_from(
-            cls.PAYLOAD_FORMAT, data, HEADER_SIZE
+        cl_ord_id, orig_cl_ord_id, security_id, account = cls.STRUCT.unpack_from(
+            data, offset + HEADER_SIZE
         )
 
         cancel = cls(
@@ -322,11 +363,12 @@ class OrderCancelBinary:
             account=account,
             header=header,
         )
-        cancel.validate()
+        if validate:
+            cancel.validate()
         return cancel
 
 
-@dataclass
+@dataclass(slots=True)
 class ExecutionReportBinary:
     """Mensagem de Relatório de Execução (TemplateId = 103).
 
@@ -364,6 +406,7 @@ class ExecutionReportBinary:
     BLOCK_LENGTH: ClassVar[int] = 54
     PAYLOAD_FORMAT: ClassVar[str] = "<QQQBBQIIqI"
     TOTAL_SIZE: ClassVar[int] = HEADER_SIZE + BLOCK_LENGTH  # 62 bytes
+    STRUCT: ClassVar[struct.Struct] = struct.Struct(PAYLOAD_FORMAT)
 
     @property
     def last_px_scaled(self) -> int:
@@ -378,21 +421,9 @@ class ExecutionReportBinary:
             raise SbeValidationError(f"ClOrdID deve ser estritamente positivo: {self.cl_ord_id}")
         if self.exec_id <= 0:
             raise SbeValidationError(f"ExecID deve ser estritamente positivo: {self.exec_id}")
-        if self.exec_type not in (
-            ExecType.NEW,
-            ExecType.PARTIAL_FILL,
-            ExecType.FILL,
-            ExecType.CANCELLED,
-            ExecType.REJECTED,
-        ):
+        if self.exec_type not in (0, 1, 2, 4, 8):
             raise SbeValidationError(f"ExecType inválido: {self.exec_type}")
-        if self.ord_status not in (
-            OrdStatus.NEW,
-            OrdStatus.PARTIALLY_FILLED,
-            OrdStatus.FILLED,
-            OrdStatus.CANCELLED,
-            OrdStatus.REJECTED,
-        ):
+        if self.ord_status not in (0, 1, 2, 4, 8):
             raise SbeValidationError(f"OrdStatus inválido: {self.ord_status}")
         if self.security_id <= 0:
             raise SbeValidationError(f"SecurityID deve ser estritamente positivo: {self.security_id}")
@@ -409,8 +440,7 @@ class ExecutionReportBinary:
         """Serializa o relatório de execução em 62 bytes binários."""
         self.validate()
         header_bytes = self.header.encode()
-        payload_bytes = struct.pack(
-            self.PAYLOAD_FORMAT,
+        payload_bytes = self.STRUCT.pack(
             self.order_id,
             self.cl_ord_id,
             self.exec_id,
@@ -425,14 +455,31 @@ class ExecutionReportBinary:
         return header_bytes + payload_bytes
 
     @classmethod
-    def decode(cls, data: bytes) -> ExecutionReportBinary:
-        """Desserializa o relatório de execução a partir de bytes."""
-        if len(data) < cls.TOTAL_SIZE:
+    def unpack_raw(
+        cls,
+        data: Union[bytes, bytearray, memoryview],
+        offset: int = 0,
+    ) -> tuple[int, int, int, int, int, int, int, int, int, int]:
+        """Decodificação zero-copy ultrarrápida do payload retornando tupla direta sem alocação de objeto."""
+        return cls.STRUCT.unpack_from(data, offset + HEADER_SIZE)
+
+    @classmethod
+    def decode(
+        cls,
+        data: Union[bytes, bytearray, memoryview],
+        offset: int = 0,
+        header: Optional[SbeHeader] = None,
+        validate: bool = True,
+    ) -> ExecutionReportBinary:
+        """Desserializa o relatório de execução a partir de bytes sem overhead de heap desnecessário."""
+        data_len = len(data) - offset
+        if data_len < cls.TOTAL_SIZE:
             raise SbeTruncatedPayloadError(
                 f"Payload truncado para ExecutionReport: esperado {cls.TOTAL_SIZE} bytes, "
-                f"recebido {len(data)} bytes."
+                f"recebido {data_len} bytes."
             )
-        header = SbeHeader.decode(data[:HEADER_SIZE])
+        if header is None:
+            header = SbeHeader.decode(data, offset=offset)
         if header.template_id != cls.TEMPLATE_ID:
             raise SbeValidationError(
                 f"TemplateId divergente para ExecutionReport: esperado {cls.TEMPLATE_ID}, "
@@ -455,7 +502,7 @@ class ExecutionReportBinary:
             leaves_qty,
             last_px_scaled,
             last_qty,
-        ) = struct.unpack_from(cls.PAYLOAD_FORMAT, data, HEADER_SIZE)
+        ) = cls.STRUCT.unpack_from(data, offset + HEADER_SIZE)
 
         last_px = last_px_scaled / PRICE_SCALE
 
@@ -472,7 +519,8 @@ class ExecutionReportBinary:
             last_qty=last_qty,
             header=header,
         )
-        report.validate()
+        if validate:
+            report.validate()
         return report
 
 
@@ -489,45 +537,94 @@ class PumaSbeCodec:
     }
 
     @staticmethod
-    def decode_header(data: bytes) -> SbeHeader:
-        """Decodifica e valida o cabeçalho SBE de 8 bytes."""
-        return SbeHeader.decode(data)
+    def decode_header(
+        data: Union[bytes, bytearray, memoryview], offset: int = 0
+    ) -> SbeHeader:
+        """Decodifica e valida o cabeçalho SBE de 8 bytes sem cópias."""
+        return SbeHeader.decode(data, offset=offset)
 
     @classmethod
-    def decode(cls, data: bytes) -> SbeMessage:
-        """Decodifica dinamicamente qualquer mensagem SBE suportada pelo catálogo.
+    def decode(
+        cls,
+        data: Union[bytes, bytearray, memoryview],
+        offset: int = 0,
+        validate: bool = True,
+    ) -> SbeMessage:
+        """Decodifica dinamicamente qualquer mensagem SBE suportada pelo catálogo sem overhead de heap desnecessário.
 
-        Examina o TemplateId no cabeçalho e invoca o parser correspondente.
+        Examina o TemplateId no cabeçalho e invoca o parser correspondente diretamente via offset.
 
         Raises:
             SbeTruncatedPayloadError: Se os dados forem menores que o cabeçalho ou o bloco.
             SbeUnknownTemplateError: Se o TemplateId não pertencer ao catálogo.
             SbeValidationError: Se a mensagem violar integridade de negócio.
         """
-        if len(data) < HEADER_SIZE:
+        data_len = len(data) - offset
+        if data_len < HEADER_SIZE:
             raise SbeTruncatedPayloadError(
                 f"Buffer insuficiente para cabeçalho SBE: esperado ao menos {HEADER_SIZE} bytes, "
-                f"recebido {len(data)} bytes."
+                f"recebido {data_len} bytes."
             )
 
-        header = SbeHeader.decode(data[:HEADER_SIZE])
-        total_expected = HEADER_SIZE + header.block_length
-
-        if len(data) < total_expected:
-            raise SbeTruncatedPayloadError(
-                f"Buffer truncado para template {header.template_id}: "
-                f"esperado {total_expected} bytes (header={HEADER_SIZE} + block={header.block_length}), "
-                f"recebido {len(data)} bytes."
-            )
-
-        message_cls = cls.TEMPLATES.get(header.template_id)
+        block_length, template_id, schema_id, version = HEADER_STRUCT.unpack_from(data, offset)
+        message_cls = cls.TEMPLATES.get(template_id)
         if message_cls is None:
             raise SbeUnknownTemplateError(
-                f"TemplateId {header.template_id} desconhecido no catálogo PUMA SBE. "
+                f"TemplateId {template_id} desconhecido no catálogo PUMA SBE. "
                 f"Templates válidos: {list(cls.TEMPLATES.keys())}"
             )
 
-        return message_cls.decode(data[:total_expected])
+        total_expected = HEADER_SIZE + block_length
+        if data_len < total_expected:
+            raise SbeTruncatedPayloadError(
+                f"Buffer truncado para template {template_id}: "
+                f"esperado {total_expected} bytes (header={HEADER_SIZE} + block={block_length}), "
+                f"recebido {data_len} bytes."
+            )
+
+        header = SbeHeader(block_length, template_id, schema_id, version)
+        return message_cls.decode(data, offset=offset, header=header, validate=validate)
+
+    @classmethod
+    def iter_decode(
+        cls,
+        data: Union[bytes, bytearray, memoryview],
+        validate: bool = True,
+    ) -> Iterator[SbeMessage]:
+        """Itera e decodifica sequencialmente um fluxo de mensagens SBE contíguas com zero overhead de fatiamento."""
+        offset = 0
+        total_len = len(data)
+        while offset < total_len:
+            rem = total_len - offset
+            if rem < HEADER_SIZE:
+                raise SbeTruncatedPayloadError(
+                    f"Buffer insuficiente para cabeçalho SBE no offset {offset}: "
+                    f"esperado ao menos {HEADER_SIZE} bytes, recebido {rem} bytes."
+                )
+            block_length, template_id, schema_id, version = HEADER_STRUCT.unpack_from(data, offset)
+            message_cls = cls.TEMPLATES.get(template_id)
+            if message_cls is None:
+                raise SbeUnknownTemplateError(
+                    f"TemplateId {template_id} desconhecido no catálogo PUMA SBE."
+                )
+            total_expected = HEADER_SIZE + block_length
+            if rem < total_expected:
+                raise SbeTruncatedPayloadError(
+                    f"Buffer truncado para template {template_id} no offset {offset}: "
+                    f"esperado {total_expected} bytes, recebido {rem} bytes."
+                )
+            header = SbeHeader(block_length, template_id, schema_id, version)
+            yield message_cls.decode(data, offset=offset, header=header, validate=validate)
+            offset += total_expected
+
+    @classmethod
+    def decode_stream(
+        cls,
+        data: Union[bytes, bytearray, memoryview],
+        validate: bool = True,
+    ) -> Iterator[SbeMessage]:
+        """Alias para iter_decode."""
+        return cls.iter_decode(data, validate=validate)
 
     @classmethod
     def encode(cls, message: Any) -> bytes:

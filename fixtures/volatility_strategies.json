@@ -1,0 +1,370 @@
+{
+  "version": "1.0.0",
+  "as_of": "2026-11-04",
+  "scope": "B3 PUMA Trading System & Câmara de Compensação — Estratégias Estruturadas de Volatilidade e Opções Combinadas (FL-063)",
+  "market_context": {
+    "trading_system": "PUMA Trading System Multi-Leg Engine",
+    "clearing_house": "Câmara B3 CORE Margin System",
+    "interest_rate_annual": 0.1125,
+    "default_volatility_spread_haircut": 0.15,
+    "risk_free_rate_252": 0.1125
+  },
+  "strategies": [
+    {
+      "strategy_id": "STRAT-STRADDLE-LONG-PETR4",
+      "strategy_type": "STRADDLE",
+      "underlying_symbol": "PETR4",
+      "underlying_spot": "38.00",
+      "expiration_date": "2026-11-20",
+      "days_to_expiration": 16,
+      "packages_requested": 1000,
+      "limit_net_price": "3.20",
+      "legs": [
+        {
+          "leg_id": "LEG-PETRA380",
+          "symbol": "PETRA380",
+          "option_type": "CALL",
+          "side": "BUY",
+          "strike": "38.00",
+          "ratio": 1,
+          "expiration_date": "2026-11-20",
+          "market_price": "1.65",
+          "implied_vol": "0.2800"
+        },
+        {
+          "leg_id": "LEG-PETRM380",
+          "symbol": "PETRM380",
+          "option_type": "PUT",
+          "side": "BUY",
+          "strike": "38.00",
+          "ratio": 1,
+          "expiration_date": "2026-11-20",
+          "market_price": "1.45",
+          "implied_vol": "0.2800"
+        }
+      ],
+      "simulated_book": {
+        "PETRA380": {
+          "best_ask": "1.65",
+          "ask_qty": 5000,
+          "best_bid": "1.63",
+          "bid_qty": 4000
+        },
+        "PETRM380": {
+          "best_ask": "1.45",
+          "ask_qty": 3000,
+          "best_bid": "1.43",
+          "bid_qty": 2500
+        }
+      },
+      "expected_metrics": {
+        "net_strategy_price": "3.10",
+        "net_total_cash_flow": "-3100.00",
+        "max_loss": "3100.00",
+        "max_profit": null,
+        "breakeven_lower": "34.90",
+        "breakeven_upper": "41.10",
+        "margin_category": "DEBIT_PAID",
+        "combined_margin": "3100.00"
+      }
+    },
+    {
+      "strategy_id": "STRAT-STRANGLE-SHORT-VALE3",
+      "strategy_type": "STRANGLE",
+      "underlying_symbol": "VALE3",
+      "underlying_spot": "65.00",
+      "expiration_date": "2026-11-20",
+      "days_to_expiration": 16,
+      "packages_requested": 500,
+      "limit_net_price": "-2.20",
+      "legs": [
+        {
+          "leg_id": "LEG-VALEM620",
+          "symbol": "VALEM620",
+          "option_type": "PUT",
+          "side": "SELL",
+          "strike": "62.00",
+          "ratio": 1,
+          "expiration_date": "2026-11-20",
+          "market_price": "1.10",
+          "implied_vol": "0.3200"
+        },
+        {
+          "leg_id": "LEG-VALEA680",
+          "symbol": "VALEA680",
+          "option_type": "CALL",
+          "side": "SELL",
+          "strike": "68.00",
+          "ratio": 1,
+          "expiration_date": "2026-11-20",
+          "market_price": "1.25",
+          "implied_vol": "0.3200"
+        }
+      ],
+      "simulated_book": {
+        "VALEM620": {
+          "best_ask": "1.12",
+          "ask_qty": 2000,
+          "best_bid": "1.10",
+          "bid_qty": 3000
+        },
+        "VALEA680": {
+          "best_ask": "1.27",
+          "ask_qty": 1800,
+          "best_bid": "1.25",
+          "bid_qty": 2500
+        }
+      },
+      "expected_metrics": {
+        "net_strategy_price": "-2.35",
+        "net_total_cash_flow": "1175.00",
+        "max_profit": "1175.00",
+        "max_loss": null,
+        "breakeven_lower": "59.65",
+        "breakeven_upper": "70.35",
+        "margin_category": "WORST_CASE_OFFSET"
+      }
+    },
+    {
+      "strategy_id": "STRAT-IRON-CONDOR-BOVA11",
+      "strategy_type": "IRON_CONDOR",
+      "underlying_symbol": "BOVA11",
+      "underlying_spot": "120.00",
+      "expiration_date": "2026-11-20",
+      "days_to_expiration": 16,
+      "packages_requested": 2000,
+      "limit_net_price": "-1.60",
+      "legs": [
+        {
+          "leg_id": "LEG-BOVAM112",
+          "symbol": "BOVAM112",
+          "option_type": "PUT",
+          "side": "BUY",
+          "strike": "112.00",
+          "ratio": 1,
+          "expiration_date": "2026-11-20",
+          "market_price": "0.70",
+          "implied_vol": "0.2200"
+        },
+        {
+          "leg_id": "LEG-BOVAM116",
+          "symbol": "BOVAM116",
+          "option_type": "PUT",
+          "side": "SELL",
+          "strike": "116.00",
+          "ratio": 1,
+          "expiration_date": "2026-11-20",
+          "market_price": "1.50",
+          "implied_vol": "0.2200"
+        },
+        {
+          "leg_id": "LEG-BOVAA124",
+          "symbol": "BOVAA124",
+          "option_type": "CALL",
+          "side": "SELL",
+          "strike": "124.00",
+          "ratio": 1,
+          "expiration_date": "2026-11-20",
+          "market_price": "1.60",
+          "implied_vol": "0.2200"
+        },
+        {
+          "leg_id": "LEG-BOVAA128",
+          "symbol": "BOVAA128",
+          "option_type": "CALL",
+          "side": "BUY",
+          "strike": "128.00",
+          "ratio": 1,
+          "expiration_date": "2026-11-20",
+          "market_price": "0.65",
+          "implied_vol": "0.2200"
+        }
+      ],
+      "simulated_book": {
+        "BOVAM112": {
+          "best_ask": "0.70",
+          "ask_qty": 5000,
+          "best_bid": "0.68",
+          "bid_qty": 4000
+        },
+        "BOVAM116": {
+          "best_ask": "1.52",
+          "ask_qty": 4500,
+          "best_bid": "1.50",
+          "bid_qty": 6000
+        },
+        "BOVAA124": {
+          "best_ask": "1.62",
+          "ask_qty": 3800,
+          "best_bid": "1.60",
+          "bid_qty": 5500
+        },
+        "BOVAA128": {
+          "best_ask": "0.65",
+          "ask_qty": 4000,
+          "best_bid": "0.63",
+          "bid_qty": 3000
+        }
+      },
+      "expected_metrics": {
+        "net_strategy_price": "-1.75",
+        "net_total_cash_flow": "3500.00",
+        "max_profit": "3500.00",
+        "max_loss": "4500.00",
+        "breakeven_lower": "114.25",
+        "breakeven_upper": "125.75",
+        "margin_category": "SPREAD_CAPPED",
+        "combined_margin": "4500.00"
+      }
+    },
+    {
+      "strategy_id": "STRAT-COLLAR-PROTECTIVE-PETR4",
+      "strategy_type": "COLLAR",
+      "underlying_symbol": "PETR4",
+      "underlying_spot": "38.00",
+      "expiration_date": "2026-11-20",
+      "days_to_expiration": 16,
+      "packages_requested": 1000,
+      "limit_net_price": "38.20",
+      "legs": [
+        {
+          "leg_id": "LEG-PETR4-SPOT",
+          "symbol": "PETR4",
+          "option_type": "SPOT",
+          "side": "BUY",
+          "strike": "0.00",
+          "ratio": 1,
+          "expiration_date": null,
+          "market_price": "38.00",
+          "implied_vol": null
+        },
+        {
+          "leg_id": "LEG-PETRM360",
+          "symbol": "PETRM360",
+          "option_type": "PUT",
+          "side": "BUY",
+          "strike": "36.00",
+          "ratio": 1,
+          "expiration_date": "2026-11-20",
+          "market_price": "0.85",
+          "implied_vol": "0.2750"
+        },
+        {
+          "leg_id": "LEG-PETRA400",
+          "symbol": "PETRA400",
+          "option_type": "CALL",
+          "side": "SELL",
+          "strike": "40.00",
+          "ratio": 1,
+          "expiration_date": "2026-11-20",
+          "market_price": "0.90",
+          "implied_vol": "0.2750"
+        }
+      ],
+      "simulated_book": {
+        "PETR4": {
+          "best_ask": "38.00",
+          "ask_qty": 10000,
+          "best_bid": "37.98",
+          "bid_qty": 8000
+        },
+        "PETRM360": {
+          "best_ask": "0.85",
+          "ask_qty": 5000,
+          "best_bid": "0.83",
+          "bid_qty": 4000
+        },
+        "PETRA400": {
+          "best_ask": "0.92",
+          "ask_qty": 3500,
+          "best_bid": "0.90",
+          "bid_qty": 5000
+        }
+      },
+      "expected_metrics": {
+        "net_strategy_price": "37.95",
+        "net_total_cash_flow": "-37950.00",
+        "max_profit": "2050.00",
+        "max_loss": "1950.00",
+        "breakeven_single": "37.95",
+        "margin_category": "COVERED_COLLAR",
+        "combined_margin": "1950.00"
+      }
+    },
+    {
+      "strategy_id": "STRAT-BUTTERFLY-CALL-PETR4",
+      "strategy_type": "BUTTERFLY",
+      "underlying_symbol": "PETR4",
+      "underlying_spot": "38.00",
+      "expiration_date": "2026-11-20",
+      "days_to_expiration": 16,
+      "packages_requested": 1000,
+      "limit_net_price": "0.45",
+      "legs": [
+        {
+          "leg_id": "LEG-PETRA360",
+          "symbol": "PETRA360",
+          "option_type": "CALL",
+          "side": "BUY",
+          "strike": "36.00",
+          "ratio": 1,
+          "expiration_date": "2026-11-20",
+          "market_price": "2.80",
+          "implied_vol": "0.2800"
+        },
+        {
+          "leg_id": "LEG-PETRA380",
+          "symbol": "PETRA380",
+          "option_type": "CALL",
+          "side": "SELL",
+          "strike": "38.00",
+          "ratio": 2,
+          "expiration_date": "2026-11-20",
+          "market_price": "1.65",
+          "implied_vol": "0.2800"
+        },
+        {
+          "leg_id": "LEG-PETRA400",
+          "symbol": "PETRA400",
+          "option_type": "CALL",
+          "side": "BUY",
+          "strike": "40.00",
+          "ratio": 1,
+          "expiration_date": "2026-11-20",
+          "market_price": "0.90",
+          "implied_vol": "0.2800"
+        }
+      ],
+      "simulated_book": {
+        "PETRA360": {
+          "best_ask": "2.80",
+          "ask_qty": 3000,
+          "best_bid": "2.76",
+          "bid_qty": 2000
+        },
+        "PETRA380": {
+          "best_ask": "1.67",
+          "ask_qty": 4000,
+          "best_bid": "1.65",
+          "bid_qty": 8000
+        },
+        "PETRA400": {
+          "best_ask": "0.90",
+          "ask_qty": 3500,
+          "best_bid": "0.88",
+          "bid_qty": 2500
+        }
+      },
+      "expected_metrics": {
+        "net_strategy_price": "0.40",
+        "net_total_cash_flow": "-400.00",
+        "max_profit": "1600.00",
+        "max_loss": "400.00",
+        "breakeven_lower": "36.40",
+        "breakeven_upper": "39.60",
+        "margin_category": "DEBIT_PAID",
+        "combined_margin": "400.00"
+      }
+    }
+  ]
+}

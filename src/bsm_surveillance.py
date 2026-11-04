@@ -18,7 +18,7 @@ Zero dependências externas (apenas Python Standard Library).
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 from enum import Enum
 import json
@@ -118,6 +118,62 @@ def format_document(doc: str) -> str:
     elif len(digits) == 14:
         return f"{digits[:2]}.{digits[2:5]}.{digits[5:8]}/{digits[8:12]}-{digits[12:]}"
     return doc
+
+
+def get_document_root(doc: str) -> str:
+    """Extrai raiz identificadora do documento cadastral perante a CVM/Receita Federal.
+
+    Para CNPJ (14 dígitos), os primeiros 8 dígitos representam a raiz que identifica
+    a matriz e todas as suas filiais (mesmo grupo societário de capital único).
+    Para CPF (11 dígitos), retorna os 11 dígitos normalizados.
+    """
+    clean = normalize_document(doc)
+    if len(clean) == 14:
+        return clean[:8]
+    return clean
+
+
+def is_same_economic_entity(
+    doc1: str,
+    doc2: str,
+    account1: str = "",
+    account2: str = "",
+    meta1: Optional[Dict[str, Any]] = None,
+    meta2: Optional[Dict[str, Any]] = None,
+) -> Tuple[bool, str]:
+    """Avalia se duas pontas de negociação pertencem à mesma titularidade ou grupo econômico.
+
+    Retorna tupla (is_same, reason) onde reason pode ser:
+    - 'SAME_BENEFICIARY': Mesmo CPF ou CNPJ idêntico (11 ou 14 dígitos).
+    - 'SAME_CNPJ_ROOT': Mesma raiz de CNPJ (primeiros 8 dígitos: matriz/filial).
+    - 'SAME_ACCOUNT': Mesma conta de custódia na mesma corretora.
+    - 'SAME_ECONOMIC_GROUP': Vínculo de grupo econômico em metadados.
+    - 'DISTINCT_ENTITIES': Entidades independentes sem vínculo aparente.
+    """
+    d1 = normalize_document(doc1)
+    d2 = normalize_document(doc2)
+
+    # 1. Mesmo documento exato (CPF ou CNPJ)
+    if d1 and d2 and d1 == d2:
+        return True, "SAME_BENEFICIARY"
+
+    # 2. Mesma conta de custódia (quando informada)
+    if account1 and account2 and account1 == account2:
+        return True, "SAME_ACCOUNT"
+
+    # 3. Mesma raiz de CNPJ (matriz e filiais de mesmo grupo)
+    if len(d1) == 14 and len(d2) == 14 and d1[:8] == d2[:8]:
+        return True, "SAME_CNPJ_ROOT"
+
+    # 4. Mesmo conglomerado / grupo econômico sinalizado em metadados
+    m1 = meta1 or {}
+    m2 = meta2 or {}
+    grp1 = m1.get("economic_group_id") or m1.get("conglomerate_id")
+    grp2 = m2.get("economic_group_id") or m2.get("conglomerate_id")
+    if grp1 and grp2 and str(grp1) == str(grp2):
+        return True, "SAME_ECONOMIC_GROUP"
+
+    return False, "DISTINCT_ENTITIES"
 
 
 def parse_timestamp(ts: Union[str, datetime]) -> datetime:
@@ -407,18 +463,25 @@ class BsmSurveillanceEngine:
         return self.ingest_records(data)
 
     # -----------------------------------------------------------------
-    # DETECTOR 1: WASH TRADING (Auto-Negociação)
+    # DETECTOR 1: WASH TRADING (Auto-Negociação Direta e Coordenada)
     # -----------------------------------------------------------------
     def detect_wash_trading(
-        self, time_window_seconds: float = 60.0
+        self,
+        time_window_seconds: float = 60.0,
+        detect_coordinated: bool = True,
     ) -> List[SurveillanceAlert]:
-        """Detecta operações cruzadas onde comprador e vendedor possuem mesmo CPF/CNPJ.
+        """Detecta operações cruzadas onde comprador e vendedor possuem mesmo CPF/CNPJ,
+        mesma raiz de CNPJ (matriz e filiais), ou triangulação coordenada via intermediários.
 
-        Avalia tanto execuções registradas quanto ordens simultâneas de compra e venda
-        com o mesmo beneficiário final ou mesma conta para o mesmo instrumento e preço.
+        Em conformidade com a Resolução CVM 35 (art. 2º, I) e CVM 505 / CVM 8, identifica:
+        1. Auto-negociação direta com mesmo beneficiário final ou mesma conta.
+        2. Negociação entre filiais e matriz da mesma pessoa jurídica (raiz de CNPJ).
+        3. Esquemas triangulados (Pass-through / Carrossel) onde um intermediário compra
+           de uma entidade e revende para outra entidade da mesma raiz de CNPJ.
         """
         alerts: List[SurveillanceAlert] = []
         alert_counter = 1
+        seen_pairs: Set[Tuple[str, str]] = set()
 
         # 1. Agrupamento por símbolo
         by_symbol: Dict[str, List[AuditRecord]] = {}
@@ -426,17 +489,140 @@ class BsmSurveillanceEngine:
             by_symbol.setdefault(r.symbol, []).append(r)
 
         for symbol, recs in by_symbol.items():
-            # Separa compras e vendas
+            # ---------------------------------------------------------
+            # 1.1 Detecção de Wash Trading Coordenado com Intermediários (Triangulação / Carrossel)
+            # ---------------------------------------------------------
+            if detect_coordinated:
+                trades = [r for r in recs if r.action_type == ActionType.TRADE]
+                trade_buys = [t for t in trades if t.side == Side.BUY]
+                trade_sells = [t for t in trades if t.side == Side.SELL]
+
+                for s1 in trade_sells:
+                    for b2 in trade_buys:
+                        # Se s1 e b2 forem a mesma entidade ou mesma raiz de CNPJ
+                        same_root_ab, reason_ab = is_same_economic_entity(
+                            s1.beneficiary_id,
+                            b2.beneficiary_id,
+                            s1.account_id,
+                            b2.account_id,
+                            s1.metadata,
+                            b2.metadata,
+                        )
+                        if not same_root_ab:
+                            continue
+
+                        # Intervalo temporal entre as duas pernas
+                        delta_coord = abs((b2.timestamp - s1.timestamp).total_seconds())
+                        if delta_coord > time_window_seconds:
+                            continue
+
+                        intermediary_id = None
+                        intermediary_records = []
+
+                        # Verifica metadados de contraparte
+                        cp_s1 = s1.metadata.get("counterparty_beneficiary_id") or s1.metadata.get("counterparty_id")
+                        cp_b2 = b2.metadata.get("counterparty_beneficiary_id") or b2.metadata.get("counterparty_id")
+                        if cp_s1 and cp_b2 and str(cp_s1) == str(cp_b2):
+                            is_cp_same, _ = is_same_economic_entity(str(cp_s1), s1.beneficiary_id)
+                            if not is_cp_same:
+                                intermediary_id = str(cp_s1)
+
+                        # Verifica se há trades do intermediário no book
+                        if not intermediary_id:
+                            for m_buy in trade_buys:
+                                if m_buy.record_id in (s1.record_id, b2.record_id):
+                                    continue
+                                is_m_same, _ = is_same_economic_entity(m_buy.beneficiary_id, s1.beneficiary_id)
+                                if is_m_same:
+                                    continue
+
+                                # M compra perto de s1 com quantidade compatível
+                                if abs((m_buy.timestamp - s1.timestamp).total_seconds()) <= 5.0 and m_buy.quantity == s1.quantity:
+                                    for m_sell in trade_sells:
+                                        if m_sell.beneficiary_id == m_buy.beneficiary_id and m_sell.quantity == b2.quantity:
+                                            if abs((m_sell.timestamp - b2.timestamp).total_seconds()) <= 5.0:
+                                                intermediary_id = m_buy.beneficiary_id
+                                                intermediary_records = [m_buy.record_id, m_sell.record_id]
+                                                break
+                                if intermediary_id:
+                                    break
+
+                        # Se encontrou esquema coordenado com intermediário
+                        if intermediary_id:
+                            norm_interm = normalize_document(intermediary_id)
+                            coord_pair = tuple(sorted([s1.record_id, b2.record_id]))
+                            if coord_pair in seen_pairs:
+                                continue
+                            seen_pairs.add(coord_pair)
+                            for ir in intermediary_records:
+                                seen_pairs.add(tuple(sorted([s1.record_id, ir])))
+                                seen_pairs.add(tuple(sorted([b2.record_id, ir])))
+
+                            root_str = get_document_root(s1.beneficiary_id)
+                            desc_coord = (
+                                f"Detecção de Wash Trading coordenado via intermediário ({format_document(norm_interm)}) "
+                                f"em {symbol}: comitente {format_document(s1.beneficiary_id)} e comitente {format_document(b2.beneficiary_id)} "
+                                f"(mesma raiz de CNPJ/CPF {root_str}) transferiram {s1.quantity} ações em {delta_coord:.3f}s "
+                                f"através de negociação triangulada simulada."
+                            )
+
+                            evidence = [s1.record_id] + intermediary_records + [b2.record_id]
+                            evidence_uniq = list(dict.fromkeys(evidence))
+
+                            alert_coord = SurveillanceAlert(
+                                alert_id=f"ALT-WASH-COORD-{symbol}-{alert_counter:04d}",
+                                pattern_type=AbusePatternType.WASH_TRADING,
+                                severity=SeverityLevel.CRITICAL,
+                                symbol=symbol,
+                                participant_id=s1.participant_id,
+                                beneficiary_id=s1.beneficiary_id,
+                                operator_id=s1.operator_id or b2.operator_id,
+                                algo_id=s1.algo_id or b2.algo_id,
+                                timestamp=max(s1.timestamp, b2.timestamp),
+                                description=desc_coord,
+                                metrics={
+                                    "is_coordinated": True,
+                                    "scheme": "INTERMEDIARY_TRIANGULATION",
+                                    "cnpj_root": root_str,
+                                    "intermediary_id": norm_interm,
+                                    "intermediary_formatted": format_document(norm_interm),
+                                    "seller_record_id": s1.record_id,
+                                    "seller_beneficiary": s1.beneficiary_id,
+                                    "buyer_record_id": b2.record_id,
+                                    "buyer_beneficiary": b2.beneficiary_id,
+                                    "delta_seconds": round(delta_coord, 6),
+                                    "quantity": s1.quantity,
+                                    "seller_price": float(s1.price),
+                                    "buyer_price": float(b2.price),
+                                },
+                                evidence_records=evidence_uniq,
+                            )
+                            alerts.append(alert_coord)
+                            alert_counter += 1
+
+            # ---------------------------------------------------------
+            # 1.2 Detecção Direta (Mesmo Beneficiário, Mesma Conta ou Mesma Raiz)
+            # ---------------------------------------------------------
             buys = [r for r in recs if r.side == Side.BUY]
             sells = [r for r in recs if r.side == Side.SELL]
 
             for b in buys:
                 for s in sells:
-                    # Verifica mesmo beneficiário final ou mesma conta de custódia
-                    same_beneficiary = b.beneficiary_id and (b.beneficiary_id == s.beneficiary_id)
-                    same_account = b.account_id and (b.account_id == s.account_id)
+                    pair_key = tuple(sorted([b.record_id, s.record_id]))
+                    if pair_key in seen_pairs:
+                        continue
 
-                    if not (same_beneficiary or same_account):
+                    # Avalia vínculo econômico
+                    same_entity, match_reason = is_same_economic_entity(
+                        b.beneficiary_id,
+                        s.beneficiary_id,
+                        b.account_id,
+                        s.account_id,
+                        b.metadata,
+                        s.metadata,
+                    )
+
+                    if not same_entity:
                         continue
 
                     # Verifica janela temporal
@@ -445,46 +631,67 @@ class BsmSurveillanceEngine:
                         continue
 
                     # Verifica cruzamento de preços (Buy Price >= Sell Price) ou igualdade
-                    # Se for TRADE ou NEW ordens que se cruzariam no book
                     price_cross = (b.price >= s.price)
+                    if not price_cross:
+                        continue
 
-                    if price_cross:
-                        # Se já for TRADE ou ordens com intenção de fechamento
-                        is_trade = (b.action_type == ActionType.TRADE or s.action_type == ActionType.TRADE)
-                        severity = SeverityLevel.CRITICAL if is_trade else SeverityLevel.HIGH
+                    seen_pairs.add(pair_key)
 
-                        alert = SurveillanceAlert(
-                            alert_id=f"ALT-WASH-{symbol}-{alert_counter:04d}",
-                            pattern_type=AbusePatternType.WASH_TRADING,
-                            severity=severity,
-                            symbol=symbol,
-                            participant_id=b.participant_id,
-                            beneficiary_id=b.beneficiary_id,
-                            operator_id=b.operator_id or s.operator_id,
-                            algo_id=b.algo_id or s.algo_id,
-                            timestamp=max(b.timestamp, s.timestamp),
-                            description=(
-                                f"Detecção de Wash Trading em {symbol}: ordens opostas ({b.side.value} vs {s.side.value}) "
-                                f"com mesmo beneficiário final ({format_document(b.beneficiary_id)}) "
-                                f"executadas/cruzadas em intervalo de {delta:.3f}s a preços compatíveis "
-                                f"(Compra={b.price}, Venda={s.price})."
-                            ),
-                            metrics={
-                                "buy_record_id": b.record_id,
-                                "sell_record_id": s.record_id,
-                                "buy_order_id": b.order_id,
-                                "sell_order_id": s.order_id,
-                                "delta_seconds": round(delta, 6),
-                                "buy_price": float(b.price),
-                                "sell_price": float(s.price),
-                                "buy_qty": b.quantity,
-                                "sell_qty": s.quantity,
-                                "is_trade_execution": is_trade,
-                            },
-                            evidence_records=[b.record_id, s.record_id],
+                    is_trade = (b.action_type == ActionType.TRADE or s.action_type == ActionType.TRADE)
+                    severity = SeverityLevel.CRITICAL if is_trade else SeverityLevel.HIGH
+
+                    # Constrói descrição detalhada com base no vínculo
+                    b_root = get_document_root(b.beneficiary_id)
+                    s_root = get_document_root(s.beneficiary_id)
+
+                    if match_reason == "SAME_CNPJ_ROOT":
+                        vinculo_desc = (
+                            f"mesma raiz de CNPJ {b_root} (Matriz/Filial: "
+                            f"{format_document(b.beneficiary_id)} vs {format_document(s.beneficiary_id)})"
                         )
-                        alerts.append(alert)
-                        alert_counter += 1
+                    elif match_reason == "SAME_BENEFICIARY":
+                        vinculo_desc = f"mesmo beneficiário final ({format_document(b.beneficiary_id)})"
+                    elif match_reason == "SAME_ACCOUNT":
+                        vinculo_desc = f"mesma conta de custódia ({b.account_id})"
+                    else:
+                        vinculo_desc = f"mesmo conglomerado econômico ({match_reason})"
+
+                    alert = SurveillanceAlert(
+                        alert_id=f"ALT-WASH-{symbol}-{alert_counter:04d}",
+                        pattern_type=AbusePatternType.WASH_TRADING,
+                        severity=severity,
+                        symbol=symbol,
+                        participant_id=b.participant_id,
+                        beneficiary_id=b.beneficiary_id,
+                        operator_id=b.operator_id or s.operator_id,
+                        algo_id=b.algo_id or s.algo_id,
+                        timestamp=max(b.timestamp, s.timestamp),
+                        description=(
+                            f"Detecção de Wash Trading em {symbol}: ordens opostas ({b.side.value} vs {s.side.value}) "
+                            f"com {vinculo_desc} executadas/cruzadas em intervalo de {delta:.3f}s a preços compatíveis "
+                            f"(Compra={b.price}, Venda={s.price})."
+                        ),
+                        metrics={
+                            "match_reason": match_reason,
+                            "cnpj_root": b_root if len(b_root) == 8 else None,
+                            "buy_beneficiary_id": b.beneficiary_id,
+                            "sell_beneficiary_id": s.beneficiary_id,
+                            "buy_record_id": b.record_id,
+                            "sell_record_id": s.record_id,
+                            "buy_order_id": b.order_id,
+                            "sell_order_id": s.order_id,
+                            "delta_seconds": round(delta, 6),
+                            "buy_price": float(b.price),
+                            "sell_price": float(s.price),
+                            "buy_qty": b.quantity,
+                            "sell_qty": s.quantity,
+                            "is_trade_execution": is_trade,
+                            "is_coordinated": False,
+                        },
+                        evidence_records=[b.record_id, s.record_id],
+                    )
+                    alerts.append(alert)
+                    alert_counter += 1
 
         return alerts
 
@@ -585,12 +792,163 @@ class BsmSurveillanceEngine:
         return alerts
 
     # -----------------------------------------------------------------
+    # DETECTOR 2B: SPOOFING POR CANCELAMENTO RELÂMPAGO (< 50ms)
+    # -----------------------------------------------------------------
+    def detect_flash_cancellations(
+        self,
+        flash_threshold_ms: float = 50.0,
+        opposite_window_seconds: float = 2.0,
+        min_flash_cancels: int = 1,
+    ) -> List[SurveillanceAlert]:
+        """Detecta Spoofing através de cancelamentos relâmpago (< 50ms).
+
+        Identifica:
+        1. Ordens canceladas em menos de 50ms acompanhadas por execução de negócio
+           no lado oposto do book (Spoof-and-Execute clássico de HFT).
+        2. Cancelamentos sistemáticos em latência ultrabaixa (< 50ms) indicando
+           manipulação predatória de profundidade no livro de ofertas.
+        """
+        alerts: List[SurveillanceAlert] = []
+        alert_counter = 1
+
+        # Mapeia ordens NEW por (symbol, order_id) e por cl_ord_id
+        new_orders: Dict[Tuple[str, str], AuditRecord] = {}
+        trades_by_symbol: Dict[str, List[AuditRecord]] = {}
+
+        for r in self._records:
+            if r.action_type == ActionType.NEW:
+                new_orders[(r.symbol, r.order_id)] = r
+                if r.cl_ord_id:
+                    new_orders[(r.symbol, r.cl_ord_id)] = r
+            elif r.action_type == ActionType.TRADE:
+                trades_by_symbol.setdefault(r.symbol, []).append(r)
+
+        cancels = [r for r in self._records if r.action_type == ActionType.CANCEL]
+        flash_cancels_standalone: List[Tuple[AuditRecord, AuditRecord, float]] = []
+
+        for c in cancels:
+            orig_new = new_orders.get((c.symbol, c.order_id)) or (
+                new_orders.get((c.symbol, c.cl_ord_id)) if c.cl_ord_id else None
+            )
+            if not orig_new:
+                continue
+
+            duration_ms = (c.timestamp - orig_new.timestamp).total_seconds() * 1000.0
+            if 0.0 <= duration_ms < flash_threshold_ms:
+                # Verifica se é cancelamento legítimo de Formador de Mercado (PMM)
+                # com razão explícita de ajuste de spread e sem negócios no lado oposto
+                is_legit_mm = (
+                    orig_new.metadata.get("cancel_reason") == "SPREAD_ADJUSTMENT"
+                    or c.metadata.get("cancel_reason") == "SPREAD_ADJUSTMENT"
+                    or orig_new.metadata.get("pqr_certified") is True
+                )
+
+                # Busca execução no lado oposto (Spoof-and-Execute)
+                opp_trades = []
+                for t in trades_by_symbol.get(c.symbol, []):
+                    if t.side != orig_new.side:
+                        time_diff = abs((t.timestamp - orig_new.timestamp).total_seconds())
+                        if time_diff <= opposite_window_seconds:
+                            same_ent, _ = is_same_economic_entity(
+                                orig_new.beneficiary_id,
+                                t.beneficiary_id,
+                                orig_new.account_id,
+                                t.account_id,
+                            )
+                            same_part = orig_new.participant_id == t.participant_id
+                            same_oper = orig_new.operator_id == t.operator_id
+                            same_algo = bool(orig_new.algo_id and (orig_new.algo_id == t.algo_id))
+
+                            if same_ent or same_part or same_oper or same_algo:
+                                opp_trades.append(t)
+
+                if opp_trades:
+                    # Spoofing crítico: cancelamento relâmpago com execução no lado oposto
+                    best_opp_trade = opp_trades[0]
+                    alert = SurveillanceAlert(
+                        alert_id=f"ALT-SPOOF-FLASH-{c.symbol}-{alert_counter:04d}",
+                        pattern_type=AbusePatternType.SPOOFING,
+                        severity=SeverityLevel.CRITICAL,
+                        symbol=c.symbol,
+                        participant_id=orig_new.participant_id,
+                        beneficiary_id=orig_new.beneficiary_id,
+                        operator_id=orig_new.operator_id,
+                        algo_id=orig_new.algo_id,
+                        timestamp=c.timestamp,
+                        description=(
+                            f"Detecção de Spoofing com cancelamento relâmpago em {c.symbol}: ordem {orig_new.order_id} "
+                            f"({orig_new.side.value} {orig_new.quantity} @ {orig_new.price}) cancelada em "
+                            f"{duration_ms:.2f}ms (< {flash_threshold_ms}ms) com execução confirmada no lado oposto "
+                            f"({best_opp_trade.side.value} {best_opp_trade.quantity} @ {best_opp_trade.price}) "
+                            f"pelo mesmo operador/participante."
+                        ),
+                        metrics={
+                            "flash_cancel_duration_ms": round(duration_ms, 3),
+                            "flash_threshold_ms": flash_threshold_ms,
+                            "order_id": orig_new.order_id,
+                            "order_side": orig_new.side.value,
+                            "order_price": float(orig_new.price),
+                            "order_qty": orig_new.quantity,
+                            "has_opposite_execution": True,
+                            "opposite_trade_record_id": best_opp_trade.record_id,
+                            "opposite_trade_side": best_opp_trade.side.value,
+                            "opposite_trade_qty": best_opp_trade.quantity,
+                            "opposite_trade_price": float(best_opp_trade.price),
+                        },
+                        evidence_records=[orig_new.record_id, c.record_id, best_opp_trade.record_id],
+                    )
+                    alerts.append(alert)
+                    alert_counter += 1
+                elif not is_legit_mm:
+                    flash_cancels_standalone.append((orig_new, c, duration_ms))
+
+        # Trata cancelamentos relâmpago sem trade oposto (phantom depth / quote probing)
+        if len(flash_cancels_standalone) >= min_flash_cancels:
+            for orig_new, c, duration_ms in flash_cancels_standalone:
+                alert = SurveillanceAlert(
+                    alert_id=f"ALT-SPOOF-FLASH-{c.symbol}-{alert_counter:04d}",
+                    pattern_type=AbusePatternType.SPOOFING,
+                    severity=SeverityLevel.HIGH,
+                    symbol=c.symbol,
+                    participant_id=orig_new.participant_id,
+                    beneficiary_id=orig_new.beneficiary_id,
+                    operator_id=orig_new.operator_id,
+                    algo_id=orig_new.algo_id,
+                    timestamp=c.timestamp,
+                    description=(
+                        f"Detecção de Spoofing por cancelamento relâmpago sistemático em {c.symbol}: ordem {orig_new.order_id} "
+                        f"({orig_new.side.value} {orig_new.quantity} @ {orig_new.price}) cancelada em "
+                        f"{duration_ms:.2f}ms (< {flash_threshold_ms}ms normativo) sem execução."
+                    ),
+                    metrics={
+                        "flash_cancel_duration_ms": round(duration_ms, 3),
+                        "flash_threshold_ms": flash_threshold_ms,
+                        "order_id": orig_new.order_id,
+                        "order_side": orig_new.side.value,
+                        "order_price": float(orig_new.price),
+                        "order_qty": orig_new.quantity,
+                        "has_opposite_execution": False,
+                    },
+                    evidence_records=[orig_new.record_id, c.record_id],
+                )
+                alerts.append(alert)
+                alert_counter += 1
+
+        return alerts
+
+    # -----------------------------------------------------------------
     # DETECTOR 3: LAYERING (Estratificação em Múltiplas Camadas)
     # -----------------------------------------------------------------
     def detect_layering(
         self, min_layers: int = 3, time_window_seconds: float = 15.0
     ) -> List[SurveillanceAlert]:
-        """Detecta inserção de múltiplas camadas de ordens no mesmo lado com cancelamento em bloco."""
+        """Detecta inserção de múltiplas camadas de ordens no mesmo lado com cancelamento em bloco.
+
+        Suporta:
+        1. Identificação de estratificação em múltiplos níveis de book (laddering de preços).
+        2. Detecção de janelas temporais dinâmicas/múltiplas ao longo do pregão.
+        3. Identificação de Layering com execução confirmada no lado oposto do book (CRITICAL).
+        """
         alerts: List[SurveillanceAlert] = []
         alert_counter = 1
 
@@ -600,6 +958,12 @@ class BsmSurveillanceEngine:
             key = (r.symbol, r.participant_id, r.beneficiary_id, r.side)
             grouped.setdefault(key, []).append(r)
 
+        # Mapeia execuções de trade por símbolo
+        trades_by_symbol: Dict[str, List[AuditRecord]] = {}
+        for r in self._records:
+            if r.action_type == ActionType.TRADE:
+                trades_by_symbol.setdefault(r.symbol, []).append(r)
+
         for (sym, part_id, ben_id, side), recs in grouped.items():
             new_orders = [r for r in recs if r.action_type == ActionType.NEW]
             cancel_orders = [r for r in recs if r.action_type == ActionType.CANCEL]
@@ -607,39 +971,138 @@ class BsmSurveillanceEngine:
             if len(new_orders) < min_layers or len(cancel_orders) < min_layers:
                 continue
 
-            # Checa se ordens novas têm preços distintos (camadas escalonadas)
-            distinct_prices = {r.price for r in new_orders}
-            if len(distinct_prices) >= min_layers:
-                # Checa janela temporal do bloco
-                start_time = min(r.timestamp for r in new_orders)
-                end_time = max(r.timestamp for r in cancel_orders)
+            # Mapeia ordens canceladas por order_id
+            cancelled_order_ids = {r.order_id for r in cancel_orders}
+            layered_new = [r for r in new_orders if r.order_id in cancelled_order_ids]
+
+            if len(layered_new) < min_layers:
+                layered_new = new_orders
+
+            # Agrupa ordens em clusters temporais por time_window_seconds
+            clusters: List[List[AuditRecord]] = []
+            current_cluster: List[AuditRecord] = []
+
+            for o in sorted(layered_new, key=lambda x: x.timestamp):
+                if not current_cluster:
+                    current_cluster.append(o)
+                else:
+                    if (o.timestamp - current_cluster[-1].timestamp).total_seconds() <= time_window_seconds:
+                        current_cluster.append(o)
+                    else:
+                        clusters.append(current_cluster)
+                        current_cluster = [o]
+            if current_cluster:
+                clusters.append(current_cluster)
+
+            for cluster in clusters:
+                distinct_prices = {r.price for r in cluster}
+                if len(distinct_prices) < min_layers:
+                    continue
+
+                cluster_order_ids = {r.order_id for r in cluster}
+                matching_cancels = [c for c in cancel_orders if c.order_id in cluster_order_ids]
+                if not matching_cancels:
+                    matching_cancels = cancel_orders
+
+                start_time = min(r.timestamp for r in cluster)
+                end_time = max(c.timestamp for c in matching_cancels)
                 duration = (end_time - start_time).total_seconds()
 
-                if duration <= time_window_seconds:
-                    alert = SurveillanceAlert(
-                        alert_id=f"ALT-LAYER-{sym}-{alert_counter:04d}",
-                        pattern_type=AbusePatternType.LAYERING,
-                        severity=SeverityLevel.HIGH,
-                        symbol=sym,
-                        participant_id=part_id,
-                        beneficiary_id=ben_id,
-                        operator_id=new_orders[0].operator_id,
-                        algo_id=new_orders[0].algo_id,
-                        timestamp=end_time,
-                        description=(
-                            f"Detecção de Layering em {sym} ({side.value}): {len(distinct_prices)} camadas "
-                            f"de preços distintos inseridas e canceladas em {duration:.2f}s sem execução."
-                        ),
-                        metrics={
-                            "layer_count": len(distinct_prices),
-                            "prices": [float(p) for p in sorted(distinct_prices)],
-                            "duration_seconds": round(duration, 3),
-                            "side": side.value,
-                        },
-                        evidence_records=[r.record_id for r in new_orders + cancel_orders],
+                if not (duration <= time_window_seconds or (max(r.timestamp for r in cluster) - start_time).total_seconds() <= time_window_seconds):
+                    continue
+
+                # Mapeia tempo de vida de cada ordem no cluster: (start_ts, end_ts, price)
+                order_spans = []
+                for o in cluster:
+                    c_time = None
+                    for c in matching_cancels:
+                        if c.order_id == o.order_id:
+                            c_time = c.timestamp
+                            break
+                    if not c_time:
+                        c_time = end_time
+                    order_spans.append((o.timestamp, c_time, o.price))
+
+                # Calcula o número máximo de camadas (preços distintos) ativas simultaneamente no book
+                all_sample_points = sorted(list({s[0] for s in order_spans} | {s[1] for s in order_spans}))
+                max_concurrent_prices = 0
+                for pt in all_sample_points:
+                    active_prices_at_pt = {
+                        span[2] for span in order_spans if span[0] <= pt < span[1]
+                    }
+                    if len(active_prices_at_pt) > max_concurrent_prices:
+                        max_concurrent_prices = len(active_prices_at_pt)
+
+                # Se as ordens nunca coexistiram simultaneamente em quantidade de camadas >= min_layers
+                # trata-se de deslocamento sequencial de cotação única (quote chasing / refresh), não de layering
+                if max_concurrent_prices < min_layers:
+                    continue
+
+                # Busca execução no lado oposto do book durante o layering
+                opposite_side = Side.SELL if side == Side.BUY else Side.BUY
+                opp_trade = None
+                for t in trades_by_symbol.get(sym, []):
+                    if t.side == opposite_side:
+                        if (start_time - timedelta(seconds=2)) <= t.timestamp <= (end_time + timedelta(seconds=2)):
+                            same_ent, _ = is_same_economic_entity(
+                                ben_id,
+                                t.beneficiary_id,
+                                cluster[0].account_id,
+                                t.account_id,
+                            )
+                            if t.participant_id == part_id or same_ent:
+                                opp_trade = t
+                                break
+
+                # Isenção legítima para Formador de Mercado (PMM) certificado sem execução no lado oposto
+                is_legit_mm = any(
+                    o.metadata.get("pqr_certified") is True
+                    or o.metadata.get("cancel_reason") == "SPREAD_ADJUSTMENT"
+                    for o in cluster
+                )
+                if is_legit_mm and not opp_trade:
+                    continue
+
+                if opp_trade:
+                    severity = SeverityLevel.CRITICAL
+                    desc = (
+                        f"Detecção de Layering com execução em {sym} ({side.value}): {len(distinct_prices)} camadas "
+                        f"de preços distintos inseridas no book ({', '.join(str(p) for p in sorted(distinct_prices))}) "
+                        f"e canceladas em {duration:.2f}s, com execução confirmada no lado oposto "
+                        f"({opp_trade.side.value} {opp_trade.quantity} @ {opp_trade.price})."
                     )
-                    alerts.append(alert)
-                    alert_counter += 1
+                    evidence = [r.record_id for r in cluster + matching_cancels] + [opp_trade.record_id]
+                else:
+                    severity = SeverityLevel.HIGH
+                    desc = (
+                        f"Detecção de Layering em {sym} ({side.value}): {len(distinct_prices)} camadas "
+                        f"de preços distintos inseridas e canceladas em {duration:.2f}s sem execução."
+                    )
+                    evidence = [r.record_id for r in cluster + matching_cancels]
+
+                alert = SurveillanceAlert(
+                    alert_id=f"ALT-LAYER-{sym}-{alert_counter:04d}",
+                    pattern_type=AbusePatternType.LAYERING,
+                    severity=severity,
+                    symbol=sym,
+                    participant_id=part_id,
+                    beneficiary_id=ben_id,
+                    operator_id=cluster[0].operator_id,
+                    algo_id=cluster[0].algo_id,
+                    timestamp=end_time,
+                    description=desc,
+                    metrics={
+                        "layer_count": len(distinct_prices),
+                        "prices": [float(p) for p in sorted(distinct_prices)],
+                        "duration_seconds": round(duration, 3),
+                        "side": side.value,
+                        "has_opposite_execution": opp_trade is not None,
+                        "opposite_trade_record_id": opp_trade.record_id if opp_trade else None,
+                    },
+                    evidence_records=list(dict.fromkeys(evidence)),
+                )
+                alerts.append(alert)
+                alert_counter += 1
 
         return alerts
 
@@ -712,6 +1175,7 @@ class BsmSurveillanceEngine:
         otr_threshold: float = 20.0,
         cancel_ratio_threshold: float = 0.70,
         wash_window_seconds: float = 60.0,
+        flash_cancel_threshold_ms: float = 50.0,
     ) -> List[SurveillanceAlert]:
         """Executa toda a suíte de vigilância preventiva BSM e retorna alertas consolidados."""
         alerts: List[SurveillanceAlert] = []
@@ -720,6 +1184,11 @@ class BsmSurveillanceEngine:
             self.detect_spoofing_and_excessive_otr(
                 otr_threshold=otr_threshold,
                 cancel_ratio_threshold=cancel_ratio_threshold,
+            )
+        )
+        alerts.extend(
+            self.detect_flash_cancellations(
+                flash_threshold_ms=flash_cancel_threshold_ms,
             )
         )
         alerts.extend(self.detect_layering())
