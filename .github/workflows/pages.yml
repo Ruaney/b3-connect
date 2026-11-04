@@ -7,9 +7,9 @@ on:
       - master
   workflow_dispatch:
 
-# Permissões necessárias para publicar no GitHub Pages
+# Permissões necessárias para publicar no GitHub Pages e na branch gh-pages
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -28,21 +28,32 @@ jobs:
       - name: Checkout repositório
         uses: actions/checkout@v4
 
-      - name: Configurar GitHub Pages
-        uses: actions/configure-pages@v5
-        with:
-          enablement: true
-
       - name: Sincronizar catálogo para publicação
         run: |
           mkdir -p docs/catalog
           cp -f catalog/*.json docs/catalog/
 
+      - name: Configurar GitHub Pages (Actions runtime)
+        id: pages_config
+        continue-on-error: true
+        uses: actions/configure-pages@v5
+
       - name: Fazer upload do artefato Pages (diretório docs/)
+        id: upload_artifact
+        continue-on-error: true
         uses: actions/upload-pages-artifact@v3
         with:
           path: docs/
 
-      - name: Publicar no GitHub Pages
+      - name: Publicar no GitHub Pages (Actions)
         id: deployment
+        continue-on-error: true
         uses: actions/deploy-pages@v4
+
+      - name: Publicar na branch gh-pages (Fallback automático garantido)
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs
+          keep_files: false
+          force_orphan: true
