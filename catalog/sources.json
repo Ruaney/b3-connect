@@ -329,6 +329,86 @@
       "status": "localizada",
       "kind": "manual_tecnico",
       "limitation": "Tags FIX mandatórias (1031, 57, 1724, 8015), sincronização de relógio <100µs e apuração punitiva de Order-to-Trade Ratio."
+    },
+    {
+      "id": "SRC-042",
+      "title": "B3 Câmara — Manual de Procedimentos Operacionais: Repasse de Proventos em Empréstimo BTC (Resolução CVM 35)",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/compensacao-e-liquidacao/emprestimo-de-ativos/",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Repasse de proventos em dinheiro (Dividendo/JCP com compensação de IRRF) e ajuste de quantidade/preço para proventos em ações."
+    },
+    {
+      "id": "SRC-043",
+      "title": "B3 Balcão NoMe — Manual de Registro e Monitoramento de Letras Imobiliárias Garantidas (Lei 13.097 e CMN 4.598)",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/registro/renda-fixa/lig.htm",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Patrimônio de afetação Cover Pool, sobrecolateralização mínima de 105% e teste de estresse de liquidez de 180 dias."
+    },
+    {
+      "id": "SRC-044",
+      "title": "B3 Câmara — Manual de Administração de Risco: Metodologia CORE e Margem Intradiária (PFMI 4 e 6)",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/compensacao-e-liquidacao/administracao-de-risco/metodologia-core/",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Matriz de cenários primitivos, efeito portfólio multi-ativo, haircuts de garantias e chamadas de margem intradiárias."
+    },
+    {
+      "id": "SRC-045",
+      "title": "B3 Balcão NoMe — Manual de Escrituração de Duplicatas Escriturais Eletrônicas (Lei 13.775 e Circular BCB 4.016)",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/registro/duplicatas/",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Unicidade de lastro via NF-e 44 dígitos, endossos translativos e mandatos, e quitação financeira via SPB/Pix."
+    },
+    {
+      "id": "SRC-046",
+      "title": "B3 Central Depositária — Manual de Eventos Societários: Leilão de Frações e Sobras de Ações (Lei 6.404/76 Art. 12 e 175)",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/central-depositaria/eventos-corporativos/leilao-de-sobras.htm",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Apuração de sobras fracionárias pós-grupamento, agrupamento em lotes redondos para leilão PUMA e rateio pro-rata centavo a centavo."
+    },
+    {
+      "id": "SRC-047",
+      "title": "B3 — Manual de Tarifação Integrada de Negociação e Pós-Trade (Escadinha ADTV e Day-Trade)",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/tarifas/negociacao-e-pos-negociacao/",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Componentes de emolumento, liquidação e registro com escadinha regressiva ADTV (Tiers 1 a 7) e alíquotas de Day-Trade."
+    },
+    {
+      "id": "SRC-048",
+      "title": "B3 Balcão NoMe — Manual de Escrituração e Liquidação de CDB e RDB (Resolução CMN 5.036)",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/registro/renda-fixa/cdb-rdb.htm",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Atualização diária de PU (%CDI, Pré, IPCA), inalienabilidade de RDB e retenção regressiva de IOF e IRRF."
+    },
+    {
+      "id": "SRC-049",
+      "title": "B3 Câmara — Regulamento da Estrutura de Salvaguardas e Cascata de Inadimplência (CPMI-IOSCO PFMI 4/7)",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/compensacao-e-liquidacao/salvaguardas/",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Absorção de default nível a nível: Margem -> Fundo do inadimplente -> Skin-in-the-game B3 -> Fundo mútuo adimplentes -> Chamadas extraordinárias."
+    },
+    {
+      "id": "SRC-050",
+      "title": "B3 PUMA Trading System — Especificação de Ordens Avançadas e Algorítmicas (Iceberg, Stop e Trailing-Stop)",
+      "url": "https://www.b3.com.br/pt_br/solucoes/plataformas/puma-trading-system/regras-de-negociacao/",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Ordens Iceberg com DisplayQty e reserva oculta, ordens Stop-Loss, Stop-Limit e Trailing-Stop com gatilho dinâmico."
+    },
+    {
+      "id": "SRC-051",
+      "title": "B3 Balcão NoMe & Depositária — Manual de Debêntures Incentivadas e de Infraestrutura (Leis 12.431 e 14.801)",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/registro/renda-fixa/debentures-incentivadas.htm",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Amortização de principal (Bullet/Constante/Variável), cupom IPCA+, benefício fiscal PF 0% (12.431) e bônus emissora (14.801)."
     }
   ]
 }

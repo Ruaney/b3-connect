@@ -994,6 +994,216 @@
         "implemented": "src/hft_algo_governance.py",
         "tested_locally": "tests/test_hft_algo_governance.py"
       }
+    },
+    {
+      "id": "FL-048",
+      "name": "Processar Proventos em Dinheiro e Ações em Contratos de Empréstimo BTC em Aberto",
+      "system": "Câmara B3",
+      "interface": "Motor de Ajuste e Reembolso de Proventos BTC (IMBARQ018/011)",
+      "sources": [
+        "SRC-042"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Repasse financeiro de dividendos e JCP com compensação de IRRF, ajuste compulsório de quantidade e preço para bonificações, desdobramentos e grupamentos com frações implementados com sucesso. Pendente homologação Câmara B3.",
+      "evidence": {
+        "documented": "docs/layout-btc-corporate-actions.md",
+        "implemented": "src/btc_corporate_actions.py",
+        "tested_locally": "tests/test_btc_corporate_actions.py"
+      }
+    },
+    {
+      "id": "FL-049",
+      "name": "Registrar, Monitorar Carteira de Ativos (Cover Pool) e Liquidar LIGs / Covered Bonds",
+      "system": "Balcão NoMe & Registradora B3",
+      "interface": "Motor de Monitoramento de Cover Pool e Teste de Estresse de LIG",
+      "sources": [
+        "SRC-043"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Patrimônio de afetação em conta segregada NoMe, sobrecolateralização mínima de 105%, teste de estresse de liquidez de 180 dias e parecer fiduciário implementados com sucesso. Pendente homologação B3.",
+      "evidence": {
+        "documented": "docs/layout-lig-covered-bonds.md",
+        "implemented": "src/lig_covered_bonds.py",
+        "tested_locally": "tests/test_lig_covered_bonds.py"
+      }
+    },
+    {
+      "id": "FL-050",
+      "name": "Calcular e Monitorar Margem Intradiária CORE (Closeout Risk Evaluation)",
+      "system": "Câmara B3",
+      "interface": "Motor de Margem Intradiária e Matriz de Choques CORE",
+      "sources": [
+        "SRC-044"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Cenários primitivos de choques em ações, opções (Black-Scholes) e futuros (DI1/DOL), compensação multilateral intragrupo, haircuts de colaterais e disparo automático de Margin Call implementados com sucesso. Pendente homologação B3.",
+      "evidence": {
+        "documented": "docs/layout-core-intraday-margin.md",
+        "implemented": "src/core_intraday_margin.py",
+        "tested_locally": "tests/test_core_intraday_margin.py"
+      }
+    },
+    {
+      "id": "FL-051",
+      "name": "Escriturar, Endossar e Liquidar Duplicatas Escriturais Eletrônicas",
+      "system": "Balcão NoMe B3",
+      "interface": "Motor de Escrituração de Duplicatas e Bloqueio de Unicidade NF-e",
+      "sources": [
+        "SRC-045"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Validação de chave NF-e (44 dígitos cDV), bloqueio determinístico de duplicidade de lastro mercantil, endosso translativo e mandato com hash SHA-256 e liquidação SPB/Pix implementados com sucesso. Pendente sandbox Balcão B3.",
+      "evidence": {
+        "documented": "docs/layout-electronic-trade-bills.md",
+        "implemented": "src/electronic_trade_bills.py",
+        "tested_locally": "tests/test_electronic_trade_bills.py"
+      }
+    },
+    {
+      "id": "FL-052",
+      "name": "Apurar Frações de Ações Pós-Grupamento e Processar Leilão Especial de Sobras",
+      "system": "Central Depositária B3 & PUMA",
+      "interface": "Motor de Apuração de Frações e Rateio Pro-Rata de Sobras",
+      "sources": [
+        "SRC-046"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Segregação de inteiros e frações, consolidação de sobras para leilão em lote redondo no PUMA e rateio financeiro pro-rata pelo método dos maiores restos (Hare-Niemeyer) sem resíduos implementados com sucesso. Pendente homologação Central Depositária B3.",
+      "evidence": {
+        "documented": "docs/layout-share-fractions-auction.md",
+        "implemented": "src/share_fractions_auction.py",
+        "tested_locally": "tests/test_share_fractions_auction.py"
+      }
+    },
+    {
+      "id": "FL-053",
+      "name": "Calcular Tarifação Integrada B3: Escadinha Regressiva ADTV e Descontos de Day-Trade",
+      "system": "PUMA Trading System & Câmara B3",
+      "interface": "Motor de Tarifação Integrada de Negociação e Liquidação",
+      "sources": [
+        "SRC-047"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Cálculo de emolumentos, taxa de liquidação e registro em 7 faixas de ADTV, matching automático de day-trade e desonerações regulatórias (CMN 4.373 e PMM) implementados com sucesso. Pendente homologação B3.",
+      "evidence": {
+        "documented": "docs/layout-b3-tariff-engine.md",
+        "implemented": "src/b3_tariff_engine.py",
+        "tested_locally": "tests/test_b3_tariff_engine.py"
+      }
+    },
+    {
+      "id": "FL-054",
+      "name": "Registrar, Atualizar PU Diário na Curva e Liquidar CDBs e RDBs",
+      "system": "Balcão NoMe B3",
+      "interface": "Motor de Escrituração de Títulos Bancários e Retenção Regressiva",
+      "sources": [
+        "SRC-048"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Atualização diária de PU (%CDI, Pré, IPCA), inalienabilidade estrita de RDB, retenção automática da tabela regressiva de IOF e IRRF e liquidação de resgate antecipado implementados com sucesso. Pendente homologação Balcão B3.",
+      "evidence": {
+        "documented": "docs/layout-cdb-rdb-registry.md",
+        "implemented": "src/cdb_rdb_registry.py",
+        "tested_locally": "tests/test_cdb_rdb_registry.py"
+      }
+    },
+    {
+      "id": "FL-055",
+      "name": "Executar Estrutura de Salvaguardas e Cascata de Inadimplência (Default Waterfall)",
+      "system": "Câmara B3",
+      "interface": "Motor de Mitigação de Risco Sistêmico e Cascata CPMI-IOSCO",
+      "sources": [
+        "SRC-049"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Absorção nível a nível de inadimplência (Margem -> Fundo Inadimplente -> SITG R$ 500M -> Fundo Mútuo Adimplentes -> Aval Extraordinário) com rateio pro-rata e balanço contábil formal implementados com sucesso. Pendente homologação Câmara B3.",
+      "evidence": {
+        "documented": "docs/layout-default-waterfall.md",
+        "implemented": "src/default_waterfall.py",
+        "tested_locally": "tests/test_default_waterfall.py"
+      }
+    },
+    {
+      "id": "FL-056",
+      "name": "Rotear, Gerenciar Livro e Executar Ordens Avançadas: Iceberg, Stop e Trailing-Stop",
+      "system": "PUMA Trading System",
+      "interface": "Motor de Ordens Avançadas e Algorítmicas PUMA (FIX 4.4)",
+      "sources": [
+        "SRC-050"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Ordens Iceberg com DisplayQty e renovação de tranche, ordens Stop-Loss e Stop-Limit ativadas por LastPx e Trailing-Stop dinâmico com deslocamento Ratchet implementados com sucesso. Pendente homologação PUMA.",
+      "evidence": {
+        "documented": "docs/layout-puma-advanced-orders.md",
+        "implemented": "src/puma_advanced_orders.py",
+        "tested_locally": "tests/test_puma_advanced_orders.py"
+      }
+    },
+    {
+      "id": "FL-057",
+      "name": "Escriturar, Amortizar e Liquidar Debêntures Incentivadas (Leis 12.431/11 e 14.801/24)",
+      "system": "Balcão NoMe & Central Depositária B3",
+      "interface": "Motor de Escrituração e Cronograma de Debêntures de Infraestrutura",
+      "sources": [
+        "SRC-051"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Cronogramas de amortização Bullet, Constante e Variável, atualização monetária por IPCA, cupom semestral, isenção PF 0% (12.431) e bônus emissora (14.801) com conservação de VNE implementados com sucesso. Pendente homologação B3.",
+      "evidence": {
+        "documented": "docs/layout-infrastructure-debentures.md",
+        "implemented": "src/infrastructure_debentures.py",
+        "tested_locally": "tests/test_infrastructure_debentures.py"
+      }
     }
   ]
 }
