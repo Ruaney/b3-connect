@@ -47,9 +47,10 @@ Execute `python3 scripts/test_catalog.py --check-files`, `python3 scripts/get_co
 
 ## 💼 Suporte Corporativo & Plataforma Gerenciada B3 Enterprise
 
-Para instituições financeiras (corretoras PNP/PN, distribuidoras DTVM, gestoras de recursos, bancos de investimento, agtechs e fintechs) que demandam **conectores de produção gerenciados**, **suporte de engenharia sênior 24/7 com SLA contratual**, **gateway de risco pré-trading em sub-milissegundo (<80µs)** e **consultoria assistida de homologação junto à B3 e Banco Central**, conheça a oferta da nossa plataforma privada:
+Para instituições financeiras (corretoras PNP/PN, distribuidoras DTVM, gestoras de recursos, bancos de investimento, agtechs e fintechs) que demandam **conectores de produção gerenciados**, **suporte de engenharia sênior 24/7 com SLA contratual**, **gateway de risco pré-trading em sub-milissegundo (<80µs)** e **consultoria assistida de homologação junto à B3 e Banco Central**:
 
-👉 **[B3 Enterprise Platform — Conectores Gerenciados, Suporte 24/7 e Homologação B3](https://github.com/Ruaney/b3-enterprise-platform)**
+👉 **B3 Enterprise Platform — Conectores Gerenciados, Suporte 24/7 e Homologação B3**  
+*(Disponível sob Acordo de Confidencialidade / NDA e licenciamento institucional privado. Para solicitar demonstração técnica ou proposta comercial, consulte o canal corporativo: `enterprise@b3connect.io`).*
 
 ## Publicação
 

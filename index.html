@@ -1406,6 +1406,145 @@
         grid-template-columns: 1fr;
       }
     }
+
+    /* Modal Corporativo B3 Enterprise */
+    .enterprise-modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(4, 7, 16, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 99999;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+    }
+    .enterprise-modal-overlay.active {
+      display: flex;
+    }
+    .enterprise-modal-card {
+      background: #0c1222;
+      border: 1px solid rgba(0, 229, 255, 0.4);
+      border-radius: 12px;
+      max-width: 680px;
+      width: 100%;
+      padding: 28px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(0, 229, 255, 0.15);
+      position: relative;
+      color: #f1f5f9;
+      animation: modalFadeIn 0.25s ease-out;
+    }
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: translateY(-16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .enterprise-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 14px;
+    }
+    .enterprise-badge-tag {
+      display: inline-block;
+      padding: 4px 10px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      background: rgba(0, 229, 255, 0.15);
+      color: #00e5ff;
+      border: 1px solid rgba(0, 229, 255, 0.4);
+      border-radius: 4px;
+      letter-spacing: 0.06em;
+      margin-bottom: 8px;
+    }
+    .enterprise-modal-close {
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      font-size: 1.8rem;
+      cursor: pointer;
+      line-height: 1;
+      padding: 4px;
+    }
+    .enterprise-modal-close:hover {
+      color: #ffffff;
+    }
+    .enterprise-feats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 16px 0;
+    }
+    @media (max-width: 600px) {
+      .enterprise-feats-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .enterprise-feat-item {
+      background: rgba(17, 26, 48, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 0.82rem;
+      line-height: 1.4;
+    }
+    .enterprise-feat-item strong {
+      display: block;
+      color: #38bdf8;
+      font-size: 0.88rem;
+      margin-bottom: 4px;
+    }
+    .enterprise-notice-box {
+      background: rgba(245, 158, 11, 0.08);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 0.82rem;
+      color: #fbbf24;
+      line-height: 1.4;
+      margin-top: 14px;
+    }
+    .enterprise-modal-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+    .btn-ent-primary {
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      color: #ffffff;
+      padding: 10px 18px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid rgba(56, 189, 248, 0.4);
+    }
+    .btn-ent-primary:hover {
+      background: #0284c7;
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+      color: #ffffff;
+    }
+    .btn-ent-secondary {
+      background: rgba(255, 255, 255, 0.06);
+      color: #e2e8f0;
+      padding: 10px 18px;
+      border-radius: 6px;
+      font-weight: 500;
+      font-size: 0.85rem;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      cursor: pointer;
+    }
+    .btn-ent-secondary:hover {
+      background: rgba(255, 255, 255, 0.12);
+    }
   </style>
 </head>
 <body>
@@ -1414,7 +1553,7 @@
        TOP NAVBAR
        ======================================================================== -->
   <div style="background: linear-gradient(90deg, #070e1e 0%, #002b80 50%, #070e1e 100%); border-bottom: 1px solid rgba(0,229,255,0.25); padding: 8px 16px; text-align: center; font-size: 0.84rem; color: #e2e8f0; position: relative; z-index: 1001;">
-    <span>🏛️ <strong>Precisa de Conectores Prontos, SLA 24/7 ou Consultoria de Homologação?</strong> Conheça a <a href="https://github.com/Ruaney/b3-enterprise-platform" target="_blank" style="color: #00e5ff; font-weight: 700; text-decoration: underline;">B3 Enterprise Platform</a> com suporte especializado e implantação on-premise.</span>
+    <span>🏛️ <strong>Precisa de Conectores Prontos, SLA 24/7 ou Consultoria de Homologação?</strong> Conheça a <a href="javascript:void(0)" onclick="openEnterpriseModal()" style="color: #00e5ff; font-weight: 700; text-decoration: underline; cursor: pointer;">B3 Enterprise Platform</a> (solução institucional sob licença privada).</span>
   </div>
   <header class="top-nav">
     <div class="container nav-inner">
@@ -1423,7 +1562,7 @@
         <div class="brand-title-wrap">
           <div class="brand-title-main">
             <span>B3 Integration Atlas</span>
-            <span class="version-tag" id="nav-version">v0.2.0</span>
+            <span class="version-tag" id="nav-version">v1.0.0</span>
           </div>
           <span class="brand-subtitle">Radar Técnico de Integração e Homologação</span>
         </div>
@@ -1436,14 +1575,14 @@
           <li><a href="#homologacao" class="nav-link">Roteiro B3</a></li>
           <li><a href="#fontes" class="nav-link">Fontes Oficiais</a></li>
           <li><a href="#governanca" class="nav-link">Governança</a></li>
-          <li><a href="https://github.com/Ruaney/b3-enterprise-platform" target="_blank" class="nav-link" style="color: #00e5ff; font-weight: 600;" title="Plataforma comercial e suporte institucional">💼 Suporte Enterprise</a></li>
+          <li><a href="javascript:void(0)" onclick="openEnterpriseModal()" class="nav-link" style="color: #00e5ff; font-weight: 600; cursor: pointer;" title="Conheça a oferta comercial da B3 Enterprise Platform (Ambiente Privado)">💼 Suporte Enterprise</a></li>
         </ul>
       </nav>
 
       <div class="nav-actions">
         <div class="status-pill" id="live-indicator" title="Status dos dados carregados">
           <span class="pulse-dot"></span>
-          <span id="live-indicator-text">Radar Ativo (30 Fluxos)</span>
+          <span id="live-indicator-text">Radar Ativo (44 Fluxos B3)</span>
         </div>
         <a href="https://github.com/Ruaney/b3-connect" target="_blank" rel="noopener noreferrer" class="btn-github" title="Ver repositório no GitHub">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -2477,6 +2616,85 @@
         }, 3000);
       }
     }
+
+    // Controle do Modal B3 Enterprise
+    function openEnterpriseModal() {
+      const modal = document.getElementById('enterprise-modal');
+      if (modal) {
+        modal.classList.add('active');
+      }
+    }
+
+    function closeEnterpriseModal() {
+      const modal = document.getElementById('enterprise-modal');
+      if (modal) {
+        modal.classList.remove('active');
+      }
+    }
+
+    function copyEnterpriseContact() {
+      const contactText = 'enterprise@b3connect.io';
+      navigator.clipboard.writeText(contactText).then(() => {
+        showToast('Canal copiado: ' + contactText);
+      }).catch(() => {
+        showToast('Canal institucional: ' + contactText);
+      });
+    }
   </script>
+
+  <!-- MODAL CORPORATIVO B3 ENTERPRISE -->
+  <div id="enterprise-modal" class="enterprise-modal-overlay" onclick="if (event.target === this) closeEnterpriseModal();">
+    <div class="enterprise-modal-card">
+      <div class="enterprise-modal-header">
+        <div>
+          <span class="enterprise-badge-tag">AMBIENTE INSTITUCIONAL PRIVADO</span>
+          <h2 style="font-size: 1.35rem; color: #ffffff; margin: 4px 0;">B3 Enterprise Platform</h2>
+          <p style="color: #94a3b8; font-size: 0.84rem; margin: 0;">Conectores Gerenciados, Gateway de Risco Sub-Milissegundo & Sustentação 24/7</p>
+        </div>
+        <button class="enterprise-modal-close" onclick="closeEnterpriseModal()">&times;</button>
+      </div>
+
+      <div class="enterprise-modal-body">
+        <p style="font-size: 0.88rem; color: #cbd5e1; line-height: 1.5; margin-bottom: 14px;">
+          Solução corporativa on-premise de missão crítica voltada para Corretoras (PN/PNP), DTVMs, Gestoras de Recursos (Asset Managers) e Bancos Liquidantes (PL) integrados diretamente aos ambientes da <strong>B3</strong> e do <strong>Banco Central do Brasil (SPB/STR)</strong>.
+        </p>
+
+        <div class="enterprise-feats-grid">
+          <div class="enterprise-feat-item">
+            <strong>⚡ Risco Pré-Trade &lt; 80µs</strong>
+            Trava sub-milissegundo de fat-finger, limites CVM 505 e túnel de preços em FIX 4.4 e SBE.
+          </div>
+          <div class="enterprise-feat-item">
+            <strong>🛡️ SLA 99,99% & 15min</strong>
+            Equipe sênior de sustentação dedicada com apuração automática de Service Credits contratuais.
+          </div>
+          <div class="enterprise-feat-item">
+            <strong>🧪 Simulador Sandbox Completo</strong>
+            Mock local de PUMA FIX, iMercado OAuth2/SAS e SPB LDL0001 sem depender de janelas RCC/VPN.
+          </div>
+          <div class="enterprise-feat-item">
+            <strong>📜 Homologação Assistida B3</strong>
+            Acompanhamento de testes CET, conformidade mTLS ICP-Brasil e liquidação multilateral BACEN.
+          </div>
+        </div>
+
+        <div class="enterprise-notice-box">
+          <strong>🔒 Repositório e Licença Privados:</strong> Por conter motores de alta frequência e segredos institucionais de conexão, o repositório da Enterprise Platform é mantido de forma estritamente privada sob Acordo de Confidencialidade (NDA) e licenciamento corporativo.
+        </div>
+
+        <div class="enterprise-modal-actions">
+          <a href="mailto:enterprise@b3connect.io?subject=Solicitacao%20de%20Acesso%20Institucional%20-%20B3%20Enterprise%20Platform" class="btn-ent-primary">
+            ✉️ Solicitar Apresentação Técnica
+          </a>
+          <button class="btn-ent-secondary" onclick="copyEnterpriseContact()">
+            Copiar Email Institucional
+          </button>
+          <button class="btn-ent-secondary" onclick="closeEnterpriseModal()" style="margin-left: auto;">
+            Fechar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
