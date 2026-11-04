@@ -273,6 +273,38 @@
       "status": "localizada",
       "kind": "manual_tecnico",
       "limitation": "Registro escritural NoMe de Swaps (CDI/Pré/Dólar/IPCA) e NDFs liquidados por PTAX com invariante soma-zero bilateral e IRRF."
+    },
+    {
+      "id": "SRC-035",
+      "title": "B3 Câmara de Compensação — Manual de Procedimentos Operacionais: Mercado a Termo de Ações (Termo Tradicional, Pontos e Flexível)",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/negociacao/renda-variavel/mercado-a-termo.htm",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Precificação exponencial DU/252, cobertura 100% na carteira 2306-6, margem CORE e liquidação antecipada/vencimento."
+    },
+    {
+      "id": "SRC-036",
+      "title": "B3 Balcão / NoMe — Manual de Registro e Liquidação de Opções Flexíveis de Balcão (Barreiras Knock-In/Knock-Out e Limitadores Cap)",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/registro/derivativos-de-balcao/opcoes-flexiveis.htm",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Barreiras Knock-In/Knock-Out, limitadores Cap/Rebate e liquidação exclusivamente financeira D+1 soma-zero."
+    },
+    {
+      "id": "SRC-037",
+      "title": "B3 Central Depositária — Manual de Procedimentos Operacionais: Composição e Desmembramento de Units (Lei 6.404/76 Art. 43)",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/central-depositaria/servicos-da-central-depositaria/units.htm",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Proporção estrita de ações ON/PN por Unit, book closure e conservação de ações equivalentes em D+0 atômico."
+    },
+    {
+      "id": "SRC-038",
+      "title": "B3 & CVM — Manual de Procedimentos Operacionais de Leilões Especiais de OPA no PUMA Trading System (Resolução CVM 85)",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/negociacao/renda-variavel/ofertas-publicas-de-aquisicao-opa.htm",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Quórum de fechamento de capital (>2/3), Tag-Along Art. 254-A e rateio proporcional pelo método dos maiores restos."
     }
   ]
 }

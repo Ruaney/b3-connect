@@ -847,6 +847,90 @@
         "implemented": "src/otc_derivatives_swap_ndf.py",
         "tested_locally": "tests/test_otc_derivatives_swap_ndf.py"
       }
+    },
+    {
+      "id": "FL-041",
+      "name": "Operar Mercado a Termo de Ações: Termo Tradicional, Flexível, em Pontos, Cobertura 2306-6 e Liquidação Antecipada",
+      "system": "PUMA Trading System & Câmara B3",
+      "interface": "Motor de Registro, Garantias e Liquidação de Termo de Ações",
+      "sources": [
+        "SRC-035"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Precificação exponencial DU/252, verificação de 100% de cobertura do vendedor na carteira 2306-6, margem CORE e liquidação antecipada/no vencimento implementados com sucesso. Pendente homologação na Câmara B3.",
+      "evidence": {
+        "documented": "docs/layout-equity-forward-termo.md",
+        "implemented": "src/equity_forward_termo.py",
+        "tested_locally": "tests/test_equity_forward_termo.py"
+      }
+    },
+    {
+      "id": "FL-042",
+      "name": "Registrar e liquidar Opções Flexíveis de Balcão NoMe com Barreiras (Knock-In/Out) e Limitadores (Cap/Rebate)",
+      "system": "Balcão B3 (NoMe Derivativos)",
+      "interface": "Mensageria de Registro e Liquidação Financeira D+1 de Opções Flexíveis",
+      "sources": [
+        "SRC-036"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Monitoramento determinístico de barreiras contínuas/discretas, limitadores de ganho (Cap) e compensação (Rebate), soma-zero bilateral e IRRF implementados com sucesso. Pendente homologação no NoMe B3.",
+      "evidence": {
+        "documented": "docs/layout-flexible-options-otc.md",
+        "implemented": "src/flexible_options_otc.py",
+        "tested_locally": "tests/test_flexible_options_otc.py"
+      }
+    },
+    {
+      "id": "FL-043",
+      "name": "Compor (emitir) e desmembrar (cancelar) Units na Central Depositária B3 (Lei 6.404/76 Art. 43)",
+      "system": "Central Depositária B3 (CSD)",
+      "interface": "Módulo de Instruções de Composição e Desmembramento de Certificados de Depósito de Ações",
+      "sources": [
+        "SRC-037"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Validação de proporção exata de ações ON/PN por Unit, trava em suspensão de livros (AGE/AGO), liquidação atômica D+0 e conservação física de ações equivalentes implementados com sucesso. Pendente homologação na Central Depositária B3.",
+      "evidence": {
+        "documented": "docs/layout-units-conversion.md",
+        "implemented": "src/units_conversion.py",
+        "tested_locally": "tests/test_units_conversion.py"
+      }
+    },
+    {
+      "id": "FL-044",
+      "name": "Processar Leilões Especiais de OPA: Oferta Pública CVM 85, Tag-Along, Quórum de Fechamento de Capital e Rateio",
+      "system": "PUMA Trading System & Central Depositária B3",
+      "interface": "Motor de Habilitação, Leilão Especial de OPA e Rateio Pro-Rata",
+      "sources": [
+        "SRC-038"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Apuração do quórum legal de 2/3 de fechamento de capital, piso regulatório de Tag-Along (80%/100%), rateio proporcional pelo método dos maiores restos e conservação de ações aceitas/devolvidas implementados com sucesso. Pendente homologação no PUMA Trading System.",
+      "evidence": {
+        "documented": "docs/layout-opa-tender-offer.md",
+        "implemented": "src/opa_tender_offer.py",
+        "tested_locally": "tests/test_opa_tender_offer.py"
+      }
     }
   ]
 }
