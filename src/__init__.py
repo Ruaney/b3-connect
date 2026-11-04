@@ -460,6 +460,50 @@ from src.cdb_rdb_registry import (
     get_iof_regressive_rate,
     get_irrf_regressive_rate,
 )
+from src.coe_structured_notes import (
+    CoeCapitalProtectionType,
+    CoeContractSpec,
+    CoeEngine,
+    CoeError,
+    CoePayoffStructure,
+    CoeSettlementError,
+    CoeSettlementReceipt,
+    CoeStatus,
+    CoeTaxBreakdown,
+    CoeValidationError,
+    ObservationDateEvent,
+    UnderlyingAssetType,
+)
+from src.puma_closing_auction import (
+    AuctionExecutionFill,
+    AuctionOrder,
+    AuctionOrderSide,
+    AuctionOrderType,
+    AuctionPhase,
+    PumaClosingAuctionEngine,
+    PumaClosingAuctionError,
+    TheoreticalPriceSummary,
+)
+from src.fx_settlement_pvp import (
+    FxContract,
+    FxContractType,
+    FxLegStatus,
+    FxMultilateralNetBalance,
+    FxSettlementEngine,
+    FxSettlementError,
+    FxSettlementReceipt,
+    FxSettlementStatus,
+)
+from src.drex_tokenized_assets import (
+    CsdCustodyAccount,
+    DrexAccountStatus,
+    DrexDvpEngine,
+    DrexDvpReceipt,
+    DrexOperationType,
+    DrexTokenizationError,
+    DrexWallet,
+    TpftSecurityType,
+)
 
 __all__ = [
     # Parser IMBARQ004
@@ -896,4 +940,44 @@ __all__ = [
     "InalienableRdbError",
     "get_iof_regressive_rate",
     "get_irrf_regressive_rate",
+    # Balcão NoMe — Certificados de Operações Estruturadas COE (FL-058)
+    "CoeCapitalProtectionType",
+    "CoeContractSpec",
+    "CoeEngine",
+    "CoeError",
+    "CoePayoffStructure",
+    "CoeSettlementError",
+    "CoeSettlementReceipt",
+    "CoeStatus",
+    "CoeTaxBreakdown",
+    "CoeValidationError",
+    "ObservationDateEvent",
+    "UnderlyingAssetType",
+    # PUMA Trading — Leilão de Fechamento & MOC/LOC (FL-059)
+    "AuctionExecutionFill",
+    "AuctionOrder",
+    "AuctionOrderSide",
+    "AuctionOrderType",
+    "AuctionPhase",
+    "PumaClosingAuctionEngine",
+    "PumaClosingAuctionError",
+    "TheoreticalPriceSummary",
+    # Câmara B3 — Compensação e Liquidação Câmbio Spot & NDF com Liquidação PvP (FL-060)
+    "FxContract",
+    "FxContractType",
+    "FxLegStatus",
+    "FxMultilateralNetBalance",
+    "FxSettlementEngine",
+    "FxSettlementError",
+    "FxSettlementReceipt",
+    "FxSettlementStatus",
+    # B3 CSD & DREX — TPFt e Liquidação DvP Atômica On-Chain (FL-061)
+    "CsdCustodyAccount",
+    "DrexAccountStatus",
+    "DrexDvpEngine",
+    "DrexDvpReceipt",
+    "DrexOperationType",
+    "DrexTokenizationError",
+    "DrexWallet",
+    "TpftSecurityType",
 ]

@@ -1,0 +1,100 @@
+{
+  "version": "1.0.0",
+  "as_of": "2026-11-04",
+  "scope": "B3 Balcão NoMe — Certificados de Operações Estruturadas (COE)",
+  "contracts": [
+    {
+      "contract_id": "COE-IBOV-BULL-001",
+      "issuer_institution_id": "INST-ITAUBBA-001",
+      "underlying_asset": "IBOVESPA",
+      "protection_type": "PROTECTED_CAPITAL",
+      "payoff_structure": "BULL_SPREAD",
+      "issue_date": "2024-11-04",
+      "maturity_date": "2026-11-04",
+      "nominal_unit_value": "1000.00",
+      "quantity": 500,
+      "initial_underlying_level": "130000.00",
+      "protection_floor_pct": "100.00",
+      "maximum_cap_gain_pct": "35.00",
+      "participation_rate_pct": "100.00",
+      "observation_schedule": []
+    },
+    {
+      "contract_id": "COE-SP500-DIGITAL-002",
+      "issuer_institution_id": "INST-BTGPACT-002",
+      "underlying_asset": "SP500",
+      "protection_type": "PROTECTED_CAPITAL",
+      "payoff_structure": "DIGITAL_BINARY",
+      "issue_date": "2025-05-04",
+      "maturity_date": "2026-11-04",
+      "nominal_unit_value": "5000.00",
+      "quantity": 100,
+      "initial_underlying_level": "5800.00",
+      "protection_floor_pct": "100.00",
+      "digital_coupon_pct": "22.50",
+      "observation_schedule": []
+    },
+    {
+      "contract_id": "COE-GOLD-AUTOCALL-003",
+      "issuer_institution_id": "INST-SAFRA-003",
+      "underlying_asset": "GOLD_OZ1D",
+      "protection_type": "PROTECTED_CAPITAL",
+      "payoff_structure": "AUTOCALLABLE",
+      "issue_date": "2025-11-04",
+      "maturity_date": "2027-11-04",
+      "nominal_unit_value": "10000.00",
+      "quantity": 50,
+      "initial_underlying_level": "450.00",
+      "protection_floor_pct": "100.00",
+      "digital_coupon_pct": "25.00",
+      "observation_schedule": [
+        {
+          "observation_date": "2026-05-04",
+          "barrier_level_pct": "100.00",
+          "coupon_rate_pct": "8.50"
+        },
+        {
+          "observation_date": "2026-11-04",
+          "barrier_level_pct": "100.00",
+          "coupon_rate_pct": "17.00"
+        }
+      ]
+    },
+    {
+      "contract_id": "COE-PTAX-RISK-004",
+      "issuer_institution_id": "INST-SANTANDER-004",
+      "underlying_asset": "PTAX_USD",
+      "protection_type": "AT_RISK_CAPITAL",
+      "payoff_structure": "PARTICIPATION_CAP",
+      "issue_date": "2026-01-10",
+      "maturity_date": "2026-11-04",
+      "nominal_unit_value": "1000.00",
+      "quantity": 250,
+      "initial_underlying_level": "5.5000",
+      "protection_floor_pct": "80.00",
+      "maximum_cap_gain_pct": "40.00",
+      "participation_rate_pct": "150.00",
+      "observation_schedule": []
+    }
+  ],
+  "settlement_scenarios": {
+    "bull_spread_above_cap": {
+      "contract_id": "COE-IBOV-BULL-001",
+      "final_underlying_level": "180000.00",
+      "settlement_date": "2026-11-04",
+      "days_elapsed": 730
+    },
+    "bull_spread_negative": {
+      "contract_id": "COE-IBOV-BULL-001",
+      "final_underlying_level": "115000.00",
+      "settlement_date": "2026-11-04",
+      "days_elapsed": 730
+    },
+    "autocall_triggered_obs2": {
+      "contract_id": "COE-GOLD-AUTOCALL-003",
+      "current_underlying_level": "495.00",
+      "observation_date": "2026-11-04",
+      "days_elapsed": 365
+    }
+  }
+}

@@ -1204,6 +1204,90 @@
         "implemented": "src/infrastructure_debentures.py",
         "tested_locally": "tests/test_infrastructure_debentures.py"
       }
+    },
+    {
+      "id": "FL-058",
+      "name": "Registrar, Monitorar Barreiras de Autocall e Liquidar Certificados de Operações Estruturadas (COE)",
+      "system": "Balcão NoMe B3",
+      "interface": "Motor Determinístico de Precificação e Liquidação de COE",
+      "sources": [
+        "SRC-052"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Suporte a Capital Protegido, Capital em Risco, Bull Spread, Digital e Autocallable com conservação de capital garantido implementados. Pendente homologação B3.",
+      "evidence": {
+        "documented": "docs/layout-coe-structured-notes.md",
+        "implemented": "src/coe_structured_notes.py",
+        "tested_locally": "tests/test_coe_structured_notes.py"
+      }
+    },
+    {
+      "id": "FL-059",
+      "name": "Processar Leilão de Fechamento (Closing Auction) PUMA: Apuração do PTF e Casamento de Ordens MOC/LOC",
+      "system": "PUMA Trading System",
+      "interface": "Algoritmo de Preço Teórico de Fechamento e Uncross do Livro",
+      "sources": [
+        "SRC-053"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Critérios de maximização de volume, menor desbalanceamento, prioridade MOC e conservação de book implementados. Pendente homologação B3.",
+      "evidence": {
+        "documented": "docs/layout-puma-closing-auction.md",
+        "implemented": "src/puma_closing_auction.py",
+        "tested_locally": "tests/test_puma_closing_auction.py"
+      }
+    },
+    {
+      "id": "FL-060",
+      "name": "Compensar e Liquidar Operações de Câmbio Spot, Termo e NDF com Mecanismo Multimoeda PvP",
+      "system": "Câmara de Câmbio B3",
+      "interface": "Motor de Liquidação Atômica Payment versus Payment (PvP)",
+      "sources": [
+        "SRC-054"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Liquidação atômica simultânea USD/BRL, erradicação de Risco Herstatt, liquidação NDF e fechamento soma-zero implementados. Pendente homologação B3.",
+      "evidence": {
+        "documented": "docs/layout-fx-settlement-pvp.md",
+        "implemented": "src/fx_settlement_pvp.py",
+        "tested_locally": "tests/test_fx_settlement_pvp.py"
+      }
+    },
+    {
+      "id": "FL-061",
+      "name": "Tokenizar Títulos Públicos (TPFt), Executar DvP Atômico em Smart Contracts e Conciliar Custódia na Rede DREX",
+      "system": "Central Depositária B3 (CSD) & BACEN DREX",
+      "interface": "Motor de Interoperabilidade CSD/DREX e DvP On-Chain",
+      "sources": [
+        "SRC-055"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Ciclo Mint/Lock, Burn/Unlock, liquidação DvP TPFt x Real Digital e conservação de custódia total implementados. Pendente homologação B3.",
+      "evidence": {
+        "documented": "docs/layout-drex-tokenized-assets.md",
+        "implemented": "src/drex_tokenized_assets.py",
+        "tested_locally": "tests/test_drex_tokenized_assets.py"
+      }
     }
   ]
 }

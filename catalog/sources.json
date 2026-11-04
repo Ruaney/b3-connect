@@ -409,6 +409,38 @@
       "status": "localizada",
       "kind": "manual_tecnico",
       "limitation": "Amortização de principal (Bullet/Constante/Variável), cupom IPCA+, benefício fiscal PF 0% (12.431) e bônus emissora (14.801)."
+    },
+    {
+      "id": "SRC-052",
+      "title": "B3 Balcão NoMe — Manual de Registro e Liquidação de Certificados de Operações Estruturadas (COE - Res. CMN 4.263 e CVM 8)",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/registro/derivativos/coe.htm",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Regras de Capital Protegido vs Capital em Risco, barreiras de Autocall, Bull Spread e fechamento de DIE."
+    },
+    {
+      "id": "SRC-053",
+      "title": "B3 PUMA Trading System — Procedimentos Operacionais de Leilão de Fechamento e Ordens MOC/LOC",
+      "url": "https://www.b3.com.br/pt_br/solucoes/plataformas/puma-trading-system/regras-de-negociacao/leiloes.htm",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Formação do Preço Teórico de Fechamento (PTF), minimização de desbalanceamento e priorização MOC."
+    },
+    {
+      "id": "SRC-054",
+      "title": "B3 Câmara de Câmbio — Regulamento de Compensação e Liquidação com Mecanismo PvP (CPMI-IOSCO PFMI 12)",
+      "url": "https://www.b3.com.br/pt_br/regulacao/estrutura-normativa/regulamentos-e-manuais/camara-cambio.htm",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Liquidação atômica Payment versus Payment multimoeda (BRL e USD), prevenção do Risco Herstatt e liquidação NDF."
+    },
+    {
+      "id": "SRC-055",
+      "title": "Banco Central do Brasil & B3 CSD — Manual de Interoperabilidade e Títulos Públicos Tokenizados na Rede DREX",
+      "url": "https://www.b3.com.br/pt_br/solucoes/plataformas/inovacao-e-ativos-digitais/drex.htm",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Espelhamento de custódia fiduciária CSD B3, smart contracts ERC-1155, liquidação DvP atômica e des-tokenização."
     }
   ]
 }

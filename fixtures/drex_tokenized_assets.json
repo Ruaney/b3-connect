@@ -1,0 +1,39 @@
+{
+  "version": "1.0.0",
+  "as_of": "2026-11-04",
+  "scope": "B3 CSD & BACEN DREX — Títulos Públicos Tokenizados (TPFt) & DvP Atômico",
+  "csd_accounts": [
+    {
+      "account_id": "CSD-ACC-ITAU-001",
+      "participant_id": "PART-ITAU-01",
+      "symbol": "LTN2028",
+      "available_quantity": 50000,
+      "encumbered_drex_quantity": 10000
+    },
+    {
+      "account_id": "CSD-ACC-BRAD-002",
+      "participant_id": "PART-BRAD-02",
+      "symbol": "LTN2028",
+      "available_quantity": 30000,
+      "encumbered_drex_quantity": 5000
+    }
+  ],
+  "drex_wallets": [
+    {
+      "wallet_address": "0x1111111111111111111111111111111111111111",
+      "participant_id": "PART-ITAU-01",
+      "real_digital_balance_brl": "25000000.00",
+      "tpft_balances": {
+        "LTN2028": 10000
+      }
+    },
+    {
+      "wallet_address": "0x2222222222222222222222222222222222222222",
+      "participant_id": "PART-BRAD-02",
+      "real_digital_balance_brl": "40000000.00",
+      "tpft_balances": {
+        "LTN2028": 5000
+      }
+    }
+  ]
+}
