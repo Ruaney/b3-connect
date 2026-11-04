@@ -931,6 +931,69 @@
         "implemented": "src/opa_tender_offer.py",
         "tested_locally": "tests/test_opa_tender_offer.py"
       }
+    },
+    {
+      "id": "FL-045",
+      "name": "Governança de DMA B3: Modelos DMA 1, DMA 2, DMA 3 e DMA 4 com Filtros Pré-Trade Mandatórios CVM 35 e Kill-Switch",
+      "system": "PUMA Trading System & Gateway de Risco B3",
+      "interface": "Motor de Filtros Pré-Trade e Kill-Switch DMA (CVM 35)",
+      "sources": [
+        "SRC-039"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Arquitetura dos modelos DMA 1 (OMS), DMA 2 (Algo), DMA 3 (Direct to Exchange) e DMA 4 (Co-location), filtros mandatórios de valor, quantidade, túnel de preço, short selling, throttling por janela deslizante e Kill-Switch sub-100ms implementados com sucesso. Pendente homologação B3.",
+      "evidence": {
+        "documented": "docs/layout-dma-governance.md",
+        "implemented": "src/dma_governance.py",
+        "tested_locally": "tests/test_dma_governance.py"
+      }
+    },
+    {
+      "id": "FL-046",
+      "name": "Operar Programa de Formador de Mercado PMM: Obrigações de Presença, Spread Máximo, Profundidade e Descontos Tarifários",
+      "system": "PUMA Trading System & Tarifação B3",
+      "interface": "Motor de Auditoria Contínua de PMM e Apuração Tarifária",
+      "sources": [
+        "SRC-040"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Auditoria de snapshots de cotação contínua (exclusão de leilões), conformidade de spread percentual e ticks, profundidade mínima de lote, tolerância de recomposição de oferta (regeneration time) e apuração mensal de descontos tarifários implementados com sucesso. Pendente homologação B3.",
+      "evidence": {
+        "documented": "docs/layout-market-maker-pmm.md",
+        "implemented": "src/market_maker_pmm.py",
+        "tested_locally": "tests/test_market_maker_pmm.py"
+      }
+    },
+    {
+      "id": "FL-047",
+      "name": "Auditar Negociação Algorítmica e HFT: Tags Mandatórias CVM 505 / RTS 25, Sincronização Temporal e Order-to-Trade Ratio (OTR)",
+      "system": "BSM Supervisão de Mercados & PUMA FIX",
+      "interface": "Motor de Auditoria Regulatória de Algoritmos e Tarifação Punitiva de OTR",
+      "sources": [
+        "SRC-041"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Validação de tags FIX CVM 505 / RTS 25 (1031, 57, 1724, 8015), rastreabilidade de algoritmos HFT vs discricionários, precisão temporal em microssegundos (< 100 µs), cálculo determinístico de OTR por volume e quantidade e apuração de taxas punitivas B3 implementados com sucesso. Pendente sandbox BSM.",
+      "evidence": {
+        "documented": "docs/layout-hft-algo-governance.md",
+        "implemented": "src/hft_algo_governance.py",
+        "tested_locally": "tests/test_hft_algo_governance.py"
+      }
     }
   ]
 }

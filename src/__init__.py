@@ -312,6 +312,16 @@ from src.nome_agro import (
     PriceIndexType,
     SettlementRecord,
 )
+from src.dma_governance import (
+    DmaClientConfig,
+    DmaGovernanceEngine,
+    DmaModelType,
+    DmaOrderRequest,
+    DmaRejectionReason,
+    DmaRiskEvaluationResult,
+    KillSwitchExecution,
+    OrderSide,
+)
 
 __all__ = [
     # Parser IMBARQ004
@@ -612,4 +622,13 @@ __all__ = [
     "AgroValidationError",
     "AgroParsingError",
     "AgroSettlementError",
+    # Governança de DMA e Filtros Pré-Trade B3 / CVM 35 (FL-045)
+    "DmaClientConfig",
+    "DmaGovernanceEngine",
+    "DmaModelType",
+    "DmaOrderRequest",
+    "DmaRejectionReason",
+    "DmaRiskEvaluationResult",
+    "KillSwitchExecution",
+    "OrderSide",
 ]

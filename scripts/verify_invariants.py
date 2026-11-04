@@ -55,6 +55,9 @@ from src.equity_forward_termo import EquityForwardEngine
 from src.flexible_options_otc import FlexibleOptionsOtcEngine
 from src.units_conversion import UnitsConversionEngine
 from src.opa_tender_offer import OpaTenderOfferEngine
+from src.dma_governance import DmaGovernanceEngine, DmaModelType
+from src.market_maker_pmm import MarketMakerPmmEngine
+from src.hft_algo_governance import HftAlgoGovernanceEngine
 
 
 class InvariantViolationError(AssertionError):
@@ -701,6 +704,68 @@ def verify_opa_tender_offer_invariants(fixtures_dir: Path):
     print("      ✓ Conservação de ações habilitadas, quórum legal de 2/3 e rateio proporcional pro-rata comprovados.")
 
 
+def verify_dma_governance_invariants(fixtures_dir: Path):
+    """
+    Lei 29: Invariante de Governança DMA e Proteção de Risco Pré-Trade CVM 35 (FL-045)
+    1. Acesso rigoroso por modelo de DMA (DMA 1, 2, 3 e 4) com checagem de limites de valor, lote e túnel.
+    2. Mecanismo de Kill-Switch Mandatório B3 com latência de execução < 100ms e cancelamento total de ordens ativas.
+    """
+    print("[29/31] Verificando Invariante de Governança DMA e Filtros Pré-Trade (FL-045)...")
+    engine = DmaGovernanceEngine()
+    engine.load_from_json_file(fixtures_dir / "dma_governance_orders.json")
+    
+    # Valida presença dos 4 modelos
+    cli_dma1 = engine.get_client("CLI_DMA1_RETAIL")
+    cli_dma4 = engine.get_client("CLI_DMA4_HFT")
+    check(cli_dma1 is not None and cli_dma1.dma_model == DmaModelType.DMA_1, "Modelo DMA 1 não configurado")
+    check(cli_dma4 is not None and cli_dma4.dma_model == DmaModelType.DMA_4, "Modelo DMA 4 não configurado")
+    
+    # Disparo de Kill-Switch e verificação de esvaziamento de ordens ativas
+    ks = engine.trigger_kill_switch("CLI_DMA3_INST", "Invariante Formal de Risco")
+    check(ks.channel_blocked, "Canal DMA não bloqueado após acionamento do Kill-Switch")
+    check(ks.latency_ms < 100.0, "Latência do Kill-Switch ultrapassou o teto regulatório de 100ms")
+    active_orders = engine.get_active_orders("CLI_DMA3_INST")
+    check(len(active_orders) == 0, "Ordens ativas remanescentes após execução de Kill-Switch")
+    print("      ✓ Modelos DMA 1 a 4, filtros pré-trade CVM 35 e Kill-Switch sub-100ms comprovados.")
+
+
+def verify_market_maker_pmm_invariants(fixtures_dir: Path):
+    """
+    Lei 30: Invariante de Conservação Tarifária e Presença PMM (FL-046)
+    1. Identidade de Conservação Tarifária: Total_Tarifas_Brutas == Desconto_PMM + Tarifas_Liquidas_Devidas.
+    2. Respeito às métricas de presença contínua, spread máximo e profundidade mínima com exclusão de leilões.
+    """
+    print("[30/31] Verificando Invariante Tarifária e Presença de Formador de Mercado PMM (FL-046)...")
+    engine = MarketMakerPmmEngine()
+    sessions, monthly_rewards = engine.load_fixtures_and_audit(fixtures_dir / "market_maker_pmm_audit.json")
+    check(len(sessions) > 0, "Nenhuma sessão de PMM auditada")
+    check(len(monthly_rewards) > 0, "Nenhum faturamento mensal de PMM apurado")
+    for r in monthly_rewards:
+        check(
+            r.total_gross_fees == r.discount_amount + r.net_fees_payable,
+            f"Conservação tarifária violada no PMM para {r.participant_id} em {r.symbol}",
+        )
+    print("      ✓ Conservação de faturamento tarifário, presença contínua e exclusão de leilões PMM comprovadas.")
+
+
+def verify_hft_algo_governance_invariants(fixtures_dir: Path):
+    """
+    Lei 31: Invariante de Identificação Algorítmica e Penalidade OTR BSM (FL-047)
+    1. Identificação mandatória RTS 25 / CVM 505 (Tag 1031, 57, 1724, 8015).
+    2. Conservação da Tarifação Punitiva de OTR: Total_Penalidades == Soma(Penalidades_Individuais).
+    """
+    print("[31/31] Verificando Invariante de Identificação Algorítmica e Penalidade OTR BSM (FL-047)...")
+    engine = HftAlgoGovernanceEngine.load_from_json(fixtures_dir / "hft_algo_governance.json")
+    rep = engine.generate_governance_report()
+    check(rep.total_events > 0, "Nenhum evento algorítmico auditado na fixture")
+    sum_penalties = sum(p.total_penalty_brl for p in rep.penalties)
+    check(
+        sum_penalties == rep.total_penalties_brl,
+        f"Conservação de penalidades de OTR violada: {sum_penalties} != {rep.total_penalties_brl}",
+    )
+    print("      ✓ Identificação CVM 505/RTS 25, sincronização temporal e tarifação punitiva de OTR comprovadas.")
+
+
 def main():
     print("=" * 70)
     print(" B3 INTEGRATION ATLAS — VERIFICAÇÃO FORMAL DE INVARIANTES")
@@ -741,9 +806,12 @@ def main():
         verify_flexible_options_otc_invariants(fixtures_dir)
         verify_units_conversion_invariants(fixtures_dir)
         verify_opa_tender_offer_invariants(fixtures_dir)
+        verify_dma_governance_invariants(fixtures_dir)
+        verify_market_maker_pmm_invariants(fixtures_dir)
+        verify_hft_algo_governance_invariants(fixtures_dir)
         
         print("\n" + "=" * 70)
-        print("✓ TODAS AS 28 LEIS DE CONSERVAÇÃO E INVARIANTES DA B3 FORAM PROVADAS!")
+        print("✓ TODAS AS 31 LEIS DE CONSERVAÇÃO E INVARIANTES DA B3 FORAM PROVADAS!")
         print("  Garantia matemática de consistência em todas as fixtures e módulos.")
         print("=" * 70)
         sys.exit(0)

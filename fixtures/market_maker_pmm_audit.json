@@ -1,0 +1,197 @@
+{
+  "contracts": [
+    {
+      "contract_id": "PMM-2026-PRIO3-UBS",
+      "participant_id": "008-UBS",
+      "symbol": "PRIO3",
+      "asset_class": "EQUITY_SMALL_CAP",
+      "min_presence_pct": "80.00",
+      "max_spread_pct": "1.50",
+      "min_bid_qty": "500",
+      "min_ask_qty": "500",
+      "max_regeneration_seconds": 60,
+      "max_daily_spread_violations": 5,
+      "base_discount_pct": "100.00",
+      "min_monthly_compliant_ratio": "80.00"
+    },
+    {
+      "contract_id": "PMM-2026-SMAL11-JPM",
+      "participant_id": "016-JP_MORGAN",
+      "symbol": "SMAL11",
+      "asset_class": "ETF",
+      "min_presence_pct": "90.00",
+      "max_spread_pct": "0.50",
+      "min_bid_qty": "200",
+      "min_ask_qty": "200",
+      "max_regeneration_seconds": 60,
+      "max_daily_spread_violations": 3,
+      "base_discount_pct": "100.00",
+      "min_monthly_compliant_ratio": "85.00"
+    },
+    {
+      "contract_id": "PMM-2026-CCMF26-XP",
+      "participant_id": "099-XP",
+      "symbol": "CCMF26",
+      "asset_class": "COMMODITY_FUTURE",
+      "min_presence_pct": "85.00",
+      "max_spread_pct": "0.30",
+      "min_bid_qty": "10",
+      "min_ask_qty": "10",
+      "max_regeneration_seconds": 45,
+      "max_daily_spread_violations": 4,
+      "base_discount_pct": "100.00",
+      "min_monthly_compliant_ratio": "80.00"
+    }
+  ],
+  "sessions": [
+    {
+      "session_date": "2026-11-03",
+      "participant_id": "008-UBS",
+      "symbol": "PRIO3",
+      "snapshots": [
+        {
+          "timestamp": "2026-11-03T09:55:00Z",
+          "bid_price": "44.00",
+          "bid_qty": "1000",
+          "ask_price": "44.20",
+          "ask_qty": "1000",
+          "phase": "OPENING_AUCTION",
+          "duration_seconds": "300.0"
+        },
+        {
+          "timestamp": "2026-11-03T10:00:00Z",
+          "bid_price": "44.10",
+          "bid_qty": "500",
+          "ask_price": "44.50",
+          "ask_qty": "500",
+          "phase": "CONTINUOUS",
+          "duration_seconds": "1800.0"
+        },
+        {
+          "timestamp": "2026-11-03T10:30:00Z",
+          "bid_price": null,
+          "bid_qty": null,
+          "ask_price": "44.55",
+          "ask_qty": "500",
+          "phase": "CONTINUOUS",
+          "last_trade_timestamp": "2026-11-03T10:29:45Z",
+          "duration_seconds": "30.0"
+        },
+        {
+          "timestamp": "2026-11-03T10:30:30Z",
+          "bid_price": "44.15",
+          "bid_qty": "500",
+          "ask_price": "44.60",
+          "ask_qty": "500",
+          "phase": "CONTINUOUS",
+          "duration_seconds": "1800.0"
+        },
+        {
+          "timestamp": "2026-11-03T11:00:30Z",
+          "bid_price": "43.80",
+          "bid_qty": "500",
+          "ask_price": "44.80",
+          "ask_qty": "500",
+          "phase": "CONTINUOUS",
+          "duration_seconds": "60.0"
+        },
+        {
+          "timestamp": "2026-11-03T11:01:30Z",
+          "bid_price": "44.20",
+          "bid_qty": "600",
+          "ask_price": "44.65",
+          "ask_qty": "600",
+          "phase": "CONTINUOUS",
+          "duration_seconds": "1800.0"
+        }
+      ]
+    },
+    {
+      "session_date": "2026-11-04",
+      "participant_id": "008-UBS",
+      "symbol": "PRIO3",
+      "snapshots": [
+        {
+          "timestamp": "2026-11-04T10:00:00Z",
+          "bid_price": "44.50",
+          "bid_qty": "500",
+          "ask_price": "44.90",
+          "ask_qty": "500",
+          "phase": "CONTINUOUS",
+          "duration_seconds": "3000.0"
+        },
+        {
+          "timestamp": "2026-11-04T10:50:00Z",
+          "bid_price": "44.50",
+          "bid_qty": "500",
+          "ask_price": "45.00",
+          "ask_qty": "500",
+          "phase": "CONTINUOUS",
+          "duration_seconds": "2500.0"
+        },
+        {
+          "timestamp": "2026-11-04T11:31:40Z",
+          "bid_price": "44.30",
+          "bid_qty": "500",
+          "ask_price": "45.50",
+          "ask_qty": "500",
+          "phase": "CONTINUOUS",
+          "duration_seconds": "100.0"
+        }
+      ]
+    },
+    {
+      "session_date": "2026-11-03",
+      "participant_id": "016-JP_MORGAN",
+      "symbol": "SMAL11",
+      "snapshots": [
+        {
+          "timestamp": "2026-11-03T10:00:00Z",
+          "bid_price": "105.00",
+          "bid_qty": "300",
+          "ask_price": "105.40",
+          "ask_qty": "300",
+          "phase": "CONTINUOUS",
+          "duration_seconds": "3600.0"
+        },
+        {
+          "timestamp": "2026-11-03T11:00:00Z",
+          "bid_price": null,
+          "bid_qty": null,
+          "ask_price": null,
+          "ask_qty": null,
+          "phase": "CONTINUOUS",
+          "last_trade_timestamp": null,
+          "duration_seconds": "900.0"
+        },
+        {
+          "timestamp": "2026-11-03T11:15:00Z",
+          "bid_price": "105.10",
+          "bid_qty": "200",
+          "ask_price": "105.50",
+          "ask_qty": "200",
+          "phase": "CONTINUOUS",
+          "duration_seconds": "3600.0"
+        }
+      ]
+    }
+  ],
+  "monthly_billings": [
+    {
+      "month_reference": "2026-11",
+      "participant_id": "008-UBS",
+      "symbol": "PRIO3",
+      "gross_trading_fees": "45250.80",
+      "gross_clearing_fees": "21840.20",
+      "use_tiered_discount": true
+    },
+    {
+      "month_reference": "2026-11",
+      "participant_id": "016-JP_MORGAN",
+      "symbol": "SMAL11",
+      "gross_trading_fees": "82000.00",
+      "gross_clearing_fees": "38000.00",
+      "use_tiered_discount": false
+    }
+  ]
+}

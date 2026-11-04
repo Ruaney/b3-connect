@@ -1,0 +1,366 @@
+{
+  "governance_version": "CVM_35_DMA_GOVERNANCE_2026",
+  "regulatory_framework": "Instrução CVM 35/2021 Art. 3º e Manual de Procedimentos Operacionais B3",
+  "reference_prices": {
+    "PETR4": "38.00",
+    "VALE3": "62.50",
+    "ITUB4": "34.00",
+    "B3SA3": "12.00",
+    "WINZ26": "130000.00"
+  },
+  "clients": [
+    {
+      "client_id": "CLI_DMA1_RETAIL",
+      "account": "10001",
+      "participant_code": 88,
+      "dma_model": "DMA_1",
+      "max_order_value": "100000.00",
+      "max_order_qty": 2000,
+      "price_tunnel_pct": "0.05",
+      "max_uncovered_position": 0,
+      "max_msg_per_second": 10,
+      "is_active": true,
+      "is_kill_switch_active": false,
+      "custody": {
+        "PETR4": 1000,
+        "VALE3": 500,
+        "B3SA3": 2000
+      }
+    },
+    {
+      "client_id": "CLI_DMA2_ALGO",
+      "account": "20002",
+      "participant_code": 88,
+      "dma_model": "DMA_2",
+      "max_order_value": "1000000.00",
+      "max_order_qty": 20000,
+      "price_tunnel_pct": "0.04",
+      "max_uncovered_position": 5000,
+      "max_msg_per_second": 50,
+      "is_active": true,
+      "is_kill_switch_active": false,
+      "custody": {
+        "PETR4": 10000,
+        "VALE3": 8000,
+        "ITUB4": 15000
+      }
+    },
+    {
+      "client_id": "CLI_DMA3_INST",
+      "account": "30003",
+      "participant_code": 88,
+      "dma_model": "DMA_3",
+      "max_order_value": "5000000.00",
+      "max_order_qty": 50000,
+      "price_tunnel_pct": "0.03",
+      "max_uncovered_position": 25000,
+      "max_msg_per_second": 200,
+      "is_active": true,
+      "is_kill_switch_active": false,
+      "custody": {
+        "PETR4": 50000,
+        "VALE3": 30000,
+        "B3SA3": 40000
+      }
+    },
+    {
+      "client_id": "CLI_DMA4_HFT",
+      "account": "40004",
+      "participant_code": 88,
+      "dma_model": "DMA_4",
+      "max_order_value": "10000000.00",
+      "max_order_qty": 100000,
+      "price_tunnel_pct": "0.02",
+      "max_uncovered_position": 100000,
+      "max_msg_per_second": 2000,
+      "is_active": true,
+      "is_kill_switch_active": false,
+      "custody": {
+        "PETR4": 100000,
+        "VALE3": 100000,
+        "B3SA3": 100000,
+        "WINZ26": 500
+      }
+    },
+    {
+      "client_id": "CLI_DMA3_KILLSWITCH_TARGET",
+      "account": "30009",
+      "participant_code": 88,
+      "dma_model": "DMA_3",
+      "max_order_value": "2000000.00",
+      "max_order_qty": 20000,
+      "price_tunnel_pct": "0.05",
+      "max_uncovered_position": 10000,
+      "max_msg_per_second": 5,
+      "is_active": true,
+      "is_kill_switch_active": false,
+      "custody": {
+        "PETR4": 5000,
+        "VALE3": 5000
+      }
+    }
+  ],
+  "test_scenarios": {
+    "approved_orders": [
+      {
+        "description": "DMA 1 Ordem Varejo Normal dentro de todos os limites",
+        "request": {
+          "order_id": "ORD-APPR-DMA1-001",
+          "client_id": "CLI_DMA1_RETAIL",
+          "symbol": "PETR4",
+          "side": "BUY",
+          "quantity": 500,
+          "price": "38.20",
+          "timestamp": "2026-11-03T10:00:00.000000Z",
+          "dma_model": "DMA_1"
+        },
+        "expected_reason": "APPROVED"
+      },
+      {
+        "description": "DMA 2 Ordem de Algoritmo de Execução institucional (VWAP child slice)",
+        "request": {
+          "order_id": "ORD-APPR-DMA2-002",
+          "client_id": "CLI_DMA2_ALGO",
+          "symbol": "VALE3",
+          "side": "SELL",
+          "quantity": 5000,
+          "price": "62.40",
+          "timestamp": "2026-11-03T10:00:01.000000Z",
+          "dma_model": "DMA_2"
+        },
+        "expected_reason": "APPROVED"
+      },
+      {
+        "description": "DMA 3 Ordem Direta de Fundo Institucional Internacional",
+        "request": {
+          "order_id": "ORD-APPR-DMA3-003",
+          "client_id": "CLI_DMA3_INST",
+          "symbol": "B3SA3",
+          "side": "BUY",
+          "quantity": 20000,
+          "price": "12.10",
+          "timestamp": "2026-11-03T10:00:02.000000Z",
+          "dma_model": "DMA_3"
+        },
+        "expected_reason": "APPROVED"
+      },
+      {
+        "description": "DMA 4 Ordem HFT Co-location Santana de Parnaíba (alta frequência)",
+        "request": {
+          "order_id": "ORD-APPR-DMA4-004",
+          "client_id": "CLI_DMA4_HFT",
+          "symbol": "PETR4",
+          "side": "BUY",
+          "quantity": 10000,
+          "price": "38.05",
+          "timestamp": "2026-11-03T10:00:03.000000Z",
+          "dma_model": "DMA_4"
+        },
+        "expected_reason": "APPROVED"
+      }
+    ],
+    "rejected_max_value": [
+      {
+        "description": "DMA 2 Ordem violando Limite de Valor Financeiro Máximo (R$ 1.125.000 > R$ 1.000.000)",
+        "request": {
+          "order_id": "ORD-REJ-VAL-001",
+          "client_id": "CLI_DMA2_ALGO",
+          "symbol": "VALE3",
+          "side": "BUY",
+          "quantity": 18000,
+          "price": "62.50",
+          "timestamp": "2026-11-03T10:05:00.000000Z",
+          "dma_model": "DMA_2"
+        },
+        "expected_reason": "REJECTED_MAX_ORDER_VALUE_EXCEEDED"
+      }
+    ],
+    "rejected_max_quantity": [
+      {
+        "description": "DMA 1 Ordem violando Limite de Quantidade Máxima (3.000 ações > teto de 2.000)",
+        "request": {
+          "order_id": "ORD-REJ-QTY-001",
+          "client_id": "CLI_DMA1_RETAIL",
+          "symbol": "B3SA3",
+          "side": "BUY",
+          "quantity": 3000,
+          "price": "12.00",
+          "timestamp": "2026-11-03T10:06:00.000000Z",
+          "dma_model": "DMA_1"
+        },
+        "expected_reason": "REJECTED_MAX_ORDER_QUANTITY_EXCEEDED"
+      }
+    ],
+    "rejected_price_tunnel": [
+      {
+        "description": "DMA 3 Ordem violando Túnel de Preço Rejeição (+10.53% > limite de 3.0%)",
+        "request": {
+          "order_id": "ORD-REJ-TUNNEL-001",
+          "client_id": "CLI_DMA3_INST",
+          "symbol": "PETR4",
+          "side": "BUY",
+          "quantity": 1000,
+          "price": "42.00",
+          "timestamp": "2026-11-03T10:07:00.000000Z",
+          "dma_model": "DMA_3"
+        },
+        "expected_reason": "REJECTED_PRICE_TUNNEL_EXCEEDED"
+      },
+      {
+        "description": "DMA 4 Ordem violando Túnel de Preço Rejeição HFT (-5.60% > limite de 2.0%)",
+        "request": {
+          "order_id": "ORD-REJ-TUNNEL-002",
+          "client_id": "CLI_DMA4_HFT",
+          "symbol": "VALE3",
+          "side": "SELL",
+          "quantity": 1000,
+          "price": "59.00",
+          "timestamp": "2026-11-03T10:07:01.000000Z",
+          "dma_model": "DMA_4"
+        },
+        "expected_reason": "REJECTED_PRICE_TUNNEL_EXCEEDED"
+      }
+    ],
+    "rejected_uncovered_position": [
+      {
+        "description": "DMA 1 Venda a descoberto vedada para cliente de varejo (custódia 500, venda de 1500)",
+        "request": {
+          "order_id": "ORD-REJ-SHORT-001",
+          "client_id": "CLI_DMA1_RETAIL",
+          "symbol": "VALE3",
+          "side": "SELL",
+          "quantity": 1500,
+          "price": "62.50",
+          "timestamp": "2026-11-03T10:08:00.000000Z",
+          "dma_model": "DMA_1"
+        },
+        "expected_reason": "REJECTED_UNCOVERED_POSITION_EXCEEDED"
+      }
+    ],
+    "throttling_burst": [
+      {
+        "description": "Ordem 1 da rajada (dentro da cota)",
+        "request": {
+          "order_id": "ORD-THROT-001",
+          "client_id": "CLI_DMA3_KILLSWITCH_TARGET",
+          "symbol": "PETR4",
+          "side": "BUY",
+          "quantity": 100,
+          "price": "38.00",
+          "timestamp": "2026-11-03T10:10:00.000000Z",
+          "dma_model": "DMA_3"
+        },
+        "expected_reason": "APPROVED"
+      },
+      {
+        "description": "Ordem 2 da rajada",
+        "request": {
+          "order_id": "ORD-THROT-002",
+          "client_id": "CLI_DMA3_KILLSWITCH_TARGET",
+          "symbol": "PETR4",
+          "side": "BUY",
+          "quantity": 100,
+          "price": "38.00",
+          "timestamp": "2026-11-03T10:10:00.020000Z",
+          "dma_model": "DMA_3"
+        },
+        "expected_reason": "APPROVED"
+      },
+      {
+        "description": "Ordem 3 da rajada",
+        "request": {
+          "order_id": "ORD-THROT-003",
+          "client_id": "CLI_DMA3_KILLSWITCH_TARGET",
+          "symbol": "PETR4",
+          "side": "BUY",
+          "quantity": 100,
+          "price": "38.00",
+          "timestamp": "2026-11-03T10:10:00.040000Z",
+          "dma_model": "DMA_3"
+        },
+        "expected_reason": "APPROVED"
+      },
+      {
+        "description": "Ordem 4 da rajada",
+        "request": {
+          "order_id": "ORD-THROT-004",
+          "client_id": "CLI_DMA3_KILLSWITCH_TARGET",
+          "symbol": "PETR4",
+          "side": "BUY",
+          "quantity": 100,
+          "price": "38.00",
+          "timestamp": "2026-11-03T10:10:00.060000Z",
+          "dma_model": "DMA_3"
+        },
+        "expected_reason": "APPROVED"
+      },
+      {
+        "description": "Ordem 5 da rajada (limite atingido)",
+        "request": {
+          "order_id": "ORD-THROT-005",
+          "client_id": "CLI_DMA3_KILLSWITCH_TARGET",
+          "symbol": "PETR4",
+          "side": "BUY",
+          "quantity": 100,
+          "price": "38.00",
+          "timestamp": "2026-11-03T10:10:00.080000Z",
+          "dma_model": "DMA_3"
+        },
+        "expected_reason": "APPROVED"
+      },
+      {
+        "description": "Ordem 6 da rajada no mesmo segundo (estouro da taxa de 5 msg/s)",
+        "request": {
+          "order_id": "ORD-THROT-006",
+          "client_id": "CLI_DMA3_KILLSWITCH_TARGET",
+          "symbol": "PETR4",
+          "side": "BUY",
+          "quantity": 100,
+          "price": "38.00",
+          "timestamp": "2026-11-03T10:10:00.100000Z",
+          "dma_model": "DMA_3"
+        },
+        "expected_reason": "REJECTED_THROTTLING_LIMIT_EXCEEDED"
+      }
+    ],
+    "kill_switch_orders": [
+      {
+        "request": {
+          "order_id": "ORD-KS-ACTIVE-001",
+          "client_id": "CLI_DMA3_KILLSWITCH_TARGET",
+          "symbol": "VALE3",
+          "side": "BUY",
+          "quantity": 200,
+          "price": "62.50",
+          "timestamp": "2026-11-03T10:15:00.000000Z",
+          "dma_model": "DMA_3"
+        }
+      },
+      {
+        "request": {
+          "order_id": "ORD-KS-ACTIVE-002",
+          "client_id": "CLI_DMA3_KILLSWITCH_TARGET",
+          "symbol": "VALE3",
+          "side": "BUY",
+          "quantity": 300,
+          "price": "62.40",
+          "timestamp": "2026-11-03T10:15:00.050000Z",
+          "dma_model": "DMA_3"
+        }
+      },
+      {
+        "request": {
+          "order_id": "ORD-KS-POST-DISARM-003",
+          "client_id": "CLI_DMA3_KILLSWITCH_TARGET",
+          "symbol": "VALE3",
+          "side": "BUY",
+          "quantity": 100,
+          "price": "62.50",
+          "timestamp": "2026-11-03T10:15:01.000000Z",
+          "dma_model": "DMA_3"
+        },
+        "expected_reason": "REJECTED_KILL_SWITCH_ACTIVE"
+      }
+    ]
+  }
+}
