@@ -305,6 +305,30 @@
       "status": "localizada",
       "kind": "manual_tecnico",
       "limitation": "Quórum de fechamento de capital (>2/3), Tag-Along Art. 254-A e rateio proporcional pelo método dos maiores restos."
+    },
+    {
+      "id": "SRC-039",
+      "title": "B3 & CVM — Manual de Acesso e Governança de Provedores de DMA (Modelos DMA 1, 2, 3 e 4) e Filtros Pré-Trade (Resolução CVM nº 35/2021)",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/negociacao/acesso/dma/",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Modelos DMA 1 a 4, filtros pré-trade mandatórios CVM 35 (valor, lote, túnel, short sell, throttling) e Kill-Switch sub-100ms."
+    },
+    {
+      "id": "SRC-040",
+      "title": "B3 — Regulamento de Operações e Ofícios Circulares do Programa de Formador de Mercado (PMM)",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/negociacao/formador-de-mercado/",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Obrigações de presença contínua (>=80%/90%), spread máximo, profundidade mínima de lote, tempo de recomposição e isenção tarifária."
+    },
+    {
+      "id": "SRC-041",
+      "title": "B3 & BSM — Manual de Supervisão de Negociação Algorítmica, Rastreabilidade (CVM 505 / RTS 25) e Política de Tarifação de Order-to-Trade Ratio (OTR)",
+      "url": "https://www.b3.com.br/pt_br/regulacao/bsm/supervisao-de-mercado/negociacao-algoritmica.htm",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Tags FIX mandatórias (1031, 57, 1724, 8015), sincronização de relógio <100µs e apuração punitiva de Order-to-Trade Ratio."
     }
   ]
 }
