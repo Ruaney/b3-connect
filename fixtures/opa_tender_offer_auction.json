@@ -1,0 +1,145 @@
+{
+  "schema_version": "1.0.0",
+  "flow_id": "FL-044",
+  "description": "Casos de Leilão Especial de OPA na B3 (Fechamento de Capital com Quórum de 2/3, Tag-Along Art. 254-A e OPA Voluntária Parcial com Rateio Pro-Rata)",
+  "reference_date": "2026-11-03",
+  "auctions": [
+    {
+      "auction_id": "OPA-B3-2026-001",
+      "company_name": "ATLAS TECNOLOGIA S.A.",
+      "offeror_name": "ATLAS CONTROL HOLDING PARTICIPACOES LTDA",
+      "ticker": "ATLS3",
+      "isin": "BRATLSACNOR1",
+      "modality": "OPA_FECHAMENTO_CAPITAL",
+      "governance_segment": "NOVO_MERCADO",
+      "offer_price_per_share": "45.00",
+      "control_block_price_per_share": null,
+      "total_issued_shares": 10000000,
+      "total_free_float_shares": 2400000,
+      "max_target_quantity": null,
+      "min_acceptance_quantity": 0,
+      "auction_date": "2026-11-03",
+      "settlement_date": "2026-11-05",
+      "orders": [
+        {
+          "order_id": "ORD-OPA-001-01",
+          "shareholder_id": "CPF-111.222.333-44",
+          "participant_code": 105,
+          "custody_account": "100201-9",
+          "stance": "TENDER_SELL",
+          "enabled_quantity": 2000000,
+          "blocked_in_opa_portfolio": true,
+          "timestamp": "2026-11-03T10:15:00Z"
+        },
+        {
+          "order_id": "ORD-OPA-001-02",
+          "shareholder_id": "CNPJ-22.333.444/0001-55",
+          "participant_code": 88,
+          "custody_account": "200301-1",
+          "stance": "AGREE_NO_SALE",
+          "enabled_quantity": 300000,
+          "blocked_in_opa_portfolio": true,
+          "timestamp": "2026-11-03T10:30:00Z"
+        },
+        {
+          "order_id": "ORD-OPA-001-03",
+          "shareholder_id": "CNPJ-33.444.555/0001-66",
+          "participant_code": 72,
+          "custody_account": "300401-2",
+          "stance": "DISSENT_HOLD",
+          "enabled_quantity": 100000,
+          "blocked_in_opa_portfolio": true,
+          "timestamp": "2026-11-03T11:00:00Z"
+        }
+      ]
+    },
+    {
+      "auction_id": "OPA-B3-2026-002",
+      "company_name": "ENERGIA DO NORDESTE S.A.",
+      "offeror_name": "GLOBAL POWER BRASIL S.A.",
+      "ticker": "ENOR3",
+      "isin": "BRENORACNOR4",
+      "modality": "OPA_ALIENACAO_CONTROLE",
+      "governance_segment": "TRADICIONAL",
+      "offer_price_per_share": "32.00",
+      "control_block_price_per_share": "40.00",
+      "total_issued_shares": 5000000,
+      "total_free_float_shares": 1500000,
+      "max_target_quantity": null,
+      "min_acceptance_quantity": 0,
+      "auction_date": "2026-11-03",
+      "settlement_date": "2026-11-05",
+      "orders": [
+        {
+          "order_id": "ORD-OPA-002-01",
+          "shareholder_id": "CNPJ-44.555.666/0001-77",
+          "participant_code": 114,
+          "custody_account": "400501-3",
+          "stance": "TENDER_SELL",
+          "enabled_quantity": 500000,
+          "blocked_in_opa_portfolio": true,
+          "timestamp": "2026-11-03T09:30:00Z"
+        },
+        {
+          "order_id": "ORD-OPA-002-02",
+          "shareholder_id": "CPF-555.666.777-88",
+          "participant_code": 120,
+          "custody_account": "500601-4",
+          "stance": "TENDER_SELL",
+          "enabled_quantity": 300000,
+          "blocked_in_opa_portfolio": true,
+          "timestamp": "2026-11-03T09:45:00Z"
+        }
+      ]
+    },
+    {
+      "auction_id": "OPA-B3-2026-003",
+      "company_name": "LOGISTICA INTEGRADA S.A.",
+      "offeror_name": "INFRAESTRUTURA FUNDO DE INVESTIMENTO EM ACOES",
+      "ticker": "LOGI3",
+      "isin": "BRLOGIACNOR8",
+      "modality": "OPA_VOLUNTARIA_PARCIAL",
+      "governance_segment": "NOVO_MERCADO",
+      "offer_price_per_share": "25.00",
+      "control_block_price_per_share": null,
+      "total_issued_shares": 8000000,
+      "total_free_float_shares": 3000000,
+      "max_target_quantity": 1000000,
+      "min_acceptance_quantity": 500000,
+      "auction_date": "2026-11-03",
+      "settlement_date": "2026-11-05",
+      "orders": [
+        {
+          "order_id": "ORD-OPA-003-01",
+          "shareholder_id": "CNPJ-66.777.888/0001-99",
+          "participant_code": 105,
+          "custody_account": "600701-5",
+          "stance": "TENDER_SELL",
+          "enabled_quantity": 800000,
+          "blocked_in_opa_portfolio": true,
+          "timestamp": "2026-11-03T10:00:00Z"
+        },
+        {
+          "order_id": "ORD-OPA-003-02",
+          "shareholder_id": "CNPJ-77.888.999/0001-11",
+          "participant_code": 88,
+          "custody_account": "700801-6",
+          "stance": "TENDER_SELL",
+          "enabled_quantity": 600000,
+          "blocked_in_opa_portfolio": true,
+          "timestamp": "2026-11-03T10:15:00Z"
+        },
+        {
+          "order_id": "ORD-OPA-003-03",
+          "shareholder_id": "CPF-888.999.000-22",
+          "participant_code": 72,
+          "custody_account": "800901-7",
+          "stance": "TENDER_SELL",
+          "enabled_quantity": 600000,
+          "blocked_in_opa_portfolio": true,
+          "timestamp": "2026-11-03T10:30:00Z"
+        }
+      ]
+    }
+  ]
+}

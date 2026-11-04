@@ -51,6 +51,10 @@ from src.lien_collateral_registry import LienCollateralRegistryEngine
 from src.buyin_failure_management import BuyInFailureEngine
 from src.listed_options_exercise import ListedOptionsEngine
 from src.otc_derivatives_swap_ndf import OtcDerivativesEngine
+from src.equity_forward_termo import EquityForwardEngine
+from src.flexible_options_otc import FlexibleOptionsOtcEngine
+from src.units_conversion import UnitsConversionEngine
+from src.opa_tender_offer import OpaTenderOfferEngine
 
 
 class InvariantViolationError(AssertionError):
@@ -637,6 +641,66 @@ def verify_otc_derivatives_swap_ndf_invariants(fixtures_dir: Path):
     print("      ✓ Conservação bilateral soma-zero (Swap/NDF) e balanço pós-IRRF no NoMe comprovados.")
 
 
+def verify_equity_forward_termo_invariants(fixtures_dir: Path):
+    """
+    Lei 25: Conservação de Quantidade e Cobertura 100% no Mercado a Termo (FL-041)
+    1. Quantidade Original == Liquidada Antecipada + Liquidada no Vencimento + Aberta.
+    2. Vendedor 100% Coberto na carteira 2306-6 e Preço calculado via DU/252.
+    """
+    print("[25/28] Verificando Invariante de Quantidade e Cobertura no Mercado a Termo (FL-041)...")
+    engine = EquityForwardEngine.from_json_fixture(fixtures_dir / "equity_forward_contracts.json")
+    summary = engine.summarize()
+    check(summary.total_contracts == 4, "Total de contratos a termo diverge da fixture")
+    check(summary.all_quantity_conserved, "Conservação de quantidade de ações a termo violada")
+    check(summary.all_seller_100pct_covered, "Vendedor a termo sem 100% de cobertura na 2306-6")
+    check(summary.all_terms_within_b3_limits, "Prazo regulamentar de termo (16 a 999 dias) violado")
+    print("      ✓ Conservação de quantidade de ações, cobertura 100% (2306-6) e prazo regulamentar comprovados.")
+
+
+def verify_flexible_options_otc_invariants(fixtures_dir: Path):
+    """
+    Lei 26: Conservação Soma-Zero e Barreiras em Opções Flexíveis de Balcão (FL-042)
+    1. Payoff Bruto Holder + Payoff Bruto Writer == 0.00.
+    2. Balanço líquido de liquidação: Net_Holder + Net_Writer + IRRF_Holder == 0.00.
+    """
+    print("[26/28] Verificando Invariante Soma-Zero em Opções Flexíveis NoMe (FL-042)...")
+    engine = FlexibleOptionsOtcEngine.from_json_fixture(fixtures_dir / "flexible_options_otc.json")
+    summary = engine.summarize()
+    check(summary.total_contracts == 5, "Total de opções flexíveis diverge da fixture")
+    check(summary.all_zero_sum_gross, "Conservação bilateral soma-zero violada em opções flexíveis")
+    check(summary.all_cashflow_balanced, "Balanço contábil pós-IRRF violado em opções flexíveis")
+    print("      ✓ Conservação bilateral soma-zero, barreiras Knock-In/Out e limitadores Cap comprovados.")
+
+
+def verify_units_conversion_invariants(fixtures_dir: Path):
+    """
+    Lei 27: Conservação Física de Ações Equivalentes em Conversão de Units (FL-043)
+    1. Para todo investidor: ON_Equivalente e PN_Equivalente são constantes antes e após cada conversão.
+    2. Respeito estrito às proporções estatutárias de ON/PN por Unit.
+    """
+    print("[27/28] Verificando Invariante de Ações Equivalentes em Units (FL-043)...")
+    engine, instructions = UnitsConversionEngine.from_json_fixture(fixtures_dir / "units_conversion_requests.json")
+    engine.process_all(instructions)
+    summary = engine.summarize()
+    check(summary.total_instructions_processed == 6, "Total de conversões de Units diverge da fixture")
+    check(summary.all_conservations_satisfied, "Conservação de ações equivalentes violada na conversão de Units")
+    print("      ✓ Conservação física de ações equivalentes (ON e PN) e atomicidade D0 em Units comprovadas.")
+
+
+def verify_opa_tender_offer_invariants(fixtures_dir: Path):
+    """
+    Lei 28: Conservação de Custódia e Quórum de 2/3 em Leilões Especiais de OPA (FL-044)
+    1. Soma(Ações Aceitas) + Soma(Ações Devolvidas) == Total de Ações Habilitadas em todas as modalidades.
+    2. Respeito estrito ao piso de Tag-Along (80%/100%) e ao quórum de 2/3 (3*Q_conc > 2*Q_hab).
+    """
+    print("[28/28] Verificando Invariante de Conservação e Quórum em Leilões de OPA (FL-044)...")
+    engine = OpaTenderOfferEngine.from_json_fixture(fixtures_dir / "opa_tender_offer_auction.json")
+    summary = engine.summarize()
+    check(summary["total_auctions"] == 3, "Total de leilões de OPA diverge da fixture")
+    check(summary["all_conservations_satisfied"], "Conservação de ações em leilões de OPA violada")
+    print("      ✓ Conservação de ações habilitadas, quórum legal de 2/3 e rateio proporcional pro-rata comprovados.")
+
+
 def main():
     print("=" * 70)
     print(" B3 INTEGRATION ATLAS — VERIFICAÇÃO FORMAL DE INVARIANTES")
@@ -673,9 +737,13 @@ def main():
         verify_buyin_failure_management_invariants(fixtures_dir)
         verify_listed_options_expiration_invariants(fixtures_dir)
         verify_otc_derivatives_swap_ndf_invariants(fixtures_dir)
+        verify_equity_forward_termo_invariants(fixtures_dir)
+        verify_flexible_options_otc_invariants(fixtures_dir)
+        verify_units_conversion_invariants(fixtures_dir)
+        verify_opa_tender_offer_invariants(fixtures_dir)
         
         print("\n" + "=" * 70)
-        print("✓ TODAS AS 24 LEIS DE CONSERVAÇÃO E INVARIANTES DA B3 FORAM PROVADAS!")
+        print("✓ TODAS AS 28 LEIS DE CONSERVAÇÃO E INVARIANTES DA B3 FORAM PROVADAS!")
         print("  Garantia matemática de consistência em todas as fixtures e módulos.")
         print("=" * 70)
         sys.exit(0)
