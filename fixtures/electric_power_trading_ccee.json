@@ -1,0 +1,496 @@
+{
+  "schema_version": "1.0.0",
+  "flow_id": "FL-087",
+  "description": "Cenário de Registro, Marcação a Mercado, Trava Fiduciária de Recebíveis e Liquidação Financeira de Energia Elétrica ACL (NoMe B3 e CCEE)",
+  "reference_date": "2024-08-01",
+  "contracts": [
+    {
+      "contract_id": "CTR-ACL-2024-001",
+      "nome_registration_id": "NOME-ENE-2024-88001",
+      "ccee_contract_code": "CCEE-REG-99101",
+      "buyer_id": "COM-ENERGIA-SE-02",
+      "buyer_name": "DELTA COMERCIALIZADORA DE ENERGIA S.A.",
+      "seller_id": "GER-HIDRO-NORTE-04",
+      "seller_name": "RIO VERDE GERACAO HIDRELETRICA S.A.",
+      "energy_type": "CONV",
+      "submarket": "SE_CO",
+      "start_date": "2024-08-01",
+      "end_date": "2024-08-31",
+      "mw_average": "10.0000",
+      "total_hours": 744,
+      "volume_mwh": "7440.0000",
+      "contract_price_mwh": "180.00",
+      "notional_amount": "1339200.00",
+      "modulation": "FLAT",
+      "status": "ACTIVE",
+      "fiduciary_assignment": {
+        "assignment_id": "TRV-NOME-2024-001",
+        "contract_id": "CTR-ACL-2024-001",
+        "beneficiary_creditor_id": "BCO-ITAU-BBA",
+        "beneficiary_creditor_name": "BANCO ITAU BBA S.A.",
+        "escrow_account_id": "ESCROW-CC-98210-ITAU",
+        "secured_debt_amount": "800000.00",
+        "retention_percentage": "100.00",
+        "fixed_retention_amount": null,
+        "status": "ACTIVE",
+        "registered_at": "2024-07-25T14:30:00"
+      },
+      "metadata": {
+        "market_segment": "ACL",
+        "trading_desk": "POWER_DESK_SP"
+      }
+    },
+    {
+      "contract_id": "CTR-ACL-2024-002",
+      "nome_registration_id": "NOME-ENE-2024-88002",
+      "ccee_contract_code": "CCEE-REG-99102",
+      "buyer_id": "IND-ALUMINIO-S-03",
+      "buyer_name": "ALUMINIO BRASIL S.A. - CONSUMIDOR LIVRE",
+      "seller_id": "GER-SOLAR-NE-01",
+      "seller_name": "SOL DO SERTAO COMPLEXO SOLAR FOTOVOLTAICO S.A.",
+      "energy_type": "I50",
+      "submarket": "NE",
+      "start_date": "2024-08-01",
+      "end_date": "2024-08-31",
+      "mw_average": "25.0000",
+      "total_hours": 744,
+      "volume_mwh": "18600.0000",
+      "contract_price_mwh": "165.00",
+      "notional_amount": "3069000.00",
+      "modulation": "FLAT",
+      "status": "ACTIVE",
+      "fiduciary_assignment": null,
+      "metadata": {
+        "market_segment": "ACL",
+        "source": "SOLAR_FOTOVOLTAICA"
+      }
+    },
+    {
+      "contract_id": "CTR-ACL-2024-003",
+      "nome_registration_id": "NOME-ENE-2024-88003",
+      "ccee_contract_code": "CCEE-REG-99103",
+      "buyer_id": "COM-ENERGIA-SE-02",
+      "buyer_name": "DELTA COMERCIALIZADORA DE ENERGIA S.A.",
+      "seller_id": "GER-SOLAR-NE-01",
+      "seller_name": "SOL DO SERTAO COMPLEXO SOLAR FOTOVOLTAICO S.A.",
+      "energy_type": "I100",
+      "submarket": "S",
+      "start_date": "2024-08-01",
+      "end_date": "2024-08-31",
+      "mw_average": "5.0000",
+      "total_hours": 744,
+      "volume_mwh": "3720.0000",
+      "contract_price_mwh": "210.00",
+      "notional_amount": "781200.00",
+      "modulation": "FLAT",
+      "status": "REGISTERED",
+      "fiduciary_assignment": {
+        "assignment_id": "TRV-NOME-2024-003",
+        "contract_id": "CTR-ACL-2024-003",
+        "beneficiary_creditor_id": "BCO-BRADESCO-BBI",
+        "beneficiary_creditor_name": "BANCO BRADESCO BBI S.A.",
+        "escrow_account_id": "ESCROW-CC-44120-BRADESCO",
+        "secured_debt_amount": "500000.00",
+        "retention_percentage": "60.00",
+        "fixed_retention_amount": null,
+        "status": "ACTIVE",
+        "registered_at": "2024-07-28T10:15:00"
+      },
+      "metadata": {
+        "market_segment": "ACL",
+        "ppa_type": "STRUCTURED_DEBT_COLLATERAL"
+      }
+    },
+    {
+      "contract_id": "CTR-ACL-2024-004",
+      "nome_registration_id": "NOME-ENE-2024-88004",
+      "ccee_contract_code": "CCEE-REG-99104",
+      "buyer_id": "IND-ALUMINIO-S-03",
+      "buyer_name": "ALUMINIO BRASIL S.A. - CONSUMIDOR LIVRE",
+      "seller_id": "GER-HIDRO-NORTE-04",
+      "seller_name": "RIO VERDE GERACAO HIDRELETRICA S.A.",
+      "energy_type": "CONV",
+      "submarket": "N",
+      "start_date": "2024-08-01",
+      "end_date": "2024-08-31",
+      "mw_average": "15.0000",
+      "total_hours": 744,
+      "volume_mwh": "11160.0000",
+      "contract_price_mwh": "145.00",
+      "notional_amount": "1618200.00",
+      "modulation": "FLAT",
+      "status": "SETTLED",
+      "fiduciary_assignment": null,
+      "metadata": {
+        "market_segment": "ACL",
+        "pre_settled": true
+      }
+    }
+  ],
+  "collateral_profiles": [
+    {
+      "participant_id": "GER-SOLAR-NE-01",
+      "participant_name": "SOL DO SERTAO COMPLEXO SOLAR FOTOVOLTAICO S.A.",
+      "ccee_agent_code": "AG-GER-SOLAR-NE-01",
+      "cash_settlement_balance": "500000.00",
+      "required_margin": "800000.00",
+      "total_collateral_nominal": "2000000.00",
+      "total_collateral_evaluated": "1925000.00",
+      "margin_coverage": "1125000.00",
+      "is_undercollateralized": false,
+      "deposits": [
+        {
+          "deposit_id": "DEP-SOLAR-CASH-01",
+          "participant_id": "GER-SOLAR-NE-01",
+          "collateral_type": "CASH_BRL",
+          "nominal_amount": "500000.00",
+          "haircut_pct": "0.00",
+          "evaluated_amount": "500000.00"
+        },
+        {
+          "deposit_id": "DEP-SOLAR-TPF-02",
+          "participant_id": "GER-SOLAR-NE-01",
+          "collateral_type": "SOVEREIGN_BOND",
+          "nominal_amount": "1500000.00",
+          "haircut_pct": "5.00",
+          "evaluated_amount": "1425000.00"
+        }
+      ]
+    },
+    {
+      "participant_id": "COM-ENERGIA-SE-02",
+      "participant_name": "DELTA COMERCIALIZADORA DE ENERGIA S.A.",
+      "ccee_agent_code": "AG-COM-ENERGIA-SE-02",
+      "cash_settlement_balance": "300000.00",
+      "required_margin": "1500000.00",
+      "total_collateral_nominal": "2300000.00",
+      "total_collateral_evaluated": "2300000.00",
+      "margin_coverage": "800000.00",
+      "is_undercollateralized": false,
+      "deposits": [
+        {
+          "deposit_id": "DEP-DELTA-CASH-01",
+          "participant_id": "COM-ENERGIA-SE-02",
+          "collateral_type": "CASH_BRL",
+          "nominal_amount": "300000.00",
+          "haircut_pct": "0.00",
+          "evaluated_amount": "300000.00"
+        },
+        {
+          "deposit_id": "DEP-DELTA-FIANCA-02",
+          "participant_id": "COM-ENERGIA-SE-02",
+          "collateral_type": "BANK_GUARANTEE",
+          "nominal_amount": "2000000.00",
+          "haircut_pct": "0.00",
+          "evaluated_amount": "2000000.00"
+        }
+      ]
+    },
+    {
+      "participant_id": "IND-ALUMINIO-S-03",
+      "participant_name": "ALUMINIO BRASIL S.A. - CONSUMIDOR LIVRE",
+      "ccee_agent_code": "AG-IND-ALUMINIO-S-03",
+      "cash_settlement_balance": "500000.00",
+      "required_margin": "1200000.00",
+      "total_collateral_nominal": "3500000.00",
+      "total_collateral_evaluated": "3350000.00",
+      "margin_coverage": "2150000.00",
+      "is_undercollateralized": false,
+      "deposits": [
+        {
+          "deposit_id": "DEP-ALUM-CASH-01",
+          "participant_id": "IND-ALUMINIO-S-03",
+          "collateral_type": "CASH_BRL",
+          "nominal_amount": "500000.00",
+          "haircut_pct": "0.00",
+          "evaluated_amount": "500000.00"
+        },
+        {
+          "deposit_id": "DEP-ALUM-TPF-02",
+          "participant_id": "IND-ALUMINIO-S-03",
+          "collateral_type": "SOVEREIGN_BOND",
+          "nominal_amount": "3000000.00",
+          "haircut_pct": "5.00",
+          "evaluated_amount": "2850000.00"
+        }
+      ]
+    },
+    {
+      "participant_id": "GER-HIDRO-NORTE-04",
+      "participant_name": "RIO VERDE GERACAO HIDRELETRICA S.A.",
+      "ccee_agent_code": "AG-GER-HIDRO-NORTE-04",
+      "cash_settlement_balance": "1000000.00",
+      "required_margin": "900000.00",
+      "total_collateral_nominal": "1000000.00",
+      "total_collateral_evaluated": "950000.00",
+      "margin_coverage": "50000.00",
+      "is_undercollateralized": false,
+      "deposits": [
+        {
+          "deposit_id": "DEP-HIDRO-TPF-01",
+          "participant_id": "GER-HIDRO-NORTE-04",
+          "collateral_type": "SOVEREIGN_BOND",
+          "nominal_amount": "1000000.00",
+          "haircut_pct": "5.00",
+          "evaluated_amount": "950000.00"
+        }
+      ]
+    }
+  ],
+  "pld_records": [
+    {
+      "submarket": "SE_CO",
+      "reference_date": "2024-08-01",
+      "hourly_prices": {
+        "1": "95.50",
+        "2": "92.00",
+        "3": "88.00",
+        "4": "85.00",
+        "5": "85.00",
+        "6": "89.00",
+        "7": "98.00",
+        "8": "115.00",
+        "9": "130.00",
+        "10": "145.00",
+        "11": "150.00",
+        "12": "148.00",
+        "13": "142.00",
+        "14": "146.00",
+        "15": "152.00",
+        "16": "158.00",
+        "17": "165.00",
+        "18": "195.00",
+        "19": "210.00",
+        "20": "205.00",
+        "21": "180.00",
+        "22": "150.00",
+        "23": "125.00",
+        "24": "105.00"
+      },
+      "average_price": "135.54",
+      "min_limit": "61.07",
+      "max_limit": "1470.32"
+    },
+    {
+      "submarket": "NE",
+      "reference_date": "2024-08-01",
+      "hourly_prices": {
+        "1": "75.00",
+        "2": "72.00",
+        "3": "70.00",
+        "4": "68.00",
+        "5": "68.00",
+        "6": "71.00",
+        "7": "80.00",
+        "8": "95.00",
+        "9": "105.00",
+        "10": "110.00",
+        "11": "115.00",
+        "12": "112.00",
+        "13": "108.00",
+        "14": "110.00",
+        "15": "115.00",
+        "16": "120.00",
+        "17": "130.00",
+        "18": "150.00",
+        "19": "160.00",
+        "20": "155.00",
+        "21": "135.00",
+        "22": "115.00",
+        "23": "98.00",
+        "24": "85.00"
+      },
+      "average_price": "103.08",
+      "min_limit": "61.07",
+      "max_limit": "1470.32"
+    },
+    {
+      "submarket": "S",
+      "reference_date": "2024-08-01",
+      "hourly_prices": {
+        "1": "110.00",
+        "2": "105.00",
+        "3": "100.00",
+        "4": "95.00",
+        "5": "95.00",
+        "6": "102.00",
+        "7": "115.00",
+        "8": "135.00",
+        "9": "150.00",
+        "10": "165.00",
+        "11": "170.00",
+        "12": "168.00",
+        "13": "160.00",
+        "14": "165.00",
+        "15": "175.00",
+        "16": "180.00",
+        "17": "190.00",
+        "18": "220.00",
+        "19": "235.00",
+        "20": "230.00",
+        "21": "200.00",
+        "22": "170.00",
+        "23": "145.00",
+        "24": "120.00"
+      },
+      "average_price": "154.38",
+      "min_limit": "61.07",
+      "max_limit": "1470.32"
+    },
+    {
+      "submarket": "N",
+      "reference_date": "2024-08-01",
+      "hourly_prices": {
+        "1": "80.00",
+        "2": "78.00",
+        "3": "75.00",
+        "4": "72.00",
+        "5": "72.00",
+        "6": "76.00",
+        "7": "85.00",
+        "8": "98.00",
+        "9": "110.00",
+        "10": "118.00",
+        "11": "120.00",
+        "12": "118.00",
+        "13": "112.00",
+        "14": "115.00",
+        "15": "122.00",
+        "16": "128.00",
+        "17": "135.00",
+        "18": "155.00",
+        "19": "165.00",
+        "20": "160.00",
+        "21": "140.00",
+        "22": "120.00",
+        "23": "105.00",
+        "24": "90.00"
+      },
+      "average_price": "110.38",
+      "min_limit": "61.07",
+      "max_limit": "1470.32"
+    }
+  ],
+  "market_forward_curves": [
+    {
+      "submarket": "SE_CO",
+      "energy_type": "CONV",
+      "forward_price_mwh": "192.50"
+    },
+    {
+      "submarket": "SE_CO",
+      "energy_type": "I50",
+      "forward_price_mwh": "205.00"
+    },
+    {
+      "submarket": "SE_CO",
+      "energy_type": "I100",
+      "forward_price_mwh": "225.00"
+    },
+    {
+      "submarket": "NE",
+      "energy_type": "I50",
+      "forward_price_mwh": "178.00"
+    },
+    {
+      "submarket": "S",
+      "energy_type": "I100",
+      "forward_price_mwh": "218.50"
+    },
+    {
+      "submarket": "N",
+      "energy_type": "CONV",
+      "forward_price_mwh": "152.00"
+    }
+  ],
+  "settlement_receipts": [
+    {
+      "settlement_id": "SETTL-CTR-ACL-2024-004-20240831",
+      "contract_id": "CTR-ACL-2024-004",
+      "settlement_date": "2024-08-31",
+      "volume_mwh": "11160.0000",
+      "contract_price_mwh": "145.00",
+      "gross_amount": "1618200.00",
+      "buyer_id": "IND-ALUMINIO-S-03",
+      "buyer_debit": "1618200.00",
+      "seller_id": "GER-HIDRO-NORTE-04",
+      "seller_gross_credit": "1618200.00",
+      "fiduciary_retained_amount": "0.00",
+      "escrow_account_id": null,
+      "beneficiary_creditor_id": null,
+      "seller_net_credit": "1618200.00",
+      "status": "SETTLED",
+      "is_zero_sum": true
+    }
+  ],
+  "ccee_mcp_settlements": [
+    {
+      "batch_id": "MCP-BATCH-SE_CO-202408",
+      "settlement_date": "2024-08-31",
+      "submarket": "SE_CO",
+      "total_generation_mwh": "10000.0000",
+      "total_consumption_mwh": "10000.0000",
+      "total_purchases_mwh": "5000.0000",
+      "total_sales_mwh": "5000.0000",
+      "net_energy_balance_mwh": "0.0000",
+      "total_credits": "135540.00",
+      "total_debits": "135540.00",
+      "net_financial_imbalance": "0.00",
+      "positions": [
+        {
+          "agent_id": "GER-HIDRO-SE-99",
+          "agent_name": "USINA HIDRELETRICA PARANA S.A.",
+          "submarket": "SE_CO",
+          "generation_mwh": "10000.0000",
+          "consumption_mwh": "0.0000",
+          "bilateral_purchases_mwh": "0.0000",
+          "bilateral_sales_mwh": "9000.0000",
+          "net_energy_mwh": "1000.0000",
+          "pld_price": "135.54",
+          "financial_settlement_amount": "135540.00"
+        },
+        {
+          "agent_id": "COM-ENERGIA-SE-02",
+          "agent_name": "DELTA COMERCIALIZADORA DE ENERGIA S.A.",
+          "submarket": "SE_CO",
+          "generation_mwh": "0.0000",
+          "consumption_mwh": "0.0000",
+          "bilateral_purchases_mwh": "9000.0000",
+          "bilateral_sales_mwh": "9000.0000",
+          "net_energy_mwh": "0.0000",
+          "pld_price": "135.54",
+          "financial_settlement_amount": "0.00"
+        },
+        {
+          "agent_id": "IND-ACOS-SE-88",
+          "agent_name": "SIDERURGICA NACIONAL S.A.",
+          "submarket": "SE_CO",
+          "generation_mwh": "0.0000",
+          "consumption_mwh": "10000.0000",
+          "bilateral_purchases_mwh": "9000.0000",
+          "bilateral_sales_mwh": "0.0000",
+          "net_energy_mwh": "-1000.0000",
+          "pld_price": "135.54",
+          "financial_settlement_amount": "-135540.00"
+        }
+      ]
+    }
+  ],
+  "margin_calls": [],
+  "mtm_history": [
+    {
+      "contract_id": "CTR-ACL-2024-001",
+      "valuation_date": "2024-08-01",
+      "submarket": "SE_CO",
+      "energy_type": "CONV",
+      "market_price_mwh": "192.50",
+      "contract_price_mwh": "180.00",
+      "price_differential_mwh": "12.50",
+      "volume_mwh": "7440.0000",
+      "buyer_mtm": "93000.00",
+      "seller_mtm": "-93000.00",
+      "net_clearing_mtm": "0.00",
+      "is_zero_sum": true
+    }
+  ]
+}

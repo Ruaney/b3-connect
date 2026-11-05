@@ -1777,6 +1777,138 @@
         "implemented": "src/interest_rate_swap_irs.py",
         "tested_locally": "tests/test_interest_rate_swap_irs.py"
       }
+    },
+    {
+      "id": "FL-087",
+      "name": "Registro, Marcação a Mercado, Custódia e Liquidação Financeira de Contratos de Compra e Venda de Energia Elétrica no Ambiente de Contratação Livre (ACL - Balcão NoMe B3 e CCEE)",
+      "system": "Balcão NoMe B3 & CCEE",
+      "interface": "Registro NoMe Energia, Conversão MWmédio para MWh, Trava Fiduciária de Recebíveis, Marcação a Mercado e Liquidação Bilateral/MCP",
+      "sources": [
+        "SRC-011",
+        "SRC-055"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Contratos bilaterais CONV, I50 e I100 nos 4 submercados (SE/CO, S, NE, N), conversão MWmédio para MWh com base nas horas civis do mês/período, apuração de PLD horário/médio CCEE dentro dos limites ANEEL, marcação a mercado bilateral simétrica, registro de garantias e trava fiduciária de recebíveis com direcionamento a contas escrow, leis de conservação LAW-089, LAW-090, LAW-091 e LAW-092 implementadas com 100% de aprovação.",
+      "evidence": {
+        "documented": "docs/layout-electric-power-trading-ccee.md",
+        "implemented": "src/electric_power_trading_ccee.py",
+        "tested_locally": "tests/test_electric_power_trading_ccee.py"
+      }
+    },
+    {
+      "id": "FL-088",
+      "name": "Registro Escritural, Custódia Segregada, Negociação e Aposentadoria de Créditos de Carbono no Mercado Voluntário (VCS / Verra, Gold Standard, Cercarbono e Plataforma de Carbono B3)",
+      "system": "Balcão NoMe B3 & Plataforma de Carbono B3",
+      "interface": "Registro Escritural de Créditos de Carbono, Custódia Segregada, Negociação Bilateral DvP e Aposentadoria Definitiva (Retirement)",
+      "sources": [
+        "SRC-030",
+        "SRC-057"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Suporte a múltiplos padrões de certificação (VCS/Verra, Gold Standard, ACR, CAR, Cercarbono, B3), tipologias florestais e tecnológicas (REDD+, ARR, Biomassa, Renovável, DAC), conservação anti-dupla contagem (LAW-088A), não-negatividade de saldos (LAW-088B) e liquidação financeira DvP soma-zero (LAW-088C).",
+      "evidence": {
+        "documented": "docs/layout-voluntary-carbon-credits.md",
+        "implemented": "src/voluntary_carbon_credits.py",
+        "tested_locally": "tests/test_voluntary_carbon_credits.py"
+      }
+    },
+    {
+      "id": "FL-089",
+      "name": "Liquidação Atômica DvP e PvP em Rede DLT EVM / Hyperledger Besu com CBDC (Real Digital Atacado), Moeda Bancária Tokenizada (Real Tokenizado Varejo) e Títulos Públicos Federais Tokenizados (TPFt) na B3 e BACEN (Diretrizes do Piloto Drex Fase 2)",
+      "system": "BACEN DREX & Central Depositária B3 (CSD)",
+      "interface": "Motor DLT Drex Fase 2 de Liquidação Atômica DvP/PvP, HTLC com Reversão por Timeout e Arquitetura de 3 Camadas",
+      "sources": [
+        "SRC-072",
+        "SRC-055"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Arquitetura de 3 camadas (Real Digital Atacado, Real Tokenizado Varejo, TPFt), liquidação atômica DvP atacado e varejo interbancário quadri-partida, transferências PvP, contratos HTLC com SHA-256 e reversão automática por timeout regulatório, leis de conservação LAW-089A, LAW-089B e LAW-089C implementadas com 100% de cobertura. Pendente homologação em ambiente Piloto BACEN/B3.",
+      "evidence": {
+        "documented": "docs/layout-drex-phase2-atomic-dvp.md",
+        "implemented": "src/drex_phase2_atomic_dvp.py",
+        "tested_locally": "tests/test_drex_phase2_atomic_dvp.py"
+      }
+    },
+    {
+      "id": "FL-090",
+      "name": "Gestão e Liquidação em Tempo Real de Chamadas de Margem Intradiária via Pix Automático e Sistema de Pagamentos Instantâneos (SPI / DICT BACEN) na Câmara B3 (Resolução BCB nº 1/2020 e Resolução BCB nº 341/2023 - Pix Automático)",
+      "system": "Câmara B3 (Motor CORE / Clearing) & SPI / DICT BACEN",
+      "interface": "Mensageria ISO 20022 pacs.008 e pacs.002, Contas PI BACEN, Jornada de Consentimento e Gestão de Default Intradiário",
+      "sources": [
+        "SRC-055",
+        "SRC-064"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Implementado com 100% Python Standard Library, autorização prévia de débito recorrente (Resolução BCB nº 341/2023), mensageria pacs.008 e pacs.002, SLA < 10s, regras de default imediato, idempotência por EndToEndId (32 caracteres), e 6 invariantes formais provadas matematicamente.",
+      "evidence": {
+        "documented": "docs/layout-pix-automatico-margin-calls.md",
+        "implemented": "src/pix_automatico_margin_calls.py",
+        "tested_locally": "tests/test_pix_automatico_margin_calls.py"
+      }
+    },
+    {
+      "id": "FL-091",
+      "name": "Reconstituição Determinística de Livro de Ofertas L3 Market By Order (MBO) a partir de Feeds Binários (ITCH / SBE B3 UMDF Market Data) com Prioridade Estrita Preço-Tempo (FIFO)",
+      "system": "PUMA Trading System & Market Data UMDF B3",
+      "interface": "Motor MBO L3, Processamento de Mensagens Binárias ITCH/SBE, Reconstituição Bidirecional Bids/Asks, Top of Book BBO e Detecção de Crossed Book",
+      "sources": [
+        "SRC-008",
+        "SRC-050"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Processamento de eventos atômicos OrderAdd, OrderModify, OrderCancel, OrderExecute e OrderDelete, prioridade estrita Preço-Tempo FIFO (LAW-091C), conservação de ordens no book (LAW-091A), proteção contra crossed book em mercado contínuo (LAW-091B) e agregação de profundidade L2 em tempo real.",
+      "evidence": {
+        "documented": "docs/layout-market-by-order-l3-book.md",
+        "implemented": "src/market_by_order_l3_book.py",
+        "tested_locally": "tests/test_market_by_order_l3_book.py"
+      }
+    },
+    {
+      "id": "FL-092",
+      "name": "Precificação Analítica, Marcação a Mercado e Liquidação de Opções Asiáticas de Média Aritmética e Geométrica (Asian Options sobre Câmbio USD/BRL e Commodities Agropecuárias) no Balcão NoMe B3",
+      "system": "Balcão NoMe B3 & Câmara B3",
+      "interface": "Motor Quantitativo Kemna-Vorst, Turnbull-Wakeman, Curran, Gregas Analíticas e Liquidação Financeira Soma-Zero",
+      "sources": [
+        "SRC-011",
+        "SRC-034"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Opções asiáticas fixed strike e floating strike, amostragem periódica, precificação Kemna-Vorst, Turnbull-Wakeman e Curran, gregas analíticas de 1ª e 2ª ordem, liquidação financeira soma-zero centavo a centavo (LAW-097), paridade put-call asiática (LAW-095) e menor volatilidade efetiva (LAW-096) implementadas e testadas.",
+      "evidence": {
+        "documented": "docs/layout-asian-exotic-options.md",
+        "implemented": "src/asian_exotic_options.py",
+        "tested_locally": "tests/test_asian_exotic_options.py"
+      }
     }
   ]
 }

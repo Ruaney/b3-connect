@@ -1,0 +1,414 @@
+{
+  "schema_version": "1.0.0",
+  "flow_id": "FL-088",
+  "description": "Registro Escritural, Custódia Segregada, Negociação e Aposentadoria de Créditos de Carbono do Mercado Voluntário (VCS / Verra, Gold Standard, Cercarbono e Plataforma de Carbono B3)",
+  "reference_date": "2026-11-05",
+  "engine_state": {
+    "default_b3_fee_rate": "0.001000",
+    "projects": {
+      "VCS-PRJ-1422": {
+        "project_id": "VCS-PRJ-1422",
+        "name": "Projeto Florestal Rio Capim REDD+",
+        "standard": "VCS",
+        "project_type": "REDD_PLUS",
+        "country": "BR",
+        "state_or_province": "PA",
+        "developer_name": "Biofílica Ambipar Environmental S.A.",
+        "registry_url_or_id": "https://registry.verra.org/app/projectDetail/VCS/1422",
+        "methodology": "VM0007 REDD+ Methodology Framework",
+        "validator_body": "SCS Global Services",
+        "active": true,
+        "created_at": "2026-11-05T03:01:47.743916+00:00"
+      },
+      "GS-PRJ-2890": {
+        "project_id": "GS-PRJ-2890",
+        "name": "Projeto Biomassa Cana Sustentável Ribeirão",
+        "standard": "GOLD_STANDARD",
+        "project_type": "BIOENERGY_BIOMASS",
+        "country": "BR",
+        "state_or_province": "SP",
+        "developer_name": "Raízen Renováveis S.A.",
+        "registry_url_or_id": "https://registry.goldstandard.org/projects/details/2890",
+        "methodology": "GS-ACM0006 Biomassa Coprodutos",
+        "validator_body": "TÜV NORD CERT GmbH",
+        "active": true,
+        "created_at": "2026-11-05T03:01:47.743930+00:00"
+      },
+      "CER-PRJ-4051": {
+        "project_id": "CER-PRJ-4051",
+        "name": "Reflorestamento e Regeneração do Xingu",
+        "standard": "CERCARBONO",
+        "project_type": "ARR",
+        "country": "BR",
+        "state_or_province": "MT",
+        "developer_name": "Agrofloresta Regenerativa Brasil Ltda.",
+        "registry_url_or_id": "https://www.cercarbono.com/projects/CER-4051",
+        "methodology": "BCR-0001 Afforestation and Reforestation",
+        "validator_body": "AENOR Internacional S.A.U.",
+        "active": true,
+        "created_at": "2026-11-05T03:01:47.743936+00:00"
+      },
+      "ACR-PRJ-5120": {
+        "project_id": "ACR-PRJ-5120",
+        "name": "Captura Direta e Mineralização Serra do Espinhaço",
+        "standard": "ACR",
+        "project_type": "DAC",
+        "country": "BR",
+        "state_or_province": "MG",
+        "developer_name": "Climeworks Brasil Captura de Carbono Ltda.",
+        "registry_url_or_id": "https://acr.winrock.org/project/5120",
+        "methodology": "ACR Carbon Dioxide Removal - Direct Air Capture",
+        "validator_body": "Bureau Veritas Certification",
+        "active": true,
+        "created_at": "2026-11-05T03:01:47.743940+00:00"
+      },
+      "B3-PRJ-0088": {
+        "project_id": "B3-PRJ-0088",
+        "name": "Complexo Eólico Caetité Energia Limpa",
+        "standard": "PADRAO_B3",
+        "project_type": "RENEWABLE_ENERGY",
+        "country": "BR",
+        "state_or_province": "BA",
+        "developer_name": "Bahia Renováveis B3 S.A.",
+        "registry_url_or_id": "https://carbono.b3.com.br/projetos/B3-0088",
+        "methodology": "B3-MET-RE-01 Geração Eólica Conectada ao SIN",
+        "validator_body": "DNV GL Business Assurance",
+        "active": true,
+        "created_at": "2026-11-05T03:01:47.743943+00:00"
+      }
+    },
+    "batches": {
+      "BATCH-VCS-2023-01": {
+        "batch_id": "BATCH-VCS-2023-01",
+        "project_id": "VCS-PRJ-1422",
+        "standard": "VCS",
+        "project_type": "REDD_PLUS",
+        "vintage": 2023,
+        "serial_range": {
+          "prefix": "VCS-1422-2023-BR",
+          "start_index": 1,
+          "end_index": 50000,
+          "formatted_range": "VCS-1422-2023-BR-00000001-00050000",
+          "total_units": 50000
+        },
+        "total_issued_tco2e": "50000.00",
+        "available_tco2e": "47000.00",
+        "locked_tco2e": "0.00",
+        "retired_tco2e": "3000.00",
+        "registry_issuance_date": "2025-06-01",
+        "b3_registration_date": "2026-01-15",
+        "verifier_report_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "status": "ACTIVE",
+        "metadata": {
+          "bioma": "Amazônia",
+          "buffer_pool_pct": "15.00"
+        }
+      },
+      "BATCH-GS-2024-01": {
+        "batch_id": "BATCH-GS-2024-01",
+        "project_id": "GS-PRJ-2890",
+        "standard": "GOLD_STANDARD",
+        "project_type": "BIOENERGY_BIOMASS",
+        "vintage": 2024,
+        "serial_range": {
+          "prefix": "GS-2890-2024-BR",
+          "start_index": 1,
+          "end_index": 25000,
+          "formatted_range": "GS-2890-2024-BR-00000001-00025000",
+          "total_units": 25000
+        },
+        "total_issued_tco2e": "25000.00",
+        "available_tco2e": "20500.00",
+        "locked_tco2e": "0.00",
+        "retired_tco2e": "4500.00",
+        "registry_issuance_date": "2025-08-10",
+        "b3_registration_date": "2026-02-01",
+        "verifier_report_hash": "d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35",
+        "status": "ACTIVE",
+        "metadata": {
+          "bioma": "Mata Atlântica",
+          "sdg_impacts": [
+            "SDG7",
+            "SDG8",
+            "SDG13"
+          ]
+        }
+      },
+      "BATCH-CER-2023-01": {
+        "batch_id": "BATCH-CER-2023-01",
+        "project_id": "CER-PRJ-4051",
+        "standard": "CERCARBONO",
+        "project_type": "ARR",
+        "vintage": 2023,
+        "serial_range": {
+          "prefix": "CER-4051-2023-BR",
+          "start_index": 1,
+          "end_index": 30000,
+          "formatted_range": "CER-4051-2023-BR-00000001-00030000",
+          "total_units": 30000
+        },
+        "total_issued_tco2e": "30000.00",
+        "available_tco2e": "30000.00",
+        "locked_tco2e": "0.00",
+        "retired_tco2e": "0.00",
+        "registry_issuance_date": "2025-09-15",
+        "b3_registration_date": "2026-02-10",
+        "verifier_report_hash": "4e07408562bedb8b60ce05c1decfe3ad16b72230967de01f640b7e4729b49fce",
+        "status": "ACTIVE",
+        "metadata": {
+          "bioma": "Cerrado",
+          "native_species": [
+            "Ipê",
+            "Copaíba",
+            "Jatobá"
+          ]
+        }
+      },
+      "BATCH-ACR-2025-01": {
+        "batch_id": "BATCH-ACR-2025-01",
+        "project_id": "ACR-PRJ-5120",
+        "standard": "ACR",
+        "project_type": "DAC",
+        "vintage": 2025,
+        "serial_range": {
+          "prefix": "ACR-5120-2025-BR",
+          "start_index": 1,
+          "end_index": 10000,
+          "formatted_range": "ACR-5120-2025-BR-00000001-00010000",
+          "total_units": 10000
+        },
+        "total_issued_tco2e": "10000.00",
+        "available_tco2e": "10000.00",
+        "locked_tco2e": "0.00",
+        "retired_tco2e": "0.00",
+        "registry_issuance_date": "2026-01-20",
+        "b3_registration_date": "2026-02-25",
+        "verifier_report_hash": "4b227777d4dd1fc61c6f884f48641d02b4d121d3fd328cb08b5531fcacdabf8a",
+        "status": "ACTIVE",
+        "metadata": {
+          "durability_years": 1000,
+          "technology": "Solid Sorbent DAC"
+        }
+      },
+      "BATCH-B3-2024-01": {
+        "batch_id": "BATCH-B3-2024-01",
+        "project_id": "B3-PRJ-0088",
+        "standard": "PADRAO_B3",
+        "project_type": "RENEWABLE_ENERGY",
+        "vintage": 2024,
+        "serial_range": {
+          "prefix": "B3-0088-2024-BR",
+          "start_index": 1,
+          "end_index": 40000,
+          "formatted_range": "B3-0088-2024-BR-00000001-00040000",
+          "total_units": 40000
+        },
+        "total_issued_tco2e": "40000.00",
+        "available_tco2e": "40000.00",
+        "locked_tco2e": "0.00",
+        "retired_tco2e": "0.00",
+        "registry_issuance_date": "2025-11-05",
+        "b3_registration_date": "2026-03-01",
+        "verifier_report_hash": "ef2d127de37b942baad06145e54b0c619a1f22327b2ebbcfbec78f5564afe39d",
+        "status": "ACTIVE",
+        "metadata": {
+          "submercado": "Nordeste",
+          "mwh_generated": 120000
+        }
+      }
+    },
+    "custody_accounts": {
+      "CUST-VCM-ORIG-001": {
+        "account_id": "CUST-VCM-ORIG-001",
+        "participant_code": "0088",
+        "holder_name": "Biofílica Ambipar Originação de Ativos Ambientais S.A.",
+        "holder_document": "12345678000195",
+        "account_type": "PROPRIETARY",
+        "positions": {
+          "BATCH-VCS-2023-01": {
+            "batch_id": "BATCH-VCS-2023-01",
+            "available_quantity": "35000.00",
+            "locked_quantity": "0.00",
+            "retired_quantity": "0.00",
+            "total_quantity": "35000.00"
+          },
+          "BATCH-GS-2024-01": {
+            "batch_id": "BATCH-GS-2024-01",
+            "available_quantity": "17000.00",
+            "locked_quantity": "0.00",
+            "retired_quantity": "0.00",
+            "total_quantity": "17000.00"
+          },
+          "BATCH-CER-2023-01": {
+            "batch_id": "BATCH-CER-2023-01",
+            "available_quantity": "30000.00",
+            "locked_quantity": "0.00",
+            "retired_quantity": "0.00",
+            "total_quantity": "30000.00"
+          },
+          "BATCH-ACR-2025-01": {
+            "batch_id": "BATCH-ACR-2025-01",
+            "available_quantity": "10000.00",
+            "locked_quantity": "0.00",
+            "retired_quantity": "0.00",
+            "total_quantity": "10000.00"
+          },
+          "BATCH-B3-2024-01": {
+            "batch_id": "BATCH-B3-2024-01",
+            "available_quantity": "40000.00",
+            "locked_quantity": "0.00",
+            "retired_quantity": "0.00",
+            "total_quantity": "40000.00"
+          }
+        },
+        "created_at": "2026-11-05T03:01:47.744020+00:00",
+        "is_active": true
+      },
+      "CUST-VCM-MM-002": {
+        "account_id": "CUST-VCM-MM-002",
+        "participant_code": "0072",
+        "holder_name": "EcoInvest Corretora de Títulos e Valores Mobiliários S.A.",
+        "holder_document": "98765432000110",
+        "account_type": "MARKET_MAKER",
+        "positions": {
+          "BATCH-VCS-2023-01": {
+            "batch_id": "BATCH-VCS-2023-01",
+            "available_quantity": "10000.00",
+            "locked_quantity": "0.00",
+            "retired_quantity": "0.00",
+            "total_quantity": "10000.00"
+          }
+        },
+        "created_at": "2026-11-05T03:01:47.744091+00:00",
+        "is_active": true
+      },
+      "CUST-VCM-CORP-003": {
+        "account_id": "CUST-VCM-CORP-003",
+        "participant_code": "0072",
+        "holder_name": "Siderúrgica Sustentável do Brasil S.A.",
+        "holder_document": "55443322000188",
+        "account_type": "OFFSETTING_CORPORATE",
+        "positions": {
+          "BATCH-VCS-2023-01": {
+            "batch_id": "BATCH-VCS-2023-01",
+            "available_quantity": "2000.00",
+            "locked_quantity": "0.00",
+            "retired_quantity": "3000.00",
+            "total_quantity": "5000.00"
+          }
+        },
+        "created_at": "2026-11-05T03:01:47.744097+00:00",
+        "is_active": true
+      },
+      "CUST-VCM-CORP-004": {
+        "account_id": "CUST-VCM-CORP-004",
+        "participant_code": "0088",
+        "holder_name": "Companhia Aérea Transbrasil S.A.",
+        "holder_document": "33221100000177",
+        "account_type": "OFFSETTING_CORPORATE",
+        "positions": {
+          "BATCH-GS-2024-01": {
+            "batch_id": "BATCH-GS-2024-01",
+            "available_quantity": "3500.00",
+            "locked_quantity": "0.00",
+            "retired_quantity": "4500.00",
+            "total_quantity": "8000.00"
+          }
+        },
+        "created_at": "2026-11-05T03:01:47.744101+00:00",
+        "is_active": true
+      }
+    },
+    "trades": {
+      "TRD-DVP-2026-000001": {
+        "trade_id": "TRD-DVP-2026-000001",
+        "batch_id": "BATCH-VCS-2023-01",
+        "seller_account_id": "CUST-VCM-ORIG-001",
+        "buyer_account_id": "CUST-VCM-MM-002",
+        "quantity_tco2e": "15000.00",
+        "unit_price_brl": "65.00",
+        "gross_amount_brl": "975000.00",
+        "b3_fee_rate": "0.001000",
+        "b3_fee_brl": "975.00",
+        "net_seller_amount_brl": "975000.00",
+        "net_buyer_disbursement_brl": "975975.00",
+        "trade_timestamp": "2026-03-10T10:00:00+00:00",
+        "settlement_date": "2026-03-10",
+        "status": "SETTLED",
+        "financial_transaction_ref": "B3-SPB-TRD-DVP-2026-000001-20261105000147"
+      },
+      "TRD-DVP-2026-000002": {
+        "trade_id": "TRD-DVP-2026-000002",
+        "batch_id": "BATCH-VCS-2023-01",
+        "seller_account_id": "CUST-VCM-MM-002",
+        "buyer_account_id": "CUST-VCM-CORP-003",
+        "quantity_tco2e": "5000.00",
+        "unit_price_brl": "68.50",
+        "gross_amount_brl": "342500.00",
+        "b3_fee_rate": "0.001000",
+        "b3_fee_brl": "342.50",
+        "net_seller_amount_brl": "342500.00",
+        "net_buyer_disbursement_brl": "342842.50",
+        "trade_timestamp": "2026-03-12T14:30:00+00:00",
+        "settlement_date": "2026-03-12",
+        "status": "SETTLED",
+        "financial_transaction_ref": "B3-SPB-TRD-DVP-2026-000002-20261105000147"
+      },
+      "TRD-DVP-2026-000003": {
+        "trade_id": "TRD-DVP-2026-000003",
+        "batch_id": "BATCH-GS-2024-01",
+        "seller_account_id": "CUST-VCM-ORIG-001",
+        "buyer_account_id": "CUST-VCM-CORP-004",
+        "quantity_tco2e": "8000.00",
+        "unit_price_brl": "82.00",
+        "gross_amount_brl": "656000.00",
+        "b3_fee_rate": "0.001000",
+        "b3_fee_brl": "656.00",
+        "net_seller_amount_brl": "656000.00",
+        "net_buyer_disbursement_brl": "656656.00",
+        "trade_timestamp": "2026-03-14T11:15:00+00:00",
+        "settlement_date": "2026-03-14",
+        "status": "SETTLED",
+        "financial_transaction_ref": "B3-SPB-TRD-DVP-2026-000003-20261105000147"
+      }
+    },
+    "retirement_certificates": {
+      "CERT-APOS-B3-2026-00001": {
+        "certificate_id": "CERT-APOS-B3-2026-00001",
+        "batch_id": "BATCH-VCS-2023-01",
+        "project_id": "VCS-PRJ-1422",
+        "project_name": "Projeto Florestal Rio Capim REDD+",
+        "standard": "VCS",
+        "project_type": "REDD_PLUS",
+        "vintage": 2023,
+        "quantity_tco2e": "3000.00",
+        "beneficiary_name": "Siderúrgica Sustentável do Brasil S.A.",
+        "beneficiary_document": "55443322000188",
+        "scope": "SCOPE_1",
+        "retirement_reason": "Neutralização de emissões diretas de Escopo 1 (alto-forno industrial) ano-base 2025",
+        "retirement_timestamp": "2026-03-15T15:00:00+00:00",
+        "serial_subrange": "VCS-1422-2023-BR-00000001-00003000",
+        "certificate_hash": "bfde96a3daa1b57b3cbea06c6e303d46c0b4fa9b5947af02284932454fb4aadb",
+        "is_irrevocable": true
+      },
+      "CERT-APOS-B3-2026-00002": {
+        "certificate_id": "CERT-APOS-B3-2026-00002",
+        "batch_id": "BATCH-GS-2024-01",
+        "project_id": "GS-PRJ-2890",
+        "project_name": "Projeto Biomassa Cana Sustentável Ribeirão",
+        "standard": "GOLD_STANDARD",
+        "project_type": "BIOENERGY_BIOMASS",
+        "vintage": 2024,
+        "quantity_tco2e": "4500.00",
+        "beneficiary_name": "Companhia Aérea Transbrasil S.A.",
+        "beneficiary_document": "33221100000177",
+        "scope": "SCOPE_3",
+        "retirement_reason": "Compensação de emissões da malha aérea doméstica e internacional - Escopo 3",
+        "retirement_timestamp": "2026-03-16T16:20:00+00:00",
+        "serial_subrange": "GS-2890-2024-BR-00000001-00004500",
+        "certificate_hash": "cc3489678d6f679970a8a30feca1b662524b53b28c81b797aaee088e8e043291",
+        "is_irrevocable": true
+      }
+    }
+  }
+}

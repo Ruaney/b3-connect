@@ -1,0 +1,170 @@
+{
+  "flow": "FL-091",
+  "name": "Reconstituição Determinística de Livro de Ofertas L3 Market By Order (MBO)",
+  "description": "Cenários de teste e eventos de mercado MBO para auditoria de microestrutura, prioridade FIFO e conservação formal de lotes na B3.",
+  "metadata": {
+    "security_id": 105234,
+    "symbol": "PETR4",
+    "trading_mode": "CONTINUOUS",
+    "price_scale": 100000000
+  },
+  "scenarios": {
+    "scenario_1_multilevel_book_construction": {
+      "description": "Construção de livro multicamadas com ordens em níveis de compra e venda.",
+      "events": [
+        {
+          "type": "ADD",
+          "order_id": 1001,
+          "security_id": 105234,
+          "symbol": "PETR4",
+          "side": "BID",
+          "price": "35.50",
+          "quantity": 1000,
+          "sequence_number": 1,
+          "timestamp": "2026-11-05T10:00:00.000000Z",
+          "participant_id": "CORR_008"
+        },
+        {
+          "type": "ADD",
+          "order_id": 1002,
+          "security_id": 105234,
+          "symbol": "PETR4",
+          "side": "BID",
+          "price": "35.50",
+          "quantity": 2500,
+          "sequence_number": 2,
+          "timestamp": "2026-11-05T10:00:00.000100Z",
+          "participant_id": "CORR_085"
+        },
+        {
+          "type": "ADD",
+          "order_id": 1003,
+          "security_id": 105234,
+          "symbol": "PETR4",
+          "side": "BID",
+          "price": "35.48",
+          "quantity": 5000,
+          "sequence_number": 3,
+          "timestamp": "2026-11-05T10:00:00.000200Z",
+          "participant_id": "CORR_114"
+        },
+        {
+          "type": "ADD",
+          "order_id": 2001,
+          "security_id": 105234,
+          "symbol": "PETR4",
+          "side": "ASK",
+          "price": "35.52",
+          "quantity": 1200,
+          "sequence_number": 4,
+          "timestamp": "2026-11-05T10:00:00.000300Z",
+          "participant_id": "CORR_008"
+        },
+        {
+          "type": "ADD",
+          "order_id": 2002,
+          "security_id": 105234,
+          "symbol": "PETR4",
+          "side": "ASK",
+          "price": "35.52",
+          "quantity": 1800,
+          "sequence_number": 5,
+          "timestamp": "2026-11-05T10:00:00.000400Z",
+          "participant_id": "CORR_072"
+        },
+        {
+          "type": "ADD",
+          "order_id": 2003,
+          "security_id": 105234,
+          "symbol": "PETR4",
+          "side": "ASK",
+          "price": "35.55",
+          "quantity": 4000,
+          "sequence_number": 6,
+          "timestamp": "2026-11-05T10:00:00.000500Z",
+          "participant_id": "CORR_308"
+        }
+      ],
+      "expected_state": {
+        "total_orders": 6,
+        "total_current_lots": 15500,
+        "bbo": {
+          "bid_price": "35.50",
+          "bid_quantity": 3500,
+          "bid_order_count": 2,
+          "ask_price": "35.52",
+          "ask_quantity": 3000,
+          "ask_order_count": 2,
+          "spread": "0.02",
+          "mid_price": "35.51",
+          "is_crossed": false,
+          "is_locked": false
+        },
+        "l2_depth": {
+          "bids": [
+            {"price": "35.50", "total_quantity": 3500, "order_count": 2},
+            {"price": "35.48", "total_quantity": 5000, "order_count": 1}
+          ],
+          "asks": [
+            {"price": "35.52", "total_quantity": 3000, "order_count": 2},
+            {"price": "35.55", "total_quantity": 4000, "order_count": 1}
+          ]
+        }
+      }
+    },
+    "scenario_2_fifo_queue_priority_test": {
+      "description": "Verificação estrita da regra FIFO: redução mantém prioridade; aumento perde prioridade para o final da fila.",
+      "initial_orders": [
+        {"order_id": 3001, "price": "40.00", "quantity": 1000, "timestamp": "2026-11-05T10:05:00.000000Z"},
+        {"order_id": 3002, "price": "40.00", "quantity": 2000, "timestamp": "2026-11-05T10:05:00.000100Z"},
+        {"order_id": 3003, "price": "40.00", "quantity": 3000, "timestamp": "2026-11-05T10:05:00.000200Z"}
+      ],
+      "modifications": [
+        {
+          "step": "reduction_keeps_priority",
+          "order_id": 3002,
+          "new_quantity": 1200,
+          "expected_queue_order": [3001, 3002, 3003],
+          "expected_level_quantity": 5200
+        },
+        {
+          "step": "increase_loses_priority",
+          "order_id": 3001,
+          "new_quantity": 1500,
+          "expected_queue_order": [3002, 3003, 3001],
+          "expected_level_quantity": 5700
+        }
+      ]
+    },
+    "scenario_3_executions_and_conservation": {
+      "description": "Execuções parciais e totais com auditoria do ledger de conservação.",
+      "resting_order_id": 4001,
+      "resting_side": "ASK",
+      "resting_price": "28.00",
+      "initial_quantity": 5000,
+      "execution_1": {
+        "executed_quantity": 2000,
+        "execution_price": "28.00",
+        "expected_remaining_quantity": 3000
+      },
+      "execution_2": {
+        "executed_quantity": 3000,
+        "execution_price": "28.00",
+        "expected_remaining_quantity": 0,
+        "order_should_be_removed": true
+      }
+    },
+    "scenario_4_auction_cross_and_resolution": {
+      "description": "Entrada em leilão, cruzamento permitido e restabelecimento de mercado contínuo.",
+      "auction_bid_price": "36.00",
+      "auction_bid_quantity": 2000,
+      "existing_ask_price": "35.50",
+      "existing_ask_quantity": 1500,
+      "expected_crossed": true,
+      "auction_unfreeze_trade": {
+        "clearing_price": "35.75",
+        "match_volume": 1500
+      }
+    }
+  }
+}

@@ -1,0 +1,217 @@
+{
+  "version": "1.0.0",
+  "as_of": "2026-11-05",
+  "scope": "Gestão e Liquidação em Tempo Real de Chamadas de Margem Intradiária via Pix Automático e SPI (Resoluções BCB 1/2020 e 341/2023 - FL-090)",
+  "ispb_camara": "00997185",
+  "pi_accounts": [
+    {
+      "ispb": "60701190",
+      "account_number": "PI-ITAU-001",
+      "participant_name": "Banco Itaú Unibanco S.A.",
+      "balance": "150000000.00",
+      "available_limit": "25000000.00"
+    },
+    {
+      "ispb": "60746948",
+      "account_number": "PI-BRAD-001",
+      "participant_name": "Banco Bradesco S.A.",
+      "balance": "120000000.00",
+      "available_limit": "20000000.00"
+    },
+    {
+      "ispb": "30306294",
+      "account_number": "PI-BTG-001",
+      "participant_name": "Banco BTG Pactual S.A.",
+      "balance": "80000000.00",
+      "available_limit": "15000000.00"
+    },
+    {
+      "ispb": "02332886",
+      "account_number": "PI-XP-001",
+      "participant_name": "XP Investimentos CCTVM S.A.",
+      "balance": "60000000.00",
+      "available_limit": "10000000.00"
+    },
+    {
+      "ispb": "00997185",
+      "account_number": "PI-B3-CLEARING-MARGIN",
+      "participant_name": "B3 S.A. - Brasil, Bolsa, Balcão",
+      "balance": "500000000.00",
+      "available_limit": "0.00"
+    }
+  ],
+  "dict_keys": [
+    {
+      "pix_key": "52998224725",
+      "key_type": "CPF",
+      "tax_id": "52998224725",
+      "name": "Investidor Fundo Alpha Qualificado",
+      "ispb": "60701190",
+      "branch": "0001",
+      "account_number": "12345-6",
+      "account_type": "CACC",
+      "is_active": true
+    },
+    {
+      "pix_key": "30306294000145",
+      "key_type": "CNPJ",
+      "tax_id": "30306294000145",
+      "name": "BTG Gestora de Recursos Ltda",
+      "ispb": "30306294",
+      "branch": "0001",
+      "account_number": "98765-4",
+      "account_type": "CACC",
+      "is_active": true
+    },
+    {
+      "pix_key": "margem.core@xpi.com.br",
+      "key_type": "EMAIL",
+      "tax_id": "02332886000104",
+      "name": "XP Tesouraria e Derivativos",
+      "ispb": "02332886",
+      "branch": "0001",
+      "account_number": "55555-0",
+      "account_type": "CACC",
+      "is_active": true
+    },
+    {
+      "pix_key": "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
+      "key_type": "EVP",
+      "tax_id": "60746948000112",
+      "name": "Bradesco Corretora de Câmbio e Títulos",
+      "ispb": "60746948",
+      "branch": "0001",
+      "account_number": "77777-1",
+      "account_type": "CACC",
+      "is_active": true
+    }
+  ],
+  "mandates": [
+    {
+      "mandate_id": "MNDT-B3-ITAU-ALPHA-001",
+      "payer_tax_id": "52998224725",
+      "payer_name": "Investidor Fundo Alpha Qualificado",
+      "payer_ispb": "60701190",
+      "payer_branch": "0001",
+      "payer_account_number": "12345-6",
+      "payer_pix_key": "52998224725",
+      "receiver_tax_id": "00997185000150",
+      "receiver_name": "B3 S.A. - Brasil, Bolsa, Balcão",
+      "receiver_ispb": "00997185",
+      "receiver_pix_key": "00997185000150",
+      "receiver_account": "PI-B3-CLEARING-MARGIN",
+      "max_limit_per_call": "15000000.00",
+      "total_monthly_limit": "50000000.00",
+      "current_monthly_utilized": "0.00",
+      "status": "ACTIVE",
+      "authorization_channel": "OPEN_FINANCE",
+      "recurrence_purpose": "INTRADAY_MARGIN_CALL"
+    },
+    {
+      "mandate_id": "MNDT-B3-BTG-001",
+      "payer_tax_id": "30306294000145",
+      "payer_name": "BTG Gestora de Recursos Ltda",
+      "payer_ispb": "30306294",
+      "payer_branch": "0001",
+      "payer_account_number": "98765-4",
+      "payer_pix_key": "30306294000145",
+      "receiver_tax_id": "00997185000150",
+      "receiver_name": "B3 S.A. - Brasil, Bolsa, Balcão",
+      "receiver_ispb": "00997185",
+      "receiver_pix_key": "00997185000150",
+      "receiver_account": "PI-B3-CLEARING-MARGIN",
+      "max_limit_per_call": "25000000.00",
+      "total_monthly_limit": "100000000.00",
+      "current_monthly_utilized": "0.00",
+      "status": "ACTIVE",
+      "authorization_channel": "INTERNET_BANKING",
+      "recurrence_purpose": "INTRADAY_MARGIN_CALL"
+    },
+    {
+      "mandate_id": "MNDT-B3-XP-001",
+      "payer_tax_id": "02332886000104",
+      "payer_name": "XP Tesouraria e Derivativos",
+      "payer_ispb": "02332886",
+      "payer_branch": "0001",
+      "payer_account_number": "55555-0",
+      "payer_pix_key": "margem.core@xpi.com.br",
+      "receiver_tax_id": "00997185000150",
+      "receiver_name": "B3 S.A. - Brasil, Bolsa, Balcão",
+      "receiver_ispb": "00997185",
+      "receiver_pix_key": "00997185000150",
+      "receiver_account": "PI-B3-CLEARING-MARGIN",
+      "max_limit_per_call": "10000000.00",
+      "total_monthly_limit": "30000000.00",
+      "current_monthly_utilized": "0.00",
+      "status": "ACTIVE",
+      "authorization_channel": "MOBILE_APP",
+      "recurrence_purpose": "INTRADAY_MARGIN_CALL"
+    },
+    {
+      "mandate_id": "MNDT-B3-BRAD-REVOKED-001",
+      "payer_tax_id": "60746948000112",
+      "payer_name": "Bradesco Corretora de Câmbio e Títulos",
+      "payer_ispb": "60746948",
+      "payer_branch": "0001",
+      "payer_account_number": "77777-1",
+      "payer_pix_key": "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
+      "receiver_tax_id": "00997185000150",
+      "receiver_name": "B3 S.A. - Brasil, Bolsa, Balcão",
+      "receiver_ispb": "00997185",
+      "receiver_pix_key": "00997185000150",
+      "receiver_account": "PI-B3-CLEARING-MARGIN",
+      "max_limit_per_call": "5000000.00",
+      "total_monthly_limit": "20000000.00",
+      "current_monthly_utilized": "0.00",
+      "status": "REVOKED",
+      "authorization_channel": "BRANCH_TERMINAL",
+      "recurrence_purpose": "INTRADAY_MARGIN_CALL"
+    }
+  ],
+  "collateral_accounts": [
+    {
+      "participant_id": "PL-ITAU-01",
+      "subaccount_id": "SUB-ALPHA-101",
+      "tax_id": "52998224725",
+      "cash_collateral_balance": "5000000.00",
+      "required_margin": "5000000.00",
+      "pretrade_risk_limit": "50000000.00",
+      "pretrade_capacity_utilized": "15000000.00",
+      "is_blocked_for_trading": false,
+      "is_in_default": false
+    },
+    {
+      "participant_id": "PL-BTG-01",
+      "subaccount_id": "SUB-BTG-202",
+      "tax_id": "30306294000145",
+      "cash_collateral_balance": "10000000.00",
+      "required_margin": "10000000.00",
+      "pretrade_risk_limit": "80000000.00",
+      "pretrade_capacity_utilized": "30000000.00",
+      "is_blocked_for_trading": false,
+      "is_in_default": false
+    },
+    {
+      "participant_id": "PL-XP-01",
+      "subaccount_id": "SUB-XP-303",
+      "tax_id": "02332886000104",
+      "cash_collateral_balance": "2000000.00",
+      "required_margin": "2000000.00",
+      "pretrade_risk_limit": "40000000.00",
+      "pretrade_capacity_utilized": "10000000.00",
+      "is_blocked_for_trading": false,
+      "is_in_default": false
+    },
+    {
+      "participant_id": "PL-BRAD-01",
+      "subaccount_id": "SUB-BRAD-404",
+      "tax_id": "60746948000112",
+      "cash_collateral_balance": "1000000.00",
+      "required_margin": "1000000.00",
+      "pretrade_risk_limit": "30000000.00",
+      "pretrade_capacity_utilized": "5000000.00",
+      "is_blocked_for_trading": false,
+      "is_in_default": false
+    }
+  ]
+}

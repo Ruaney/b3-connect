@@ -1,0 +1,131 @@
+{
+  "version": "2.0.0",
+  "as_of": "2026-11-05",
+  "scope": "B3 CSD & BACEN DREX Piloto Fase 2 — Liquidação Atômica DvP/PvP, HTLC e Arquitetura 3 Camadas (FL-089)",
+  "institutions": [
+    {
+      "institution_id": "IF-ITAU-001",
+      "institution_name": "Itaú Unibanco S.A.",
+      "reserve_wallet_address": "0x1111111111111111111111111111111111111111",
+      "real_digital_balance": "150000000.00",
+      "tokenized_real_contract_symbol": "RT_ITAU",
+      "total_issued_real_tokenizado": "17500000.00",
+      "tpft_balances": {
+        "LTN2028": 15000,
+        "LFT2029": 10000,
+        "NTNB2035": 8000
+      }
+    },
+    {
+      "institution_id": "IF-BRADESCO-002",
+      "institution_name": "Banco Bradesco S.A.",
+      "reserve_wallet_address": "0x2222222222222222222222222222222222222222",
+      "real_digital_balance": "120000000.00",
+      "tokenized_real_contract_symbol": "RT_BRADESCO",
+      "total_issued_real_tokenizado": "3800000.00",
+      "tpft_balances": {
+        "LTN2028": 12000,
+        "LFT2029": 15000,
+        "NTNB2035": 6000
+      }
+    },
+    {
+      "institution_id": "IF-BB-003",
+      "institution_name": "Banco do Brasil S.A.",
+      "reserve_wallet_address": "0x3333333333333333333333333333333333333333",
+      "real_digital_balance": "200000000.00",
+      "tokenized_real_contract_symbol": "RT_BB",
+      "total_issued_real_tokenizado": "5000000.00",
+      "tpft_balances": {
+        "LTN2028": 25000,
+        "LFT2029": 20000,
+        "NTNB2035": 10000
+      }
+    }
+  ],
+  "clients": [
+    {
+      "wallet_address": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "client_id": "CLI-ALICE-01",
+      "tax_id": "111.222.333-44",
+      "institution_id": "IF-ITAU-001",
+      "real_tokenizado_balances": {
+        "RT_ITAU": "2500000.00"
+      },
+      "tpft_balances": {
+        "LTN2028": 500,
+        "NTNB2035": 100
+      },
+      "status": "ACTIVE"
+    },
+    {
+      "wallet_address": "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "client_id": "CLI-BOB-02",
+      "tax_id": "555.666.777-88",
+      "institution_id": "IF-BRADESCO-002",
+      "real_tokenizado_balances": {
+        "RT_BRADESCO": "3800000.00"
+      },
+      "tpft_balances": {
+        "LFT2029": 400
+      },
+      "status": "ACTIVE"
+    },
+    {
+      "wallet_address": "0xcccccccccccccccccccccccccccccccccccccccc",
+      "client_id": "CLI-CARLOS-03",
+      "tax_id": "999.888.777-66",
+      "institution_id": "IF-BB-003",
+      "real_tokenizado_balances": {
+        "RT_BB": "5000000.00"
+      },
+      "tpft_balances": {
+        "LTN2028": 1000,
+        "LFT2029": 500
+      },
+      "status": "ACTIVE"
+    },
+    {
+      "wallet_address": "0xdddddddddddddddddddddddddddddddddddddddd",
+      "client_id": "CLI-DIANA-04",
+      "tax_id": "12.345.678/0001-90",
+      "institution_id": "IF-ITAU-001",
+      "real_tokenizado_balances": {
+        "RT_ITAU": "15000000.00"
+      },
+      "tpft_balances": {
+        "NTNB2035": 2500
+      },
+      "status": "ACTIVE"
+    }
+  ],
+  "tpft_instruments": [
+    {
+      "symbol": "LTN2028",
+      "security_type": "LTN",
+      "isin": "BRSTNCLTN7S3",
+      "maturity_date": "2028-01-01",
+      "unit_price_brl": "985.45",
+      "total_custody_csd_selic": 100000,
+      "circulating_onchain_quantity": 53500
+    },
+    {
+      "symbol": "LFT2029",
+      "security_type": "LFT",
+      "isin": "BRSTNCLFT1A8",
+      "maturity_date": "2029-03-01",
+      "unit_price_brl": "14250.80",
+      "total_custody_csd_selic": 80000,
+      "circulating_onchain_quantity": 45900
+    },
+    {
+      "symbol": "NTNB2035",
+      "security_type": "NTN_B",
+      "isin": "BRSTNCNTB5K9",
+      "maturity_date": "2035-05-15",
+      "unit_price_brl": "4320.15",
+      "total_custody_csd_selic": 50000,
+      "circulating_onchain_quantity": 26600
+    }
+  ]
+}

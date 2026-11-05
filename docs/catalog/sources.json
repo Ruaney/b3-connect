@@ -569,6 +569,14 @@
       "status": "localizada",
       "kind": "manual_tecnico",
       "limitation": "Contrato padronizado CBI de 100 CBIOs, túneis de negociação PUMA, ajuste diário em D+1, modelo de risco CORE e liquidação exclusivamente financeira baseada no spot de CBIO."
+    },
+    {
+      "id": "SRC-072",
+      "title": "Banco Central do Brasil (BACEN) & B3 CSD — Diretrizes Técnicas do Piloto Drex Fase 2: Hyperledger Besu, Real Digital Atacado, Real Tokenizado, TPFt e Liquidação Atômica DvP/PvP via HTLC",
+      "url": "https://www.b3.com.br/pt_br/solucoes/plataformas/inovacao-e-ativos-digitais/drex-fase-2.htm",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Arquitetura de 3 camadas da rede Drex (Real Digital CBDC, Real Tokenizado de varejo e TPFt na B3/SELIC), liquidação atômica DvP e PvP em Smart Contracts EVM, HTLC com timeouts regulatórios e paridade 1:1."
     }
   ]
 }

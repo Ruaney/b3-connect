@@ -1613,6 +1613,139 @@ def verify_health_education_securitization_invariants(fixtures_dir: Path):
     print("      ✓ Incomunicabilidade de patrimônio separado, waterfall financeiro e subordinação estrita comprovadas.")
 
 
+def verify_electric_power_trading_ccee_invariants(fixtures_dir: Path):
+    """
+    Lei 71: Balcão B3 & CCEE de Energia Elétrica - ACL (FL-087).
+    1. Conservação de Energia (MWh Vendido == MWh Comprado).
+    2. Liquidação Financeira Bilateral Soma-Zero (LAW-090).
+    3. Não-Negatividade de montantes e preços (LAW-091).
+    4. Trava fiduciária de recebíveis dentro do limite contratual (LAW-092).
+    """
+    print("[71/76] Verificando Invariante de Energia Elétrica B3 & CCEE (FL-087)...")
+    from src.electric_power_trading_ccee import ElectricPowerTradingEngine
+    with open(fixtures_dir / "electric_power_trading_ccee.json", "r", encoding="utf-8") as f:
+        data = json.load(f)
+    engine = ElectricPowerTradingEngine.from_dict(data)
+    audit = engine.verify_invariants()
+    check(audit["all_invariants_hold"], "Violação de invariantes em energia elétrica FL-087")
+    check(audit["energy_conservation_verified"], "Violação de conservação de MWh em energia elétrica")
+    check(audit["bilateral_settlement_zero_sum_verified"], "Violação de liquidação bilateral soma-zero")
+    print("      ✓ Conservação de MWh, liquidação soma-zero e trava fiduciária de energia comprovadas.")
+
+
+def verify_voluntary_carbon_credits_invariants(fixtures_dir: Path):
+    """
+    Lei 72: Mercado Voluntário de Créditos de Carbono - VCM (FL-088).
+    1. Anti-dupla contagem: Emitidos == Em Circulação + Aposentados + Bloqueados (LAW-088A).
+    2. Não-negatividade de saldos escriturais (LAW-088B).
+    3. Liquidação bilateral DvP soma-zero (LAW-088C).
+    4. Aposentadoria definitiva irrevogável (LAW-088D).
+    """
+    print("[72/76] Verificando Invariante de Créditos de Carbono Voluntário (FL-088)...")
+    from src.voluntary_carbon_credits import VoluntaryCarbonCreditsEngine
+    with open(fixtures_dir / "voluntary_carbon_credits.json", "r", encoding="utf-8") as f:
+        data = json.load(f)
+    engine = VoluntaryCarbonCreditsEngine()
+    engine.load_from_dict(data["engine_state"])
+    audit = engine.verify_invariants()
+    check(audit["INV-VCM-001_ANTI_DOUBLE_COUNTING"], "Violação de conservação e anti-dupla contagem de carbono")
+    check(audit["INV-VCM-002_NON_NEGATIVE_BALANCES"], "Violação de não-negatividade de saldos de carbono")
+    check(audit["INV-VCM-003_DVP_FINANCIAL_SETTLEMENT"], "Violação de liquidação DvP de carbono")
+    check(audit["INV-VCM-004_IRREVOCABLE_RETIREMENT"], "Violação de aposentadoria irrevogável de carbono")
+    print("      ✓ Anti-dupla contagem, não-negatividade e aposentadoria irrevogável de carbono comprovadas.")
+
+
+def verify_drex_phase2_atomic_dvp_invariants(fixtures_dir: Path):
+    """
+    Lei 73: Drex Piloto Fase 2 - Liquidação Atômica DvP/PvP em DLT (FL-089).
+    1. Conservação atômica DvP All-or-None (LAW-089A).
+    2. Paridade 1:1 de Moeda Soberana Drex (LAW-089B).
+    3. Não-negatividade e não-geração inflacionária de tokens (LAW-089C).
+    """
+    print("[73/76] Verificando Invariante de DLT Drex Fase 2 DvP/PvP (FL-089)...")
+    from src.drex_phase2_atomic_dvp import DrexPhase2AtomicDvpEngine
+    engine = DrexPhase2AtomicDvpEngine.load_from_fixture(fixtures_dir / "drex_phase2_atomic_dvp.json")
+    audit = engine.verify_invariants()
+    check(audit["LAW-089A_custody_conservation"], "Violação de conservação de custódia TPFt Drex")
+    check(audit["LAW-089A_atomic_dvp_receipts"], "Violação de conservação atômica DvP Drex")
+    check(audit["LAW-089B_sovereign_parity"], "Violação de paridade 1:1 de moeda soberana Drex")
+    check(audit["LAW-089C_non_negativity"], "Violação de não-negatividade de tokens Drex")
+    print("      ✓ Atomicidade DvP/PvP via HTLC, paridade 1:1 e conservação soberana Drex comprovadas.")
+
+
+def verify_pix_automatico_margin_calls_invariants(fixtures_dir: Path):
+    """
+    Lei 74: Chamadas de Margem via Pix Automático & SPI BACEN (FL-090).
+    1. Conservação financeira SPI Débito == Crédito (LAW-093).
+    2. Unicidade global de EndToEndId de 32 caracteres (LAW-094).
+    3. Cumprimento de SLA intradiário < 10 segundos.
+    4. Irrevogabilidade e não-repúdio do pagamento instantâneo.
+    """
+    print("[74/76] Verificando Invariante de Pix Automático para Margem SPI (FL-090)...")
+    from src.pix_automatico_margin_calls import PixAutomaticoMarginEngine
+    engine = PixAutomaticoMarginEngine(ispb_camara="00997185")
+    engine.load_fixture(fixtures_dir / "pix_automatico_margin_calls.json")
+    audit = engine.verify_invariants(raise_on_error=True)
+    check(audit["all_satisfied"], "Violação de invariantes em Pix Automático FL-090")
+    check(audit["spi_financial_conservation"], "Violação de conservação financeira SPI")
+    check(audit["e2e_id_uniqueness_and_format"], "Violação de unicidade de EndToEndId")
+    print("      ✓ Conservação financeira SPI, unicidade E2EID e liquidação < 10s comprovadas.")
+
+
+def verify_market_by_order_l3_book_invariants(fixtures_dir: Path):
+    """
+    Lei 75: Microestrutura de Mercado L3 Market By Order - MBO PUMA (FL-091).
+    1. Conservação de lotes no book: Atual == Inseridos - Executados - Cancelados (LAW-091A).
+    2. Não-cruzamento em mercado contínuo: Best_Bid < Best_Ask (LAW-091B).
+    3. Prioridade estrita Preço-Tempo FIFO (LAW-091C).
+    """
+    print("[75/76] Verificando Invariante de Livro L3 Market By Order (FL-091)...")
+    from datetime import datetime
+    from src.market_by_order_l3_book import MarketByOrderL3Book
+    with open(fixtures_dir / "market_by_order_l3_book.json", "r", encoding="utf-8") as f:
+        fixture_data = json.load(f)
+    sc1 = fixture_data["scenarios"]["scenario_1_multilevel_book_construction"]
+    book = MarketByOrderL3Book(security_id=105234, symbol="PETR4")
+    for ev_data in sc1["events"]:
+        book.apply_order_add(
+            order_id=ev_data["order_id"],
+            side=ev_data["side"],
+            price=ev_data["price"],
+            quantity=ev_data["quantity"],
+            sequence_number=ev_data["sequence_number"],
+            timestamp=datetime.fromisoformat(ev_data["timestamp"].replace("Z", "+00:00")),
+            participant_id=ev_data["participant_id"],
+        )
+    audit = book.verify_invariants(raise_on_error=True)
+    check(audit["order_conservation"], "Violação de conservação de ordens no book L3")
+    check(audit["no_crossed_book_continuous"], "Violação de integridade contra crossed book")
+    check(audit["strict_fifo_priority"], "Violação de prioridade FIFO na fila temporal")
+    print("      ✓ Conservação de ordens, não-cruzamento e ordenamento FIFO de fila L3 comprovados.")
+
+
+def verify_asian_exotic_options_invariants(fixtures_dir: Path):
+    """
+    Lei 76: Opções Asiáticas de Média Aritmética e Geométrica (FL-092).
+    1. Paridade Put-Call Asiática e Não-Arbitragem (LAW-095).
+    2. Menor Volatilidade Efetiva que Vanilla: Vol_Asian <= Vol_Vanilla (LAW-096).
+    3. Conservação Financeira Bilateral Soma-Zero em Liquidação (LAW-097).
+    """
+    print("[76/76] Verificando Invariante de Opções Asiáticas Exóticas (FL-092)...")
+    from src.asian_exotic_options import AsianExoticOptionsEngine, AsianOptionContract
+    with open(fixtures_dir / "asian_exotic_options.json", "r", encoding="utf-8") as f:
+        data = json.load(f)
+    engine = AsianExoticOptionsEngine()
+    for c_data in data["contracts"]:
+        contract = AsianOptionContract.from_dict(c_data)
+        engine.register_contract(contract)
+        res = engine.price_contract(contract.contract_id, valuation_date=contract.trade_date)
+        check(res.parity_holds, f"Violação de paridade asiática no contrato {contract.contract_id}")
+        check(res.effective_vol_bound_holds, f"Violação de limite de volatilidade no contrato {contract.contract_id}")
+    summary = engine.summarize_portfolio()
+    summary.verify_invariants()
+    print("      ✓ Paridade put-call asiática, limite de volatilidade e liquidação soma-zero comprovadas.")
+
+
 def main():
     print("=" * 70)
     print(" B3 INTEGRATION ATLAS — VERIFICAÇÃO FORMAL DE INVARIANTES")
@@ -1695,9 +1828,15 @@ def main():
         verify_interest_rate_swap_irs_invariants(fixtures_dir)
         verify_green_cpr_environmental_services_invariants(fixtures_dir)
         verify_health_education_securitization_invariants(fixtures_dir)
+        verify_electric_power_trading_ccee_invariants(fixtures_dir)
+        verify_voluntary_carbon_credits_invariants(fixtures_dir)
+        verify_drex_phase2_atomic_dvp_invariants(fixtures_dir)
+        verify_pix_automatico_margin_calls_invariants(fixtures_dir)
+        verify_market_by_order_l3_book_invariants(fixtures_dir)
+        verify_asian_exotic_options_invariants(fixtures_dir)
         
         print("\n" + "=" * 70)
-        print("✓ TODAS AS 70 LEIS DE CONSERVAÇÃO E INVARIANTES DA B3 FORAM PROVADAS!")
+        print("✓ TODAS AS 76 LEIS DE CONSERVAÇÃO E INVARIANTES DA B3 FORAM PROVADAS!")
         print("  Garantia matemática de consistência em todas as fixtures e módulos.")
         print("=" * 70)
         sys.exit(0)

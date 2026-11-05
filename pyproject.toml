@@ -1,0 +1,55 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "b3-integration-atlas"
+version = "2.1.0"
+description = "SDK e Catálogo Institucional de Integração B3 — Leis Formais de Invariantes, PUMA FIX/SBE, IMBARQ, STVM e SPB"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [
+    { name = "B3 Enterprise Architecture & DevX Team", email = "devx@b3.com.br" },
+]
+keywords = [
+    "b3",
+    "puma",
+    "fix",
+    "sbe",
+    "imbarq",
+    "stvm",
+    "spb",
+    "invariants",
+    "fintech",
+    "clearing",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Financial and Insurance Industry",
+    "Topic :: Office/Business :: Financial :: Investment",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent",
+    "Typing :: Typed",
+]
+dependencies = []
+
+[project.scripts]
+b3-atlas = "src.cli:main_atlas"
+b3-verify = "src.cli:main_verify"
+
+[project.urls]
+Homepage = "https://github.com/b3-enterprise/b3-integration-atlas"
+Documentation = "https://github.com/b3-enterprise/b3-integration-atlas/tree/main/docs"
+Repository = "https://github.com/b3-enterprise/b3-integration-atlas.git"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]
+
+[tool.setuptools.package-data]
+src = ["py.typed"]

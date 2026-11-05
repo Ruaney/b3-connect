@@ -602,3 +602,278 @@ def assert_fii_minimum_distribution(
             },
         )
 
+
+def assert_power_energy_conservation(
+    total_mwh_sold: Decimal,
+    total_mwh_bought: Decimal,
+    contract_id: str = "",
+    tolerance: Decimal = Decimal("0.0001"),
+) -> None:
+    """Lei 65 / LAW-089: Conservação Estrita de Energia Elétrica Bilateral (FL-087).
+
+    Total_MWh_Vendido == Total_MWh_Comprado centésimo de MWh a centésimo de MWh.
+    """
+    diff = abs(total_mwh_sold - total_mwh_bought)
+    check(
+        diff <= tolerance,
+        f"Violação da Conservação de Energia Elétrica Bilateral no contrato '{contract_id}': "
+        f"MWh Vendido ({total_mwh_sold}) != MWh Comprado ({total_mwh_bought}) [Diff={diff}]",
+        law_code="LAW-089",
+        details={
+            "contract_id": contract_id,
+            "total_mwh_sold": str(total_mwh_sold),
+            "total_mwh_bought": str(total_mwh_bought),
+            "diff": str(diff),
+        },
+    )
+
+
+def assert_power_settlement_zero_sum(
+    buyer_debits: Sequence[Decimal] | Decimal,
+    seller_credits: Sequence[Decimal] | Decimal,
+    reference_id: str = "",
+    tolerance: Decimal = Decimal("0.01"),
+) -> None:
+    """Lei 66 / LAW-090: Conservação Soma-Zero na Liquidação Financeira de Energia (FL-087).
+
+    Somatório(Débitos Comprador) == Somatório(Créditos Vendedor + Credores Fiduciários) centavo a centavo.
+    """
+    total_debits = sum(buyer_debits) if isinstance(buyer_debits, (list, tuple)) else buyer_debits
+    total_credits = sum(seller_credits) if isinstance(seller_credits, (list, tuple)) else seller_credits
+    diff = abs(total_debits - total_credits)
+    check(
+        diff <= tolerance,
+        f"Violação de Soma-Zero na Liquidação Financeira de Energia '{reference_id}': "
+        f"Débitos ({total_debits}) != Créditos ({total_credits}) [Diff={diff}]",
+        law_code="LAW-090",
+        details={
+            "reference_id": reference_id,
+            "total_debits": str(total_debits),
+            "total_credits": str(total_credits),
+            "diff": str(diff),
+        },
+    )
+
+
+def assert_power_non_negativity(
+    mw_average: Decimal,
+    total_hours: int,
+    volume_mwh: Decimal,
+    price_mwh: Decimal,
+    contract_id: str = "",
+) -> None:
+    """Lei 67 / LAW-091: Invariante de Não-Negatividade de Montantes e Preços de Energia (FL-087).
+
+    MWmédio >= 0, Horas > 0, MWh >= 0 e Preço/MWh >= 0.
+    """
+    is_valid = (
+        mw_average >= Decimal("0.00")
+        and total_hours > 0
+        and volume_mwh >= Decimal("0.00")
+        and price_mwh >= Decimal("0.00")
+    )
+    check(
+        is_valid,
+        f"Violação de Não-Negatividade em contrato de energia '{contract_id}': "
+        f"MWmédio={mw_average}, Horas={total_hours}, MWh={volume_mwh}, Preço={price_mwh}",
+        law_code="LAW-091",
+        details={
+            "contract_id": contract_id,
+            "mw_average": str(mw_average),
+            "total_hours": total_hours,
+            "volume_mwh": str(volume_mwh),
+            "price_mwh": str(price_mwh),
+        },
+    )
+
+
+def assert_fiduciary_assignment_limit(
+    assigned_amount: Decimal,
+    total_contract_value: Decimal,
+    contract_id: str = "",
+) -> None:
+    """Lei 68 / LAW-092: Limite de Trava Fiduciária de Recebíveis de Energia (FL-087).
+
+    Valor Travado Fiduciariamente <= Valor Total do Recebível Contratado.
+    """
+    check(
+        assigned_amount <= total_contract_value and assigned_amount >= Decimal("0.00"),
+        f"Violação do Limite da Trava Fiduciária no contrato '{contract_id}': "
+        f"Valor Travado ({assigned_amount}) excede Valor Total ({total_contract_value}) ou é negativo",
+        law_code="LAW-092",
+        details={
+            "contract_id": contract_id,
+            "assigned_amount": str(assigned_amount),
+            "total_contract_value": str(total_contract_value),
+        },
+    )
+
+
+def assert_asian_put_call_parity(
+    call_price: Decimal,
+    put_price: Decimal,
+    discount_factor: Decimal,
+    expected_underlying_avg: Decimal,
+    strike_price: Decimal,
+    tolerance: Decimal = Decimal("0.0001"),
+    contract_id: str = "",
+) -> None:
+    """Lei 71 / LAW-095: Paridade Put-Call Asiática e Condição de Não-Arbitragem (FL-092).
+
+    | (C - P) - DF * (E[S_avg] - K) | <= tolerance
+    """
+    lhs = call_price - put_price
+    rhs = discount_factor * (expected_underlying_avg - strike_price)
+    diff = abs(lhs - rhs)
+    check(
+        diff <= tolerance,
+        f"Violação da Paridade Put-Call Asiática (LAW-095) no contrato '{contract_id}': "
+        f"C - P ({lhs}) != DF * (E[S_avg] - K) ({rhs}), diferença = {diff} > tolerância {tolerance}",
+        law_code="LAW-095",
+        details={
+            "contract_id": contract_id,
+            "call_price": str(call_price),
+            "put_price": str(put_price),
+            "diff": str(diff),
+            "tolerance": str(tolerance),
+        },
+    )
+
+
+def assert_asian_effective_volatility_bound(
+    effective_volatility: Decimal,
+    vanilla_volatility: Decimal,
+    tolerance: Decimal = Decimal("0.0001"),
+    contract_id: str = "",
+) -> None:
+    """Lei 72 / LAW-096: Invariante de Menor Volatilidade Efetiva de Opção Asiática (FL-092).
+
+    Vol_Asiatica <= Vol_Vanilla (a amostragem por média reduz a variância estocástica).
+    """
+    check(
+        effective_volatility <= vanilla_volatility + tolerance,
+        f"Violação da Menor Volatilidade Efetiva Asiática (LAW-096) no contrato '{contract_id}': "
+        f"Vol_Asiatica ({effective_volatility}) excede Vol_Vanilla ({vanilla_volatility})",
+        law_code="LAW-096",
+        details={
+            "contract_id": contract_id,
+            "effective_volatility": str(effective_volatility),
+            "vanilla_volatility": str(vanilla_volatility),
+        },
+    )
+
+
+def assert_asian_zero_sum_settlement(
+    gross_holder_amount: Decimal,
+    gross_writer_amount: Decimal,
+    contract_id: str = "",
+) -> None:
+    """Lei 73 / LAW-097: Conservação Financeira Bilateral Soma-Zero em Liquidação Asiática (FL-092).
+
+    Gross_Holder + Gross_Writer == 0,00
+    """
+    total = gross_holder_amount + gross_writer_amount
+    check(
+        total == Decimal("0.00"),
+        f"Violação da Conservação Financeira Soma-Zero (LAW-097) no contrato '{contract_id}': "
+        f"Titular ({gross_holder_amount}) + Lançador ({gross_writer_amount}) = {total} != 0,00",
+        law_code="LAW-097",
+        details={
+            "contract_id": contract_id,
+            "gross_holder_amount": str(gross_holder_amount),
+            "gross_writer_amount": str(gross_writer_amount),
+            "balance": str(total),
+        },
+    )
+
+
+
+def assert_drex_atomic_dvp_conservation(
+    seller_tpft_delta: int,
+    buyer_tpft_delta: int,
+    expected_tpft_qty: int,
+    buyer_financial_delta: Decimal,
+    seller_financial_delta: Decimal,
+    expected_financial_amount: Decimal,
+    operation_id: str = "",
+) -> None:
+    """Lei 69 / LAW-089A: Conservação Atômica DvP e PvP em DLT Drex Fase 2 (FL-089).
+
+    Em liquidação atômica Delivery-versus-Payment:
+    1. A quantidade de TPFt debitada do vendedor deve ser estritamente igual à creditada ao comprador.
+    2. O montante financeiro (Real Digital ou Real Tokenizado) debitado do comprador deve ser estritamente igual ao creditado ao vendedor (ou compensado interbancariamente).
+    3. Princípio All-or-None: Ambas as pernas concluem conjuntamente ou sofrem reversão integral.
+    """
+    check(
+        seller_tpft_delta == expected_tpft_qty and buyer_tpft_delta == expected_tpft_qty,
+        f"Violação da Conservação Atômica DvP de TPFt na operação '{operation_id}': "
+        f"Débito Vendedor ({seller_tpft_delta}) ou Crédito Comprador ({buyer_tpft_delta}) "
+        f"!= Quantidade Esperada ({expected_tpft_qty})",
+        law_code="LAW-089A",
+        details={
+            "operation_id": operation_id,
+            "seller_tpft_delta": seller_tpft_delta,
+            "buyer_tpft_delta": buyer_tpft_delta,
+            "expected_tpft_qty": expected_tpft_qty,
+        },
+    )
+    check(
+        buyer_financial_delta == expected_financial_amount and seller_financial_delta == expected_financial_amount,
+        f"Violação da Conservação Atômica DvP Financeira na operação '{operation_id}': "
+        f"Débito Comprador ({buyer_financial_delta}) ou Crédito Vendedor ({seller_financial_delta}) "
+        f"!= Montante Esperado ({expected_financial_amount})",
+        law_code="LAW-089A",
+        details={
+            "operation_id": operation_id,
+            "buyer_financial_delta": str(buyer_financial_delta),
+            "seller_financial_delta": str(seller_financial_delta),
+            "expected_financial_amount": str(expected_financial_amount),
+        },
+    )
+
+
+def assert_drex_sovereign_parity_conservation(
+    real_tokenizado_amount: Decimal,
+    real_digital_amount: Decimal,
+    operation_id: str = "",
+) -> None:
+    """Lei 70 / LAW-089B: Paridade 1:1 e Conservação de Moeda Soberana Drex Fase 2 (FL-089).
+
+    1 Real Tokenizado == 1 Real Digital == R$ 1,00 BRL.
+    Em trocas PvP e liquidações interbancárias, a paridade deve ser preservada sem criação espúria de liquidez.
+    """
+    check(
+        real_tokenizado_amount == real_digital_amount,
+        f"Quebra de Paridade 1:1 de Moeda Soberana Drex na operação '{operation_id}': "
+        f"Real Tokenizado ({real_tokenizado_amount}) != Real Digital ({real_digital_amount})",
+        law_code="LAW-089B",
+        details={
+            "operation_id": operation_id,
+            "real_tokenizado_amount": str(real_tokenizado_amount),
+            "real_digital_amount": str(real_digital_amount),
+        },
+    )
+
+
+def assert_drex_token_non_negative_conservation(
+    balances: Dict[str, Union[int, Decimal]],
+    entity_id: str = "",
+) -> None:
+    """Lei 71 / LAW-089C: Não-Negatividade e Não-Geração Inflacionária de Tokens Drex (FL-089).
+
+    Nenhum saldo (TPFt, Real Digital, Real Tokenizado) pode ser negativo em qualquer carteira ou contrato.
+    """
+    for asset, balance in balances.items():
+        check(
+            balance >= 0,
+            f"Saldo negativo de token detectado para entidade '{entity_id}' no ativo '{asset}': {balance} < 0",
+            law_code="LAW-089C",
+            details={
+                "entity_id": entity_id,
+                "asset": asset,
+                "balance": str(balance),
+            },
+        )
+
+
+
