@@ -529,6 +529,14 @@
       "status": "localizada",
       "kind": "manual_tecnico",
       "limitation": "Emissão de CDA/WA, controle de quebra técnica, matriz de haircuts B3, Safe-Release guardrail e waterfall de excussão em leilão."
+    },
+    {
+      "id": "SRC-067",
+      "title": "B3 Balcão NoMe & BCB — Manual de Registro e Constituição de Gravames sobre Recebíveis de Arranjos de Pagamento (Res. CMN 4.734 e Res. BCB 264)",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/registro/recebiveis-de-cartao/",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Agrupamento de Unidades de Recebíveis (UR), consentimento opt-in, unicidade e trava de domicílio bancário, liquidação de antecipações."
     }
   ]
 }

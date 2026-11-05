@@ -1332,6 +1332,27 @@
       }
     },
     {
+      "id": "FL-069",
+      "name": "Registro e Constituição de Gravames sobre Recebíveis de Arranjos de Pagamento no Balcão NoMe B3",
+      "system": "Balcão NoMe B3 & Sistema Registrador",
+      "interface": "Motor de Registro de URs, Opt-in de Consentimento, Constituição/Baixa de Gravames e Trava de Domicílio",
+      "sources": [
+        "SRC-067"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Agrupamento de Unidades de Recebíveis (UR), consentimento opt-in, unicidade e trava de domicílio bancário, liquidação de antecipações implementados. Pendente homologação B3.",
+      "evidence": {
+        "documented": "docs/layout-card-receivables.md",
+        "implemented": "src/card_receivables_registry.py",
+        "tested_locally": "tests/test_card_receivables.py"
+      }
+    },
+    {
       "id": "FL-065",
       "name": "Registrar e Certificar Green Bonds e Sustainability-Linked Bonds com Taxonomia Verde e Gatilho de Step-Up no Balcão NoMe B3",
       "system": "Balcão NoMe B3 & Central Depositária (CSD)",
