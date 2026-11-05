@@ -1,0 +1,98 @@
+{
+  "assets": [
+    {
+      "asset_code": "CRA022001",
+      "isin": "BRCRAN000101",
+      "asset_type": "CRA",
+      "indexer": "IPCA_SPREAD",
+      "issue_date": "2024-01-15",
+      "maturity_date": "2029-01-15",
+      "nominal_value_emission": "1000.00",
+      "current_nominal_value": "1050.00",
+      "coupon_rate_annual": "0.0600",
+      "spread_over_di_annual": "0.0000",
+      "percent_of_di": "0.0000",
+      "last_coupon_date": "2024-01-15",
+      "next_coupon_date": "2025-01-15",
+      "benchmark_reference_code": "NTN-B 2029",
+      "indicative_spread_anbima": "0.0120",
+      "tunnel_band_max_pct": "0.0250",
+      "cash_flows": [
+        {
+          "flow_id": 1,
+          "payment_date": "2025-01-15",
+          "principal_amortization": "0.00",
+          "interest_payment": "63.00",
+          "total_flow": "63.00"
+        },
+        {
+          "flow_id": 2,
+          "payment_date": "2029-01-15",
+          "principal_amortization": "1050.00",
+          "interest_payment": "63.00",
+          "total_flow": "1113.00"
+        }
+      ]
+    },
+    {
+      "asset_code": "CRI023002",
+      "isin": "BRCRIN000202",
+      "asset_type": "CRI",
+      "indexer": "DI_SPREAD",
+      "issue_date": "2024-06-01",
+      "maturity_date": "2028-06-01",
+      "nominal_value_emission": "1000.00",
+      "current_nominal_value": "1000.00",
+      "coupon_rate_annual": "0.0000",
+      "spread_over_di_annual": "0.0180",
+      "percent_of_di": "0.0000",
+      "last_coupon_date": "2024-06-01",
+      "next_coupon_date": "2025-06-01",
+      "benchmark_reference_code": "DI_CURVE",
+      "indicative_spread_anbima": "0.0150",
+      "tunnel_band_max_pct": "0.0300",
+      "cash_flows": [
+        {
+          "flow_id": 1,
+          "payment_date": "2028-06-01",
+          "principal_amortization": "1000.00",
+          "interest_payment": "123.00",
+          "total_flow": "1123.00"
+        }
+      ]
+    }
+  ],
+  "market_data": {
+    "as_of_date": "2024-11-04",
+    "di_rate_annual": "0.1050",
+    "ntnb_reference_yields": {
+      "NTN-B 2029": "0.0580"
+    },
+    "ipca_accumulated_factor": "1.0500"
+  },
+  "accounts": [
+    {
+      "account_id": "ACC-SELLER-01",
+      "participant_code": "105",
+      "investor_name": "Fundo Alpha Multimercado",
+      "investor_document": "12345678000199",
+      "free_positions": {
+        "CRA022001": "500",
+        "CRI023002": "300"
+      },
+      "blocked_positions": {},
+      "cash_balance": "100000.00",
+      "credit_limit": "0.00"
+    },
+    {
+      "account_id": "ACC-BUYER-01",
+      "participant_code": "205",
+      "investor_name": "Gama Asset Management",
+      "investor_document": "98765432000188",
+      "free_positions": {},
+      "blocked_positions": {},
+      "cash_balance": "2000000.00",
+      "credit_limit": "500000.00"
+    }
+  ]
+}

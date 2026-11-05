@@ -214,6 +214,23 @@ def assert_token_csd_parity(
     )
 
 
+def assert_crypto_digital_assets_por_parity(
+    total_segregated_backing: Union[int, Decimal],
+    total_circulating_supply: Union[int, Decimal],
+    asset_code: str = "",
+) -> None:
+    """Lei 53: Conservação Estrita de Paridade 1:1 e Proof-of-Reserve em Ativos Digitais (FL-075).
+
+    total_segregated_backing == total_circulating_supply (Lei nº 14.478/2022).
+    """
+    check(
+        total_segregated_backing == total_circulating_supply,
+        f"Quebra de Paridade 1:1 em Ativos Digitais / RWA no ativo '{asset_code}': "
+        f"Lastro Segregado CSD ({total_segregated_backing}) != Supply Circulante ({total_circulating_supply})",
+        law_code="LAW-053",
+    )
+
+
 def assert_pvp_atomic_conservation(
     brl_amount: Decimal,
     usd_amount: Decimal,
@@ -244,3 +261,125 @@ def assert_forward_term_regulatory_bounds(
         f"Prazo do contrato a termo ({calendar_days} dias corridos) fora do limite regulatório B3 [{min_days}..{max_days}]",
         law_code="LAW-025",
     )
+
+
+def assert_book_quantity_conservation(
+    delta_bid: Union[int, Decimal],
+    delta_ask: Union[int, Decimal],
+    delta_executed: Union[int, Decimal],
+    delta_cancelled: Union[int, Decimal],
+    delta_injected: Union[int, Decimal] = 0,
+    symbol: str = "",
+) -> None:
+    """Lei 46 / LAW-070: Lei de Conservação de Quantidade no Livro de Ofertas (FL-070).
+
+    Delta(Bid) + Delta(Ask) + Delta(Executado) + Delta(Cancelado) - Delta(Injetado) == 0.
+    Para transições internas sem novas entradas (ex: cancelamento, execução, flash crash):
+    Delta(Bid) + Delta(Ask) + Delta(Executado) + Delta(Cancelado) == 0.
+    """
+    total_delta = (delta_bid + delta_ask) + delta_executed + delta_cancelled - delta_injected
+    check(
+        total_delta == 0,
+        f"Violação da Lei de Conservação de Quantidade no Book '{symbol}': "
+        f"Delta(Bid)={delta_bid} + Delta(Ask)={delta_ask} + Delta(Exec)={delta_executed} + Delta(Canc)={delta_cancelled} "
+        f"- Delta(Inj)={delta_injected} = {total_delta} != 0",
+        law_code="LAW-070",
+    )
+
+
+def assert_delisting_opa_quorum(
+    tendered_shares: Union[int, Decimal],
+    free_float_shares: Union[int, Decimal],
+    quorum_ratio: Decimal = Decimal("0.66666667"),
+    offer_id: str = "",
+) -> None:
+    """Lei 53: Quórum Qualificado de 2/3 e Conservação em Leilão de Deslistagem OPA (FL-070).
+
+    tendered_shares / free_float_shares >= 2/3 (Art. 4º-A Lei 6.404/76 e Res. CVM 166).
+    """
+    check(
+        free_float_shares > 0,
+        f"Free float nulo ou inválido na OPA '{offer_id}': {free_float_shares}",
+        law_code="LAW-053",
+    )
+    actual_ratio = Decimal(tendered_shares) / Decimal(free_float_shares)
+    check(
+        actual_ratio >= quorum_ratio,
+        f"Quórum de 2/3 do Free Float não atingido na OPA '{offer_id}': "
+        f"{tendered_shares}/{free_float_shares} = {actual_ratio:.4f} < {quorum_ratio:.4f}",
+        law_code="LAW-053",
+    )
+
+
+def assert_intraday_liquidity_risk_non_negative(
+    net_cash_buffer: Decimal,
+    participant_code: int = 0,
+) -> None:
+    """Lei 55: Preservação de Buffer de Liquidez Intradiária Não-Negativo e Estresse PTAX (FL-072).
+
+    net_cash_buffer >= 0 sob estresse cambial e liquidação multilateral (BCBS 248 / Circular BACEN 3.749).
+    """
+    check(
+        net_cash_buffer >= Decimal("0.00"),
+        f"Déficit crítico de liquidez intradiária no participante {participant_code}: "
+        f"Buffer líquido = R$ {net_cash_buffer:.2f} < 0",
+        law_code="LAW-055",
+    )
+
+
+def assert_secondary_fixed_income_identity(
+    dirty_price: Decimal,
+    clean_price: Decimal,
+    accrued_interest: Decimal,
+    tolerance_cents: Decimal = Decimal("0.0001"),
+    asset_ticker: str = "",
+) -> None:
+    """Lei 56: Identidade Escritural PU Sujo == PU Limpo + Juros Decorridos (FL-071).
+
+    dirty_price == clean_price + accrued_interest (Padrão ANBIMA e B3 NoMe).
+    """
+    diff = abs(dirty_price - (clean_price + accrued_interest))
+    check(
+        diff <= tolerance_cents,
+        f"Quebra da identidade de preço unitário em renda fixa no ativo '{asset_ticker}': "
+        f"PU Sujo ({dirty_price}) != PU Limpo ({clean_price}) + Juros ({accrued_interest}) [Diff={diff}]",
+        law_code="LAW-056",
+    )
+
+
+def assert_subordinated_capital_hierarchy(
+    tier1_balance: Decimal,
+    tier2_loss_absorbed: Decimal,
+    issuer_cnpj: str = "",
+) -> None:
+    """Lei 57: Inviolabilidade da Hierarquia de Capital e Absorção Prioritária AT1 (FL-073).
+
+    Se tier2_loss_absorbed > 0, então tier1_balance DEVE ser rigorosamente 0,00 (Res. CMN nº 4.958/2021).
+    """
+    if tier2_loss_absorbed > Decimal("0.00"):
+        check(
+            tier1_balance == Decimal("0.00"),
+            f"Violação da hierarquia de capital no emissor '{issuer_cnpj}': "
+            f"Tier 2 absorveu R$ {tier2_loss_absorbed} havendo R$ {tier1_balance} remanescente em AT1 Nível 1.",
+            law_code="LAW-057",
+        )
+
+
+def assert_agricultural_warrant_conservation(
+    initial_quantity: Decimal,
+    effective_quantity: Decimal,
+    technical_loss_quantity: Decimal,
+    warrant_id: str = "",
+) -> None:
+    """Lei 58: Conservação Física Estrita de Sacas/Massa e Quebra Técnica em Warrants B3 (FL-078).
+
+    initial_quantity == effective_quantity + technical_loss_quantity (Lei nº 11.076/2004).
+    """
+    check(
+        initial_quantity == (effective_quantity + technical_loss_quantity),
+        f"Violação da conservação de massa física no warrant agrícola '{warrant_id}': "
+        f"Inicial ({initial_quantity}) != Efetiva ({effective_quantity}) + Quebra ({technical_loss_quantity})",
+        law_code="LAW-058",
+    )
+
+

@@ -481,6 +481,54 @@
       "status": "localizada",
       "kind": "manual_tecnico",
       "limitation": "Validador estrutural de pernas, execução atômica All-or-None, Lei de Conservação de Razão de Pernas e desconto de margem CORE por spread de volatilidade."
+    },
+    {
+      "id": "SRC-061",
+      "title": "B3 Ofertas Públicas & CVM 166 — Manual de Procedimentos Operacionais: Ofertas Públicas de Aquisição de Ações (OPA Deslistagem e Tag Along)",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/negociacao/renda-variavel/ofertas-publicas-de-aquisicao-opa.htm",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Quórum qualificado de 2/3 das ações em circulação, piso legal de Tag Along (art. 254-A) e resgate compulsório (Squeeze-Out)."
+    },
+    {
+      "id": "SRC-062",
+      "title": "B3 Balcão NoMe & ANBIMA — Manual de Procedimentos Operacionais: Negociação Secundária de Renda Fixa Privada (Debêntures, CRI e CRA)",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/negociacao/renda-fixa/mercado-secundario-de-titulos-privados.htm",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Identidade de PU limpo e sujo, precificação de mercado ANBIMA, túnel de preços e liquidação bilateral DvP."
+    },
+    {
+      "id": "SRC-063",
+      "title": "Câmara B3 & BCBS 248 — Manual de Risco de Liquidez Intradiária e Estresse Cambial PTAX",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/compensacao-e-liquidacao/camara-b3/administracao-de-risco/risco-de-liquidez.htm",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Monitoramento de janelas horárias de liquidez, colchão HQLA, horizonte de sobrevivência e estresse cambial PTAX."
+    },
+    {
+      "id": "SRC-064",
+      "title": "B3 Balcão NoMe — Manual de Escrituração e Registro de Letras Financeiras Elegíveis ao Capital Nível 1 e Nível 2",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/registro/renda-fixa/letras-financeiras-subordinadas.htm",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Absorção de perdas (Write-Down / Equity Conversion), hierarquia prudencial AT1 vs Tier 2, cancelamento discricionário de cupom e amortizador regulatório."
+    },
+    {
+      "id": "SRC-065",
+      "title": "B3 Central Depositária (CSD) — Manual de Custódia Híbrida e Espelhamento Fiduciário de Ativos Digitais e RWA",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/depositaria/ativos-digitais-e-rwa.htm",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Paridade 1:1 Proof-of-Reserve, segregação patrimonial CSD, padrão ERC-3643 e liquidação DvP atômica híbrida."
+    },
+    {
+      "id": "SRC-066",
+      "title": "Câmara B3 — Manual de Administração de Risco: Garantias em Commodities Agrícolas (CDA/WA) e Armazéns Gerais Credenciados",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/compensacao-e-liquidacao/camara-b3/garantias/commodities-agricolas-cda-wa.htm",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Emissão de CDA/WA, controle de quebra técnica, matriz de haircuts B3, Safe-Release guardrail e waterfall de excussão em leilão."
     }
   ]
 }

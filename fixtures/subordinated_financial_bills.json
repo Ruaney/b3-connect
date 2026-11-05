@@ -1,0 +1,142 @@
+{
+  "schema_version": "1.0.0",
+  "flow_id": "FL-073",
+  "description": "Casos de Teste e Cenários Regulatórios de Escrituração, Liquidação e Absorção de Perdas de Letras Financeiras Subordinadas (Resoluções CMN nº 4.958/2021 e nº 5.036/2022, Lei nº 12.249/2010)",
+  "reference_date": "2026-11-04",
+  "institutions": [
+    {
+      "issuer_cnpj": "00000000000191",
+      "issuer_name": "BANCO BRADESCO S.A.",
+      "cet1_ratio_current": "0.1180",
+      "rwa": "850000000000.00"
+    },
+    {
+      "issuer_cnpj": "60701190000104",
+      "issuer_name": "BANCO ITAU UNIBANCO S.A.",
+      "cet1_ratio_current": "0.0480",
+      "rwa": "1200000000000.00"
+    }
+  ],
+  "bills": [
+    {
+      "bill_id": "LF-SUB-AT1-001",
+      "isin": "BRLFSUBAT101",
+      "issuer_cnpj": "60701190000104",
+      "issuer_name": "BANCO ITAU UNIBANCO S.A.",
+      "capital_tier": "NIVEL_1",
+      "absorption_mechanism": "WRITE_DOWN_PERMANENTE",
+      "indexer": "CDI",
+      "spread_annual": "0.02500000",
+      "interest_description": "100% CDI + 2.50% a.a.",
+      "issue_date": "2023-01-15",
+      "maturity_date": null,
+      "call_option_date": "2028-01-15",
+      "regulatory_trigger_ratio": "0.05125000",
+      "nominal_unit_value": "300000.00",
+      "current_unit_value": "300000.00000000",
+      "original_reference_pu": "300000.00000000",
+      "quantity": "500",
+      "status": "ATIVO",
+      "dividend_stopper_active": false,
+      "total_loss_absorbed": "0.00",
+      "equity_shares_converted": "0",
+      "conversion_price": null,
+      "interest_cancellable_discretionary": true,
+      "coupons": [
+        {
+          "coupon_id": "CPN-AT1-001-01",
+          "due_date": "2026-11-15",
+          "rate_annual_pct": "0.14250000",
+          "amount": "10687500.00",
+          "status": "AGENDADO"
+        }
+      ]
+    },
+    {
+      "bill_id": "LF-SUB-AT1-002",
+      "isin": "BRLFSUBAT102",
+      "issuer_cnpj": "60701190000104",
+      "issuer_name": "BANCO ITAU UNIBANCO S.A.",
+      "capital_tier": "NIVEL_1",
+      "absorption_mechanism": "WRITE_DOWN_TEMPORARIO",
+      "indexer": "IPCA",
+      "spread_annual": "0.07500000",
+      "interest_description": "IPCA + 7.50% a.a.",
+      "issue_date": "2023-06-01",
+      "maturity_date": null,
+      "call_option_date": "2028-06-01",
+      "regulatory_trigger_ratio": "0.05125000",
+      "nominal_unit_value": "500000.00",
+      "current_unit_value": "500000.00000000",
+      "original_reference_pu": "500000.00000000",
+      "quantity": "200",
+      "status": "ATIVO",
+      "dividend_stopper_active": false,
+      "total_loss_absorbed": "0.00",
+      "equity_shares_converted": "0",
+      "conversion_price": null,
+      "interest_cancellable_discretionary": true,
+      "coupons": [
+        {
+          "coupon_id": "CPN-AT1-002-01",
+          "due_date": "2026-12-01",
+          "rate_annual_pct": "0.12500000",
+          "amount": "6250000.00",
+          "status": "AGENDADO"
+        }
+      ]
+    },
+    {
+      "bill_id": "LF-SUB-AT1-003",
+      "isin": "BRLFSUBAT103",
+      "issuer_cnpj": "60701190000104",
+      "issuer_name": "BANCO ITAU UNIBANCO S.A.",
+      "capital_tier": "NIVEL_1",
+      "absorption_mechanism": "CONVERSAO_ACOES",
+      "indexer": "PREFIXADO",
+      "spread_annual": "0.13500000",
+      "interest_description": "Prefixado 13.50% a.a.",
+      "issue_date": "2024-02-10",
+      "maturity_date": null,
+      "call_option_date": "2029-02-10",
+      "regulatory_trigger_ratio": "0.05125000",
+      "nominal_unit_value": "100000.00",
+      "current_unit_value": "100000.00000000",
+      "original_reference_pu": "100000.00000000",
+      "quantity": "1000",
+      "status": "ATIVO",
+      "dividend_stopper_active": false,
+      "total_loss_absorbed": "0.00",
+      "equity_shares_converted": "0",
+      "conversion_price": "25.00",
+      "interest_cancellable_discretionary": true,
+      "coupons": []
+    },
+    {
+      "bill_id": "LF-SUB-T2-001",
+      "isin": "BRLFSUBT2001",
+      "issuer_cnpj": "60701190000104",
+      "issuer_name": "BANCO ITAU UNIBANCO S.A.",
+      "capital_tier": "NIVEL_2",
+      "absorption_mechanism": "WRITE_DOWN_PERMANENTE",
+      "indexer": "CDI",
+      "spread_annual": "0.01800000",
+      "interest_description": "100% CDI + 1.80% a.a.",
+      "issue_date": "2021-03-01",
+      "maturity_date": "2031-03-01",
+      "call_option_date": "2026-03-01",
+      "regulatory_trigger_ratio": "0.05125000",
+      "nominal_unit_value": "200000.00",
+      "current_unit_value": "200000.00000000",
+      "original_reference_pu": "200000.00000000",
+      "quantity": "1000",
+      "status": "ATIVO",
+      "dividend_stopper_active": false,
+      "total_loss_absorbed": "0.00",
+      "equity_shares_converted": "0",
+      "conversion_price": null,
+      "interest_cancellable_discretionary": false,
+      "coupons": []
+    }
+  ]
+}

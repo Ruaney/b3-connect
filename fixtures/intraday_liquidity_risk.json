@@ -1,0 +1,29 @@
+{
+  "institution_id": "INST-DTVM-ALFA",
+  "institution_name": "Alfa DTVM S.A. (sintético)",
+  "ispb": "12345678",
+  "initial_cash_balance": "50000000.00",
+  "windows": [
+    {"window_id": "W0800", "name": "Abertura SPB e SELIC", "start_time": "08:00", "cutoff_time": "10:00", "system_primary": "SPB_STR", "description": "Abertura da grade STR", "elapsed_hours_from_open": "0.0"},
+    {"window_id": "W1000", "name": "Ajustes Diários e Margem CORE", "start_time": "10:00", "cutoff_time": "12:00", "system_primary": "B3_DERIVATIVES", "description": "Liquidação de ajustes BM&F", "elapsed_hours_from_open": "2.0"},
+    {"window_id": "W1330", "name": "Câmara de Ações D+2", "start_time": "13:30", "cutoff_time": "15:30", "system_primary": "B3_EQUITIES", "description": "Liquidação multilateral de ações", "elapsed_hours_from_open": "5.5"},
+    {"window_id": "W1700", "name": "Fechamento STR", "start_time": "17:00", "cutoff_time": "18:30", "system_primary": "SPB_STR", "description": "Fechamento do STR", "elapsed_hours_from_open": "9.0"}
+  ],
+  "flows": [
+    {"flow_id": "F-001", "window_id": "W0800", "system": "SELIC", "direction": "INFLOW", "amount": "20000000.00", "description": "Resgate de operação compromissada"},
+    {"flow_id": "F-002", "window_id": "W1000", "system": "B3_DERIVATIVES", "direction": "OUTFLOW", "amount": "30000000.00", "description": "Ajuste diário de futuros DI1"},
+    {"flow_id": "F-003", "window_id": "W1330", "system": "B3_EQUITIES", "direction": "OUTFLOW", "amount": "60000000.00", "description": "Saldo devedor multilateral de ações"},
+    {"flow_id": "F-004", "window_id": "W1330", "system": "B3_EQUITIES", "direction": "INFLOW", "amount": "15000000.00", "description": "Recebimento de vendas"},
+    {"flow_id": "F-005", "window_id": "W1700", "system": "SPB_STR", "direction": "INFLOW", "amount": "10000000.00", "description": "Liquidação de CDB interbancário"}
+  ],
+  "hqla_assets": [
+    {"asset_id": "HQ-LFT", "asset_name": "LFT 2029", "level": "LEVEL_1", "market_value": "300000000.00", "haircut_pct": "0.00"},
+    {"asset_id": "HQ-UST", "asset_name": "US Treasury 10Y", "level": "LEVEL_2A", "market_value": "20000000.00", "haircut_pct": "0.15", "currency": "USD", "fx_rate": "5.5000"},
+    {"asset_id": "HQ-DEB", "asset_name": "Debênture AAA", "level": "LEVEL_2B", "market_value": "80000000.00", "haircut_pct": "0.50"},
+    {"asset_id": "HQ-LTN-GRAV", "asset_name": "LTN 2027 (onerada em garantia)", "level": "LEVEL_1", "market_value": "50000000.00", "haircut_pct": "0.00", "is_encumbered": true}
+  ],
+  "fx_positions": [
+    {"position_id": "FX-DOL-SHORT", "derivative_type": "FUTURE_DOL", "side": "SHORT", "quantity": 2000, "contract_multiplier": "50000", "entry_ptax": "5.5000"},
+    {"position_id": "FX-WDO-LONG", "derivative_type": "FUTURE_WDO", "side": "LONG", "quantity": 1000, "contract_multiplier": "10000", "entry_ptax": "5.5000"}
+  ]
+}

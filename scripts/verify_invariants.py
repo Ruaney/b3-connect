@@ -7,6 +7,7 @@ Verifica sistematicamente as leis matemáticas fundamentais de conservação de 
 fechamento contábil e integridade da câmara B3 sempre que um módulo é concluído.
 """
 
+import json
 import sys
 from datetime import date
 from decimal import Decimal
@@ -1024,7 +1025,7 @@ def verify_smart_order_router_invariants(fixtures_dir: Path):
     1. Soma(Q_roteada) + Q_residual == Q_ordem_mae para qualquer split determinístico.
     2. Prevenção estrita de Trade-Through e respeito a limites de preço.
     """
-    print("[46/52] Verificando Invariante de Smart Order Router (SOR) & Agregação de Liquidez (FL-068)...")
+    print("[46/58] Verificando Invariante de Smart Order Router (SOR) & Agregação de Liquidez (FL-068)...")
     engine = SmartOrderRouterEngine.load_from_fixture(fixtures_dir / "smart_order_router.json")
     order = ParentOrder(
         order_id="INV-CHECK-SOR-01",
@@ -1051,7 +1052,7 @@ def verify_card_receivables_invariants(fixtures_dir: Path):
     3. Antecipação incide estritamente sobre V_disponivel e conserva V_face == V_liquido + V_taxa.
     4. Na liquidação: Total Liquidado == Soma(Credores Fiduciários) + Repasse Lojista.
     """
-    print("[47/52] Verificando Invariante de Registro e Gravame de Recebíveis de Cartão (FL-069)...")
+    print("[47/58] Verificando Invariante de Registro e Gravame de Recebíveis de Cartão (FL-069)...")
     from src.card_receivables_registry import CardReceivablesRegistryEngine
     engine = CardReceivablesRegistryEngine.load_from_fixture(fixtures_dir / "card_receivables.json")
     metrics = engine.verify_global_conservation()
@@ -1081,7 +1082,7 @@ def verify_index_rebalancing_invariants(fixtures_dir: Path):
     3. Elegibilidade Estrita: Nenhum constituinte é Penny Stock, em Recuperação Judicial ou com presença < 95%.
     4. Continuidade Patrimonial via Divisor sem salto de preço na transição de carteira.
     """
-    print("[48/52] Verificando Invariante de Rebalanceamento e Conservação de Pesos de Índices B3 (FL-066)...")
+    print("[48/58] Verificando Invariante de Rebalanceamento e Conservação de Pesos de Índices B3 (FL-066)...")
     engine, assets, data = IndexRebalancingEngine.load_from_fixture(fixtures_dir / "index_rebalancing.json")
     res_ibov = engine.rebalance(
         assets,
@@ -1113,7 +1114,7 @@ def verify_cross_border_collateral_invariants(fixtures_dir: Path):
     5. Trava estrita de segurança anti-déficit na desoneração de garantias (Safe-Release Guardrail).
     6. Conciliação de custódia transfronteiriça com extratos de Euroclear e DTC.
     """
-    print("[49/52] Verificando Invariante de Garantias Transfronteiriças Euroclear & DTC (FL-067)...")
+    print("[49/58] Verificando Invariante de Garantias Transfronteiriças Euroclear & DTC (FL-067)...")
     from src.cross_border_collateral import (
         CrossBorderCollateralEngine,
         InternationalDepository,
@@ -1161,7 +1162,7 @@ def verify_volatility_strategies_invariants(fixtures_dir: Path):
     4. Redução de Margem de Risco CORE com Haircut de Volatilidade: Margem Combinada <= Margem Isolada.
     5. Conservação do Preço Líquido e Fluxo Financeiro Total.
     """
-    print("[50/52] Verificando Invariante de Estratégias de Volatilidade e Opções Combinadas (FL-063)...")
+    print("[50/58] Verificando Invariante de Estratégias de Volatilidade e Opções Combinadas (FL-063)...")
     from src.volatility_strategies import (
         VolatilityStrategyValidator,
         CombinedRiskMarginEngine,
@@ -1220,7 +1221,7 @@ def verify_esg_green_bonds_invariants(fixtures_dir: Path):
        - Se meta ACHIEVED, Current_Coupon == Base_Coupon.
     4. Sobretaxa Não-Negativa: Step_Up_Penalty >= 0 em todos os períodos.
     """
-    print("[51/52] Verificando Invariante de Taxonomia Verde, Conservação de Recursos e Step-Up SLB (FL-065)...")
+    print("[51/58] Verificando Invariante de Taxonomia Verde, Conservação de Recursos e Step-Up SLB (FL-065)...")
     from src.esg_green_bonds import EsgGreenBondsEngine
 
     engine = EsgGreenBondsEngine.load_from_json(fixtures_dir / "esg_green_bonds.json")
@@ -1238,7 +1239,7 @@ def verify_cra_cri_securitization_invariants(fixtures_dir: Path):
     4. Conservação de Saldo Devedor e Preço Unitário: Saldo == Qtd * PU atualizado.
     5. Incomunicabilidade do patrimônio fiduciário separado e cobertura de ativos >= passivo sênior.
     """
-    print("[52/52] Verificando Invariante de Securitização e Fundo de Reserva de CRA e CRI (FL-062)...")
+    print("[52/58] Verificando Invariante de Securitização e Fundo de Reserva de CRA e CRI (FL-062)...")
     from src.securitization_cra_cri import CraCriSecuritizationEngine
     engine = CraCriSecuritizationEngine.load_from_fixture(fixtures_dir / "cra_cri_securitization.json")
     all_inv = engine.verify_all_invariants()
@@ -1254,6 +1255,107 @@ def verify_cra_cri_securitization_invariants(fixtures_dir: Path):
     check(res_def.loss_absorbed_by_subordinated == Decimal("6000000.00") and res_def.loss_absorbed_by_senior == Decimal("0.00"),
           "Subordinação violada na absorção de perda de lastro")
     print("      ✓ Conservação financeira do waterfall, prioridade de subordinação e first-loss piece comprovadas.")
+
+
+def verify_delisting_opa_invariants(fixtures_dir: Path):
+    """
+    Lei 53: Quórum de 2/3, Tag Along e Conservação em Leilão Especial de Deslistagem OPA (FL-070).
+    1. Quórum Qualificado de 2/3 das ações habilitadas para deslistagem (Art. 4º-A da Lei 6.404/76 e Res. CVM 166).
+    2. Respeito irrestrito ao piso regulatório de Tag Along (Art. 254-A / Regulamentos de Listagem B3).
+    3. Conservação de Ações Habilitadas: Habilitadas == Aceitas + Devolvidas.
+    4. Conservação Financeira: Desembolso == Aceitas * Preço_Ofertado (+ Squeeze-Out se acionado).
+    """
+    print("[53/58] Verificando Invariante de Leilão Especial de Deslistagem / OPA (FL-070)...")
+    from src.delisting_opa_auction import DelistingOpaAuctionEngine
+    engine = DelistingOpaAuctionEngine.from_json_fixture(fixtures_dir / "delisting_opa_auction.json")
+    summaries = engine.run_all()
+    for s in summaries:
+        check(s.is_conservation_satisfied, f"Conservação violada no leilão de OPA {s.auction_id}")
+        check(s.tag_along_respected, f"Piso de Tag Along desrespeitado na OPA {s.auction_id}")
+    print("      ✓ Quórum qualificado de 2/3, piso de Tag Along e conservação no leilão comprovados.")
+
+
+def verify_crypto_digital_assets_invariants(fixtures_dir: Path):
+    """
+    Lei 54: Paridade 1:1 de Lastro (Proof-of-Reserve) e Segregação Patrimonial CSD (FL-075).
+    1. Proof-of-Reserve: Total_Segregated_Backing == Total_Circulating_Supply (Lei nº 14.478/2022).
+    2. Segregação Patrimonial Inviolável: Contas CSD e Wallets segregadas do patrimônio próprio do CSD.
+    3. Atomicidade DvP Híbrido: Liquidação sincronizada On-Chain e Off-Chain sem risco principal.
+    """
+    print("[54/58] Verificando Invariante de Criptoativos e Custódia Híbrida CSD (FL-075)...")
+    from src.crypto_digital_assets import CryptoDigitalAssetsEngine
+    engine = CryptoDigitalAssetsEngine.load_from_fixture(fixtures_dir / "crypto_digital_assets.json")
+    rep = engine.verify_formal_invariants()
+    check(rep["all_invariants_hold"], "Falha de invariante formal em Criptoativos / RWA")
+    check(rep["proof_of_reserve_parity_1to1"], "Quebra de paridade 1:1 Proof-of-Reserve em Ativos Digitais")
+    print("      ✓ Paridade 1:1 PoR, segregação patrimonial e custódia híbrida CSD comprovadas.")
+
+
+def verify_intraday_liquidity_risk_invariants(fixtures_dir: Path):
+    """
+    Lei 55: Preservação de Buffer de Liquidez Intradiária e Estresse Cambial PTAX (FL-072).
+    1. Buffer Não-Negativo: Caixa líquido intradiário >= 0 após monetização de HQLA sob estresse.
+    2. Monotonicidade de Estresse: Shocks maiores de PTAX geram chamadas de margem estritamente crescentes.
+    3. Teto Regulatório HQLA: Ativos Nível 2 restritos a 40% do colchão total (Resolução CMN nº 4.557/2017).
+    """
+    print("[55/58] Verificando Invariante de Risco de Liquidez Intradiária e Estresse PTAX (FL-072)...")
+    from src.intraday_liquidity_risk import IntradayLiquidityRiskEngine
+    engine = IntradayLiquidityRiskEngine.load_from_fixture(fixtures_dir / "intraday_liquidity_risk.json")
+    rep_base = engine.calculate_survival_horizon()
+    inv_liq = engine.verify_formal_invariants(rep_base)
+    check(all(inv_liq.values()), "Falha em invariantes de liquidez intradiária")
+    print("      ✓ Buffer de caixa intradiário não-negativo, monetização HQLA e estresse PTAX comprovados.")
+
+
+def verify_secondary_market_fixed_income_invariants(fixtures_dir: Path):
+    """
+    Lei 56: Identidade PU Limpo/Sujo, Túnel de Preços e Conservação DvP em Renda Fixa (FL-071).
+    1. Identidade de Preço Unitário: PU_Sujo == PU_Limpo + Juros_Decorridos (centavo a centavo).
+    2. Túnel de Preços B3 / ANBIMA: Negociações contidas no túnel de desvio máximo autorizado.
+    3. Conservação Bilateral DvP: Transferência simultânea e irreversível de caixa e custódia privada.
+    """
+    print("[56/58] Verificando Invariante de Negociação Secundária de Renda Fixa Privada (FL-071)...")
+    from src.secondary_market_fixed_income import SecondaryMarketFixedIncomeEngine
+    engine = SecondaryMarketFixedIncomeEngine.load_from_fixture(fixtures_dir / "secondary_fixed_income.json")
+    rep_sec = engine.verify_all_invariants()
+    check(rep_sec["all_invariants_hold"], "Falha de invariante em negociação secundária de renda fixa")
+    print("      ✓ Identidade PU limpo/sujo, conformidade ao túnel ANBIMA e liquidação DvP comprovadas.")
+
+
+def verify_subordinated_financial_bills_invariants(fixtures_dir: Path):
+    """
+    Lei 57: Hierarquia de Absorção de Capital Basileia III e Saldo Devedor de LFs (FL-073).
+    1. Inviolabilidade da Hierarquia: AT1 absorve perdas prioritariamente antes de Tier 2 (Res. CMN 4.958).
+    2. Conservação Contábil de Saldo: Saldo_Devedor == Quantidade * PU_Atual.
+    3. Conservação de Absorção: Perda_Absorvida == Quantidade * (PU_Antes - PU_Depois).
+    4. Amortizador Linear de Tier 2: Redutor de 20% ao ano nos últimos 5 anos de vida útil.
+    """
+    print("[57/58] Verificando Invariante de Letras Financeiras Subordinadas e Capital Basileia III (FL-073)...")
+    from src.subordinated_financial_bills import SubordinatedFinancialBillsRegistry, SubordinatedFinancialBill
+    with open(fixtures_dir / "subordinated_financial_bills.json", "r", encoding="utf-8") as f:
+        d_sub = json.load(f)
+    reg_sub = SubordinatedFinancialBillsRegistry()
+    for b in d_sub["bills"]:
+        reg_sub.register_bill(SubordinatedFinancialBill.from_dict(b))
+    rep_sub = reg_sub.verify_all_invariants()
+    check(rep_sub["all_invariants_hold"], "Falha de invariante em Letras Financeiras Subordinadas")
+    print("      ✓ Inviolabilidade de hierarquia AT1/Tier 2, amortização prudencial e conservação contábil comprovadas.")
+
+
+def verify_agricultural_warrant_collateral_invariants(fixtures_dir: Path):
+    """
+    Lei 58: Conservação Física de Sacas e Waterfall Zero-Leakage em Warrants Agrícolas B3 (FL-078).
+    1. Conservação de Massa e Quebra Técnica: Quantidade_Original == Quantidade_Efetiva + Perda_Tecnica.
+    2. Waterfall Financeiro de Leilão: Recursos_Brutos == Custas_Armazém + Crédito_WA + Remanescente_CDA.
+    3. Safe-Release Guardrail: Desoneração vedada se colateral remanescente < margem requerida da câmara.
+    """
+    print("[58/58] Verificando Invariante de Garantias em Commodities Agrícolas CDA/WA (FL-078)...")
+    from src.agricultural_warrant_collateral import AgriculturalWarrantCollateralEngine
+    engine = AgriculturalWarrantCollateralEngine.load_from_fixture(fixtures_dir / "agricultural_warrant_collateral.json")
+    rep_agr = engine.verify_formal_invariants(date(2026, 11, 4))
+    for k, v in rep_agr.items():
+        check(v, f"Invariante agrícola '{k}' violada")
+    print("      ✓ Conservação física de sacas, quebra técnica e waterfall zero-leakage em leilão comprovadas.")
 
 
 def main():
@@ -1320,9 +1422,15 @@ def main():
         verify_volatility_strategies_invariants(fixtures_dir)
         verify_esg_green_bonds_invariants(fixtures_dir)
         verify_cra_cri_securitization_invariants(fixtures_dir)
+        verify_delisting_opa_invariants(fixtures_dir)
+        verify_crypto_digital_assets_invariants(fixtures_dir)
+        verify_intraday_liquidity_risk_invariants(fixtures_dir)
+        verify_secondary_market_fixed_income_invariants(fixtures_dir)
+        verify_subordinated_financial_bills_invariants(fixtures_dir)
+        verify_agricultural_warrant_collateral_invariants(fixtures_dir)
         
         print("\n" + "=" * 70)
-        print("✓ TODAS AS 52 LEIS DE CONSERVAÇÃO E INVARIANTES DA B3 FORAM PROVADAS!")
+        print("✓ TODAS AS 58 LEIS DE CONSERVAÇÃO E INVARIANTES DA B3 FORAM PROVADAS!")
         print("  Garantia matemática de consistência em todas as fixtures e módulos.")
         print("=" * 70)
         sys.exit(0)

@@ -1416,6 +1416,132 @@
         "implemented": "src/volatility_strategies.py",
         "tested_locally": "tests/test_volatility_strategies.py"
       }
+    },
+    {
+      "id": "FL-070",
+      "name": "Leilão Especial de Deslistagem / OPA por Fechamento de Capital, Quórum de 2/3 e Tag Along",
+      "system": "PUMA Trading System & Balcão B3",
+      "interface": "Motor de Habilitação de Ordens, Apuração de Quórum Qualificado 2/3 (Art. 4º-A), Tag Along e Squeeze-Out",
+      "sources": [
+        "SRC-061"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Apuração de quórum 2/3, respeito ao piso de Tag Along (art. 254-A), rateio pro-rata e squeeze-out implementados. Pendente homologação B3.",
+      "evidence": {
+        "documented": "docs/layout-delisting-opa-auction.md",
+        "implemented": "src/delisting_opa_auction.py",
+        "tested_locally": "tests/test_delisting_opa_auction.py"
+      }
+    },
+    {
+      "id": "FL-071",
+      "name": "Negociação Secundária de Renda Fixa Privada (CRA, CRI e Debêntures) no Balcão NoMe B3",
+      "system": "Balcão NoMe B3 & ANBIMA",
+      "interface": "Motor de Negociação Bilateral/Cross-Trade, Túnel de Preços ANBIMA, PU Sujo/Limpo e DvP",
+      "sources": [
+        "SRC-062"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Identidade de PU limpo/sujo, verificação de túnel de preços ANBIMA, liquidação bilateral DvP e mark-to-market implementados. Pendente homologação B3.",
+      "evidence": {
+        "documented": "docs/layout-secondary-market-fixed-income.md",
+        "implemented": "src/secondary_market_fixed_income.py",
+        "tested_locally": "tests/test_secondary_market_fixed_income.py"
+      }
+    },
+    {
+      "id": "FL-072",
+      "name": "Gestão de Risco de Liquidez Intradiária e Estresse Cambial PTAX (BCBS 248 & LCR)",
+      "system": "Câmara B3 (CORE) & Sistema de Pagamentos B3",
+      "interface": "Monitoramento de Janelas Horárias, Monetização HQLA Nível 1/2 e Estresse de PTAX",
+      "sources": [
+        "SRC-063"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Buffer de caixa intradiário não-negativo, monetização gradual HQLA com teto de 40% em Nível 2 e horizonte de sobrevivência implementados. Pendente homologação B3.",
+      "evidence": {
+        "documented": "docs/layout-intraday-liquidity-risk.md",
+        "implemented": "src/intraday_liquidity_risk.py",
+        "tested_locally": "tests/test_intraday_liquidity_risk.py"
+      }
+    },
+    {
+      "id": "FL-073",
+      "name": "Escrituração, Liquidação e Absorção de Perdas de Letras Financeiras Subordinadas (Basileia III)",
+      "system": "Balcão NoMe B3 & Central Depositária (CSD)",
+      "interface": "Motor de Escrituração de LFs, Absorção de Perdas AT1/Tier 2 (Write-Down / Conversão) e Dividend Stopper",
+      "sources": [
+        "SRC-064"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Hierarquia de capital (Nível 1 perpétuo vs Nível 2 mínimo 5 anos), baixa contábil permanente/temporária, conversão em ações e amortizador linear implementados. Pendente homologação B3.",
+      "evidence": {
+        "documented": "docs/layout-subordinated-financial-bills.md",
+        "implemented": "src/subordinated_financial_bills.py",
+        "tested_locally": "tests/test_subordinated_financial_bills.py"
+      }
+    },
+    {
+      "id": "FL-075",
+      "name": "Criptoativos, Tokens RWA e Custódia Híbrida CSD B3 (Proof-of-Reserve e Reg. 14.478)",
+      "system": "Central Depositária (CSD) B3 & DLT",
+      "interface": "Bridge Fiduciária On-Chain/Off-Chain, Auditoria Proof-of-Reserve 1:1, Padrão ERC-3643 e DvP Híbrido",
+      "sources": [
+        "SRC-065"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Segregação patrimonial inviolável, conciliação de reservas Merkle, compliance ERC-3643 e liquidação atômica DvP híbrida implementados. Pendente homologação B3.",
+      "evidence": {
+        "documented": "docs/layout-crypto-digital-assets.md",
+        "implemented": "src/crypto_digital_assets.py",
+        "tested_locally": "tests/test_crypto_digital_assets.py"
+      }
+    },
+    {
+      "id": "FL-078",
+      "name": "Gestão de Garantias em Commodities Agrícolas (CDA e WA) com Armazéns Credenciados B3",
+      "system": "Câmara B3 (CORE) & Balcão Agrícola",
+      "interface": "Motor de Registro CDA/WA, Quebra Técnica, Matriz de Haircuts B3, Safe-Release e Excussão em Leilão",
+      "sources": [
+        "SRC-066"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Conservação de massa física com quebra técnica, matriz de haircuts por safra/armazenagem, trava de desoneração e waterfall zero-leakage de leilão implementados. Pendente homologação B3.",
+      "evidence": {
+        "documented": "docs/layout-agricultural-warrant-collateral.md",
+        "implemented": "src/agricultural_warrant_collateral.py",
+        "tested_locally": "tests/test_agricultural_warrant_collateral.py"
+      }
     }
   ]
 }

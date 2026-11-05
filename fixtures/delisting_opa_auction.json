@@ -1,0 +1,278 @@
+{
+  "schema_version": "1.0.0",
+  "flow_id": "FL-070",
+  "description": "Casos de Teste e Cenários Regulatórios de Leilão Especial de Deslistagem / OPA por Fechamento de Capital, Quórum de 2/3, Tag Along e Squeeze-Out (Lei 6.404/76 e Resoluções CVM 166 e 85)",
+  "reference_date": "2026-11-04",
+  "auctions": [
+    {
+      "auction_id": "OPA-DELIST-2026-001",
+      "company_name": "AURORA ENERGIA S.A.",
+      "ticker": "AURA3",
+      "isin": "BRAURAACNOR1",
+      "offeror_name": "AURORA PARTICIPACOES CONTROLADORA S.A.",
+      "modality": "FECHAMENTO_CAPITAL",
+      "governance_segment": "NOVO_MERCADO",
+      "offer_price_per_share": "35.50",
+      "control_block_price_per_share": null,
+      "statutory_tag_along_ratio": null,
+      "total_issued_shares": 10000000,
+      "initial_controller_shares": 7000000,
+      "initial_free_float_shares": 3000000,
+      "execute_squeeze_out": false,
+      "max_target_quantity": null,
+      "min_acceptance_quantity": 0,
+      "auction_date": "2026-11-04",
+      "settlement_date": "2026-11-06",
+      "orders": [
+        {
+          "order_id": "ORD-DELIST-001-01",
+          "shareholder_id": "CPF-***.111.222-33",
+          "participant_code": 105,
+          "custody_account": "100201-9",
+          "stance": "TENDER_SELL",
+          "enabled_quantity": 1800000,
+          "blocked_in_custody": true,
+          "timestamp": "2026-11-04T10:15:00Z"
+        },
+        {
+          "order_id": "ORD-DELIST-001-02",
+          "shareholder_id": "CNPJ-**.222.333/0001-44",
+          "participant_code": 88,
+          "custody_account": "200301-1",
+          "stance": "AGREE_NO_SALE",
+          "enabled_quantity": 400000,
+          "blocked_in_custody": true,
+          "timestamp": "2026-11-04T10:30:00Z"
+        },
+        {
+          "order_id": "ORD-DELIST-001-03",
+          "shareholder_id": "CNPJ-**.333.444/0001-55",
+          "participant_code": 72,
+          "custody_account": "300401-2",
+          "stance": "DISSENT_HOLD",
+          "enabled_quantity": 300000,
+          "blocked_in_custody": true,
+          "timestamp": "2026-11-04T11:00:00Z"
+        }
+      ]
+    },
+    {
+      "auction_id": "OPA-DELIST-2026-002",
+      "company_name": "BRASIL METALURGIA S.A.",
+      "ticker": "BMET3",
+      "isin": "BRBMETACNOR5",
+      "offeror_name": "HOLDING SIDERURGICA NACIONAL LTDA",
+      "modality": "FECHAMENTO_CAPITAL",
+      "governance_segment": "TRADICIONAL",
+      "offer_price_per_share": "22.00",
+      "control_block_price_per_share": null,
+      "statutory_tag_along_ratio": null,
+      "total_issued_shares": 20000000,
+      "initial_controller_shares": 14000000,
+      "initial_free_float_shares": 6000000,
+      "execute_squeeze_out": false,
+      "max_target_quantity": null,
+      "min_acceptance_quantity": 0,
+      "auction_date": "2026-11-04",
+      "settlement_date": "2026-11-06",
+      "orders": [
+        {
+          "order_id": "ORD-DELIST-002-01",
+          "shareholder_id": "CPF-***.444.555-66",
+          "participant_code": 114,
+          "custody_account": "400501-3",
+          "stance": "TENDER_SELL",
+          "enabled_quantity": 2000000,
+          "blocked_in_custody": true,
+          "timestamp": "2026-11-04T10:05:00Z"
+        },
+        {
+          "order_id": "ORD-DELIST-002-02",
+          "shareholder_id": "CNPJ-**.555.666/0001-77",
+          "participant_code": 39,
+          "custody_account": "500601-4",
+          "stance": "AGREE_NO_SALE",
+          "enabled_quantity": 1000000,
+          "blocked_in_custody": true,
+          "timestamp": "2026-11-04T10:20:00Z"
+        },
+        {
+          "order_id": "ORD-DELIST-002-03",
+          "shareholder_id": "CNPJ-**.666.777/0001-88",
+          "participant_code": 88,
+          "custody_account": "600701-5",
+          "stance": "DISSENT_HOLD",
+          "enabled_quantity": 2000000,
+          "blocked_in_custody": true,
+          "timestamp": "2026-11-04T10:45:00Z"
+        }
+      ]
+    },
+    {
+      "auction_id": "OPA-DELIST-2026-003",
+      "company_name": "LOGISTICA E PORTOS BRASIL S.A.",
+      "ticker": "LPBR3",
+      "isin": "BRLPBRACNOR2",
+      "offeror_name": "GLOBAL INFRASTRUCTURE INVESTMENTS B.V.",
+      "modality": "FECHAMENTO_CAPITAL",
+      "governance_segment": "NOVO_MERCADO",
+      "offer_price_per_share": "50.00",
+      "control_block_price_per_share": null,
+      "statutory_tag_along_ratio": null,
+      "total_issued_shares": 10000000,
+      "initial_controller_shares": 8500000,
+      "initial_free_float_shares": 1500000,
+      "execute_squeeze_out": true,
+      "max_target_quantity": null,
+      "min_acceptance_quantity": 0,
+      "auction_date": "2026-11-04",
+      "settlement_date": "2026-11-06",
+      "orders": [
+        {
+          "order_id": "ORD-DELIST-003-01",
+          "shareholder_id": "CNPJ-**.777.888/0001-99",
+          "participant_code": 105,
+          "custody_account": "700801-6",
+          "stance": "TENDER_SELL",
+          "enabled_quantity": 1200000,
+          "blocked_in_custody": true,
+          "timestamp": "2026-11-04T10:10:00Z"
+        },
+        {
+          "order_id": "ORD-DELIST-003-02",
+          "shareholder_id": "CPF-***.888.999-00",
+          "participant_code": 72,
+          "custody_account": "800901-7",
+          "stance": "AGREE_NO_SALE",
+          "enabled_quantity": 150000,
+          "blocked_in_custody": true,
+          "timestamp": "2026-11-04T10:35:00Z"
+        },
+        {
+          "order_id": "ORD-DELIST-003-03",
+          "shareholder_id": "CPF-***.999.000-11",
+          "participant_code": 39,
+          "custody_account": "900101-8",
+          "stance": "DISSENT_HOLD",
+          "enabled_quantity": 50000,
+          "blocked_in_custody": true,
+          "timestamp": "2026-11-04T11:15:00Z"
+        }
+      ]
+    },
+    {
+      "auction_id": "OPA-DELIST-2026-004",
+      "company_name": "AGROPECUARIA CERRADO S.A.",
+      "ticker": "ACER3",
+      "isin": "BRACERACNOR8",
+      "offeror_name": "CERRADO GRAOS DO BRASIL S.A.",
+      "modality": "FECHAMENTO_COM_ALIENACAO_CONTROLE",
+      "governance_segment": "TRADICIONAL",
+      "offer_price_per_share": "34.00",
+      "control_block_price_per_share": "40.00",
+      "statutory_tag_along_ratio": "0.80",
+      "total_issued_shares": 15000000,
+      "initial_controller_shares": 10500000,
+      "initial_free_float_shares": 4500000,
+      "execute_squeeze_out": false,
+      "max_target_quantity": null,
+      "min_acceptance_quantity": 0,
+      "auction_date": "2026-11-04",
+      "settlement_date": "2026-11-06",
+      "orders": [
+        {
+          "order_id": "ORD-DELIST-004-01",
+          "shareholder_id": "CNPJ-**.101.202/0001-30",
+          "participant_code": 114,
+          "custody_account": "110201-1",
+          "stance": "TENDER_SELL",
+          "enabled_quantity": 3200000,
+          "blocked_in_custody": true,
+          "timestamp": "2026-11-04T10:12:00Z"
+        },
+        {
+          "order_id": "ORD-DELIST-004-02",
+          "shareholder_id": "CNPJ-**.202.303/0001-40",
+          "participant_code": 88,
+          "custody_account": "120301-2",
+          "stance": "AGREE_NO_SALE",
+          "enabled_quantity": 600000,
+          "blocked_in_custody": true,
+          "timestamp": "2026-11-04T10:40:00Z"
+        },
+        {
+          "order_id": "ORD-DELIST-004-03",
+          "shareholder_id": "CPF-***.303.404-50",
+          "participant_code": 105,
+          "custody_account": "130401-3",
+          "stance": "DISSENT_HOLD",
+          "enabled_quantity": 400000,
+          "blocked_in_custody": true,
+          "timestamp": "2026-11-04T11:05:00Z"
+        }
+      ]
+    },
+    {
+      "auction_id": "OPA-DELIST-2026-005",
+      "company_name": "REDE VAREJO POPULAR S.A.",
+      "ticker": "RVAR3",
+      "isin": "BRRVARACNOR0",
+      "offeror_name": "CONSORCIO VAREJO S.A.",
+      "modality": "DESLISTAGEM_VOLUNTARIA_CONCORRENTE",
+      "governance_segment": "NIVEL_1",
+      "offer_price_per_share": "18.50",
+      "control_block_price_per_share": "20.00",
+      "statutory_tag_along_ratio": "0.80",
+      "total_issued_shares": 12000000,
+      "initial_controller_shares": 7200000,
+      "initial_free_float_shares": 4800000,
+      "execute_squeeze_out": false,
+      "max_target_quantity": 2000000,
+      "min_acceptance_quantity": 1000000,
+      "auction_date": "2026-11-04",
+      "settlement_date": "2026-11-06",
+      "orders": [
+        {
+          "order_id": "ORD-DELIST-005-01",
+          "shareholder_id": "CNPJ-**.404.505/0001-60",
+          "participant_code": 105,
+          "custody_account": "140501-4",
+          "stance": "TENDER_SELL",
+          "enabled_quantity": 1500000,
+          "blocked_in_custody": true,
+          "timestamp": "2026-11-04T10:14:00Z"
+        },
+        {
+          "order_id": "ORD-DELIST-005-02",
+          "shareholder_id": "CNPJ-**.505.606/0001-70",
+          "participant_code": 88,
+          "custody_account": "150601-5",
+          "stance": "TENDER_SELL",
+          "enabled_quantity": 1000000,
+          "blocked_in_custody": true,
+          "timestamp": "2026-11-04T10:25:00Z"
+        },
+        {
+          "order_id": "ORD-DELIST-005-03",
+          "shareholder_id": "CPF-***.606.707-80",
+          "participant_code": 72,
+          "custody_account": "160701-6",
+          "stance": "TENDER_SELL",
+          "enabled_quantity": 500000,
+          "blocked_in_custody": true,
+          "timestamp": "2026-11-04T10:50:00Z"
+        },
+        {
+          "order_id": "ORD-DELIST-005-04",
+          "shareholder_id": "CNPJ-**.707.808/0001-90",
+          "participant_code": 39,
+          "custody_account": "170801-7",
+          "stance": "AGREE_NO_SALE",
+          "enabled_quantity": 400000,
+          "blocked_in_custody": true,
+          "timestamp": "2026-11-04T11:20:00Z"
+        }
+      ]
+    }
+  ]
+}

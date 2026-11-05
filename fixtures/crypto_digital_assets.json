@@ -1,0 +1,125 @@
+{
+  "version": "1.0.0",
+  "as_of": "2026-11-04",
+  "scope": "B3 Digital Assets & Marco Legal dos Criptoativos — Custódia Híbrida e RWA Tokenizados (FL-075)",
+  "regulatory_framework": {
+    "law": "Lei nº 14.478/2022 (Marco Legal dos Criptoativos)",
+    "cvm_resolution": "CVM 175/2022 & CVM 88/2022",
+    "bcb_regulation": "Resolução BCB nº 319/2023 & Regulamento Pix/SPI / STR",
+    "fiduciary_segregation": "Art. 13-A da Lei nº 14.478/2022 (Patrimônio de Afetação e Incomunicabilidade)"
+  },
+  "csd_accounts": [
+    {
+      "account_id": "CSD-ACC-ITAU-DEB01",
+      "participant_id": "PART-ITAU-01",
+      "tax_id": "11111111000191",
+      "asset_code": "RWA-DEB-VALE-01",
+      "asset_type": "DEBENTURE_INCENTIVADA",
+      "total_units": "50000.00000000",
+      "available_units": "30000.00000000",
+      "fiduciary_locked_units": "20000.00000000"
+    },
+    {
+      "account_id": "CSD-ACC-BRAD-DEB01",
+      "participant_id": "PART-BRAD-02",
+      "tax_id": "22222222000182",
+      "asset_code": "RWA-DEB-VALE-01",
+      "asset_type": "DEBENTURE_INCENTIVADA",
+      "total_units": "40000.00000000",
+      "available_units": "25000.00000000",
+      "fiduciary_locked_units": "15000.00000000"
+    },
+    {
+      "account_id": "CSD-ACC-BTG-CRI02",
+      "participant_id": "PART-BTG-03",
+      "tax_id": "33333333000173",
+      "asset_code": "RWA-CRI-AGRO-02",
+      "asset_type": "CRI_RECEIVABLES",
+      "total_units": "60000.00000000",
+      "available_units": "50000.00000000",
+      "fiduciary_locked_units": "10000.00000000"
+    }
+  ],
+  "fiduciary_reserves": [
+    {
+      "reserve_id": "RES-FID-ITAU-VALE01",
+      "custodian_participant_id": "PART-ITAU-01",
+      "asset_code": "RWA-DEB-VALE-01",
+      "segregated_backing_units": "20000.00000000",
+      "fiduciary_deposit_account": "CC-FID-0341-998877-VALE",
+      "is_bankruptcy_remote": true,
+      "last_audit_date": "2026-11-04"
+    },
+    {
+      "reserve_id": "RES-FID-BRAD-VALE01",
+      "custodian_participant_id": "PART-BRAD-02",
+      "asset_code": "RWA-DEB-VALE-01",
+      "segregated_backing_units": "15000.00000000",
+      "fiduciary_deposit_account": "CC-FID-0237-776655-VALE",
+      "is_bankruptcy_remote": true,
+      "last_audit_date": "2026-11-04"
+    },
+    {
+      "reserve_id": "RES-FID-BTG-CRI02",
+      "custodian_participant_id": "PART-BTG-03",
+      "asset_code": "RWA-CRI-AGRO-02",
+      "segregated_backing_units": "10000.00000000",
+      "fiduciary_deposit_account": "CC-FID-0208-554433-AGRO",
+      "is_bankruptcy_remote": true,
+      "last_audit_date": "2026-11-04"
+    }
+  ],
+  "erc3643_wallets": [
+    {
+      "wallet_address": "0x1111111111111111111111111111111111111111",
+      "onchain_identity_id": "ONCHAINID-ITAU-TREX-001",
+      "investor_tax_id": "11111111000191",
+      "participant_id": "PART-ITAU-01",
+      "compliance_status": "VERIFIED",
+      "is_qualified_investor": true,
+      "country_code": "BR",
+      "balances": {
+        "RWA-DEB-VALE-01": "20000.00000000"
+      },
+      "escrowed_balances": {}
+    },
+    {
+      "wallet_address": "0x2222222222222222222222222222222222222222",
+      "onchain_identity_id": "ONCHAINID-BRAD-TREX-002",
+      "investor_tax_id": "22222222000182",
+      "participant_id": "PART-BRAD-02",
+      "compliance_status": "VERIFIED",
+      "is_qualified_investor": true,
+      "country_code": "BR",
+      "balances": {
+        "RWA-DEB-VALE-01": "15000.00000000"
+      },
+      "escrowed_balances": {}
+    },
+    {
+      "wallet_address": "0x3333333333333333333333333333333333333333",
+      "onchain_identity_id": "ONCHAINID-BTG-TREX-003",
+      "investor_tax_id": "33333333000173",
+      "participant_id": "PART-BTG-03",
+      "compliance_status": "VERIFIED",
+      "is_qualified_investor": true,
+      "country_code": "BR",
+      "balances": {
+        "RWA-CRI-AGRO-02": "10000.00000000"
+      },
+      "escrowed_balances": {}
+    },
+    {
+      "wallet_address": "0x4444444444444444444444444444444444444444",
+      "onchain_identity_id": "ONCHAINID-XP-TREX-004",
+      "investor_tax_id": "44444444000164",
+      "participant_id": "PART-XP-04",
+      "compliance_status": "VERIFIED",
+      "is_qualified_investor": true,
+      "country_code": "BR",
+      "balances": {},
+      "escrowed_balances": {}
+    }
+  ],
+  "dvp_orders": []
+}
