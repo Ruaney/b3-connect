@@ -1,0 +1,561 @@
+{
+  "schema_version": "1.0.0",
+  "flow_id": "FL-081",
+  "description": "Casos de Teste e Cenários Regulatórios de Leilões Especiais de Desinvestimento, Alienação de Unidades Produtivas Isoladas (UPI) e Liquidação Judicial de Ativos em Recuperação no PUMA Trading B3 (Lei nº 11.101/2005)",
+  "reference_date": "2026-11-04",
+  "auctions": [
+    {
+      "auction_id": "AUCTION-RJ-UPI-001",
+      "debtor_name": "TELECOM BRASIL S.A. - EM RECUPERAÇÃO JUDICIAL",
+      "judicial_process_number": "0203329-61.2016.8.19.0001",
+      "court_name": "7ª Vara Empresarial da Comarca da Capital - TJRJ",
+      "judicial_administrator": "Alvarez & Marsal Administração Judicial Ltda.",
+      "auction_date": "2026-11-04",
+      "settlement_date": "2026-11-06",
+      "description": "Alienação Judicial de UPI de Infraestrutura de Fibra Óptica com Stalking Horse e Right to Match",
+      "lots": [
+        {
+          "lot_id": "LOT-UPI-FIBRA-01",
+          "asset_name": "UPI Infraestrutura de Rede Neutra de Fibra Óptica",
+          "lot_type": "UPI",
+          "quantity": 1,
+          "judicial_reserve_price": "1500000000.00",
+          "minimum_overbid_step": "10000000.00",
+          "required_bid_bond_amount": "75000000.00",
+          "judicial_process_number": "0203329-61.2016.8.19.0001",
+          "court_name": "7ª Vara Empresarial da Comarca da Capital - TJRJ",
+          "debtor_name": "TELECOM BRASIL S.A. - EM RECUPERAÇÃO JUDICIAL",
+          "judicial_administrator": "Alvarez & Marsal Administração Judicial Ltda.",
+          "is_free_and_clear_of_liens": true,
+          "status": "PENDING"
+        }
+      ],
+      "proponents": [
+        {
+          "proponent_id": "PROP-SH-01",
+          "name": "INVESTIDOR INFRA FIBRA S.A.",
+          "document_id": "12.345.678/0001-90",
+          "participant_code": 105,
+          "custody_account": "100201-9",
+          "is_qualified": true,
+          "bid_bond_deposited": "75000000.00",
+          "bid_bond_blocked": true,
+          "is_stalking_horse": true,
+          "has_right_to_match": true
+        },
+        {
+          "proponent_id": "PROP-CONC-02",
+          "name": "CONSORCIO TELECOM GLOBAL",
+          "document_id": "23.456.789/0001-01",
+          "participant_code": 88,
+          "custody_account": "200301-1",
+          "is_qualified": true,
+          "bid_bond_deposited": "75000000.00",
+          "bid_bond_blocked": true,
+          "is_stalking_horse": false,
+          "has_right_to_match": false
+        },
+        {
+          "proponent_id": "PROP-PATRIA-03",
+          "name": "PATRIA INFRAESTRUTURA FUNDO DE INVESTIMENTO",
+          "document_id": "34.567.890/0001-12",
+          "participant_code": 72,
+          "custody_account": "300401-2",
+          "is_qualified": true,
+          "bid_bond_deposited": "75000000.00",
+          "bid_bond_blocked": true,
+          "is_stalking_horse": false,
+          "has_right_to_match": false
+        }
+      ],
+      "bids": [
+        {
+          "bid_id": "BID-01",
+          "lot_id": "LOT-UPI-FIBRA-01",
+          "proponent_id": "PROP-SH-01",
+          "round_type": "STALKING_HORSE",
+          "bid_amount": "1500000000.00",
+          "timestamp": "2026-11-04T10:00:00Z",
+          "is_valid": true
+        },
+        {
+          "bid_id": "BID-02",
+          "lot_id": "LOT-UPI-FIBRA-01",
+          "proponent_id": "PROP-CONC-02",
+          "round_type": "SEALED_BID",
+          "bid_amount": "1550000000.00",
+          "timestamp": "2026-11-04T10:15:00Z",
+          "is_valid": true
+        },
+        {
+          "bid_id": "BID-03",
+          "lot_id": "LOT-UPI-FIBRA-01",
+          "proponent_id": "PROP-PATRIA-03",
+          "round_type": "SEALED_BID",
+          "bid_amount": "1520000000.00",
+          "timestamp": "2026-11-04T10:20:00Z",
+          "is_valid": true
+        },
+        {
+          "bid_id": "BID-04",
+          "lot_id": "LOT-UPI-FIBRA-01",
+          "proponent_id": "PROP-PATRIA-03",
+          "round_type": "OPEN_OVERBID",
+          "bid_amount": "1560000000.00",
+          "timestamp": "2026-11-04T11:00:00Z",
+          "is_valid": true
+        },
+        {
+          "bid_id": "BID-05",
+          "lot_id": "LOT-UPI-FIBRA-01",
+          "proponent_id": "PROP-CONC-02",
+          "round_type": "OPEN_OVERBID",
+          "bid_amount": "1580000000.00",
+          "timestamp": "2026-11-04T11:15:00Z",
+          "is_valid": true
+        },
+        {
+          "bid_id": "BID-06",
+          "lot_id": "LOT-UPI-FIBRA-01",
+          "proponent_id": "PROP-PATRIA-03",
+          "round_type": "OPEN_OVERBID",
+          "bid_amount": "1600000000.00",
+          "timestamp": "2026-11-04T11:30:00Z",
+          "is_valid": true
+        },
+        {
+          "bid_id": "BID-07",
+          "lot_id": "LOT-UPI-FIBRA-01",
+          "proponent_id": "PROP-SH-01",
+          "round_type": "MATCHING_BID",
+          "bid_amount": "1600000000.00",
+          "timestamp": "2026-11-04T12:00:00Z",
+          "is_valid": true
+        }
+      ],
+      "extracurricular_expenses": [
+        {
+          "expense_id": "EXP-01",
+          "expense_type": "B3_AUCTION_FEES",
+          "description": "Taxa de Negociação e Emolumentos Leilão B3",
+          "amount": "8000000.00",
+          "recipient": "B3 S.A. - Brasil, Bolsa, Balcão"
+        },
+        {
+          "expense_id": "EXP-02",
+          "expense_type": "AUCTIONEER_COMMISSION",
+          "description": "Comissão de Corretagem e Mediação Especial PUMA",
+          "amount": "16000000.00",
+          "recipient": "Sociedade Corretora B3"
+        },
+        {
+          "expense_id": "EXP-03",
+          "expense_type": "JUDICIAL_ADMINISTRATOR_FEE",
+          "description": "Honorários da Administração Judicial (Art. 24 e 84 LF-RJ)",
+          "amount": "20000000.00",
+          "recipient": "Alvarez & Marsal Administração Judicial Ltda."
+        },
+        {
+          "expense_id": "EXP-04",
+          "expense_type": "COURT_COSTS",
+          "description": "Custas Judiciais e Fundo Especial do Tribunal TJRJ",
+          "amount": "1000000.00",
+          "recipient": "Tribunal de Justiça do Estado do Rio de Janeiro"
+        }
+      ],
+      "creditor_claims": [
+        {
+          "creditor_id": "CR-TRAB-01",
+          "name": "Sindicato dos Trabalhadores em Telecomunicações",
+          "creditor_class": "CLASSE_I_TRABALHISTA",
+          "original_claim_amount": "80000000.00"
+        },
+        {
+          "creditor_id": "CR-TRAB-02",
+          "name": "Associação de Ex-Empregados e Técnicos de Rede",
+          "creditor_class": "CLASSE_I_TRABALHISTA",
+          "original_claim_amount": "70000000.00"
+        },
+        {
+          "creditor_id": "CR-GAR-01",
+          "name": "Banco Nacional de Desenvolvimento Econômico e Social - BNDES",
+          "creditor_class": "CLASSE_II_GARANTIA_REAL",
+          "original_claim_amount": "500000000.00"
+        },
+        {
+          "creditor_id": "CR-GAR-02",
+          "name": "Banco Bradesco S.A. (Garantia Fiduciária de Ativos)",
+          "creditor_class": "CLASSE_II_GARANTIA_REAL",
+          "original_claim_amount": "300000000.00"
+        },
+        {
+          "creditor_id": "CR-TRIB-01",
+          "name": "Procuradoria-Geral da Fazenda Nacional - PGFN",
+          "creditor_class": "CLASSE_III_TRIBUTARIA",
+          "original_claim_amount": "350000000.00"
+        },
+        {
+          "creditor_id": "CR-TRIB-02",
+          "name": "Secretaria de Estado de Fazenda do Rio de Janeiro - SEFAZ-RJ",
+          "creditor_class": "CLASSE_III_TRIBUTARIA",
+          "original_claim_amount": "150000000.00"
+        },
+        {
+          "creditor_id": "CR-QUIR-01",
+          "name": "Nokia Solutions and Networks do Brasil",
+          "creditor_class": "CLASSE_VI_QUIROGRAFARIO",
+          "original_claim_amount": "150000000.00"
+        },
+        {
+          "creditor_id": "CR-QUIR-02",
+          "name": "Huawei do Brasil Telecomunicações Ltda.",
+          "creditor_class": "CLASSE_VI_QUIROGRAFARIO",
+          "original_claim_amount": "100000000.00"
+        },
+        {
+          "creditor_id": "CR-QUIR-03",
+          "name": "Cisco Systems do Brasil Ltda.",
+          "creditor_class": "CLASSE_VI_QUIROGRAFARIO",
+          "original_claim_amount": "50000000.00"
+        }
+      ]
+    },
+    {
+      "auction_id": "AUCTION-RJ-SIDERURGIA-MULTI-02",
+      "debtor_name": "COMPANHIA SIDERURGICA DO SUDESTE S.A. - EM FALENCIA",
+      "judicial_process_number": "1087654-32.2023.8.26.0100",
+      "court_name": "2ª Vara de Falências e Recuperações Judiciais - TJSP",
+      "judicial_administrator": "Deloitte Touche Tohmatsu Consultores Ltda.",
+      "auction_date": "2026-11-04",
+      "settlement_date": "2026-11-06",
+      "description": "Alienação Judicial de Múltiplos Lotes: UPI Laminação (Arrematada) e Imóvel Terreno (Deserto)",
+      "lots": [
+        {
+          "lot_id": "LOT-SID-UPI-01",
+          "asset_name": "UPI Laminação e Aciaria Industrial",
+          "lot_type": "UPI",
+          "quantity": 1,
+          "judicial_reserve_price": "250000000.00",
+          "minimum_overbid_step": "5000000.00",
+          "required_bid_bond_amount": "12500000.00",
+          "judicial_process_number": "1087654-32.2023.8.26.0100",
+          "court_name": "2ª Vara de Falências e Recuperações Judiciais - TJSP",
+          "debtor_name": "COMPANHIA SIDERURGICA DO SUDESTE S.A. - EM FALENCIA",
+          "judicial_administrator": "Deloitte Touche Tohmatsu Consultores Ltda.",
+          "is_free_and_clear_of_liens": true,
+          "status": "PENDING"
+        },
+        {
+          "lot_id": "LOT-SID-TERRENO-02",
+          "asset_name": "Imóvel e Terreno Industrial Vale do Paraíba",
+          "lot_type": "REAL_ESTATE",
+          "quantity": 1,
+          "judicial_reserve_price": "60000000.00",
+          "minimum_overbid_step": "2000000.00",
+          "required_bid_bond_amount": "3000000.00",
+          "judicial_process_number": "1087654-32.2023.8.26.0100",
+          "court_name": "2ª Vara de Falências e Recuperações Judiciais - TJSP",
+          "debtor_name": "COMPANHIA SIDERURGICA DO SUDESTE S.A. - EM FALENCIA",
+          "judicial_administrator": "Deloitte Touche Tohmatsu Consultores Ltda.",
+          "is_free_and_clear_of_liens": true,
+          "status": "PENDING"
+        }
+      ],
+      "proponents": [
+        {
+          "proponent_id": "PROP-CSN-01",
+          "name": "SIDERURGICA NACIONAL DE METAIS S.A.",
+          "document_id": "45.678.901/0001-23",
+          "participant_code": 105,
+          "custody_account": "400501-3",
+          "is_qualified": true,
+          "bid_bond_deposited": "15500000.00",
+          "bid_bond_blocked": true,
+          "is_stalking_horse": false,
+          "has_right_to_match": false
+        },
+        {
+          "proponent_id": "PROP-GERDAU-02",
+          "name": "GERDAU ACOMINAS PARTICIPACOES S.A.",
+          "document_id": "56.789.012/0001-34",
+          "participant_code": 88,
+          "custody_account": "500601-4",
+          "is_qualified": true,
+          "bid_bond_deposited": "15500000.00",
+          "bid_bond_blocked": true,
+          "is_stalking_horse": false,
+          "has_right_to_match": false
+        },
+        {
+          "proponent_id": "PROP-IMOB-03",
+          "name": "LOG EMPREENDIMENTOS IMOBILIARIOS LTDA",
+          "document_id": "67.890.123/0001-45",
+          "participant_code": 72,
+          "custody_account": "600701-5",
+          "is_qualified": true,
+          "bid_bond_deposited": "3000000.00",
+          "bid_bond_blocked": true,
+          "is_stalking_horse": false,
+          "has_right_to_match": false
+        }
+      ],
+      "bids": [
+        {
+          "bid_id": "BID-SID-01",
+          "lot_id": "LOT-SID-UPI-01",
+          "proponent_id": "PROP-CSN-01",
+          "round_type": "SEALED_BID",
+          "bid_amount": "260000000.00",
+          "timestamp": "2026-11-04T10:00:00Z",
+          "is_valid": true
+        },
+        {
+          "bid_id": "BID-SID-02",
+          "lot_id": "LOT-SID-UPI-01",
+          "proponent_id": "PROP-GERDAU-02",
+          "round_type": "OPEN_OVERBID",
+          "bid_amount": "270000000.00",
+          "timestamp": "2026-11-04T11:00:00Z",
+          "is_valid": true
+        },
+        {
+          "bid_id": "BID-SID-03",
+          "lot_id": "LOT-SID-UPI-01",
+          "proponent_id": "PROP-CSN-01",
+          "round_type": "OPEN_OVERBID",
+          "bid_amount": "280000000.00",
+          "timestamp": "2026-11-04T11:30:00Z",
+          "is_valid": true
+        }
+      ],
+      "extracurricular_expenses": [
+        {
+          "expense_id": "EXP-SID-01",
+          "expense_type": "B3_AUCTION_FEES",
+          "description": "Taxas B3 de Pregão Especial",
+          "amount": "2000000.00",
+          "recipient": "B3 S.A."
+        },
+        {
+          "expense_id": "EXP-SID-02",
+          "expense_type": "JUDICIAL_ADMINISTRATOR_FEE",
+          "description": "Honorários Administração Judicial Falimentar",
+          "amount": "8000000.00",
+          "recipient": "Deloitte Touche Tohmatsu"
+        }
+      ],
+      "creditor_claims": [
+        {
+          "creditor_id": "CR-SID-TRAB-01",
+          "name": "Créditos Trabalhistas Falimentares",
+          "creditor_class": "CLASSE_I_TRABALHISTA",
+          "original_claim_amount": "70000000.00"
+        },
+        {
+          "creditor_id": "CR-SID-GAR-01",
+          "name": "Banco Itaú BBA S.A. (Hipoteca Industrial)",
+          "creditor_class": "CLASSE_II_GARANTIA_REAL",
+          "original_claim_amount": "200000000.00"
+        }
+      ]
+    },
+    {
+      "auction_id": "AUCTION-RJ-SUPERAVIT-EQUITY-03",
+      "debtor_name": "BIOENERGIA AGROINDUSTRIAL DO CENTRO-OESTE S.A. - EM RECUPERAÇÃO JUDICIAL",
+      "judicial_process_number": "0012987-45.2024.8.26.0506",
+      "court_name": "1ª Vara Cível da Comarca de Ribeirão Preto - TJSP",
+      "judicial_administrator": "PricewaterhouseCoopers Assessoria Empresarial Ltda.",
+      "auction_date": "2026-11-04",
+      "settlement_date": "2026-11-06",
+      "description": "Alienação Judicial com Superávit Remanescente Devolvido à Sociedade Recuperanda",
+      "lots": [
+        {
+          "lot_id": "LOT-BIO-USINA-01",
+          "asset_name": "UPI Usina de Etanol e Cogeração de Energia a Biomassa",
+          "lot_type": "UPI",
+          "quantity": 1,
+          "judicial_reserve_price": "80000000.00",
+          "minimum_overbid_step": "2000000.00",
+          "required_bid_bond_amount": "4000000.00",
+          "judicial_process_number": "0012987-45.2024.8.26.0506",
+          "court_name": "1ª Vara Cível da Comarca de Ribeirão Preto - TJSP",
+          "debtor_name": "BIOENERGIA AGROINDUSTRIAL DO CENTRO-OESTE S.A. - EM RECUPERAÇÃO JUDICIAL",
+          "judicial_administrator": "PricewaterhouseCoopers Assessoria Empresarial Ltda.",
+          "is_free_and_clear_of_liens": true,
+          "status": "PENDING"
+        }
+      ],
+      "proponents": [
+        {
+          "proponent_id": "PROP-RAIZEN-01",
+          "name": "RAIZEN ENERGIA S.A.",
+          "document_id": "78.901.234/0001-56",
+          "participant_code": 105,
+          "custody_account": "700801-6",
+          "is_qualified": true,
+          "bid_bond_deposited": "6000000.00",
+          "bid_bond_blocked": true,
+          "is_stalking_horse": false,
+          "has_right_to_match": false
+        },
+        {
+          "proponent_id": "PROP-MARTINHO-02",
+          "name": "SAO MARTINHO PARTICIPACOES S.A.",
+          "document_id": "89.012.345/0001-67",
+          "participant_code": 88,
+          "custody_account": "800901-7",
+          "is_qualified": true,
+          "bid_bond_deposited": "6000000.00",
+          "bid_bond_blocked": true,
+          "is_stalking_horse": false,
+          "has_right_to_match": false
+        }
+      ],
+      "bids": [
+        {
+          "bid_id": "BID-BIO-01",
+          "lot_id": "LOT-BIO-USINA-01",
+          "proponent_id": "PROP-RAIZEN-01",
+          "round_type": "SEALED_BID",
+          "bid_amount": "100000000.00",
+          "timestamp": "2026-11-04T10:00:00Z",
+          "is_valid": true
+        },
+        {
+          "bid_id": "BID-BIO-02",
+          "lot_id": "LOT-BIO-USINA-01",
+          "proponent_id": "PROP-MARTINHO-02",
+          "round_type": "OPEN_OVERBID",
+          "bid_amount": "110000000.00",
+          "timestamp": "2026-11-04T11:00:00Z",
+          "is_valid": true
+        },
+        {
+          "bid_id": "BID-BIO-03",
+          "lot_id": "LOT-BIO-USINA-01",
+          "proponent_id": "PROP-RAIZEN-01",
+          "round_type": "OPEN_OVERBID",
+          "bid_amount": "120000000.00",
+          "timestamp": "2026-11-04T11:30:00Z",
+          "is_valid": true
+        }
+      ],
+      "extracurricular_expenses": [
+        {
+          "expense_id": "EXP-BIO-01",
+          "expense_type": "B3_AUCTION_FEES",
+          "description": "Taxas de Registro e Liquidação B3",
+          "amount": "1500000.00",
+          "recipient": "B3 S.A."
+        },
+        {
+          "expense_id": "EXP-BIO-02",
+          "expense_type": "JUDICIAL_ADMINISTRATOR_FEE",
+          "description": "Honorários AJ PwC",
+          "amount": "3500000.00",
+          "recipient": "PricewaterhouseCoopers"
+        }
+      ],
+      "creditor_claims": [
+        {
+          "creditor_id": "CR-BIO-TRAB-01",
+          "name": "Créditos Trabalhistas Rurais",
+          "creditor_class": "CLASSE_I_TRABALHISTA",
+          "original_claim_amount": "15000000.00"
+        },
+        {
+          "creditor_id": "CR-BIO-GAR-01",
+          "name": "Banco Santander (Brasil) S.A.",
+          "creditor_class": "CLASSE_II_GARANTIA_REAL",
+          "original_claim_amount": "40000000.00"
+        },
+        {
+          "creditor_id": "CR-BIO-TRIB-01",
+          "name": "Fazenda Estadual de São Paulo",
+          "creditor_class": "CLASSE_III_TRIBUTARIA",
+          "original_claim_amount": "10000000.00"
+        },
+        {
+          "creditor_id": "CR-BIO-QUIR-01",
+          "name": "Fornecedores de Cana de Açúcar e Defensivos",
+          "creditor_class": "CLASSE_VI_QUIROGRAFARIO",
+          "original_claim_amount": "20000000.00"
+        }
+      ]
+    },
+    {
+      "auction_id": "AUCTION-RJ-TOTAL-DESERTO-04",
+      "debtor_name": "NAVEGACAO FLUVIAL DA AMAZONIA S.A. - EM LIQUIDACAO JUDICIAL",
+      "judicial_process_number": "0621458-90.2023.8.04.0001",
+      "court_name": "Vara de Falências e Insolvência da Comarca de Manaus - TJAM",
+      "judicial_administrator": "Amazonas Consultoria Judicial Ltda.",
+      "auction_date": "2026-11-04",
+      "settlement_date": "2026-11-06",
+      "description": "Leilão Especial de Lotes Fluviais que Resulta 100% Deserto",
+      "lots": [
+        {
+          "lot_id": "LOT-NAV-FROTA-01",
+          "asset_name": "Frota de Empurradores Fluviais e Balsas Graneleiras",
+          "lot_type": "EQUIPMENT_MACHINERY",
+          "quantity": 1,
+          "judicial_reserve_price": "40000000.00",
+          "minimum_overbid_step": "1000000.00",
+          "required_bid_bond_amount": "2000000.00",
+          "judicial_process_number": "0621458-90.2023.8.04.0001",
+          "court_name": "Vara de Falências e Insolvência da Comarca de Manaus - TJAM",
+          "debtor_name": "NAVEGACAO FLUVIAL DA AMAZONIA S.A. - EM LIQUIDACAO JUDICIAL",
+          "judicial_administrator": "Amazonas Consultoria Judicial Ltda.",
+          "is_free_and_clear_of_liens": true,
+          "status": "PENDING"
+        },
+        {
+          "lot_id": "LOT-NAV-TERMINAL-02",
+          "asset_name": "Terminal Hidroviário e Estaleiro Fluvial de Manaus",
+          "lot_type": "REAL_ESTATE",
+          "quantity": 1,
+          "judicial_reserve_price": "60000000.00",
+          "minimum_overbid_step": "2000000.00",
+          "required_bid_bond_amount": "3000000.00",
+          "judicial_process_number": "0621458-90.2023.8.04.0001",
+          "court_name": "Vara de Falências e Insolvência da Comarca de Manaus - TJAM",
+          "debtor_name": "NAVEGACAO FLUVIAL DA AMAZONIA S.A. - EM LIQUIDACAO JUDICIAL",
+          "judicial_administrator": "Amazonas Consultoria Judicial Ltda.",
+          "is_free_and_clear_of_liens": true,
+          "status": "PENDING"
+        }
+      ],
+      "proponents": [
+        {
+          "proponent_id": "PROP-NAV-01",
+          "name": "TRANSPORTE FLUVIAL NORTE LTDA",
+          "document_id": "90.123.456/0001-78",
+          "participant_code": 105,
+          "custody_account": "901001-8",
+          "is_qualified": true,
+          "bid_bond_deposited": "5000000.00",
+          "bid_bond_blocked": true,
+          "is_stalking_horse": false,
+          "has_right_to_match": false
+        }
+      ],
+      "bids": [],
+      "extracurricular_expenses": [
+        {
+          "expense_id": "EXP-NAV-01",
+          "expense_type": "B3_AUCTION_FEES",
+          "description": "Taxa B3 Fixa de Pregão",
+          "amount": "100000.00",
+          "recipient": "B3 S.A."
+        }
+      ],
+      "creditor_claims": [
+        {
+          "creditor_id": "CR-NAV-01",
+          "name": "Credores Trabalhistas Fluviais",
+          "creditor_class": "CLASSE_I_TRABALHISTA",
+          "original_claim_amount": "10000000.00"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,212 @@
+{
+  "schema_version": "1.0.0",
+  "flow_id": "FL-083",
+  "system": "B3_CLEARING_OFFSHORE_EUROBONDS_COLLATERAL",
+  "description": "Depósito, Haircut e Bloqueio de Ativos Financeiros Offshore e Eurobonds como Colateral Multilateral na Câmara B3",
+  "reference_date": "2026-11-04",
+  "ptax_rates": [
+    {
+      "currency": "USD",
+      "bid_rate": "5.7500",
+      "ask_rate": "5.7510",
+      "mid_rate": "5.7505",
+      "bulletin_date": "2026-11-04"
+    },
+    {
+      "currency": "EUR",
+      "bid_rate": "6.2500",
+      "ask_rate": "6.2520",
+      "mid_rate": "6.2510",
+      "bulletin_date": "2026-11-04"
+    }
+  ],
+  "fx_safety_configs": [
+    {
+      "currency": "USD",
+      "base_haircut": "0.0500",
+      "volatility_stress_buffer": "0.0250",
+      "liquidation_horizon_days": 2,
+      "total_fx_haircut": "0.0750"
+    },
+    {
+      "currency": "EUR",
+      "base_haircut": "0.0600",
+      "volatility_stress_buffer": "0.0300",
+      "liquidation_horizon_days": 2,
+      "total_fx_haircut": "0.0900"
+    }
+  ],
+  "securities": [
+    {
+      "isin": "US71654V4086",
+      "ticker": "PBR",
+      "name": "PETROLEO BRASILEIRO S.A. - PETROBRAS ADR",
+      "asset_type": "ADR",
+      "brazilian_issuer_root": "PETROBRAS_GRP",
+      "offshore_issuing_entity": "Citibank N.A. (Depositary)",
+      "currency": "USD",
+      "depository": "DTC",
+      "credit_rating": "BB",
+      "country_risk_zone": "BR_OFFSHORE",
+      "maturity_date": null,
+      "unit_price": "14.50",
+      "underlying_b3_ticker": "PETR4",
+      "adr_ratio": "2.0000"
+    },
+    {
+      "isin": "US91912E1055",
+      "ticker": "VALE",
+      "name": "VALE S.A. GDR",
+      "asset_type": "GDR",
+      "brazilian_issuer_root": "VALE_GRP",
+      "offshore_issuing_entity": "JPMorgan Chase Bank (Depositary)",
+      "currency": "USD",
+      "depository": "EUROCLEAR",
+      "credit_rating": "BBB",
+      "country_risk_zone": "BR_OFFSHORE",
+      "maturity_date": null,
+      "unit_price": "12.80",
+      "underlying_b3_ticker": "VALE3",
+      "adr_ratio": "1.0000"
+    },
+    {
+      "isin": "US71647NAQ25",
+      "ticker": "PGF-2030",
+      "name": "PETROBRAS GLOBAL FINANCE B.V. 6.875% 2030",
+      "asset_type": "EUROBOND",
+      "brazilian_issuer_root": "PETROBRAS_GRP",
+      "offshore_issuing_entity": "Petrobras Global Finance B.V.",
+      "currency": "USD",
+      "depository": "EUROCLEAR",
+      "credit_rating": "BB",
+      "country_risk_zone": "BR_OFFSHORE",
+      "maturity_date": "2030-01-25",
+      "unit_price": "102.50",
+      "underlying_b3_ticker": null,
+      "adr_ratio": null
+    },
+    {
+      "isin": "XS1843437465",
+      "ticker": "VTCIM-2028",
+      "name": "VOTORANTIM CIMENTOS INT 3.500% 2028",
+      "asset_type": "EUROBOND",
+      "brazilian_issuer_root": "VOTORANTIM_GRP",
+      "offshore_issuing_entity": "Votorantim Cimentos International S.A.",
+      "currency": "EUR",
+      "depository": "EUROCLEAR",
+      "credit_rating": "BBB",
+      "country_risk_zone": "BR_OFFSHORE",
+      "maturity_date": "2028-07-13",
+      "unit_price": "98.75",
+      "underlying_b3_ticker": null,
+      "adr_ratio": null
+    },
+    {
+      "isin": "US46556MAE09",
+      "ticker": "ITAU-2027",
+      "name": "ITAU UNIBANCO HOLDING (CAYMAN) 4.625% 2027",
+      "asset_type": "EUROBOND",
+      "brazilian_issuer_root": "ITAU_UNIBANCO_GRP",
+      "offshore_issuing_entity": "Itau Unibanco Holding S.A. Cayman Branch",
+      "currency": "USD",
+      "depository": "CLEARSTREAM",
+      "credit_rating": "BBB",
+      "country_risk_zone": "BR_OFFSHORE",
+      "maturity_date": "2027-05-15",
+      "unit_price": "99.20",
+      "underlying_b3_ticker": null,
+      "adr_ratio": null
+    }
+  ],
+  "accounts": [
+    {
+      "account_id": "ACC-ITAU-DTC-HOUSE",
+      "participant_id": "PART-ITAU-01",
+      "segregation_type": "HOUSE",
+      "depository": "DTC",
+      "depository_account_number": "DTC-00028911",
+      "b3_clearing_subaccount": "B3-CLR-DTC-ITAU-H"
+    },
+    {
+      "account_id": "ACC-ITAU-DTC-CLIENT",
+      "participant_id": "PART-ITAU-01",
+      "segregation_type": "CLIENT",
+      "depository": "DTC",
+      "depository_account_number": "DTC-00028912",
+      "b3_clearing_subaccount": "B3-CLR-DTC-ITAU-C"
+    },
+    {
+      "account_id": "ACC-BRAD-EUR-HOUSE",
+      "participant_id": "PART-BRAD-02",
+      "segregation_type": "HOUSE",
+      "depository": "EUROCLEAR",
+      "depository_account_number": "EUR-99481023",
+      "b3_clearing_subaccount": "B3-CLR-EUR-BRAD-H"
+    },
+    {
+      "account_id": "ACC-BTG-CLR-HOUSE",
+      "participant_id": "PART-BTG-03",
+      "segregation_type": "HOUSE",
+      "depository": "CLEARSTREAM",
+      "depository_account_number": "CST-77881122",
+      "b3_clearing_subaccount": "B3-CLR-CST-BTG-H"
+    }
+  ],
+  "positions": [
+    {
+      "position_id": "POS-PBR-001",
+      "account_id": "ACC-ITAU-DTC-HOUSE",
+      "participant_id": "PART-ITAU-01",
+      "isin": "US71654V4086",
+      "total_quantity": "100000.0000",
+      "pledged_quantity": "100000.0000",
+      "unencumbered_quantity": "0.0000",
+      "status": "PLEDGED_MULTILATERAL",
+      "created_at": "2026-11-04T10:00:00"
+    },
+    {
+      "position_id": "POS-VALE-002",
+      "account_id": "ACC-BRAD-EUR-HOUSE",
+      "participant_id": "PART-BRAD-02",
+      "isin": "US91912E1055",
+      "total_quantity": "80000.0000",
+      "pledged_quantity": "50000.0000",
+      "unencumbered_quantity": "30000.0000",
+      "status": "PLEDGED_MULTILATERAL",
+      "created_at": "2026-11-04T10:15:00"
+    },
+    {
+      "position_id": "POS-PGF-003",
+      "account_id": "ACC-BRAD-EUR-HOUSE",
+      "participant_id": "PART-BRAD-02",
+      "isin": "US71647NAQ25",
+      "total_quantity": "5000.0000",
+      "pledged_quantity": "5000.0000",
+      "unencumbered_quantity": "0.0000",
+      "status": "PLEDGED_MULTILATERAL",
+      "created_at": "2026-11-04T10:30:00"
+    },
+    {
+      "position_id": "POS-VTC-004",
+      "account_id": "ACC-BRAD-EUR-HOUSE",
+      "participant_id": "PART-BRAD-02",
+      "isin": "XS1843437465",
+      "total_quantity": "4000.0000",
+      "pledged_quantity": "4000.0000",
+      "unencumbered_quantity": "0.0000",
+      "status": "PLEDGED_MULTILATERAL",
+      "created_at": "2026-11-04T11:00:00"
+    },
+    {
+      "position_id": "POS-ITAU-005",
+      "account_id": "ACC-BTG-CLR-HOUSE",
+      "participant_id": "PART-BTG-03",
+      "isin": "US46556MAE09",
+      "total_quantity": "10000.0000",
+      "pledged_quantity": "8000.0000",
+      "unencumbered_quantity": "2000.0000",
+      "status": "PLEDGED_MULTILATERAL",
+      "created_at": "2026-11-04T11:30:00"
+    }
+  ]
+}

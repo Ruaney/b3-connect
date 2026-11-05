@@ -537,6 +537,38 @@
       "status": "localizada",
       "kind": "manual_tecnico",
       "limitation": "Agrupamento de Unidades de Recebíveis (UR), consentimento opt-in, unicidade e trava de domicílio bancário, liquidação de antecipações."
+    },
+    {
+      "id": "SRC-068",
+      "title": "Câmara B3 — Manual de Risco e Garantias: Ativos Offshore, ADRs, GDRs e Eurobonds como Colateral Multilateral",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/compensacao-e-liquidacao/camara-b3/garantias/ativos-offshore-eurobonds.htm",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Elegibilidade de ADRs, GDRs e Eurobonds de emissores brasileiros, matriz de haircuts por rating e tenor, conversão PTAX e segregação internacional DTC/Euroclear/Clearstream."
+    },
+    {
+      "id": "SRC-069",
+      "title": "B3 Balcão NoMe — Manual de Registro de Certificados de Recebíveis (CR Saúde e CR Educação) e Lei nº 14.430/2022 (Marco da Securitização)",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/registro/renda-fixa/certificados-de-recebiveis-sociais.htm",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Regras de emissão e registro de Certificados de Recebíveis de Saúde e Educação, segregação patrimonial com termo de afetação, cascata de subordinação e fundo de reserva."
+    },
+    {
+      "id": "SRC-070",
+      "title": "Comissão de Valores Mobiliários (CVM) & B3 Balcão NoMe — Resolução CVM nº 175 (Anexos II e III) e Lei nº 8.668/1993: Escrituração, Custódia e Gestão de Cotas de FIDC e FII",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/registro/fundos-de-investimento/estruturados-fidc-fii.htm",
+      "status": "localizada",
+      "kind": "norma_regulatoria",
+      "limitation": "Estrutura de classes e subclasses de cotas de FIDC (Sênior, Mezanino, Júnior), subordinação estrita (Water-Tight Priority), absorção de perdas de carteira e distribuição periódica mandatória de 95% do lucro caixa de FIIs."
+    },
+    {
+      "id": "SRC-071",
+      "title": "B3 PUMA Trading System & Câmara B3 — Especificação do Contrato Futuro de Crédito de Descarbonização (CBI), RenovaBio (Lei 13.576) e Manual de Compensação",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/negociacao/commodities/futuro-de-credito-de-descarbonizacao-cbio.htm",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Contrato padronizado CBI de 100 CBIOs, túneis de negociação PUMA, ajuste diário em D+1, modelo de risco CORE e liquidação exclusivamente financeira baseada no spot de CBIO."
     }
   ]
 }

@@ -1,0 +1,295 @@
+{
+  "flow_id": "FL-076",
+  "description": "Empréstimo e Operações Compromissadas com Títulos Públicos Federais (TPF Lending / BTC Soberano / SELIC / B3)",
+  "reference_date": "2026-11-04",
+  "bonds": [
+    {
+      "bond_id": "LTN-2027-01-01",
+      "bond_type": "LTN",
+      "isin": "BRSTNCLTN7S1",
+      "issue_date": "2024-01-05",
+      "maturity_date": "2027-01-01",
+      "market_unit_price": "852.145000",
+      "annual_coupon_rate": "0.0000",
+      "has_semiannual_coupon": false,
+      "description": "Letra do Tesouro Nacional Prefixada Venc 2027"
+    },
+    {
+      "bond_id": "LFT-2029-03-01",
+      "bond_type": "LFT",
+      "isin": "BRSTNCLFT6Q2",
+      "issue_date": "2023-03-10",
+      "maturity_date": "2029-03-01",
+      "market_unit_price": "14820.750000",
+      "annual_coupon_rate": "0.0000",
+      "has_semiannual_coupon": false,
+      "description": "Letra Financeira do Tesouro Pós-fixada SELIC Venc 2029"
+    },
+    {
+      "bond_id": "NTN-B-2035-05-15",
+      "bond_type": "NTN-B",
+      "isin": "BRSTNCNTB431",
+      "issue_date": "2020-05-15",
+      "maturity_date": "2035-05-15",
+      "market_unit_price": "4210.500000",
+      "annual_coupon_rate": "0.0600",
+      "has_semiannual_coupon": true,
+      "description": "Nota do Tesouro Nacional Série B IPCA+ Juros Semestrais Venc 2035"
+    },
+    {
+      "bond_id": "NTN-F-2029-01-01",
+      "bond_type": "NTN-F",
+      "isin": "BRSTNCNTF178",
+      "issue_date": "2018-01-05",
+      "maturity_date": "2029-01-01",
+      "market_unit_price": "995.800000",
+      "annual_coupon_rate": "0.1000",
+      "has_semiannual_coupon": true,
+      "description": "Nota do Tesouro Nacional Série F Prefixada 10% a.a. Juros Semestrais Venc 2029"
+    }
+  ],
+  "accounts": [
+    {
+      "account_id": "SELIC-CTA-00101",
+      "participant_id": "PART-ITA-001",
+      "participant_name": "BANCO ITAU UNIBANCO S.A.",
+      "cash_balance": "50000000.00",
+      "cash_blocked_collateral": "0.00",
+      "positions": {
+        "LTN-2027-01-01": {
+          "bond_id": "LTN-2027-01-01",
+          "total_quantity": "10000.0000",
+          "available_quantity": "8000.0000",
+          "lent_quantity": "2000.0000",
+          "collateral_blocked_quantity": "0.0000"
+        },
+        "LFT-2029-03-01": {
+          "bond_id": "LFT-2029-03-01",
+          "total_quantity": "500.0000",
+          "available_quantity": "500.0000",
+          "lent_quantity": "0.0000",
+          "collateral_blocked_quantity": "0.0000"
+        },
+        "NTN-B-2035-05-15": {
+          "bond_id": "NTN-B-2035-05-15",
+          "total_quantity": "2000.0000",
+          "available_quantity": "1500.0000",
+          "lent_quantity": "500.0000",
+          "collateral_blocked_quantity": "0.0000"
+        },
+        "NTN-F-2029-01-01": {
+          "bond_id": "NTN-F-2029-01-01",
+          "total_quantity": "5000.0000",
+          "available_quantity": "4000.0000",
+          "lent_quantity": "1000.0000",
+          "collateral_blocked_quantity": "0.0000"
+        }
+      }
+    },
+    {
+      "account_id": "SELIC-CTA-00202",
+      "participant_id": "PART-BRA-002",
+      "participant_name": "BANCO BRADESCO S.A.",
+      "cash_balance": "35000000.00",
+      "cash_blocked_collateral": "2804290.00",
+      "positions": {
+        "LTN-2027-01-01": {
+          "bond_id": "LTN-2027-01-01",
+          "total_quantity": "5000.0000",
+          "available_quantity": "5000.0000",
+          "lent_quantity": "0.0000",
+          "collateral_blocked_quantity": "0.0000"
+        },
+        "LFT-2029-03-01": {
+          "bond_id": "LFT-2029-03-01",
+          "total_quantity": "1000.0000",
+          "available_quantity": "1000.0000",
+          "lent_quantity": "0.0000",
+          "collateral_blocked_quantity": "0.0000"
+        },
+        "NTN-B-2035-05-15": {
+          "bond_id": "NTN-B-2035-05-15",
+          "total_quantity": "1000.0000",
+          "available_quantity": "1000.0000",
+          "lent_quantity": "0.0000",
+          "collateral_blocked_quantity": "0.0000"
+        },
+        "NTN-F-2029-01-01": {
+          "bond_id": "NTN-F-2029-01-01",
+          "total_quantity": "2000.0000",
+          "available_quantity": "2000.0000",
+          "lent_quantity": "0.0000",
+          "collateral_blocked_quantity": "0.0000"
+        }
+      }
+    },
+    {
+      "account_id": "SELIC-CTA-00303",
+      "participant_id": "PART-BTG-003",
+      "participant_name": "BANCO BTG PACTUAL S.A.",
+      "cash_balance": "80000000.00",
+      "cash_blocked_collateral": "0.00",
+      "positions": {
+        "LTN-2027-01-01": {
+          "bond_id": "LTN-2027-01-01",
+          "total_quantity": "15000.0000",
+          "available_quantity": "15000.0000",
+          "lent_quantity": "0.0000",
+          "collateral_blocked_quantity": "0.0000"
+        },
+        "LFT-2029-03-01": {
+          "bond_id": "LFT-2029-03-01",
+          "total_quantity": "2000.0000",
+          "available_quantity": "2000.0000",
+          "lent_quantity": "0.0000",
+          "collateral_blocked_quantity": "0.0000"
+        },
+        "NTN-B-2035-05-15": {
+          "bond_id": "NTN-B-2035-05-15",
+          "total_quantity": "5000.0000",
+          "available_quantity": "5000.0000",
+          "lent_quantity": "0.0000",
+          "collateral_blocked_quantity": "0.0000"
+        },
+        "NTN-F-2029-01-01": {
+          "bond_id": "NTN-F-2029-01-01",
+          "total_quantity": "8000.0000",
+          "available_quantity": "8000.0000",
+          "lent_quantity": "0.0000",
+          "collateral_blocked_quantity": "0.0000"
+        }
+      }
+    }
+  ],
+  "loans": [
+    {
+      "contract_id": "LOAN-LTN-2026-001",
+      "bond_id": "LTN-2027-01-01",
+      "lender_account_id": "SELIC-CTA-00101",
+      "borrower_account_id": "SELIC-CTA-00202",
+      "quantity": "2000.0000",
+      "market_unit_price": "852.145000",
+      "loan_principal": "1704290.00",
+      "start_date": "2026-11-04",
+      "end_date": "2026-12-04",
+      "settlement_cycle": "D0",
+      "rate_type": "PASSIVE",
+      "rental_rate_annual": "0.0250",
+      "business_days": 22,
+      "collateral_requirement_pct": "1.0000",
+      "required_margin": "1704290.00",
+      "margin_posted": "1704290.00",
+      "status": "ACTIVE",
+      "rental_fee_accrued": "3719.68",
+      "coupons_forwarded": [],
+      "margin_allocations": [
+        {
+          "allocation_id": "MAR-CASH-LOAN-LTN-2026-001-01",
+          "contract_id": "LOAN-LTN-2026-001",
+          "account_id": "SELIC-CTA-00202",
+          "asset_type": "CASH",
+          "cash_amount": "1704290.00",
+          "bond_id": null,
+          "bond_quantity": "0.0000",
+          "valuation_amount": "1704290.00"
+        }
+      ]
+    },
+    {
+      "contract_id": "LOAN-NTNF-2026-002",
+      "bond_id": "NTN-F-2029-01-01",
+      "lender_account_id": "SELIC-CTA-00101",
+      "borrower_account_id": "SELIC-CTA-00202",
+      "quantity": "1000.0000",
+      "market_unit_price": "995.800000",
+      "loan_principal": "995800.00",
+      "start_date": "2026-06-01",
+      "end_date": "2026-07-15",
+      "settlement_cycle": "D+1",
+      "rate_type": "ACTIVE",
+      "rental_rate_annual": "0.0300",
+      "business_days": 31,
+      "collateral_requirement_pct": "1.1000",
+      "required_margin": "1095380.00",
+      "margin_posted": "1100000.00",
+      "status": "ACTIVE",
+      "rental_fee_accrued": "3674.98",
+      "coupons_forwarded": [
+        {
+          "event_id": "CPN-LOAN-NTNF-2026-002-01",
+          "contract_id": "LOAN-NTNF-2026-002",
+          "bond_id": "NTN-F-2029-01-01",
+          "quantity": "1000.0000",
+          "coupon_unit_value": "48.808848",
+          "total_coupon_amount": "48808.85",
+          "record_date": "2026-06-30",
+          "payment_date": "2026-07-01",
+          "borrower_account_id": "SELIC-CTA-00202",
+          "lender_account_id": "SELIC-CTA-00101",
+          "status": "SETTLED"
+        }
+      ],
+      "margin_allocations": [
+        {
+          "allocation_id": "MAR-CASH-LOAN-NTNF-2026-002-01",
+          "contract_id": "LOAN-NTNF-2026-002",
+          "account_id": "SELIC-CTA-00202",
+          "asset_type": "CASH",
+          "cash_amount": "1100000.00",
+          "bond_id": null,
+          "bond_quantity": "0.0000",
+          "valuation_amount": "1100000.00"
+        }
+      ]
+    }
+  ],
+  "repos": [
+    {
+      "repo_id": "REPO-LTN-ON-001",
+      "bond_id": "LTN-2027-01-01",
+      "seller_account_id": "SELIC-CTA-00202",
+      "buyer_account_id": "SELIC-CTA-00303",
+      "quantity": "5000.0000",
+      "spot_unit_price": "852.145000",
+      "repo_annual_rate": "0.1075",
+      "start_date": "2026-11-04",
+      "repurchase_date": "2026-11-05",
+      "business_days": 1,
+      "status": "REGISTERED",
+      "spot_settlement_amount": "4260725.00",
+      "repurchase_settlement_amount": "4262542.57",
+      "interest_accrued": "1817.57"
+    },
+    {
+      "repo_id": "REPO-LFT-TERM-002",
+      "bond_id": "LFT-2029-03-01",
+      "seller_account_id": "SELIC-CTA-00101",
+      "buyer_account_id": "SELIC-CTA-00303",
+      "quantity": "100.0000",
+      "spot_unit_price": "14820.750000",
+      "repo_annual_rate": "0.1065",
+      "start_date": "2026-11-04",
+      "repurchase_date": "2026-12-04",
+      "business_days": 22,
+      "status": "REGISTERED",
+      "spot_settlement_amount": "1482075.00",
+      "repurchase_settlement_amount": "1495854.77",
+      "interest_accrued": "13779.77"
+    }
+  ],
+  "coupon_history": [
+    {
+      "event_id": "CPN-LOAN-NTNF-2026-002-01",
+      "contract_id": "LOAN-NTNF-2026-002",
+      "bond_id": "NTN-F-2029-01-01",
+      "quantity": "1000.0000",
+      "coupon_unit_value": "48.808848",
+      "total_coupon_amount": "48808.85",
+      "record_date": "2026-06-30",
+      "payment_date": "2026-07-01",
+      "borrower_account_id": "SELIC-CTA-00202",
+      "lender_account_id": "SELIC-CTA-00101",
+      "status": "SETTLED"
+    }
+  ]
+}

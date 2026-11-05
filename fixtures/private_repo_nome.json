@@ -1,0 +1,320 @@
+{
+  "schema_version": "1.0.0",
+  "flow_code": "FL-079",
+  "system": "B3_BALCAO_NOME_PRIVATE_REPO",
+  "description": "Casos de Teste e Cenários Regulatórios de Registro, Marcação a Mercado, Margem e Liquidação DvP de Compromissadas com Títulos Privados no Balcão NoMe B3",
+  "reference_date": "2026-11-04",
+  "regulatory_framework": [
+    "RESOLUCAO_CMN_4706_2018",
+    "MANUAL_RISCO_GARANTIAS_NOME_B3",
+    "LEI_12431_DEBENTURES_INCENTIVADAS",
+    "LEI_14711_MARCO_LEGAL_GARANTIAS"
+  ],
+  "b3_collected_fees": "0.00",
+  "participants": [
+    {
+      "participant_id": "BANCO_ALFA_S_A",
+      "name": "BANCO ALFA DE INVESTIMENTO S.A.",
+      "custody_account": "CTA-ALFA-001",
+      "cash_balance": "500000000.00",
+      "free_collateral": {
+        "DEB-VALE-31": "50000.0000",
+        "LF-ITAU-2027": "200.0000",
+        "CRA-KLAB-2031": "40000.0000",
+        "CRI-CYRE-2029": "10000.0000"
+      },
+      "blocked_collateral": {
+        "DEB-VALE-31": "10000.0000",
+        "LF-ITAU-2027": "50.0000"
+      }
+    },
+    {
+      "participant_id": "FUNDO_BETA_ASSET",
+      "name": "BETA MULTIMERCADO CREDITO PRIVADO FI",
+      "custody_account": "CTA-BETA-002",
+      "cash_balance": "750000000.00",
+      "free_collateral": {
+        "DEB-VALE-31": "5000.0000",
+        "CRI-CYRE-2029": "5000.0000"
+      },
+      "blocked_collateral": {}
+    },
+    {
+      "participant_id": "BANCO_GAMA_INVEST",
+      "name": "BANCO GAMA DE NEGOCIOS S.A.",
+      "custody_account": "CTA-GAMA-003",
+      "cash_balance": "300000000.00",
+      "free_collateral": {
+        "CRI-CYRE-2029": "60000.0000",
+        "DEB-AZUL-27": "30000.0000"
+      },
+      "blocked_collateral": {
+        "CRI-CYRE-2029": "20000.0000"
+      }
+    }
+  ],
+  "assets": [
+    {
+      "asset_id": "DEB-VALE-31",
+      "isin": "BRVALEDBS014",
+      "asset_type": "DEBENTURE",
+      "issuer_cnpj": "33592510000154",
+      "issuer_name": "VALE S.A.",
+      "rating": "AAA",
+      "issue_date": "2021-06-15",
+      "maturity_date": "2031-06-15",
+      "nominal_unit_price": "1000.00",
+      "current_market_pu": "1045.25000000",
+      "is_eligible": true
+    },
+    {
+      "asset_id": "LF-ITAU-2027",
+      "isin": "BRLFITAU0029",
+      "asset_type": "LF",
+      "issuer_cnpj": "60701190000104",
+      "issuer_name": "BANCO ITAU UNIBANCO S.A.",
+      "rating": "AAA",
+      "issue_date": "2022-03-10",
+      "maturity_date": "2027-03-10",
+      "nominal_unit_price": "300000.00",
+      "current_market_pu": "320150.00000000",
+      "is_eligible": true
+    },
+    {
+      "asset_id": "CRI-CYRE-2029",
+      "isin": "BRCYRECRI088",
+      "asset_type": "CRI",
+      "issuer_cnpj": "73178600000118",
+      "issuer_name": "CYRELA BRAZIL REALTY S.A.",
+      "rating": "AA",
+      "issue_date": "2022-09-01",
+      "maturity_date": "2029-09-01",
+      "nominal_unit_price": "1000.00",
+      "current_market_pu": "1012.80000000",
+      "is_eligible": true
+    },
+    {
+      "asset_id": "CRA-KLAB-2031",
+      "isin": "BRKLABCRA022",
+      "asset_type": "CRA",
+      "issuer_cnpj": "89637490000145",
+      "issuer_name": "KLABIN S.A.",
+      "rating": "AAA",
+      "issue_date": "2021-11-20",
+      "maturity_date": "2031-11-20",
+      "nominal_unit_price": "1000.00",
+      "current_market_pu": "1030.50000000",
+      "is_eligible": true
+    },
+    {
+      "asset_id": "DEB-AZUL-27",
+      "isin": "BRAZULDBS008",
+      "asset_type": "DEBENTURE",
+      "issuer_cnpj": "09296295000160",
+      "issuer_name": "AZUL LINHAS AEREAS BRASILEIRAS S.A.",
+      "rating": "BBB-",
+      "issue_date": "2022-05-15",
+      "maturity_date": "2027-05-15",
+      "nominal_unit_price": "1000.00",
+      "current_market_pu": "850.00000000",
+      "is_eligible": true
+    }
+  ],
+  "contracts": [
+    {
+      "contract_id": "REPO-PRV-001",
+      "seller_id": "BANCO_ALFA_S_A",
+      "buyer_id": "FUNDO_BETA_ASSET",
+      "asset_id": "DEB-VALE-31",
+      "quantity": "10000.0000",
+      "trade_date": "2026-11-04",
+      "start_date": "2026-11-04",
+      "maturity_date": "2027-01-08",
+      "workdays": 44,
+      "rate_type": "PRE",
+      "annual_rate": "12.50000000",
+      "cdi_percentage": null,
+      "cdi_spread": null,
+      "start_pu": "930.00000000",
+      "start_price": "9300000.00",
+      "end_pu": "949.32373530",
+      "end_price": "9493237.35",
+      "initial_haircut": "0.10500000",
+      "status": "ACTIVE",
+      "additional_cash_margin": "0.00",
+      "additional_collateral": {},
+      "margin_call_history": [],
+      "settlement_history": [
+        {
+          "settlement_id": "DVP-START-REPO-PRV-001",
+          "contract_id": "REPO-PRV-001",
+          "settlement_date": "2026-11-04",
+          "leg": "START_LEG",
+          "cash_amount": "9300000.00",
+          "cash_payer": "FUNDO_BETA_ASSET",
+          "cash_payee": "BANCO_ALFA_S_A",
+          "asset_id": "DEB-VALE-31",
+          "asset_quantity": "10000.0000",
+          "asset_deliverer": "BANCO_ALFA_S_A",
+          "asset_receiver": "B3_NOME_ESCROW_FOR_FUNDO_BETA_ASSET",
+          "timestamp": "2026-11-04T10:30:00+00:00"
+        }
+      ],
+      "execution_result": null
+    },
+    {
+      "contract_id": "REPO-PRV-002",
+      "seller_id": "BANCO_ALFA_S_A",
+      "buyer_id": "FUNDO_BETA_ASSET",
+      "asset_id": "LF-ITAU-2027",
+      "quantity": "50.0000",
+      "trade_date": "2026-11-04",
+      "start_date": "2026-11-04",
+      "maturity_date": "2026-12-04",
+      "workdays": 22,
+      "rate_type": "CDI",
+      "annual_rate": "11.25000000",
+      "cdi_percentage": "100.00000000",
+      "cdi_spread": null,
+      "start_pu": "300000.00000000",
+      "start_price": "15000000.00",
+      "end_pu": "302805.16800000",
+      "end_price": "15140258.40",
+      "initial_haircut": "0.05000000",
+      "status": "ACTIVE",
+      "additional_cash_margin": "0.00",
+      "additional_collateral": {},
+      "margin_call_history": [],
+      "settlement_history": [
+        {
+          "settlement_id": "DVP-START-REPO-PRV-002",
+          "contract_id": "REPO-PRV-002",
+          "settlement_date": "2026-11-04",
+          "leg": "START_LEG",
+          "cash_amount": "15000000.00",
+          "cash_payer": "FUNDO_BETA_ASSET",
+          "cash_payee": "BANCO_ALFA_S_A",
+          "asset_id": "LF-ITAU-2027",
+          "asset_quantity": "50.0000",
+          "asset_deliverer": "BANCO_ALFA_S_A",
+          "asset_receiver": "B3_NOME_ESCROW_FOR_FUNDO_BETA_ASSET",
+          "timestamp": "2026-11-04T11:00:00+00:00"
+        }
+      ],
+      "execution_result": null
+    },
+    {
+      "contract_id": "REPO-PRV-003",
+      "seller_id": "BANCO_GAMA_INVEST",
+      "buyer_id": "FUNDO_BETA_ASSET",
+      "asset_id": "CRI-CYRE-2029",
+      "quantity": "20000.0000",
+      "trade_date": "2026-11-04",
+      "start_date": "2026-11-04",
+      "maturity_date": "2027-02-05",
+      "workdays": 63,
+      "rate_type": "CDI_SPREAD",
+      "annual_rate": "11.25000000",
+      "cdi_percentage": "100.00000000",
+      "cdi_spread": "1.50000000",
+      "start_pu": "880.00000000",
+      "start_price": "17600000.00",
+      "end_pu": "907.13949920",
+      "end_price": "18142789.98",
+      "initial_haircut": "0.12500000",
+      "status": "ACTIVE",
+      "additional_cash_margin": "0.00",
+      "additional_collateral": {},
+      "margin_call_history": [],
+      "settlement_history": [
+        {
+          "settlement_id": "DVP-START-REPO-PRV-003",
+          "contract_id": "REPO-PRV-003",
+          "settlement_date": "2026-11-04",
+          "leg": "START_LEG",
+          "cash_amount": "17600000.00",
+          "cash_payer": "FUNDO_BETA_ASSET",
+          "cash_payee": "BANCO_GAMA_INVEST",
+          "asset_id": "CRI-CYRE-2029",
+          "asset_quantity": "20000.0000",
+          "asset_deliverer": "BANCO_GAMA_INVEST",
+          "asset_receiver": "B3_NOME_ESCROW_FOR_FUNDO_BETA_ASSET",
+          "timestamp": "2026-11-04T11:30:00+00:00"
+        }
+      ],
+      "execution_result": null
+    },
+    {
+      "contract_id": "REPO-PRV-004",
+      "seller_id": "BANCO_ALFA_S_A",
+      "buyer_id": "BANCO_GAMA_INVEST",
+      "asset_id": "CRA-KLAB-2031",
+      "quantity": "15000.0000",
+      "trade_date": "2026-11-04",
+      "start_date": "2026-11-04",
+      "maturity_date": "2027-03-12",
+      "workdays": 88,
+      "rate_type": "PRE",
+      "annual_rate": "13.00000000",
+      "cdi_percentage": null,
+      "cdi_spread": null,
+      "start_pu": "850.00000000",
+      "start_price": "12750000.00",
+      "end_pu": "887.06257550",
+      "end_price": "13305938.63",
+      "initial_haircut": "0.15000000",
+      "status": "REGISTERED",
+      "additional_cash_margin": "0.00",
+      "additional_collateral": {},
+      "margin_call_history": [],
+      "settlement_history": [],
+      "execution_result": null
+    }
+  ],
+  "settlement_records": [
+    {
+      "settlement_id": "DVP-START-REPO-PRV-001",
+      "contract_id": "REPO-PRV-001",
+      "settlement_date": "2026-11-04",
+      "leg": "START_LEG",
+      "cash_amount": "9300000.00",
+      "cash_payer": "FUNDO_BETA_ASSET",
+      "cash_payee": "BANCO_ALFA_S_A",
+      "asset_id": "DEB-VALE-31",
+      "asset_quantity": "10000.0000",
+      "asset_deliverer": "BANCO_ALFA_S_A",
+      "asset_receiver": "B3_NOME_ESCROW_FOR_FUNDO_BETA_ASSET",
+      "timestamp": "2026-11-04T10:30:00+00:00"
+    },
+    {
+      "settlement_id": "DVP-START-REPO-PRV-002",
+      "contract_id": "REPO-PRV-002",
+      "settlement_date": "2026-11-04",
+      "leg": "START_LEG",
+      "cash_amount": "15000000.00",
+      "cash_payer": "FUNDO_BETA_ASSET",
+      "cash_payee": "BANCO_ALFA_S_A",
+      "asset_id": "LF-ITAU-2027",
+      "asset_quantity": "50.0000",
+      "asset_deliverer": "BANCO_ALFA_S_A",
+      "asset_receiver": "B3_NOME_ESCROW_FOR_FUNDO_BETA_ASSET",
+      "timestamp": "2026-11-04T11:00:00+00:00"
+    },
+    {
+      "settlement_id": "DVP-START-REPO-PRV-003",
+      "contract_id": "REPO-PRV-003",
+      "settlement_date": "2026-11-04",
+      "leg": "START_LEG",
+      "cash_amount": "17600000.00",
+      "cash_payer": "FUNDO_BETA_ASSET",
+      "cash_payee": "BANCO_GAMA_INVEST",
+      "asset_id": "CRI-CYRE-2029",
+      "asset_quantity": "20000.0000",
+      "asset_deliverer": "BANCO_GAMA_INVEST",
+      "asset_receiver": "B3_NOME_ESCROW_FOR_FUNDO_BETA_ASSET",
+      "timestamp": "2026-11-04T11:30:00+00:00"
+    }
+  ],
+  "margin_calls": [],
+  "execution_results": []
+}

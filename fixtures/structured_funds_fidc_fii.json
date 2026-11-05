@@ -1,0 +1,313 @@
+{
+  "schema_version": "1.0.0",
+  "flow_code": "FL-077",
+  "system": "B3_BALCAO_NOME_STRUCTURED_FUNDS",
+  "fidc_funds": [
+    {
+      "fund_id": "FIDC-AGRO-INDUSTRIA-01",
+      "fund_name": "Fundo de Investimento em Direitos Creditórios Agro Industrial B3",
+      "cnpj": "12.345.678/0001-90",
+      "administrator_cnpj": "00.000.000/0001-91",
+      "manager_cnpj": "11.111.111/0001-22",
+      "cvm_registration_number": "CVM-FIDC-175-0091",
+      "creation_date": "2024-03-01",
+      "senior_quota": {
+        "subclass_id": "SUB-SR-01",
+        "isin": "BRFIDCCT0015",
+        "b3_ticker": "FIDC11SR",
+        "quota_class": "SENIOR",
+        "benchmark_indexer": "CDI",
+        "target_spread_annual": "0.01500000",
+        "quantity": "100000",
+        "unit_quota_value": "100.00000000",
+        "minimum_subordination_ratio": "0.25000000",
+        "accrued_unpaid_yield": "0.00"
+      },
+      "mezzanine_quota": {
+        "subclass_id": "SUB-MZ-01",
+        "isin": "BRFIDCCT0023",
+        "b3_ticker": "FIDC11MZ",
+        "quota_class": "MEZANINO",
+        "benchmark_indexer": "CDI",
+        "target_spread_annual": "0.03500000",
+        "quantity": "20000",
+        "unit_quota_value": "100.00000000",
+        "minimum_subordination_ratio": "0.10000000",
+        "accrued_unpaid_yield": "0.00"
+      },
+      "junior_quota": {
+        "subclass_id": "SUB-JR-01",
+        "isin": "BRFIDCCT0031",
+        "b3_ticker": "FIDC11JR",
+        "quota_class": "SUBORDINADA_JUNIOR",
+        "benchmark_indexer": "FLUTUANTE_RESIDUAL",
+        "target_spread_annual": "0.00000000",
+        "quantity": "20000",
+        "unit_quota_value": "100.00000000",
+        "minimum_subordination_ratio": "0.00000000",
+        "accrued_unpaid_yield": "0.00"
+      },
+      "cash_balance": "1000000.00",
+      "accrued_expenses": "0.00",
+      "receivables": [
+        {
+          "receivable_id": "REC-DUP-2026-001",
+          "debtor_name": "Agropecuária Vale Verde S.A.",
+          "debtor_cnpj_cpf": "23.456.789/0001-01",
+          "receivable_type": "DUPLICATA_MERCANTIL",
+          "original_face_value": "5000000.00",
+          "current_outstanding_balance": "5000000.00",
+          "acquisition_discount_rate_annual": "0.14500000",
+          "issue_date": "2026-01-10",
+          "due_date": "2026-12-10",
+          "status": "ADIMPLENTE",
+          "days_past_due": 0,
+          "pld_provision_amount": "0.00"
+        },
+        {
+          "receivable_id": "REC-DUP-2026-002",
+          "debtor_name": "Logística e Transportes Rodoviários S.A.",
+          "debtor_cnpj_cpf": "34.567.890/0001-12",
+          "receivable_type": "DUPLICATA_SERVICO",
+          "original_face_value": "4000000.00",
+          "current_outstanding_balance": "4000000.00",
+          "acquisition_discount_rate_annual": "0.15000000",
+          "issue_date": "2026-02-01",
+          "due_date": "2026-11-30",
+          "status": "ADIMPLENTE",
+          "days_past_due": 0,
+          "pld_provision_amount": "0.00"
+        },
+        {
+          "receivable_id": "REC-CCB-2026-003",
+          "debtor_name": "Indústria Metalúrgica Progresso Ltda.",
+          "debtor_cnpj_cpf": "45.678.901/0001-23",
+          "receivable_type": "CCB_FINANCEIRA",
+          "original_face_value": "3000000.00",
+          "current_outstanding_balance": "3000000.00",
+          "acquisition_discount_rate_annual": "0.16000000",
+          "issue_date": "2026-03-15",
+          "due_date": "2027-03-15",
+          "status": "ADIMPLENTE",
+          "days_past_due": 0,
+          "pld_provision_amount": "0.00"
+        },
+        {
+          "receivable_id": "REC-AGR-2026-004",
+          "debtor_name": "Cooperativa Agrícola do Centro-Oeste",
+          "debtor_cnpj_cpf": "56.789.012/0001-34",
+          "receivable_type": "RECEBIVEL_AGRONEGOCIO",
+          "original_face_value": "1000000.00",
+          "current_outstanding_balance": "1000000.00",
+          "acquisition_discount_rate_annual": "0.13800000",
+          "issue_date": "2026-04-01",
+          "due_date": "2026-10-31",
+          "status": "ADIMPLENTE",
+          "days_past_due": 0,
+          "pld_provision_amount": "0.00"
+        }
+      ]
+    },
+    {
+      "fund_id": "FIDC-STRESSED-WRITE-OFF-02",
+      "fund_name": "FIDC Especial de Crédito Corporativo B3",
+      "cnpj": "98.765.432/0001-10",
+      "administrator_cnpj": "00.000.000/0001-91",
+      "manager_cnpj": "22.222.222/0001-33",
+      "cvm_registration_number": "CVM-FIDC-175-0104",
+      "creation_date": "2025-01-10",
+      "senior_quota": {
+        "subclass_id": "STRS-SR-01",
+        "isin": "BRFIDCST0012",
+        "b3_ticker": "STRS11SR",
+        "quota_class": "SENIOR",
+        "benchmark_indexer": "CDI",
+        "target_spread_annual": "0.02000000",
+        "quantity": "50000",
+        "unit_quota_value": "100.00000000",
+        "minimum_subordination_ratio": "0.30000000",
+        "accrued_unpaid_yield": "0.00"
+      },
+      "mezzanine_quota": {
+        "subclass_id": "STRS-MZ-01",
+        "isin": "BRFIDCST0020",
+        "b3_ticker": "STRS11MZ",
+        "quota_class": "MEZANINO",
+        "benchmark_indexer": "CDI",
+        "target_spread_annual": "0.04000000",
+        "quantity": "15000",
+        "unit_quota_value": "100.00000000",
+        "minimum_subordination_ratio": "0.15000000",
+        "accrued_unpaid_yield": "0.00"
+      },
+      "junior_quota": {
+        "subclass_id": "STRS-JR-01",
+        "isin": "BRFIDCST0038",
+        "b3_ticker": "STRS11JR",
+        "quota_class": "SUBORDINADA_JUNIOR",
+        "benchmark_indexer": "FLUTUANTE_RESIDUAL",
+        "target_spread_annual": "0.00000000",
+        "quantity": "10000",
+        "unit_quota_value": "100.00000000",
+        "minimum_subordination_ratio": "0.00000000",
+        "accrued_unpaid_yield": "0.00"
+      },
+      "cash_balance": "500000.00",
+      "accrued_expenses": "0.00",
+      "receivables": [
+        {
+          "receivable_id": "REC-DEF-2026-101",
+          "debtor_name": "Varejo Eletrodomésticos Brasil S.A.",
+          "debtor_cnpj_cpf": "67.890.123/0001-45",
+          "receivable_type": "DUPLICATA_MERCANTIL",
+          "original_face_value": "1200000.00",
+          "current_outstanding_balance": "1200000.00",
+          "acquisition_discount_rate_annual": "0.18000000",
+          "issue_date": "2026-01-15",
+          "due_date": "2026-06-15",
+          "status": "ADIMPLENTE",
+          "days_past_due": 0,
+          "pld_provision_amount": "0.00"
+        },
+        {
+          "receivable_id": "REC-DEF-2026-102",
+          "debtor_name": "Rede Comercial Alimentícia Ltda.",
+          "debtor_cnpj_cpf": "78.901.234/0001-56",
+          "receivable_type": "RECEBIVEL_CARTAO",
+          "original_face_value": "2800000.00",
+          "current_outstanding_balance": "2800000.00",
+          "acquisition_discount_rate_annual": "0.14000000",
+          "issue_date": "2026-02-10",
+          "due_date": "2026-12-20",
+          "status": "ADIMPLENTE",
+          "days_past_due": 0,
+          "pld_provision_amount": "0.00"
+        },
+        {
+          "receivable_id": "REC-DEF-2026-103",
+          "debtor_name": "Operadora de Saúde Integrada S.A.",
+          "debtor_cnpj_cpf": "89.012.345/0001-67",
+          "receivable_type": "DUPLICATA_SERVICO",
+          "original_face_value": "3000000.00",
+          "current_outstanding_balance": "3000000.00",
+          "acquisition_discount_rate_annual": "0.15500000",
+          "issue_date": "2026-03-01",
+          "due_date": "2026-11-30",
+          "status": "ADIMPLENTE",
+          "days_past_due": 0,
+          "pld_provision_amount": "0.00"
+        }
+      ]
+    }
+  ],
+  "fii_funds": [
+    {
+      "fund_id": "FII-PRIME-OFFICES-01",
+      "fund_name": "Fundo de Investimento Imobiliário Prime Offices B3",
+      "cnpj": "33.444.555/0001-66",
+      "b3_ticker": "PRMO11",
+      "isin": "BRPRMOCTF008",
+      "administrator_cnpj": "00.000.000/0001-91",
+      "manager_cnpj": "33.333.333/0001-44",
+      "creation_date": "2024-01-15",
+      "total_quotas": "1000000",
+      "unit_quota_value": "100.00000000",
+      "cash_balance": "5000000.00",
+      "accrued_obligations": "0.00",
+      "accumulated_retained_earnings": "0.00",
+      "assets": [
+        {
+          "asset_id": "PROP-FARIA-LIMA-01",
+          "asset_name": "Edifício Corporativo Faria Lima Tower",
+          "asset_type": "IMOVEL_FISICO",
+          "acquisition_cost": "50000000.00",
+          "current_valuation": "55000000.00",
+          "monthly_gross_revenue": "450000.00",
+          "monthly_operating_expense": "35000.00",
+          "address_or_description": "Av. Brigadeiro Faria Lima, 3500 - Itaim Bibi, São Paulo - SP"
+        },
+        {
+          "asset_id": "PROP-PAULISTA-02",
+          "asset_name": "Complexo Paulista Business Center",
+          "asset_type": "IMOVEL_FISICO",
+          "acquisition_cost": "38000000.00",
+          "current_valuation": "40000000.00",
+          "monthly_gross_revenue": "320000.00",
+          "monthly_operating_expense": "28000.00",
+          "address_or_description": "Av. Paulista, 1800 - Bela Vista, São Paulo - SP"
+        }
+      ],
+      "cash_flow_history": [
+        {
+          "statement_id": "STMT-2026-S1",
+          "period_start": "2026-01-01",
+          "period_end": "2026-06-30",
+          "is_semiannual_closing": true,
+          "gross_rental_revenue": "4620000.00",
+          "financial_yield_revenue": "250000.00",
+          "realized_capital_gains": "0.00",
+          "other_operating_revenues": "0.00",
+          "property_maintenance_expenses": "380000.00",
+          "administration_fee_paid": "120000.00",
+          "management_fee_paid": "240000.00",
+          "custody_and_audit_expenses": "30000.00",
+          "other_operating_expenses": "0.00"
+        }
+      ]
+    },
+    {
+      "fund_id": "FII-CREDITO-CRI-02",
+      "fund_name": "Fundo de Investimento Imobiliário Crédito Imobiliário High Yield B3",
+      "cnpj": "44.555.666/0001-77",
+      "b3_ticker": "CRHY11",
+      "isin": "BRCRHYCTF005",
+      "administrator_cnpj": "00.000.000/0001-91",
+      "manager_cnpj": "44.444.444/0001-55",
+      "creation_date": "2024-06-01",
+      "total_quotas": "500000",
+      "unit_quota_value": "100.00000000",
+      "cash_balance": "2000000.00",
+      "accrued_obligations": "0.00",
+      "accumulated_retained_earnings": "0.00",
+      "assets": [
+        {
+          "asset_id": "CRI-LOGISTICA-01",
+          "asset_name": "CRI Galpão Logístico Cajamar 1ª Série",
+          "asset_type": "CRI",
+          "acquisition_cost": "28000000.00",
+          "current_valuation": "28000000.00",
+          "monthly_gross_revenue": "260000.00",
+          "monthly_operating_expense": "5000.00",
+          "address_or_description": "Lastro em Contrato de Locação BTS Cajamar/SP"
+        },
+        {
+          "asset_id": "CRI-RESIDENCIAL-02",
+          "asset_name": "CRI Loteamento Residencial Jardins 2ª Série",
+          "asset_type": "CRI",
+          "acquisition_cost": "20000000.00",
+          "current_valuation": "20000000.00",
+          "monthly_gross_revenue": "190000.00",
+          "monthly_operating_expense": "4000.00",
+          "address_or_description": "Lastro em Carteira de Financiamento Habitacional"
+        }
+      ],
+      "cash_flow_history": [
+        {
+          "statement_id": "STMT-CRHY-2026-05",
+          "period_start": "2026-05-01",
+          "period_end": "2026-05-31",
+          "is_semiannual_closing": false,
+          "gross_rental_revenue": "0.00",
+          "financial_yield_revenue": "450000.00",
+          "realized_capital_gains": "0.00",
+          "other_operating_revenues": "0.00",
+          "property_maintenance_expenses": "9000.00",
+          "administration_fee_paid": "25000.00",
+          "management_fee_paid": "40000.00",
+          "custody_and_audit_expenses": "6000.00",
+          "other_operating_expenses": "0.00"
+        }
+      ]
+    }
+  ]
+}

@@ -383,3 +383,222 @@ def assert_agricultural_warrant_conservation(
     )
 
 
+
+
+def assert_cbio_futures_daily_adjustment_zero_sum(
+    buyer_total_adjustment: Decimal,
+    seller_total_adjustment: Decimal,
+    contract_ticker: str = "",
+    settlement_date: str = "",
+) -> None:
+    """Lei 59 / LAW-086: Conservação Soma-Zero no Ajuste Diário de Futuros de CBIO (FL-086).
+
+    Somatório(Ajuste_Comprador) + Somatório(Ajuste_Vendedor) == 0,00 centavo a centavo
+    (Mark-to-Market diário da Câmara B3, Lei nº 13.576/2017 e Manual de Compensação B3).
+    """
+    total = buyer_total_adjustment + seller_total_adjustment
+    check(
+        total == Decimal("0.00"),
+        f"Violação de soma-zero no ajuste diário de futuros CBIO '{contract_ticker}' em {settlement_date}: "
+        f"Ajuste Compradores ({buyer_total_adjustment}) + Ajuste Vendedores ({seller_total_adjustment}) = {total} != 0.00",
+        law_code="LAW-086",
+        details={
+            "contract_ticker": contract_ticker,
+            "settlement_date": str(settlement_date),
+            "buyer_total_adjustment": str(buyer_total_adjustment),
+            "seller_total_adjustment": str(seller_total_adjustment),
+            "net_total": str(total),
+        },
+    )
+
+
+def assert_cbio_futures_open_interest_parity(
+    long_open_interest: int,
+    short_open_interest: int,
+    reported_open_interest: int,
+    contract_ticker: str = "",
+) -> None:
+    """Lei 60 / LAW-087: Paridade e Conservação de Contratos em Aberto (Open Interest) em Futuros de CBIO (FL-086).
+
+    Posições_Compradas == Posições_Vendidas == Open_Interest_Total (Câmara B3 Clearing).
+    """
+    check(
+        long_open_interest == short_open_interest and long_open_interest == reported_open_interest,
+        f"Violação da paridade de Open Interest em futuros de CBIO '{contract_ticker}': "
+        f"Compradas ({long_open_interest}) != Vendidas ({short_open_interest}) ou != Reportado ({reported_open_interest})",
+        law_code="LAW-087",
+        details={
+            "contract_ticker": contract_ticker,
+            "long_open_interest": long_open_interest,
+            "short_open_interest": short_open_interest,
+            "reported_open_interest": reported_open_interest,
+        },
+    )
+
+
+def assert_cbio_futures_final_settlement_zero_sum(
+    buyer_final_pnl: Decimal,
+    seller_final_pnl: Decimal,
+    contract_ticker: str = "",
+    settlement_date: str = "",
+) -> None:
+    """Lei 61 / LAW-088: Conservação Soma-Zero na Liquidação Final Financeira de Futuros de CBIO (FL-086).
+
+    Somatório(P&L Final Compradores) + Somatório(P&L Final Vendedores) == 0,00 centavo a centavo
+    baseado no Preço de Fechamento Spot de CBIO (RenovaBio / Câmara B3).
+    """
+    total = buyer_final_pnl + seller_final_pnl
+    check(
+        total == Decimal("0.00"),
+        f"Violação de soma-zero na liquidação final financeira de futuros CBIO '{contract_ticker}' em {settlement_date}: "
+        f"P&L Final Compradores ({buyer_final_pnl}) + P&L Final Vendedores ({seller_final_pnl}) = {total} != 0.00",
+        law_code="LAW-088",
+        details={
+            "contract_ticker": contract_ticker,
+            "settlement_date": str(settlement_date),
+            "buyer_final_pnl": str(buyer_final_pnl),
+            "seller_final_pnl": str(seller_final_pnl),
+            "net_total": str(total),
+        },
+    )
+
+
+def assert_irs_periodic_reset_zero_sum(
+    party_a_amount: Decimal,
+    party_b_amount: Decimal,
+    period_index: int = 1,
+    contract_id: str = "",
+) -> None:
+    """Lei 62 / LAW-080: Conservação Bilateral Soma-Zero em Swaps com Ajustes Periódicos IRS (FL-080).
+
+    Saldo_Líquido_Ponta_A + Saldo_Líquido_Ponta_B == 0,00 centavo a centavo a cada reset (NoMe B3).
+    """
+    total = party_a_amount + party_b_amount
+    check(
+        total == Decimal("0.00"),
+        f"Violação de soma-zero bilateral no IRS '{contract_id}' período #{period_index}: "
+        f"Ponta A ({party_a_amount}) + Ponta B ({party_b_amount}) = {total} != 0.00",
+        law_code="LAW-080",
+        details={
+            "contract_id": contract_id,
+            "period_index": period_index,
+            "party_a_amount": str(party_a_amount),
+            "party_b_amount": str(party_b_amount),
+            "sum": str(total),
+        },
+    )
+
+
+def assert_no_arbitrage_pre_di_curve(
+    telescoping_forward_sum: Decimal,
+    terminal_discount_factor: Decimal,
+    initial_discount_factor: Decimal = Decimal("1.00000000"),
+    tolerance: Decimal = Decimal("0.0001"),
+    context_desc: str = "Curva Pré/DI",
+) -> None:
+    """Lei 63 / LAW-081: Invariante de Não-Arbitragem e Telescopagem na Curva Pré/DI (FL-080).
+
+    Soma( (F_fwd,j - 1) * DF_j ) == DF_0 - DF_n (Identidade estrita de não-arbitragem e ausência de arbitragem por replicação).
+    """
+    expected = initial_discount_factor - terminal_discount_factor
+    diff = abs(telescoping_forward_sum - expected)
+    check(
+        diff <= tolerance,
+        f"Violação de Não-Arbitragem na Curva Pré/DI [{context_desc}]: "
+        f"Soma Telescópica ({telescoping_forward_sum}) != DF_0 - DF_n ({expected}) [Diff={diff}]",
+        law_code="LAW-081",
+        details={
+            "context_desc": context_desc,
+            "telescoping_forward_sum": str(telescoping_forward_sum),
+            "expected": str(expected),
+            "terminal_discount_factor": str(terminal_discount_factor),
+            "initial_discount_factor": str(initial_discount_factor),
+            "diff": str(diff),
+        },
+    )
+
+
+
+def assert_fidc_water_tight_subordination(
+    junior_equity: Decimal,
+    mezzanine_absorbed: Decimal,
+    senior_absorbed: Decimal,
+    fund_id: str = "",
+) -> None:
+    """Lei 62 / LAW-077A: Prioridade Estrita de Subordinação FIDC (Water-Tight Priority - FL-077).
+
+    A cota Mezanino só absorve perdas se a Subordinada Júnior estiver com PL zerado.
+    A cota Sênior só absorve perdas se Mezanino e Júnior estiverem com PL zerado.
+    """
+    valid = True
+    msg = ""
+    if mezzanine_absorbed > Decimal("0.00") and junior_equity > Decimal("0.00"):
+        valid = False
+        msg = f"Mezanino absorveu perda ({mezzanine_absorbed}) com Júnior ainda detendo PL ({junior_equity})"
+    elif senior_absorbed > Decimal("0.00") and junior_equity > Decimal("0.00"):
+        valid = False
+        msg = f"Sênior absorveu perda ({senior_absorbed}) com Júnior ainda detendo PL ({junior_equity})"
+
+    check(
+        valid,
+        f"Violação da Subordinação Estrita (Water-Tight Priority) no FIDC '{fund_id}': {msg}",
+        law_code="LAW-077A",
+        details={
+            "fund_id": fund_id,
+            "junior_equity": str(junior_equity),
+            "mezzanine_absorbed": str(mezzanine_absorbed),
+            "senior_absorbed": str(senior_absorbed),
+        },
+    )
+
+
+def assert_fund_equity_conservation(
+    total_net_assets: Decimal,
+    classes_equity_sum: Decimal,
+    fund_id: str = "",
+    tolerance: Decimal = Decimal("0.02"),
+) -> None:
+    """Lei 63 / LAW-077B: Conservação Patrimonial de Cotas de Fundos Estruturados (FL-077).
+
+    Patrimônio_Líquido == Soma(Quantidade_Cotas_i * Valor_Cota_Unitario_i).
+    """
+    diff = abs(total_net_assets - classes_equity_sum)
+    check(
+        diff <= tolerance,
+        f"Violação da Conservação Patrimonial de Cotas no Fundo '{fund_id}': "
+        f"PL ({total_net_assets}) != Soma das Classes ({classes_equity_sum}) [Diff={diff}]",
+        law_code="LAW-077B",
+        details={
+            "fund_id": fund_id,
+            "total_net_assets": str(total_net_assets),
+            "classes_equity_sum": str(classes_equity_sum),
+            "diff": str(diff),
+        },
+    )
+
+
+def assert_fii_minimum_distribution(
+    declared_distribution: Decimal,
+    net_cash_profit: Decimal,
+    fund_id: str = "",
+) -> None:
+    """Lei 64 / LAW-077C: Piso Mandatório de Distribuição de Proventos FII (Lei 8.668/93 - FL-077).
+
+    Proventos_Distribuidos >= 0.95 * Lucro_Caixa_Semestral_Positivo.
+    """
+    if net_cash_profit > Decimal("0.00"):
+        required_min = (net_cash_profit * Decimal("0.95")).quantize(Decimal("0.01"), rounding="ROUND_HALF_UP")
+        check(
+            declared_distribution >= required_min,
+            f"Violação do Piso Mandatório de 95% de Proventos FII no Fundo '{fund_id}': "
+            f"Distribuído ({declared_distribution}) < 95% do Lucro Caixa ({required_min}) "
+            f"[Lucro Caixa={net_cash_profit}]",
+            law_code="LAW-077C",
+            details={
+                "fund_id": fund_id,
+                "declared_distribution": str(declared_distribution),
+                "required_minimum_95": str(required_min),
+                "net_cash_profit": str(net_cash_profit),
+            },
+        )
+

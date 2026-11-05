@@ -1,0 +1,342 @@
+{
+  "schema_version": "1.0.0",
+  "flow_code": "FL-085",
+  "system": "B3_BALCAO_NOME_SOCIAL_SECURITIZATION",
+  "description": "Emissão, Registro, Segregação Fiduciária e Gestão de Fundo de Reserva de Certificados de Recebíveis de Saúde (CR Saúde) e Educação (CR Educação) no Balcão NoMe B3",
+  "reference_date": "2026-11-04",
+  "regulatory_framework": [
+    "LEI_14430_2022",
+    "RESOLUCAO_CVM_60",
+    "RESOLUCAO_CVM_175"
+  ],
+  "issues": [
+    {
+      "issue_id": "CR-SAUDE-2026-001",
+      "sector": "HEALTH",
+      "legal_framework": [
+        "LEI_14430_2022",
+        "RESOLUCAO_CVM_60",
+        "RESOLUCAO_CVM_175"
+      ],
+      "series_number": 1,
+      "issue_date": "2026-01-15",
+      "final_maturity_date": "2031-01-15",
+      "annual_operational_expenses_pct": "0.0015",
+      "pending_inflow": "0.00",
+      "fiduciary_regime": {
+        "regime_id": "REG-SAUDE-2026-001",
+        "securitizer_name": "VERT COMPANHIA SECURITIZADORA S.A.",
+        "securitizer_cnpj": "25005683000109",
+        "trustee_name": "VORTX DISTRIBUIDORA DE TITULOS E VALORES MOBILIARIOS LTDA.",
+        "trustee_cnpj": "22610500000188",
+        "deed_registry_number": "TERMO-SEC-SAUDE-2026-085",
+        "registry_date": "2026-01-15",
+        "segregated_account_id": "CC-FID-SAUDE-001-B3",
+        "segregated_cash_balance": "500000.00",
+        "status": "ACTIVE",
+        "reserve_fund": {
+          "fund_id": "RF-SAUDE-001",
+          "target_balance": "2500000.00",
+          "current_balance": "2500000.00",
+          "minimum_floor": "1000000.00",
+          "yield_rate_annual_pct": "0.1050"
+        }
+      },
+      "tranches": {
+        "CR-SAUDE-26-SR": {
+          "tranche_id": "CR-SAUDE-26-SR",
+          "isin": "BRCRSAUSEN01",
+          "b3_code": "CRSAU26SR1",
+          "tranche_class": "SENIOR",
+          "amortization_type": "SAC",
+          "indexer": "CDI",
+          "spread_rate_annual_pct": "0.0120",
+          "original_quantity": 40000,
+          "current_quantity": 40000,
+          "original_unit_price": "1000.00000000",
+          "current_unit_price": "1000.00000000",
+          "accrued_interest": "0.00",
+          "unpaid_interest_deficit": "0.00",
+          "amortization_schedule": {
+            "2026-12-15": "2500000.00",
+            "2027-12-15": "2500000.00"
+          }
+        },
+        "CR-SAUDE-26-MEZ": {
+          "tranche_id": "CR-SAUDE-26-MEZ",
+          "isin": "BRCRSAUMEZ02",
+          "b3_code": "CRSAU26MZ1",
+          "tranche_class": "MEZZANINE",
+          "amortization_type": "SAC",
+          "indexer": "CDI",
+          "spread_rate_annual_pct": "0.0250",
+          "original_quantity": 10000,
+          "current_quantity": 10000,
+          "original_unit_price": "1000.00000000",
+          "current_unit_price": "1000.00000000",
+          "accrued_interest": "0.00",
+          "unpaid_interest_deficit": "0.00",
+          "amortization_schedule": {
+            "2026-12-15": "1000000.00"
+          }
+        },
+        "CR-SAUDE-26-SUB": {
+          "tranche_id": "CR-SAUDE-26-SUB",
+          "isin": "BRCRSAUSUB03",
+          "b3_code": "CRSAU26SB1",
+          "tranche_class": "SUBORDINATED",
+          "amortization_type": "BULLET",
+          "indexer": "CDI",
+          "spread_rate_annual_pct": "0.0450",
+          "original_quantity": 5000,
+          "current_quantity": 5000,
+          "original_unit_price": "1000.00000000",
+          "current_unit_price": "1000.00000000",
+          "accrued_interest": "0.00",
+          "unpaid_interest_deficit": "0.00",
+          "amortization_schedule": {
+            "2031-01-15": "5000000.00"
+          }
+        }
+      },
+      "collateral_pool": {
+        "MED-PLAN-001": {
+          "asset_id": "MED-PLAN-001",
+          "collateral_type": "HEALTH_PLAN_PREMIUM",
+          "debtor_name": "OPERADORA DE SAUDE SUPLEMENTAR UNISAUDE S.A.",
+          "debtor_doc": "44332211000199",
+          "original_face_value": "25000000.00",
+          "outstanding_balance": "25000000.00",
+          "issue_date": "2026-01-10",
+          "maturity_date": "2029-12-30",
+          "indexer": "CDI",
+          "interest_rate_pct": "0.1250",
+          "status": "PERFORMING",
+          "accrued_interest": "0.00",
+          "delinquency_days": 0,
+          "metadata": {
+            "ans_operator_code": "ANS-345891",
+            "cnes_hospital_code": null,
+            "sus_aih_number": null,
+            "sus_apac_number": null,
+            "mec_institution_code": null,
+            "inep_school_code": null,
+            "student_id": null,
+            "guarantor_name": null,
+            "guarantor_doc": null
+          },
+          "guarantee_description": "Cessão fiduciária de carteira de mensalidades de planos de saúde corporativos"
+        },
+        "MED-SUS-002": {
+          "asset_id": "MED-SUS-002",
+          "collateral_type": "HOSPITAL_SUS_INVOICE",
+          "debtor_name": "FUNDO NACIONAL DE SAUDE - MINISTERIO DA SAUDE",
+          "debtor_doc": "00394544000851",
+          "original_face_value": "20000000.00",
+          "outstanding_balance": "20000000.00",
+          "issue_date": "2026-01-12",
+          "maturity_date": "2028-06-30",
+          "indexer": "CDI",
+          "interest_rate_pct": "0.1200",
+          "status": "PERFORMING",
+          "accrued_interest": "0.00",
+          "delinquency_days": 0,
+          "metadata": {
+            "ans_operator_code": null,
+            "cnes_hospital_code": "CNES-2078015",
+            "sus_aih_number": "AIH-3526100892345",
+            "sus_apac_number": "APAC-352620011894",
+            "mec_institution_code": null,
+            "inep_school_code": null,
+            "student_id": null,
+            "guarantor_name": null,
+            "guarantor_doc": null
+          },
+          "guarantee_description": "Créditos de internação e alta complexidade hospitalar SUS homologados"
+        },
+        "MED-CLIN-003": {
+          "asset_id": "MED-CLIN-003",
+          "collateral_type": "PRIVATE_CLINIC_RECEIVABLE",
+          "debtor_name": "REDE MEDICA DIAGNOSTICA CARDIOLIFE LTDA.",
+          "debtor_doc": "12876543000155",
+          "original_face_value": "15000000.00",
+          "outstanding_balance": "15000000.00",
+          "issue_date": "2026-01-14",
+          "maturity_date": "2029-01-15",
+          "indexer": "CDI",
+          "interest_rate_pct": "0.1300",
+          "status": "PERFORMING",
+          "accrued_interest": "0.00",
+          "delinquency_days": 0,
+          "metadata": {
+            "ans_operator_code": null,
+            "cnes_hospital_code": "CNES-5544332",
+            "sus_aih_number": null,
+            "sus_apac_number": null,
+            "mec_institution_code": null,
+            "inep_school_code": null,
+            "student_id": null,
+            "guarantor_name": null,
+            "guarantor_doc": null
+          },
+          "guarantee_description": "Fluxos recebíveis de atendimentos clínicos e exames diagnósticos particulares"
+        }
+      }
+    },
+    {
+      "issue_id": "CR-EDU-2026-001",
+      "sector": "EDUCATION",
+      "legal_framework": [
+        "LEI_14430_2022",
+        "RESOLUCAO_CVM_60",
+        "RESOLUCAO_CVM_175"
+      ],
+      "series_number": 1,
+      "issue_date": "2026-02-01",
+      "final_maturity_date": "2031-02-01",
+      "annual_operational_expenses_pct": "0.0015",
+      "pending_inflow": "0.00",
+      "fiduciary_regime": {
+        "regime_id": "REG-EDU-2026-001",
+        "securitizer_name": "OCTANTE SECURITIZADORA S.A.",
+        "securitizer_cnpj": "10452391000177",
+        "trustee_name": "OLIVEIRA TRUST DISTRIBUIDORA DE TITULOS E VALORES MOBILIARIOS S.A.",
+        "trustee_cnpj": "36113876000191",
+        "deed_registry_number": "TERMO-SEC-EDU-2026-085",
+        "registry_date": "2026-02-01",
+        "segregated_account_id": "CC-FID-EDU-002-B3",
+        "segregated_cash_balance": "400000.00",
+        "status": "ACTIVE",
+        "reserve_fund": {
+          "fund_id": "RF-EDU-001",
+          "target_balance": "1800000.00",
+          "current_balance": "1800000.00",
+          "minimum_floor": "800000.00",
+          "yield_rate_annual_pct": "0.1000"
+        }
+      },
+      "tranches": {
+        "CR-EDU-26-SR": {
+          "tranche_id": "CR-EDU-26-SR",
+          "isin": "BRCREDUSE001",
+          "b3_code": "CREDU26SR1",
+          "tranche_class": "SENIOR",
+          "amortization_type": "SAC",
+          "indexer": "IPCA",
+          "spread_rate_annual_pct": "0.0620",
+          "original_quantity": 30000,
+          "current_quantity": 30000,
+          "original_unit_price": "1000.00000000",
+          "current_unit_price": "1000.00000000",
+          "accrued_interest": "0.00",
+          "unpaid_interest_deficit": "0.00",
+          "amortization_schedule": {
+            "2026-12-01": "2000000.00",
+            "2027-12-01": "2000000.00"
+          }
+        },
+        "CR-EDU-26-SUB": {
+          "tranche_id": "CR-EDU-26-SUB",
+          "isin": "BRCREDUSU002",
+          "b3_code": "CREDU26SB1",
+          "tranche_class": "SUBORDINATED",
+          "amortization_type": "BULLET",
+          "indexer": "IPCA",
+          "spread_rate_annual_pct": "0.0950",
+          "original_quantity": 6000,
+          "current_quantity": 6000,
+          "original_unit_price": "1000.00000000",
+          "current_unit_price": "1000.00000000",
+          "accrued_interest": "0.00",
+          "unpaid_interest_deficit": "0.00",
+          "amortization_schedule": {
+            "2031-02-01": "6000000.00"
+          }
+        }
+      },
+      "collateral_pool": {
+        "EDU-K12-001": {
+          "asset_id": "EDU-K12-001",
+          "collateral_type": "TUITION_FEES_K12",
+          "debtor_name": "COLEGIO BANDEIRANTES DE ENSINO BASICO S.A.",
+          "debtor_doc": "61234567000188",
+          "original_face_value": "16000000.00",
+          "outstanding_balance": "16000000.00",
+          "issue_date": "2026-01-20",
+          "maturity_date": "2029-12-20",
+          "indexer": "IPCA",
+          "interest_rate_pct": "0.0750",
+          "status": "PERFORMING",
+          "accrued_interest": "0.00",
+          "delinquency_days": 0,
+          "metadata": {
+            "ans_operator_code": null,
+            "cnes_hospital_code": null,
+            "sus_aih_number": null,
+            "sus_apac_number": null,
+            "mec_institution_code": null,
+            "inep_school_code": "INEP-35109876",
+            "student_id": null,
+            "guarantor_name": null,
+            "guarantor_doc": null
+          },
+          "guarantee_description": "Cessão fiduciária de carteira de contratos de anuidade e mensalidades de ensino fundamental e médio"
+        },
+        "EDU-UNIV-002": {
+          "asset_id": "EDU-UNIV-002",
+          "collateral_type": "TUITION_FEES_HIGHER_ED",
+          "debtor_name": "ASSOCIACAO EDUCACIONAL UNIVERSITARIA PAULISTA",
+          "debtor_doc": "43567890000112",
+          "original_face_value": "15000000.00",
+          "outstanding_balance": "15000000.00",
+          "issue_date": "2026-01-22",
+          "maturity_date": "2030-06-30",
+          "indexer": "IPCA",
+          "interest_rate_pct": "0.0800",
+          "status": "PERFORMING",
+          "accrued_interest": "0.00",
+          "delinquency_days": 0,
+          "metadata": {
+            "ans_operator_code": null,
+            "cnes_hospital_code": null,
+            "sus_aih_number": null,
+            "sus_apac_number": null,
+            "mec_institution_code": "eMEC-1298",
+            "inep_school_code": null,
+            "student_id": null,
+            "guarantor_name": null,
+            "guarantor_doc": null
+          },
+          "guarantee_description": "Mensalidades dos cursos de Medicina, Engenharia e Direito"
+        },
+        "EDU-STUD-003": {
+          "asset_id": "EDU-STUD-003",
+          "collateral_type": "STUDENT_LOAN_PRIVATE",
+          "debtor_name": "FUNDO DE FINANCIAMENTO ESTUDANTIL PRIVADO ALPHA",
+          "debtor_doc": "29876543000100",
+          "original_face_value": "10000000.00",
+          "outstanding_balance": "10000000.00",
+          "issue_date": "2026-01-25",
+          "maturity_date": "2031-01-31",
+          "indexer": "IPCA",
+          "interest_rate_pct": "0.0850",
+          "status": "PERFORMING",
+          "accrued_interest": "0.00",
+          "delinquency_days": 0,
+          "metadata": {
+            "ans_operator_code": null,
+            "cnes_hospital_code": null,
+            "sus_aih_number": null,
+            "sus_apac_number": null,
+            "mec_institution_code": "eMEC-4412",
+            "inep_school_code": null,
+            "student_id": "STUD-FIN-2026-9988",
+            "guarantor_name": "CARLOS EDUARDO SILVA",
+            "guarantor_doc": "09876543210"
+          },
+          "guarantee_description": "Contratos de mútuo financeiro estudantil com fiança solidária de avalista"
+        }
+      }
+    }
+  ]
+}

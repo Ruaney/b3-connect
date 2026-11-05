@@ -1349,13 +1349,268 @@ def verify_agricultural_warrant_collateral_invariants(fixtures_dir: Path):
     2. Waterfall Financeiro de Leilão: Recursos_Brutos == Custas_Armazém + Crédito_WA + Remanescente_CDA.
     3. Safe-Release Guardrail: Desoneração vedada se colateral remanescente < margem requerida da câmara.
     """
-    print("[58/58] Verificando Invariante de Garantias em Commodities Agrícolas CDA/WA (FL-078)...")
+    print("[58/59] Verificando Invariante de Garantias em Commodities Agrícolas CDA/WA (FL-078)...")
     from src.agricultural_warrant_collateral import AgriculturalWarrantCollateralEngine
     engine = AgriculturalWarrantCollateralEngine.load_from_fixture(fixtures_dir / "agricultural_warrant_collateral.json")
     rep_agr = engine.verify_formal_invariants(date(2026, 11, 4))
     for k, v in rep_agr.items():
         check(v, f"Invariante agrícola '{k}' violada")
     print("      ✓ Conservação física de sacas, quebra técnica e waterfall zero-leakage em leilão comprovadas.")
+
+
+def verify_offshore_eurobonds_collateral_invariants(fixtures_dir: Path):
+    """
+    Lei 59: Ativos Offshore e Eurobonds como Colateral Multilateral B3 (FL-083).
+    1. Não-negatividade e limitação superior do valor de colateral elegível (0 <= V_elegivel <= V_bruto).
+    2. Segregação internacional de custódia (Saldo_Total == Saldo_Bloqueado + Saldo_Desimpedido).
+    3. Segregação estrita de contas de custódia House e Client nas depositárias (DTC, Euroclear, Clearstream).
+    4. Co-domínio e monotonicidade dos haircuts regulatórios (rating e tenor).
+    5. Safe-Release Guardrail: veto de desoneração geradora de déficit de margem requerida da câmara.
+    """
+    print("[59/59] Verificando Invariante de Ativos Offshore e Eurobonds como Colateral Multilateral (FL-083)...")
+    from src.offshore_eurobonds_collateral import (
+        OffshoreEurobondsCollateralEngine,
+        MarginReleaseViolationError,
+    )
+    engine = OffshoreEurobondsCollateralEngine.load_from_fixture(fixtures_dir / "offshore_eurobonds_collateral.json")
+    rep = engine.verify_invariants(date(2026, 11, 4))
+    for k, v in rep.items():
+        check(v, f"Invariante offshore '{k}' violada")
+    print("      ✓ Não-negatividade, segregação internacional de custódia e Safe-Release Guardrail comprovados.")
+
+
+def verify_sovereign_tpf_lending_invariants(fixtures_dir: Path):
+    """
+    Lei 60: Custódia Soberana e Paridade de Recompra em Operações Compromissadas com TPF (FL-076).
+    1. Conservação de Custódia Soberana: Custódia_Total == Disponível + Emprestada + Bloqueada_Garantia.
+    2. Paridade de Recompra Repo: Preço_Recompra == Preço_Venda * (1 + Taxa_Repo * DU/252).
+    3. Colateralização Mínima de Margem Multilateral: Margem >= 100% de PU de mercado.
+    4. Repasse Integral de Cupons Semestrais: 100% repassados nas NTN-B e NTN-F.
+    """
+    print("[60/60] Verificando Invariante de Empréstimo e Operações Compromissadas com TPFs (FL-076)...")
+    from src.sovereign_tpf_lending import SovereignTpfLendingEngine
+    engine = SovereignTpfLendingEngine.load_from_fixture(fixtures_dir / "sovereign_tpf_lending.json")
+    rep = engine.verify_invariants()
+    check(rep["all_invariants_hold"], f"Falha de invariante em TPFs: {rep['violations']}")
+    print("      ✓ Conservação de custódia soberana, paridade de recompra repo e repasse integral de cupons comprovados.")
+
+
+def verify_structured_funds_fidc_fii_invariants(fixtures_dir: Path):
+    """
+    Lei 61: Fundos Estruturados: FIDC e FII no Balcão NoMe B3 (FL-077).
+    1. Conservação Patrimonial de Cotas: PL == Soma(Qtd_Cotas_i * Valor_Cota_i).
+    2. Subordinação Estrita (Water-Tight Priority): Subordinada Júnior absorve 100% antes de Mezanino/Sênior.
+    3. Rendimentos Mandatórios FII: Distribuição mínima de 95% do lucro caixa semestral (Lei 8.668/93).
+    4. Conservação de Fluxo de Caixa no Waterfall de FIDC: Entradas == Saídas.
+    """
+    print("[61/61] Verificando Invariante de Fundos Estruturados FIDC e FII (FL-077)...")
+    from src.structured_funds_fidc_fii import StructuredFundsEngine, round_cents
+    from src.invariants import (
+        assert_fund_equity_conservation,
+        assert_fidc_water_tight_subordination,
+        assert_fii_minimum_distribution,
+    )
+
+    engine = StructuredFundsEngine.load_from_fixture(fixtures_dir / "structured_funds_fidc_fii.json")
+    rep = engine.verify_all_invariants()
+    for fund_key, inv in rep.items():
+        check(inv["all_invariants_hold"], f"Invariante violada no fundo estruturado '{fund_key}'")
+
+    # Verificação formal da Water-Tight Priority no FIDC em estresse
+    fidc_stressed = engine.get_fidc("FIDC-STRESSED-WRITE-OFF-02")
+    loss_event = fidc_stressed.absorb_credit_default("REC-DEF-2026-101")
+    assert_fidc_water_tight_subordination(
+        junior_equity=loss_event.junior_equity_post,
+        mezzanine_absorbed=loss_event.absorbed_by_mezzanine,
+        senior_absorbed=loss_event.absorbed_by_senior,
+        fund_id=fidc_stressed.fund_id,
+    )
+
+    # Verificação formal do piso de 95% do lucro caixa de FII
+    fii = engine.get_fii("FII-PRIME-OFFICES-01")
+    dist_event = fii.declare_and_settle_distribution(
+        statement_id="STMT-2026-S1",
+        record_date=date(2026, 6, 30),
+        payment_date=date(2026, 7, 15),
+    )
+    assert_fii_minimum_distribution(
+        declared_distribution=dist_event.declared_total_distribution,
+        net_cash_profit=dist_event.net_cash_profit,
+        fund_id=fii.fund_id,
+    )
+    assert_fund_equity_conservation(
+        total_net_assets=fii.net_asset_value,
+        classes_equity_sum=round_cents(fii.total_quotas * fii.unit_quota_value),
+        fund_id=fii.fund_id,
+    )
+    print("      ✓ Conservação patrimonial de cotas, subordinação estrita e proventos mínimos de 95% (Lei 8.668/93) comprovadas.")
+
+
+def verify_commodity_options_black76_invariants(fixtures_dir: Path):
+    """
+    Lei 62: Paridade Black-76 e Conservação de Conversão de Opções em Futuros Agrícolas (FL-064).
+    1. Paridade Put-Call Black-76: C - P == (F - K) * exp(-r*T) comprovada com tolerância Decimal.
+    2. Conservação Física de Exercício: Qtd_Futuros_Criada == Qtd_Opções_Exercidas (1:1 bilateral).
+    3. Conservação Financeira Zero-Sum: Soma_MTM(Holders) + Soma_MTM(Writers) == 0,00.
+    4. Threshold Mínimo de 1 Tick para Exercício Automático.
+    5. Inviolabilidade de Contrary Instruction (barreira de não-exercício formal).
+    """
+    print("[62/62] Verificando Invariante de Opções sobre Futuros de Commodities Agrícolas Black-76 (FL-064)...")
+    from src.commodity_options_black76 import CommodityOptionsEngine
+    engine = CommodityOptionsEngine.load_from_fixture(fixtures_dir / "commodity_options_black76.json")
+    for ticker, contract in engine.contracts.items():
+        engine.price_series(
+            ticker=ticker,
+            forward_price=contract.strike,
+            time_to_maturity=Decimal("0.25"),
+            volatility=Decimal("0.25"),
+        )
+    engine.evaluate_and_execute_exercise(date(2026, 11, 20), {"CCMX26": Decimal("68.50")})
+    rep = engine.verify_invariants(raise_on_error=True)
+    for k, v in rep.items():
+        check(v, f"Invariante de opções agrícolas '{k}' violada")
+    print("      ✓ Paridade Black-76, conservação física 1:1 de futuros e liquidação zero-sum comprovadas.")
+
+
+def verify_private_repo_nome_invariants(fixtures_dir: Path):
+    """
+    Lei 63: Conservação DvP e Paridade de Recompra em Compromissadas Privadas Balcão NoMe (FL-079).
+    1. Invariante DvP: Transferência simultânea e conservação de custódia e caixa em D0 e vencimento.
+    2. Invariante de Paridade de Recompra: Preço_Recompra == Preço_Venda * Fator_Remuneração (DU/252).
+    3. Invariante de Cobertura e Monotonicidade da Matriz de Haircuts Regulatórios B3.
+    4. Invariante Financeira de Excussão de Default: Recursos_Brutos == Taxas_B3 + Comprador + Vendedor.
+    5. Invariante de Não-Negatividade Global.
+    """
+    print("[63/64] Verificando Invariante de Compromissadas Privadas e DvP Balcão NoMe (FL-079)...")
+    from src.private_repo_nome import PrivateRepoNomeEngine
+    engine = PrivateRepoNomeEngine.load_from_fixture(fixtures_dir / "private_repo_nome.json")
+    report = engine.verify_invariants()
+    check(report["all_invariants_hold"], f"Violação de invariantes em compromissadas privadas: {report['violations']}")
+    print("      ✓ Conservação DvP, paridade de recompra, monotonicidade de haircuts e waterfall de default comprovadas.")
+
+
+def verify_cbio_futures_puma_invariants(fixtures_dir: Path):
+    """
+    Lei 64: Conservação Soma-Zero e Paridade de Open Interest em Futuros de CBIO (FL-086).
+    1. Invariante de Soma-Zero no Ajuste Diário: Somatório(Ajuste_Compradores) + Somatório(Ajuste_Vendedores) == 0,00.
+    2. Invariante de Open Interest: Posições_Compradas == Posições_Vendidas == Open_Interest_Total.
+    3. Conservação de Lotes e Volume nos Trades.
+    4. Inviolabilidade do Túnel de Rejeição PUMA (Hard Collar).
+    5. Invariante de Soma-Zero na Liquidação Final Financeira no Vencimento (Spot CBIO RenovaBio).
+    6. Cobertura de Chamadas de Margem para Contas Deficitárias.
+    """
+    print("[64/65] Verificando Invariante de Futuros de CBIO (CBI) no PUMA e Câmara B3 (FL-086)...")
+    from src.cbio_futures_puma import CbioFuturesEngine
+    engine = CbioFuturesEngine.load_from_fixture(fixtures_dir / "cbio_futures_puma.json")
+    report = engine.verify_invariants()
+    check(report["all_invariants_hold"], "Falha de invariante em Futuros de CBIO (FL-086)")
+    print("      ✓ Mark-to-Market diário soma-zero, paridade de Open Interest e túneis PUMA comprovados.")
+
+
+def verify_special_insolvency_auction_invariants(fixtures_dir: Path):
+    """
+    Lei 65: Conservação de Lotes, Restituição de Caução e Waterfall em Leilões de Insolvência e UPI (FL-081).
+    1. Conservação de Ativos Leiloados: Lote_Total == Lote_Arrematado + Lote_Deserto.
+    2. Restituição Integral de Caução a Não Vencedores: Total_Caução_Retida == Caução_Vencedor.
+    3. Liquidação Financeira Integral (Waterfall Judicial de Pagamento - Art. 84 e 83 LF-RJ).
+    4. Preço de Reserva Mínimo e Overbidding Minimum Step.
+    """
+    print("[65/65] Verificando Invariante de Leilões Judiciais de Insolvência e Alienação de UPI (FL-081)...")
+    from src.special_insolvency_auction import SpecialInsolvencyAuctionEngine
+    engine = SpecialInsolvencyAuctionEngine.from_json_fixture(fixtures_dir / "special_insolvency_auction.json")
+    summaries = engine.run_all()
+    for s in summaries:
+        check(s.all_invariants_satisfied, f"Invariante violada no leilão judicial de insolvência {s.auction_id}")
+        check(s.is_asset_conserved, f"Conservação de lotes violada no leilão {s.auction_id}")
+        check(s.is_bid_bond_conserved, f"Restituição de caução violada no leilão {s.auction_id}")
+        check(s.is_waterfall_conserved, f"Waterfall judicial violado no leilão {s.auction_id}")
+    print("      ✓ Conservação de lotes, restituição integral de caução e waterfall judicial comprovadas.")
+
+
+def verify_fii_etf_lending_btc_invariants(fixtures_dir: Path):
+    """
+    Lei 66: Empréstimo de Cotas de FII e ETFs na Câmara B3 (FL-084).
+    1. Conservação de Cotas (LAW-084): Cotas_Doador == Cotas_Emprestadas_Ativas + Cotas_Devolvidas.
+    2. Paridade no Repasse de Proventos (LAW-085): Provento_Recebido_Tomador == Provento_Repassado_Doador (centavo a centavo).
+    3. Conservação Multilateral de Custódia: Total_Lent_Active == Total_Borrowed_Active.
+    4. Não-negatividade de Custódia: saldos escriturais >= 0.
+    """
+    print("[66/70] Verificando Invariante de Empréstimo de Cotas FII e ETF BTC (FL-084)...")
+    from src.fii_etf_lending_btc import FiiEtfLendingEngine
+    engine = FiiEtfLendingEngine.load_fixture(fixtures_dir / "fii_etf_lending_btc.json")
+    audit = engine.verify_invariants()
+    check(audit["law_084_contract_quota_conservation"], "Violação de LAW-084 no fixture oficial")
+    check(audit["law_085_dividend_forwarding_parity"], "Violação de LAW-085 no fixture oficial")
+    check(audit["law_multilateral_custody_balance"], "Desbalanceamento multilateral de custódia")
+    check(audit["law_non_negative_custody"], "Violação de não-negatividade de custódia")
+    print("      ✓ Conservação de cotas (LAW-084), repasse de proventos (LAW-085) e custódia multilateral comprovados.")
+
+
+def verify_fx_forward_ndf_invariants(fixtures_dir: Path):
+    """
+    Lei 67: Contratos a Termo de Moedas e NDF no Balcão NoMe B3 (FL-074).
+    1. Conservação Bilateral Soma-Zero (LAW-061): Ganho Comprador + Perda Vendedor == 0,00.
+    2. Paridade Cambial na Fixação PTAX (LAW-062).
+    """
+    print("[67/70] Verificando Invariante de Termo de Moedas e NDF Balcão NoMe (FL-074)...")
+    from src.fx_forward_ndf import FxForwardNdfRegistry
+    registry = FxForwardNdfRegistry.from_json_file(fixtures_dir / "fx_forward_ndf.json")
+    rep = registry.verify_invariants()
+    check(rep["all_invariants_hold"], f"Violação de invariante em NDF: {rep['violations']}")
+    print("      ✓ Conservação bilateral soma-zero e paridade cambial PTAX comprovadas.")
+
+
+def verify_interest_rate_swap_irs_invariants(fixtures_dir: Path):
+    """
+    Lei 68: Swaps de Taxa de Juros com Reset Periódico (IRS) no Balcão NoMe B3 (FL-080).
+    1. Conservação Bilateral Soma-Zero em Resets (LAW-080): Saldo A + Saldo B == 0,00.
+    2. Invariante de Não-Arbitragem na Curva Pré/DI (LAW-081): Identidade telescópica DF e forward rates.
+    """
+    print("[68/70] Verificando Invariante de Swaps de Taxa de Juros IRS (FL-080)...")
+    from src.interest_rate_swap_irs import InterestRateSwapEngine
+    engine = InterestRateSwapEngine.from_json_fixture(fixtures_dir / "interest_rate_swap_irs.json")
+    engine.settle_all()
+    rep = engine.verify_invariants()
+    check(rep["irs_period_zero_sum"], "Violação de soma-zero no IRS")
+    check(rep["irs_cashflow_balanced"], "Violação de equilíbrio de caixa IRS")
+    check(rep["no_arbitrage_pre_di"], "Violação de não-arbitragem na curva Pré/DI")
+    print("      ✓ Soma-zero bilateral nos resets e não-arbitragem na curva Pré/DI comprovadas.")
+
+
+def verify_green_cpr_environmental_services_invariants(fixtures_dir: Path):
+    """
+    Lei 69: CPR Verde e Pagamentos por Serviços Ambientais no Balcão NoMe B3 (FL-082).
+    1. Unicidade de Hectare Preservado (INV-CPR-001): Área Comprometida <= Área Preservada CAR.
+    2. Conservação Financeira de Liquidação (INV-CPR-002): Desembolso Comprador == Remuneração + Taxa.
+    3. Conformidade Regulatória CAR (INV-CPR-003): CAR ativo e sem embargos IBAMA.
+    """
+    print("[69/70] Verificando Invariante de CPR Verde e Serviços Ambientais (FL-082)...")
+    from src.green_cpr_environmental_services import GreenCPREnvironmentalServicesEngine
+    engine = GreenCPREnvironmentalServicesEngine.load_from_fixture(fixtures_dir / "green_cpr_environmental_services.json")
+    rep = engine.verify_invariants()
+    check(rep["INV-CPR-001_PRESERVED_AREA_UNICITY"], "Violação de unicidade de hectare preservado")
+    check(rep["INV-CPR-002_FINANCIAL_CONSERVATION"], "Violação de conservação financeira na liquidação de CPR Verde")
+    check(rep["INV-CPR-003_CAR_COMPLIANCE"], "Violação de conformidade do CAR")
+    print("      ✓ Unicidade de hectare preservado, conformidade CAR e conservação financeira comprovadas.")
+
+
+def verify_health_education_securitization_invariants(fixtures_dir: Path):
+    """
+    Lei 70: Certificados de Recebíveis de Saúde e Educação - CR Saúde e CR Educação (FL-085).
+    1. Incomunicabilidade do Patrimônio Separado (Lei nº 14.430/2022).
+    2. Conservação Financeira do Waterfall: Entradas == Saídas centavo a centavo.
+    3. Subordinação Estrita e First-Loss Piece (Júnior -> Mezanino -> Sênior).
+    4. Conservação de PU e Saldo Devedor em todas as tranches.
+    """
+    print("[70/70] Verificando Invariante de CR Saúde e CR Educação (FL-085)...")
+    from src.health_education_securitization import SocialSecuritizationEngine
+    engine = SocialSecuritizationEngine.load_from_fixture(fixtures_dir / "health_education_securitization.json")
+    rep = engine.verify_all_invariants()
+    for issue_id, inv in rep.items():
+        check(inv["all_invariants_hold"], f"Violação de invariante na emissão social '{issue_id}'")
+        check(inv["incommunicability_verified"], f"Violação de incomunicabilidade na emissão social '{issue_id}'")
+        check(inv["pu_conservation_verified"], f"Violação de conservação de PU na emissão social '{issue_id}'")
+    print("      ✓ Incomunicabilidade de patrimônio separado, waterfall financeiro e subordinação estrita comprovadas.")
 
 
 def main():
@@ -1428,9 +1683,21 @@ def main():
         verify_secondary_market_fixed_income_invariants(fixtures_dir)
         verify_subordinated_financial_bills_invariants(fixtures_dir)
         verify_agricultural_warrant_collateral_invariants(fixtures_dir)
+        verify_offshore_eurobonds_collateral_invariants(fixtures_dir)
+        verify_sovereign_tpf_lending_invariants(fixtures_dir)
+        verify_structured_funds_fidc_fii_invariants(fixtures_dir)
+        verify_commodity_options_black76_invariants(fixtures_dir)
+        verify_private_repo_nome_invariants(fixtures_dir)
+        verify_cbio_futures_puma_invariants(fixtures_dir)
+        verify_special_insolvency_auction_invariants(fixtures_dir)
+        verify_fii_etf_lending_btc_invariants(fixtures_dir)
+        verify_fx_forward_ndf_invariants(fixtures_dir)
+        verify_interest_rate_swap_irs_invariants(fixtures_dir)
+        verify_green_cpr_environmental_services_invariants(fixtures_dir)
+        verify_health_education_securitization_invariants(fixtures_dir)
         
         print("\n" + "=" * 70)
-        print("✓ TODAS AS 58 LEIS DE CONSERVAÇÃO E INVARIANTES DA B3 FORAM PROVADAS!")
+        print("✓ TODAS AS 70 LEIS DE CONSERVAÇÃO E INVARIANTES DA B3 FORAM PROVADAS!")
         print("  Garantia matemática de consistência em todas as fixtures e módulos.")
         print("=" * 70)
         sys.exit(0)

@@ -1,0 +1,283 @@
+{
+  "curves": [
+    {
+      "curve_id": "CURVA-PRE-DI-2026",
+      "curve_date": "2026-01-02",
+      "vertices": [
+        { "du_days": 0, "zero_rate_pct": "0.0000" },
+        { "du_days": 21, "zero_rate_pct": "13.5000" },
+        { "du_days": 63, "zero_rate_pct": "13.6500" },
+        { "du_days": 126, "zero_rate_pct": "13.8000" },
+        { "du_days": 189, "zero_rate_pct": "13.9500" },
+        { "du_days": 252, "zero_rate_pct": "14.1000" },
+        { "du_days": 378, "zero_rate_pct": "14.2500" },
+        { "du_days": 504, "zero_rate_pct": "14.4000" },
+        { "du_days": 756, "zero_rate_pct": "14.6000" }
+      ]
+    }
+  ],
+  "contracts": [
+    {
+      "contract_id": "IRS-PRE-DI-Q-2026-001",
+      "nome_protocol": "NOME-IRS-20260102-001",
+      "trade_date": "2026-01-02",
+      "effective_date": "2026-01-05",
+      "maturity_date": "2027-01-05",
+      "reset_frequency": "QUARTERLY",
+      "notional_brl": "50000000.00",
+      "party_a_name": "Banco Alpha Estruturador S.A.",
+      "party_a_document": "12.345.678/0001-90",
+      "party_a_irrf_rate": "0.1500",
+      "party_a_irrf_exempt": false,
+      "party_b_name": "Agropecuária Vale Verde S.A.",
+      "party_b_document": "98.765.432/0001-10",
+      "party_b_irrf_rate": "0.1500",
+      "party_b_irrf_exempt": false,
+      "guarantee_mode": "COM_GARANTIA_CCP",
+      "is_corporate_hedge": true,
+      "active_leg": {
+        "indexer": "PRE",
+        "rate_annual_pct": "13.7500",
+        "cdi_percentage": "100.0000",
+        "spread_annual_pct": "0.0000"
+      },
+      "passive_leg": {
+        "indexer": "CDI",
+        "rate_annual_pct": "13.6500",
+        "cdi_percentage": "100.0000",
+        "spread_annual_pct": "0.0000"
+      },
+      "periods": [
+        {
+          "period_index": 1,
+          "start_date": "2026-01-05",
+          "end_date": "2026-04-06",
+          "settlement_date": "2026-04-07",
+          "business_days_du": 63,
+          "calendar_days_dc": 91,
+          "notional_brl": "50000000.00",
+          "passive_rate_override": "13.5000"
+        },
+        {
+          "period_index": 2,
+          "start_date": "2026-04-06",
+          "end_date": "2026-07-06",
+          "settlement_date": "2026-07-07",
+          "business_days_du": 63,
+          "calendar_days_dc": 91,
+          "notional_brl": "50000000.00",
+          "passive_rate_override": "13.8000"
+        },
+        {
+          "period_index": 3,
+          "start_date": "2026-07-06",
+          "end_date": "2026-10-05",
+          "settlement_date": "2026-10-06",
+          "business_days_du": 63,
+          "calendar_days_dc": 91,
+          "notional_brl": "50000000.00",
+          "passive_rate_override": "14.1000"
+        },
+        {
+          "period_index": 4,
+          "start_date": "2026-10-05",
+          "end_date": "2027-01-05",
+          "settlement_date": "2027-01-06",
+          "business_days_du": 63,
+          "calendar_days_dc": 92,
+          "notional_brl": "50000000.00",
+          "passive_rate_override": "13.9000"
+        }
+      ]
+    },
+    {
+      "contract_id": "IRS-IPCA-DI-S-2026-002",
+      "nome_protocol": "NOME-IRS-20260115-002",
+      "trade_date": "2026-01-15",
+      "effective_date": "2026-01-16",
+      "maturity_date": "2028-01-17",
+      "reset_frequency": "SEMIANNUAL",
+      "notional_brl": "100000000.00",
+      "party_a_name": "Fundo de Investimento Imobiliário Prime",
+      "party_a_document": "33.444.555/0001-66",
+      "party_a_irrf_rate": "0.0000",
+      "party_a_irrf_exempt": true,
+      "party_b_name": "Banco Tesouraria Global S.A.",
+      "party_b_document": "55.666.777/0001-88",
+      "party_b_irrf_rate": "0.1500",
+      "party_b_irrf_exempt": false,
+      "guarantee_mode": "SEM_GARANTIA_CCP",
+      "is_corporate_hedge": true,
+      "active_leg": {
+        "indexer": "IPCA",
+        "rate_annual_pct": "6.2500",
+        "cdi_percentage": "100.0000",
+        "spread_annual_pct": "0.0000"
+      },
+      "passive_leg": {
+        "indexer": "CDI",
+        "rate_annual_pct": "13.7500",
+        "cdi_percentage": "100.0000",
+        "spread_annual_pct": "0.2000"
+      },
+      "periods": [
+        {
+          "period_index": 1,
+          "start_date": "2026-01-16",
+          "end_date": "2026-07-16",
+          "settlement_date": "2026-07-17",
+          "business_days_du": 126,
+          "calendar_days_dc": 181,
+          "notional_brl": "100000000.00",
+          "ipca_period_pct": "2.2500",
+          "passive_rate_override": "13.6500"
+        },
+        {
+          "period_index": 2,
+          "start_date": "2026-07-16",
+          "end_date": "2027-01-18",
+          "settlement_date": "2027-01-19",
+          "business_days_du": 126,
+          "calendar_days_dc": 186,
+          "notional_brl": "100000000.00",
+          "ipca_period_pct": "1.9500",
+          "passive_rate_override": "13.9000"
+        },
+        {
+          "period_index": 3,
+          "start_date": "2027-01-18",
+          "end_date": "2027-07-19",
+          "settlement_date": "2027-07-20",
+          "business_days_du": 126,
+          "calendar_days_dc": 182,
+          "notional_brl": "100000000.00",
+          "ipca_period_pct": "2.4000",
+          "passive_rate_override": "14.1500"
+        },
+        {
+          "period_index": 4,
+          "start_date": "2027-07-19",
+          "end_date": "2028-01-17",
+          "settlement_date": "2028-01-18",
+          "business_days_du": 126,
+          "calendar_days_dc": 182,
+          "notional_brl": "100000000.00",
+          "ipca_period_pct": "2.1000",
+          "passive_rate_override": "13.7000"
+        }
+      ]
+    },
+    {
+      "contract_id": "IRS-PRE-DI-ANNUAL-AMORT-003",
+      "nome_protocol": "NOME-IRS-20260202-003",
+      "trade_date": "2026-02-02",
+      "effective_date": "2026-02-03",
+      "maturity_date": "2029-02-05",
+      "reset_frequency": "ANNUAL",
+      "notional_brl": "30000000.00",
+      "party_a_name": "Concessionária de Rodovias Paulista S.A.",
+      "party_a_document": "44.555.666/0001-22",
+      "party_a_irrf_rate": "0.1500",
+      "party_a_irrf_exempt": false,
+      "party_b_name": "Fundação de Seguridade Multipatrocinada",
+      "party_b_document": "77.888.999/0001-44",
+      "party_b_irrf_rate": "0.0000",
+      "party_b_irrf_exempt": true,
+      "guarantee_mode": "COM_GARANTIA_CCP",
+      "is_corporate_hedge": true,
+      "active_leg": {
+        "indexer": "CDI",
+        "rate_annual_pct": "14.0000",
+        "cdi_percentage": "100.0000",
+        "spread_annual_pct": "0.5000"
+      },
+      "passive_leg": {
+        "indexer": "PRE",
+        "rate_annual_pct": "13.5000",
+        "cdi_percentage": "100.0000",
+        "spread_annual_pct": "0.0000"
+      },
+      "periods": [
+        {
+          "period_index": 1,
+          "start_date": "2026-02-03",
+          "end_date": "2027-02-03",
+          "settlement_date": "2027-02-04",
+          "business_days_du": 252,
+          "calendar_days_dc": 365,
+          "notional_brl": "30000000.00",
+          "active_rate_override": "13.8500"
+        },
+        {
+          "period_index": 2,
+          "start_date": "2027-02-03",
+          "end_date": "2028-02-03",
+          "settlement_date": "2028-02-04",
+          "business_days_du": 252,
+          "calendar_days_dc": 365,
+          "notional_brl": "20000000.00",
+          "active_rate_override": "14.2000"
+        },
+        {
+          "period_index": 3,
+          "start_date": "2028-02-03",
+          "end_date": "2029-02-05",
+          "settlement_date": "2029-02-06",
+          "business_days_du": 252,
+          "calendar_days_dc": 368,
+          "notional_brl": "10000000.00",
+          "active_rate_override": "13.6000"
+        }
+      ]
+    },
+    {
+      "contract_id": "IRS-PRE-DI-EXACT-DAILY-004",
+      "nome_protocol": "NOME-IRS-20260302-004",
+      "trade_date": "2026-03-02",
+      "effective_date": "2026-03-03",
+      "maturity_date": "2026-04-01",
+      "reset_frequency": "MONTHLY",
+      "notional_brl": "20000000.00",
+      "party_a_name": "Distribuidora de Energia Solar S.A.",
+      "party_a_document": "11.222.333/0001-55",
+      "party_a_irrf_rate": "0.2250",
+      "party_a_irrf_exempt": false,
+      "party_b_name": "Banco Regional de Desenvolvimento S.A.",
+      "party_b_document": "66.777.888/0001-99",
+      "party_b_irrf_rate": "0.2250",
+      "party_b_irrf_exempt": false,
+      "guarantee_mode": "COM_GARANTIA_CCP",
+      "is_corporate_hedge": true,
+      "active_leg": {
+        "indexer": "PRE",
+        "rate_annual_pct": "13.6500",
+        "cdi_percentage": "100.0000",
+        "spread_annual_pct": "0.0000"
+      },
+      "passive_leg": {
+        "indexer": "CDI",
+        "rate_annual_pct": "13.6500",
+        "cdi_percentage": "100.0000",
+        "spread_annual_pct": "0.0000"
+      },
+      "periods": [
+        {
+          "period_index": 1,
+          "start_date": "2026-03-03",
+          "end_date": "2026-04-01",
+          "settlement_date": "2026-04-02",
+          "business_days_du": 21,
+          "calendar_days_dc": 29,
+          "notional_brl": "20000000.00",
+          "daily_cdi_rates": [
+            "13.6500", "13.6500", "13.6500", "13.6500", "13.6500",
+            "13.6500", "13.6500", "13.6500", "13.6500", "13.6500",
+            "13.6500", "13.6500", "13.6500", "13.6500", "13.6500",
+            "13.6500", "13.6500", "13.6500", "13.6500", "13.6500",
+            "13.6500"
+          ]
+        }
+      ]
+    }
+  ]
+}

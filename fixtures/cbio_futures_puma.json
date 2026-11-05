@@ -1,0 +1,297 @@
+{
+  "schema_version": "1.0.0",
+  "flow_id": "FL-086",
+  "description": "Cenário de Negociação, Ajuste Diário e Liquidação Financeira de Futuros de CBIO (CBI) no PUMA e Câmara B3",
+  "reference_date": "2024-12-15",
+  "contracts": [
+    {
+      "ticker": "CBIZ24",
+      "expiration_date": "2024-12-30",
+      "reference_price": "85.00",
+      "settlement_price": "85.50",
+      "spot_final_price": "86.00",
+      "hard_limit_pct": "10.00",
+      "auction_collar_pct": "4.00",
+      "contract_multiplier": 100,
+      "tick_size": "0.01",
+      "trading_phase": "EXPIRED"
+    },
+    {
+      "ticker": "CBIF25",
+      "expiration_date": "2025-01-31",
+      "reference_price": "86.50",
+      "settlement_price": "86.80",
+      "spot_final_price": null,
+      "hard_limit_pct": "10.00",
+      "auction_collar_pct": "4.00",
+      "contract_multiplier": 100,
+      "tick_size": "0.01",
+      "trading_phase": "CONTINUOUS"
+    }
+  ],
+  "margin_profiles": [
+    {
+      "account_id": "ACC-USINA-01",
+      "participant_name": "USINA BIOENERGIA BRASIL S.A.",
+      "cash_settlement_balance": "50000.00",
+      "required_margin": "120000.00",
+      "deposits": [
+        {
+          "deposit_id": "DEP-USINA-CASH-01",
+          "account_id": "ACC-USINA-01",
+          "collateral_type": "CASH_BRL",
+          "nominal_amount": "200000.00",
+          "haircut_pct": "0.00"
+        },
+        {
+          "deposit_id": "DEP-USINA-TPF-02",
+          "account_id": "ACC-USINA-01",
+          "collateral_type": "SOVEREIGN_BOND",
+          "nominal_amount": "300000.00",
+          "haircut_pct": "5.00"
+        }
+      ]
+    },
+    {
+      "account_id": "ACC-DISTRIB-02",
+      "participant_name": "DISTRIBUIDORA NACIONAL DE PETROLEO S.A.",
+      "cash_settlement_balance": "-50000.00",
+      "required_margin": "120000.00",
+      "deposits": [
+        {
+          "deposit_id": "DEP-DIST-CASH-01",
+          "account_id": "ACC-DISTRIB-02",
+          "collateral_type": "CASH_BRL",
+          "nominal_amount": "250000.00",
+          "haircut_pct": "0.00"
+        },
+        {
+          "deposit_id": "DEP-DIST-TPF-02",
+          "account_id": "ACC-DISTRIB-02",
+          "collateral_type": "SOVEREIGN_BOND",
+          "nominal_amount": "400000.00",
+          "haircut_pct": "5.00"
+        }
+      ]
+    },
+    {
+      "account_id": "ACC-TRADER-03",
+      "participant_name": "ECO INVEST ASSET MANAGEMENT LTDA",
+      "cash_settlement_balance": "0.00",
+      "required_margin": "60000.00",
+      "deposits": [
+        {
+          "deposit_id": "DEP-TRD-CASH-01",
+          "account_id": "ACC-TRADER-03",
+          "collateral_type": "CASH_BRL",
+          "nominal_amount": "150000.00",
+          "haircut_pct": "0.00"
+        }
+      ]
+    },
+    {
+      "account_id": "ACC-MARKETMAKER-04",
+      "participant_name": "ALFA SECURITIES CORRETORA DE CAMBIO E TITULOS S.A.",
+      "cash_settlement_balance": "0.00",
+      "required_margin": "60000.00",
+      "deposits": [
+        {
+          "deposit_id": "DEP-MM-CASH-01",
+          "account_id": "ACC-MARKETMAKER-04",
+          "collateral_type": "CASH_BRL",
+          "nominal_amount": "500000.00",
+          "haircut_pct": "0.00"
+        }
+      ]
+    }
+  ],
+  "orders": [
+    {
+      "order_id": "ORD-CBIZ24-001",
+      "ticker": "CBIZ24",
+      "account_id": "ACC-DISTRIB-02",
+      "side": "BUY",
+      "order_type": "LIMIT",
+      "quantity": 50,
+      "price": "85.20",
+      "filled_quantity": 50,
+      "status": "FILLED",
+      "created_at": "2024-12-15T10:00:00"
+    },
+    {
+      "order_id": "ORD-CBIZ24-002",
+      "ticker": "CBIZ24",
+      "account_id": "ACC-USINA-01",
+      "side": "SELL",
+      "order_type": "LIMIT",
+      "quantity": 50,
+      "price": "85.20",
+      "filled_quantity": 50,
+      "status": "FILLED",
+      "created_at": "2024-12-15T10:01:00"
+    },
+    {
+      "order_id": "ORD-CBIF25-001",
+      "ticker": "CBIF25",
+      "account_id": "ACC-TRADER-03",
+      "side": "BUY",
+      "order_type": "LIMIT",
+      "quantity": 20,
+      "price": "86.60",
+      "filled_quantity": 20,
+      "status": "FILLED",
+      "created_at": "2024-12-15T11:00:00"
+    },
+    {
+      "order_id": "ORD-CBIF25-002",
+      "ticker": "CBIF25",
+      "account_id": "ACC-MARKETMAKER-04",
+      "side": "SELL",
+      "order_type": "LIMIT",
+      "quantity": 20,
+      "price": "86.60",
+      "filled_quantity": 20,
+      "status": "FILLED",
+      "created_at": "2024-12-15T11:02:00"
+    }
+  ],
+  "trades": [
+    {
+      "trade_id": "TRD-CBIZ24-000001",
+      "ticker": "CBIZ24",
+      "buy_order_id": "ORD-CBIZ24-001",
+      "sell_order_id": "ORD-CBIZ24-002",
+      "buyer_account_id": "ACC-DISTRIB-02",
+      "seller_account_id": "ACC-USINA-01",
+      "price": "85.20",
+      "quantity": 50,
+      "executed_at": "2024-12-15T10:01:00",
+      "in_auction": false,
+      "contract_multiplier": 100
+    },
+    {
+      "trade_id": "TRD-CBIF25-000002",
+      "ticker": "CBIF25",
+      "buy_order_id": "ORD-CBIF25-001",
+      "sell_order_id": "ORD-CBIF25-002",
+      "buyer_account_id": "ACC-TRADER-03",
+      "seller_account_id": "ACC-MARKETMAKER-04",
+      "price": "86.60",
+      "quantity": 20,
+      "executed_at": "2024-12-15T11:02:00",
+      "in_auction": false,
+      "contract_multiplier": 100
+    }
+  ],
+  "positions": [
+    {
+      "account_id": "ACC-DISTRIB-02",
+      "ticker": "CBIZ24",
+      "side": "LONG",
+      "quantity": 0,
+      "entry_price": "85.20",
+      "current_reference_price": "86.00",
+      "accumulated_pnl": "4000.00",
+      "status": "EXPIRED"
+    },
+    {
+      "account_id": "ACC-USINA-01",
+      "ticker": "CBIZ24",
+      "side": "SHORT",
+      "quantity": 0,
+      "entry_price": "85.20",
+      "current_reference_price": "86.00",
+      "accumulated_pnl": "-4000.00",
+      "status": "EXPIRED"
+    },
+    {
+      "account_id": "ACC-TRADER-03",
+      "ticker": "CBIF25",
+      "side": "LONG",
+      "quantity": 20,
+      "entry_price": "86.60",
+      "current_reference_price": "86.80",
+      "accumulated_pnl": "400.00",
+      "status": "OPEN"
+    },
+    {
+      "account_id": "ACC-MARKETMAKER-04",
+      "ticker": "CBIF25",
+      "side": "SHORT",
+      "quantity": 20,
+      "entry_price": "86.60",
+      "current_reference_price": "86.80",
+      "accumulated_pnl": "-400.00",
+      "status": "OPEN"
+    }
+  ],
+  "margin_calls": [],
+  "daily_adjustments": [
+    {
+      "settlement_date": "2024-12-15",
+      "ticker": "CBIF25",
+      "settlement_price": "86.80",
+      "account_adjustments": {
+        "ACC-TRADER-03": "400.00",
+        "ACC-MARKETMAKER-04": "-400.00"
+      },
+      "long_total_adjustment": "400.00",
+      "short_total_adjustment": "-400.00",
+      "net_clearing_adjustment": "0.00",
+      "settlement_cycle": "D+1",
+      "details": [
+        {
+          "account_id": "ACC-TRADER-03",
+          "side": "LONG",
+          "quantity": 20,
+          "base_price": "86.60",
+          "settlement_price": "86.80",
+          "daily_adjustment": "400.00"
+        },
+        {
+          "account_id": "ACC-MARKETMAKER-04",
+          "side": "SHORT",
+          "quantity": 20,
+          "base_price": "86.60",
+          "settlement_price": "86.80",
+          "daily_adjustment": "-400.00"
+        }
+      ]
+    }
+  ],
+  "final_settlements": [
+    {
+      "settlement_date": "2024-12-30",
+      "ticker": "CBIZ24",
+      "spot_final_price": "86.00",
+      "previous_settlement_price": "85.20",
+      "account_final_pnl": {
+        "ACC-DISTRIB-02": "4000.00",
+        "ACC-USINA-01": "-4000.00"
+      },
+      "long_total_pnl": "4000.00",
+      "short_total_pnl": "-4000.00",
+      "net_clearing_pnl": "0.00",
+      "closed_contracts": 50,
+      "settlement_cycle": "D+1",
+      "details": [
+        {
+          "account_id": "ACC-DISTRIB-02",
+          "side": "LONG",
+          "closed_quantity": 50,
+          "base_price": "85.20",
+          "spot_final_price": "86.00",
+          "final_pnl": "4000.00"
+        },
+        {
+          "account_id": "ACC-USINA-01",
+          "side": "SHORT",
+          "closed_quantity": 50,
+          "base_price": "85.20",
+          "spot_final_price": "86.00",
+          "final_pnl": "-4000.00"
+        }
+      ]
+    }
+  ]
+}

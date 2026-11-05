@@ -1,0 +1,391 @@
+{
+  "version": "1.0.0",
+  "flow_id": "FL-064",
+  "as_of": "2026-11-04",
+  "title": "Negociação, Precificação Black-76 e Exercício de Opções sobre Futuros de Commodities Agrícolas (FL-064)",
+  "market_context": {
+    "risk_free_rate_annual": "0.1075",
+    "usd_ptax_rate": "5.4500",
+    "clearing_house": "Câmara B3 - Módulo de Derivativos Agropecuários",
+    "trading_system": "PUMA Trading System",
+    "model": "Black-76 (Fischer Black 1976)"
+  },
+  "contracts": [
+    {
+      "ticker": "CCMX26C6500",
+      "commodity": "CORN",
+      "underlying_future_ticker": "CCMX26",
+      "option_type": "CALL",
+      "strike": "65.00",
+      "expiration_date": "2026-11-20",
+      "style": "EUROPEAN",
+      "specification": {
+        "commodity": "CORN",
+        "ticker_prefix": "CCM",
+        "name": "Milho em Grão Campinas (B3)",
+        "contract_size": "450",
+        "unit_of_measure": "sacas de 60kg (27 metric tons)",
+        "currency": "BRL",
+        "tick_size": "0.01"
+      }
+    },
+    {
+      "ticker": "CCMX26P6500",
+      "commodity": "CORN",
+      "underlying_future_ticker": "CCMX26",
+      "option_type": "PUT",
+      "strike": "65.00",
+      "expiration_date": "2026-11-20",
+      "style": "EUROPEAN",
+      "specification": {
+        "commodity": "CORN",
+        "ticker_prefix": "CCM",
+        "name": "Milho em Grão Campinas (B3)",
+        "contract_size": "450",
+        "unit_of_measure": "sacas de 60kg (27 metric tons)",
+        "currency": "BRL",
+        "tick_size": "0.01"
+      }
+    },
+    {
+      "ticker": "CCMX26C7200",
+      "commodity": "CORN",
+      "underlying_future_ticker": "CCMX26",
+      "option_type": "CALL",
+      "strike": "72.00",
+      "expiration_date": "2026-11-20",
+      "style": "EUROPEAN",
+      "specification": {
+        "commodity": "CORN",
+        "ticker_prefix": "CCM",
+        "name": "Milho em Grão Campinas (B3)",
+        "contract_size": "450",
+        "unit_of_measure": "sacas de 60kg (27 metric tons)",
+        "currency": "BRL",
+        "tick_size": "0.01"
+      }
+    },
+    {
+      "ticker": "CCMX26P5800",
+      "commodity": "CORN",
+      "underlying_future_ticker": "CCMX26",
+      "option_type": "PUT",
+      "strike": "58.00",
+      "expiration_date": "2026-11-20",
+      "style": "EUROPEAN",
+      "specification": {
+        "commodity": "CORN",
+        "ticker_prefix": "CCM",
+        "name": "Milho em Grão Campinas (B3)",
+        "contract_size": "450",
+        "unit_of_measure": "sacas de 60kg (27 metric tons)",
+        "currency": "BRL",
+        "tick_size": "0.01"
+      }
+    },
+    {
+      "ticker": "BGIU26C32000",
+      "commodity": "LIVE_CATTLE",
+      "underlying_future_ticker": "BGIU26",
+      "option_type": "CALL",
+      "strike": "320.00",
+      "expiration_date": "2026-09-30",
+      "style": "EUROPEAN",
+      "specification": {
+        "commodity": "LIVE_CATTLE",
+        "ticker_prefix": "BGI",
+        "name": "Boi Gordo Indicador Cepea (B3)",
+        "contract_size": "330",
+        "unit_of_measure": "arrobas líquidas de 15kg (4.950 kg)",
+        "currency": "BRL",
+        "tick_size": "0.01"
+      }
+    },
+    {
+      "ticker": "BGIU26P32000",
+      "commodity": "LIVE_CATTLE",
+      "underlying_future_ticker": "BGIU26",
+      "option_type": "PUT",
+      "strike": "320.00",
+      "expiration_date": "2026-09-30",
+      "style": "EUROPEAN",
+      "specification": {
+        "commodity": "LIVE_CATTLE",
+        "ticker_prefix": "BGI",
+        "name": "Boi Gordo Indicador Cepea (B3)",
+        "contract_size": "330",
+        "unit_of_measure": "arrobas líquidas de 15kg (4.950 kg)",
+        "currency": "BRL",
+        "tick_size": "0.01"
+      }
+    },
+    {
+      "ticker": "SJCF27C1250",
+      "commodity": "SOYBEAN",
+      "underlying_future_ticker": "SJCF27",
+      "option_type": "CALL",
+      "strike": "12.50",
+      "expiration_date": "2027-01-15",
+      "style": "EUROPEAN",
+      "specification": {
+        "commodity": "SOYBEAN",
+        "ticker_prefix": "SJC",
+        "name": "Soja em Grão FOB Santos (B3)",
+        "contract_size": "450",
+        "unit_of_measure": "sacas de 60kg (27 metric tons)",
+        "currency": "USD",
+        "tick_size": "0.01"
+      }
+    },
+    {
+      "ticker": "SJCF27P1250",
+      "commodity": "SOYBEAN",
+      "underlying_future_ticker": "SJCF27",
+      "option_type": "PUT",
+      "strike": "12.50",
+      "expiration_date": "2027-01-15",
+      "style": "EUROPEAN",
+      "specification": {
+        "commodity": "SOYBEAN",
+        "ticker_prefix": "SJC",
+        "name": "Soja em Grão FOB Santos (B3)",
+        "contract_size": "450",
+        "unit_of_measure": "sacas de 60kg (27 metric tons)",
+        "currency": "USD",
+        "tick_size": "0.01"
+      }
+    },
+    {
+      "ticker": "ICFZ26C24000",
+      "commodity": "ARABICA_COFFEE",
+      "underlying_future_ticker": "ICFZ26",
+      "option_type": "CALL",
+      "strike": "240.00",
+      "expiration_date": "2026-12-15",
+      "style": "EUROPEAN",
+      "specification": {
+        "commodity": "ARABICA_COFFEE",
+        "ticker_prefix": "ICF",
+        "name": "Café Arábica tipo 4/5 (B3)",
+        "contract_size": "100",
+        "unit_of_measure": "sacas de 60kg (6 metric tons)",
+        "currency": "USD",
+        "tick_size": "0.05"
+      }
+    },
+    {
+      "ticker": "ICFZ26P24000",
+      "commodity": "ARABICA_COFFEE",
+      "underlying_future_ticker": "ICFZ26",
+      "option_type": "PUT",
+      "strike": "240.00",
+      "expiration_date": "2026-12-15",
+      "style": "EUROPEAN",
+      "specification": {
+        "commodity": "ARABICA_COFFEE",
+        "ticker_prefix": "ICF",
+        "name": "Café Arábica tipo 4/5 (B3)",
+        "contract_size": "100",
+        "unit_of_measure": "sacas de 60kg (6 metric tons)",
+        "currency": "USD",
+        "tick_size": "0.05"
+      }
+    }
+  ],
+  "positions": [
+    {
+      "position_id": "POS-CCM-C65-L1",
+      "participant_id": "COOP_AGRO_PARANA",
+      "option_ticker": "CCMX26C6500",
+      "side": "LONG",
+      "quantity": 120,
+      "unit_premium": "3.1500",
+      "contrary_instruction": false
+    },
+    {
+      "position_id": "POS-CCM-C65-L2",
+      "participant_id": "FUNDO_AGRO_ALPHA",
+      "option_ticker": "CCMX26C6500",
+      "side": "LONG",
+      "quantity": 80,
+      "unit_premium": "3.2000",
+      "contrary_instruction": false
+    },
+    {
+      "position_id": "POS-CCM-C65-S1",
+      "participant_id": "MARKET_MAKER_B3",
+      "option_ticker": "CCMX26C6500",
+      "side": "SHORT",
+      "quantity": 150,
+      "unit_premium": "3.1700",
+      "contrary_instruction": false
+    },
+    {
+      "position_id": "POS-CCM-C65-S2",
+      "participant_id": "TRADING_COMMODITIES",
+      "option_ticker": "CCMX26C6500",
+      "side": "SHORT",
+      "quantity": 50,
+      "unit_premium": "3.1600",
+      "contrary_instruction": false
+    },
+    {
+      "position_id": "POS-CCM-P65-L1",
+      "participant_id": "TRADING_COMMODITIES",
+      "option_ticker": "CCMX26P6500",
+      "side": "LONG",
+      "quantity": 100,
+      "unit_premium": "3.1500",
+      "contrary_instruction": false
+    },
+    {
+      "position_id": "POS-CCM-P65-S1",
+      "participant_id": "MARKET_MAKER_B3",
+      "option_ticker": "CCMX26P6500",
+      "side": "SHORT",
+      "quantity": 100,
+      "unit_premium": "3.1500",
+      "contrary_instruction": false
+    },
+    {
+      "position_id": "POS-CCM-C72-L1",
+      "participant_id": "COOP_AGRO_PARANA",
+      "option_ticker": "CCMX26C7200",
+      "side": "LONG",
+      "quantity": 50,
+      "unit_premium": "0.8500",
+      "contrary_instruction": true
+    },
+    {
+      "position_id": "POS-CCM-C72-S1",
+      "participant_id": "MARKET_MAKER_B3",
+      "option_ticker": "CCMX26C7200",
+      "side": "SHORT",
+      "quantity": 50,
+      "unit_premium": "0.8500",
+      "contrary_instruction": false
+    },
+    {
+      "position_id": "POS-BGI-C320-L1",
+      "participant_id": "FUNDO_AGRO_ALPHA",
+      "option_ticker": "BGIU26C32000",
+      "side": "LONG",
+      "quantity": 60,
+      "unit_premium": "14.5000",
+      "contrary_instruction": false
+    },
+    {
+      "position_id": "POS-BGI-C320-S1",
+      "participant_id": "FRIGORIFICO_CENTRAL",
+      "option_ticker": "BGIU26C32000",
+      "side": "SHORT",
+      "quantity": 60,
+      "unit_premium": "14.5000",
+      "contrary_instruction": false
+    },
+    {
+      "position_id": "POS-BGI-P320-L1",
+      "participant_id": "FRIGORIFICO_CENTRAL",
+      "option_ticker": "BGIU26P32000",
+      "side": "LONG",
+      "quantity": 40,
+      "unit_premium": "12.2000",
+      "contrary_instruction": false
+    },
+    {
+      "position_id": "POS-BGI-P320-S1",
+      "participant_id": "MARKET_MAKER_B3",
+      "option_ticker": "BGIU26P32000",
+      "side": "SHORT",
+      "quantity": 40,
+      "unit_premium": "12.2000",
+      "contrary_instruction": false
+    },
+    {
+      "position_id": "POS-SJC-C125-L1",
+      "participant_id": "TRADING_COMMODITIES",
+      "option_ticker": "SJCF27C1250",
+      "side": "LONG",
+      "quantity": 80,
+      "unit_premium": "0.7500",
+      "contrary_instruction": false
+    },
+    {
+      "position_id": "POS-SJC-C125-S1",
+      "participant_id": "MARKET_MAKER_B3",
+      "option_ticker": "SJCF27C1250",
+      "side": "SHORT",
+      "quantity": 80,
+      "unit_premium": "0.7500",
+      "contrary_instruction": false
+    },
+    {
+      "position_id": "POS-ICF-C240-L1",
+      "participant_id": "EXPORTADORA_CAFE_SANTOS",
+      "option_ticker": "ICFZ26C24000",
+      "side": "LONG",
+      "quantity": 30,
+      "unit_premium": "15.8000",
+      "contrary_instruction": false
+    },
+    {
+      "position_id": "POS-ICF-C240-S1",
+      "participant_id": "MARKET_MAKER_B3",
+      "option_ticker": "ICFZ26C24000",
+      "side": "SHORT",
+      "quantity": 30,
+      "unit_premium": "15.8000",
+      "contrary_instruction": false
+    }
+  ],
+  "pricing_benchmarks": [
+    {
+      "benchmark_id": "BM-CCM-ATM",
+      "commodity": "CORN",
+      "forward_price": "65.00",
+      "strike": "65.00",
+      "time_to_maturity": "0.25",
+      "volatility": "0.25",
+      "risk_free_rate": "0.1075",
+      "expected_call_price": "3.1534",
+      "expected_put_price": "3.1534",
+      "expected_parity_diff_max": "0.0001"
+    },
+    {
+      "benchmark_id": "BM-BGI-ITM",
+      "commodity": "LIVE_CATTLE",
+      "forward_price": "330.00",
+      "strike": "320.00",
+      "time_to_maturity": "0.15",
+      "volatility": "0.18",
+      "risk_free_rate": "0.1075",
+      "expected_call_price": "14.6645",
+      "expected_put_price": "4.8245",
+      "expected_parity_diff_max": "0.0001"
+    },
+    {
+      "benchmark_id": "BM-SJC-ATM",
+      "commodity": "SOYBEAN",
+      "forward_price": "12.50",
+      "strike": "12.50",
+      "time_to_maturity": "0.35",
+      "volatility": "0.22",
+      "risk_free_rate": "0.1075",
+      "expected_call_price": "0.6246",
+      "expected_put_price": "0.6246",
+      "expected_parity_diff_max": "0.0001"
+    },
+    {
+      "benchmark_id": "BM-ICF-ATM",
+      "commodity": "ARABICA_COFFEE",
+      "forward_price": "240.00",
+      "strike": "240.00",
+      "time_to_maturity": "0.20",
+      "volatility": "0.30",
+      "risk_free_rate": "0.1075",
+      "expected_call_price": "12.5630",
+      "expected_put_price": "12.5630",
+      "expected_parity_diff_max": "0.0001"
+    }
+  ]
+}

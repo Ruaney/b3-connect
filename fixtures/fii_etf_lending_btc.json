@@ -1,0 +1,326 @@
+{
+  "version": "1.0",
+  "system": "Câmara B3 - BTC FII e ETF (FL-084)",
+  "contracts": [
+    {
+      "contract_id": "BTC-FII-2026-0001",
+      "asset_type": "FII",
+      "symbol": "HGLG11",
+      "isin": "BRHGLGCTF004",
+      "lender_participant_id": 105,
+      "lender_account": 10001,
+      "borrower_participant_id": 88,
+      "borrower_account": 20001,
+      "quantity": 10000,
+      "returned_quantity": 4000,
+      "active_quantity": 6000,
+      "base_price": "165.50",
+      "rental_rate": "0.0250",
+      "contract_value": "1655000.00",
+      "active_value": "993000.00",
+      "open_date": "2026-10-01",
+      "maturity_date": "2026-12-01",
+      "reversibility": "BORROWER_REVERSIBLE",
+      "status": "PARTIALLY_RETURNED",
+      "accrued_rental_fee": "1428.62"
+    },
+    {
+      "contract_id": "BTC-FII-2026-0002",
+      "asset_type": "FII",
+      "symbol": "KNIP11",
+      "isin": "BRKNIPCTF001",
+      "lender_participant_id": 105,
+      "lender_account": 10002,
+      "borrower_participant_id": 93,
+      "borrower_account": 20002,
+      "quantity": 25000,
+      "returned_quantity": 0,
+      "active_quantity": 25000,
+      "base_price": "94.20",
+      "rental_rate": "0.0300",
+      "contract_value": "2355000.00",
+      "active_value": "2355000.00",
+      "open_date": "2026-10-15",
+      "maturity_date": "2026-11-25",
+      "reversibility": "BOTH_REVERSIBLE",
+      "status": "OPEN",
+      "accrued_rental_fee": "0.00"
+    },
+    {
+      "contract_id": "BTC-ETF-2026-0003",
+      "asset_type": "ETF_EQUITY",
+      "symbol": "BOVA11",
+      "isin": "BRBOVACTF003",
+      "lender_participant_id": 114,
+      "lender_account": 10003,
+      "borrower_participant_id": 88,
+      "borrower_account": 20003,
+      "quantity": 50000,
+      "returned_quantity": 50000,
+      "active_quantity": 0,
+      "base_price": "125.00",
+      "rental_rate": "0.0180",
+      "contract_value": "6250000.00",
+      "active_value": "0.00",
+      "open_date": "2026-09-01",
+      "maturity_date": "2026-12-01",
+      "reversibility": "BORROWER_REVERSIBLE",
+      "status": "RETURNED",
+      "accrued_rental_fee": "13287.85"
+    },
+    {
+      "contract_id": "BTC-ETF-2026-0004",
+      "asset_type": "ETF_FIXED_INCOME",
+      "symbol": "IMAB11",
+      "isin": "BRIMABCTF001",
+      "lender_participant_id": 114,
+      "lender_account": 10004,
+      "borrower_participant_id": 105,
+      "borrower_account": 20004,
+      "quantity": 30000,
+      "returned_quantity": 0,
+      "active_quantity": 30000,
+      "base_price": "102.40",
+      "rental_rate": "0.0220",
+      "contract_value": "3072000.00",
+      "active_value": "3072000.00",
+      "open_date": "2026-10-01",
+      "maturity_date": "2026-11-30",
+      "reversibility": "FIXED_TERM",
+      "status": "OPEN",
+      "accrued_rental_fee": "0.00"
+    }
+  ],
+  "custody_accounts": [
+    {
+      "participant_id": 105,
+      "account_id": 10001,
+      "positions": {
+        "HGLG11": {
+          "symbol": "HGLG11",
+          "isin": "BRHGLGCTF004",
+          "available_qty": 9000,
+          "lent_active_qty": 6000,
+          "borrowed_active_qty": 0,
+          "returned_cum_qty": 4000,
+          "total_owned_qty": 15000
+        }
+      }
+    },
+    {
+      "participant_id": 105,
+      "account_id": 10002,
+      "positions": {
+        "KNIP11": {
+          "symbol": "KNIP11",
+          "isin": "BRKNIPCTF001",
+          "available_qty": 5000,
+          "lent_active_qty": 25000,
+          "borrowed_active_qty": 0,
+          "returned_cum_qty": 0,
+          "total_owned_qty": 30000
+        }
+      }
+    },
+    {
+      "participant_id": 114,
+      "account_id": 10003,
+      "positions": {
+        "BOVA11": {
+          "symbol": "BOVA11",
+          "isin": "BRBOVACTF003",
+          "available_qty": 60000,
+          "lent_active_qty": 0,
+          "borrowed_active_qty": 0,
+          "returned_cum_qty": 50000,
+          "total_owned_qty": 60000
+        }
+      }
+    },
+    {
+      "participant_id": 114,
+      "account_id": 10004,
+      "positions": {
+        "IMAB11": {
+          "symbol": "IMAB11",
+          "isin": "BRIMABCTF001",
+          "available_qty": 10000,
+          "lent_active_qty": 30000,
+          "borrowed_active_qty": 0,
+          "returned_cum_qty": 0,
+          "total_owned_qty": 40000
+        }
+      }
+    },
+    {
+      "participant_id": 88,
+      "account_id": 20001,
+      "positions": {
+        "HGLG11": {
+          "symbol": "HGLG11",
+          "isin": "BRHGLGCTF004",
+          "available_qty": 6000,
+          "lent_active_qty": 0,
+          "borrowed_active_qty": 6000,
+          "returned_cum_qty": 0,
+          "total_owned_qty": 6000
+        }
+      }
+    },
+    {
+      "participant_id": 93,
+      "account_id": 20002,
+      "positions": {
+        "KNIP11": {
+          "symbol": "KNIP11",
+          "isin": "BRKNIPCTF001",
+          "available_qty": 25000,
+          "lent_active_qty": 0,
+          "borrowed_active_qty": 25000,
+          "returned_cum_qty": 0,
+          "total_owned_qty": 25000
+        }
+      }
+    },
+    {
+      "participant_id": 88,
+      "account_id": 20003,
+      "positions": {
+        "BOVA11": {
+          "symbol": "BOVA11",
+          "isin": "BRBOVACTF003",
+          "available_qty": 0,
+          "lent_active_qty": 0,
+          "borrowed_active_qty": 0,
+          "returned_cum_qty": 0,
+          "total_owned_qty": 0
+        }
+      }
+    },
+    {
+      "participant_id": 105,
+      "account_id": 20004,
+      "positions": {
+        "IMAB11": {
+          "symbol": "IMAB11",
+          "isin": "BRIMABCTF001",
+          "available_qty": 30000,
+          "lent_active_qty": 0,
+          "borrowed_active_qty": 30000,
+          "returned_cum_qty": 0,
+          "total_owned_qty": 30000
+        }
+      }
+    }
+  ],
+  "dividend_receipts": [
+    {
+      "receipt_id": "REC-PROV-BTC-FII-2026-0001-EVT-HGLG11-202610",
+      "contract_id": "BTC-FII-2026-0001",
+      "event_id": "EVT-HGLG11-202610",
+      "symbol": "HGLG11",
+      "lender_participant_id": 105,
+      "lender_account": 10001,
+      "borrower_participant_id": 88,
+      "borrower_account": 20001,
+      "quantity_at_record_date": 10000,
+      "rate_per_quota": "1.100000",
+      "gross_amount": "11000.00",
+      "withholding_tax": "0.00",
+      "net_amount": "11000.00",
+      "borrower_debit": "11000.00",
+      "lender_credit": "11000.00",
+      "tax_compensation_credit": "0.00",
+      "payment_date": "2026-11-14",
+      "value_conserved": true,
+      "settlement_status": "SETTLED"
+    },
+    {
+      "receipt_id": "REC-PROV-BTC-FII-2026-0002-EVT-KNIP11-202610",
+      "contract_id": "BTC-FII-2026-0002",
+      "event_id": "EVT-KNIP11-202610",
+      "symbol": "KNIP11",
+      "lender_participant_id": 105,
+      "lender_account": 10002,
+      "borrower_participant_id": 93,
+      "borrower_account": 20002,
+      "quantity_at_record_date": 25000,
+      "rate_per_quota": "0.800000",
+      "gross_amount": "20000.00",
+      "withholding_tax": "0.00",
+      "net_amount": "20000.00",
+      "borrower_debit": "20000.00",
+      "lender_credit": "20000.00",
+      "tax_compensation_credit": "0.00",
+      "payment_date": "2026-11-13",
+      "value_conserved": true,
+      "settlement_status": "SETTLED"
+    },
+    {
+      "receipt_id": "REC-PROV-BTC-ETF-2026-0004-EVT-IMAB11-202610",
+      "contract_id": "BTC-ETF-2026-0004",
+      "event_id": "EVT-IMAB11-202610",
+      "symbol": "IMAB11",
+      "lender_participant_id": 114,
+      "lender_account": 10004,
+      "borrower_participant_id": 105,
+      "borrower_account": 20004,
+      "quantity_at_record_date": 30000,
+      "rate_per_quota": "0.750000",
+      "gross_amount": "22500.00",
+      "withholding_tax": "3375.00",
+      "net_amount": "19125.00",
+      "borrower_debit": "19125.00",
+      "lender_credit": "19125.00",
+      "tax_compensation_credit": "3375.00",
+      "payment_date": "2026-10-22",
+      "value_conserved": true,
+      "settlement_status": "SETTLED"
+    }
+  ],
+  "return_receipts": [
+    {
+      "return_id": "REC-DEV-BTC-FII-2026-0001-0001",
+      "contract_id": "BTC-FII-2026-0001",
+      "symbol": "HGLG11",
+      "return_date": "2026-11-04",
+      "returned_quantity": 4000,
+      "remaining_quantity": 6000,
+      "business_days": 22,
+      "rental_fee": "1428.62",
+      "is_early_return": true,
+      "is_final_settlement": false,
+      "lender_participant_id": 105,
+      "lender_account": 10001,
+      "borrower_participant_id": 88,
+      "borrower_account": 20001,
+      "status": "SETTLED"
+    },
+    {
+      "return_id": "REC-DEV-BTC-ETF-2026-0003-0002",
+      "contract_id": "BTC-ETF-2026-0003",
+      "symbol": "BOVA11",
+      "return_date": "2026-10-15",
+      "returned_quantity": 50000,
+      "remaining_quantity": 0,
+      "business_days": 30,
+      "rental_fee": "13287.85",
+      "is_early_return": true,
+      "is_final_settlement": true,
+      "lender_participant_id": 114,
+      "lender_account": 10003,
+      "borrower_participant_id": 88,
+      "borrower_account": 20003,
+      "status": "SETTLED"
+    }
+  ],
+  "invariants_audit": {
+    "law_084_contract_quota_conservation": true,
+    "law_085_dividend_forwarding_parity": true,
+    "law_multilateral_custody_balance": true,
+    "law_non_negative_custody": true,
+    "total_contracts": 4,
+    "total_dividend_receipts": 3,
+    "total_return_receipts": 2
+  }
+}
