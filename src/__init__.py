@@ -1351,6 +1351,20 @@ from src.central_settlement_liquidity_bus import (
     SettlementInstruction,
     WaterfallStageResolution,
 )
+from src.b3_unified_lifecycle import (
+    B3Module,
+    B3UnifiedLifecycleEngine,
+    InvestorAccount,
+    LifecycleTraceReport,
+    Order,
+    OrderSide,
+    OrderType,
+    OTCAssetType,
+    OTCContract,
+    Participant,
+    StepAuditRecord,
+    StepStatus,
+)
 
 
 __all__ = [
@@ -2643,6 +2657,19 @@ __all__ = [
     "SettlementCycle",
     "SettlementInstruction",
     "WaterfallStageResolution",
+    # Ciclo de Vida Unificado dos 7 Módulos B3
+    "B3Module",
+    "B3UnifiedLifecycleEngine",
+    "InvestorAccount",
+    "LifecycleTraceReport",
+    "Order",
+    "OrderSide",
+    "OrderType",
+    "OTCAssetType",
+    "OTCContract",
+    "Participant",
+    "StepAuditRecord",
+    "StepStatus",
 ]
 
 

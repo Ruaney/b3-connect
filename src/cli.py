@@ -15,6 +15,11 @@ from pathlib import Path
 import sys
 from typing import Any, Dict, List, Optional, Sequence, Tuple
 
+# Garante que a raiz do repositório esteja no sys.path para importações relativas e diretas
+_PKG_ROOT = str(Path(__file__).resolve().parent.parent)
+if _PKG_ROOT not in sys.path:
+    sys.path.insert(0, _PKG_ROOT)
+
 VERSION = "2.2.0"
 
 # Constantes do Catálogo
@@ -708,6 +713,410 @@ def cmd_simulate_flow(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_explain(args: argparse.Namespace) -> int:
+    """Exibe explicação pedagógica e arquitetural dos módulos do ecossistema B3."""
+    target = getattr(args, "module", "overview") or "overview"
+    target = target.lower().strip()
+
+    modules_data: Dict[str, Dict[str, Any]] = {
+        "overview": {
+            "title": "VISÃO GERAL DO ECOSSISTEMA B3 (7 MÓDULOS INTEGRADOS)",
+            "subtitle": "Da Pré-Negociação à Custódia: A Arquitetura Completa de Mercado de Capitais",
+            "sections": [
+                (
+                    "Os 7 Módulos Estruturantes",
+                    "1. Pré-Negociação & Risco (Pre-Trade Gateway): Validação de limites, fat-finger e DMA (<80µs).\n"
+                    "2. Negociação Listada (PUMA Trading System): Casamento central anônimo FIFO/Pro-Rata e leilões.\n"
+                    "3. Registro & Balcão Organizado (NoMe / Cetip): CDB, Debêntures, Recebíveis e gravames bilaterais.\n"
+                    "4. Contraparte Central (Câmara B3 / CCP): Novação legal (Lei 10.214), margem CORE e compensação.\n"
+                    "5. Liquidação Financeira (SPB / BACEN): Liquidação definitiva em moeda soberana (STR LDL0001, Drex).\n"
+                    "6. Central Depositária & Custódia (CSD): Guarda escritural e contas individualizadas por CPF/CNPJ.\n"
+                    "7. Supervisão de Mercados (BSM): Monitoramento em tempo real de Wash Trading, Spoofing e MOC.",
+                ),
+                (
+                    "Leis de Conservação",
+                    "84 Leis Formais comprovam matematicamente a consistência contábil, financeira e física.",
+                ),
+            ],
+        },
+        "pre-trade": {
+            "title": "MÓDULO 1: PRÉ-NEGOCIAÇÃO & RISCO (PRE-TRADE RISK GATEWAY)",
+            "subtitle": "Guardião perimetral com decisão em microssegundos antes do motor de matching",
+            "sections": [
+                (
+                    "Objetivo & Latência",
+                    "Impedir que ordens com erros de digitação, extrapolação de limite ou flooding alcancem a bolsa.\n"
+                    "Latência típica: < 80 microssegundos (FPGA / colocation no Data Center de Santana de Parnaíba).",
+                ),
+                (
+                    "Modalidades de Acesso DMA",
+                    "- DMA 1: Home broker e terminais convencionais (risco na corretora).\n"
+                    "- DMA 2: Provedor de infraestrutura terceirizado credenciado.\n"
+                    "- DMA 3: Conexão direta com software de risco operando em tempo real.\n"
+                    "- DMA 4 (Sponsored Access): Conexão direta em colocation sem intermediário de software.",
+                ),
+                (
+                    "Filtros Críticos",
+                    "- Fat-Finger: Rejeição de desvios anômalos de preço em relação ao último negócio (>10%).\n"
+                    "- Teto Operacional: Bloqueio por saldo de crédito ou limite nocional máximo por lote.\n"
+                    "- Throttling: Algoritmo Leaky Bucket controlando limite de mensagens por segundo por sessão.",
+                ),
+            ],
+        },
+        "puma": {
+            "title": "MÓDULO 2: NEGOCIAÇÃO LISTADA (PUMA TRADING SYSTEM)",
+            "subtitle": "Motor de casamento de ordens eletrônico centralizado e anônimo da B3",
+            "sections": [
+                (
+                    "Protocolos & Livro de Ofertas",
+                    "- Entrada: FIX 4.4 / FIX 5.0 SP2 e PUMA SBE (Simple Binary Encoding binário de alta performance).\n"
+                    "- Market Data: UMDF (Universal Market Data Feed) com FAST Multicast UDP.\n"
+                    "- Livro L2 (Market By Price): Agregação por nível de preço.\n"
+                    "- Livro L3 (Market By Order): Fila granular com timestamp de nanossegundos ordem a ordem.",
+                ),
+                (
+                    "Algoritmos de Execução",
+                    "- FIFO (Price-Time Priority): Ordem cronológica ao melhor preço (Ações, Opções).\n"
+                    "- Pro-Rata: Rateio proporcional ao tamanho da oferta (certos Futuros BM&F).\n"
+                    "- Closing Cross (MOC/LOC): Leilão de fechamento com prioridade MOC e janela de congelamento.",
+                ),
+                (
+                    "Túneis de Proteção & Circuit Breakers",
+                    "- Rejeição: Descarta ordens fora da banda diária (ex: ±20%).\n"
+                    "- Estático: Abre leilão se preço romper variação da referência de abertura (ex: ±10%).\n"
+                    "- Dinâmico: Abre leilão de volatilidade se preço romper variação do último negócio (ex: ±2%).\n"
+                    "- Circuit Breaker: Paralisação escalonada (Nível I: -10%, Nível II: -15%, Nível III: -20%).",
+                ),
+            ],
+        },
+        "balcao": {
+            "title": "MÓDULO 3: REGISTRO & BALCÃO ORGANIZADO (NOME / BALCÃO CETIP)",
+            "subtitle": "Ambiente para registro e guarda de operações bilaterais e crédito privado",
+            "sections": [
+                (
+                    "Mercado Listado vs Balcão",
+                    "Diferença fundamental: No PUMA a negociação é anônima em tela com livro central.\n"
+                    "No NoMe/Cetip a operação é bilateralmente negociada e registrada para conferir eficácia jurídica.",
+                ),
+                (
+                    "Instrumentos Registrados",
+                    "- Captação Bancária: CDB, RDB, LCI, LCA, Letras Financeiras (LF).\n"
+                    "- Títulos de Crédito: Debêntures simples e incentivadas, Notas Comerciais.\n"
+                    "- Derivativos Customizados: Swaps (Pré x DI, DI x Dólar), Termo de Moedas (NDF), Opções Flexíveis.\n"
+                    "- Agronegócio: CPR Física e Financeira, CIR com afetação de terra sob Lei 13.986/20.",
+                ),
+                (
+                    "Registrador de Recebíveis & Gravames",
+                    "- Centralização de recebíveis de arranjos de pagamento (cartão de crédito/débito).\n"
+                    "- Registro de gravames fiduciários e travas de domicílio (Res. CMN 4.734 / Circ. BCB 3.952).\n"
+                    "- Garantia de unicidade: impede sobrecolateralização cruzada do mesmo fluxo de recebíveis.",
+                ),
+            ],
+        },
+        "ccp": {
+            "title": "MÓDULO 4: PÓS-NEGOCIAÇÃO & CONTRAPARTE CENTRAL (CÂMARA B3 / CCP)",
+            "subtitle": "Eliminação do risco bilateral via novação legal e compensação multilateral contínua",
+            "sections": [
+                (
+                    "Novação Contratual (Lei 10.214/2001)",
+                    "A B3 interpõe-se juridicamente entre comprador e vendedor (Art. 7º da Lei 10.214).\n"
+                    "Torna-se compradora de todo vendedor e vendedora de todo comprador: risco de crédito bilateral = 0.",
+                ),
+                (
+                    "Margem de Garantia CORE",
+                    "Closeout Risk Evaluation: Modelo proprietário multiativo em tempo real.\n"
+                    "Simula o custo de liquidação forçada da carteira em cenários de estresse de preços e liquidez.",
+                ),
+                (
+                    "Compensação Multilateral Contínua",
+                    "Agregação de todas as compras e vendas em um único saldo líquido financeiro e físico.\n"
+                    "Redução de liquidez exigida no sistema financeiro tipicamente superior a 85%.",
+                ),
+                (
+                    "Cascata de Salvaguardas (Default Waterfall)",
+                    "1. Garantias do participante inadimplente -> 2. Aporte no Fundo de Liquidação ->\n"
+                    "3. Skin in the game da B3 -> 4. Fundo de Liquidação geral -> 5. Patrimônio da B3.",
+                ),
+            ],
+        },
+        "spb": {
+            "title": "MÓDULO 5: LIQUIDAÇÃO FINANCEIRA & SPB (BACEN / STR / SPI / DREX)",
+            "subtitle": "Movimentação definitiva em moeda soberana do Banco Central",
+            "sections": [
+                (
+                    "Integração com STR / SPB",
+                    "Mensagens formais de liquidação de diferenças líquidas:\n"
+                    "- LDL0001: Abertura e processamento do ciclo de liquidação multilateral líquida no STR.\n"
+                    "- LDL0003: Confirmação e encerramento do ciclo com finalidade irrevogável.\n"
+                    "Ciclos padrão: D0 (Câmbio / intradia), D+1 (Ajustes de Futuros BM&F, Tesouro Direto), D+2 (Ações).",
+                ),
+                (
+                    "Pix Margem 24/7 (SPI)",
+                    "Chamadas de margem intradiárias e noturnas liquidadas em menos de 10 segundos.\n"
+                    "Reconciliação e garantia de unicidade atômica via código E2EID.",
+                ),
+                (
+                    "Drex Fase 2 (DLT Soberana)",
+                    "DvP Atômico (Delivery vs Payment) e PvP (Payment vs Payment) com contratos inteligentes.\n"
+                    "A titularidade só muda se o débito e crédito de moeda digital ocorrerem no mesmo bloco da rede.",
+                ),
+            ],
+        },
+        "csd": {
+            "title": "MÓDULO 6: CENTRAL DEPOSITÁRIA & CUSTÓDIA (CSD)",
+            "subtitle": "Guarda, escrituração e contas individualizadas por investidor final",
+            "sections": [
+                (
+                    "Contas Individualizadas (CPF / CNPJ)",
+                    "Diferencial do modelo brasileiro: cada investidor possui conta de custódia própria.\n"
+                    "Incomunicabilidade patrimonial: ativos não entram na massa falida da corretora.",
+                ),
+                (
+                    "Conciliação Diária (Arquivos IMBARQ)",
+                    "- IMBARQ004: Demonstrativo financeiro de liquidação.\n"
+                    "- IMBARQ006: Posições em aberto na Câmara (derivativos, futuros e opções).\n"
+                    "- IMBARQ011: Contratos de aluguel de ações e títulos (Banco de Títulos B3 - BTC).\n"
+                    "- IMBARQ012: Posição de custódia na Central Depositária (Disponível, Garantia, Judicial).\n"
+                    "- IMBARQ013: Extrato diário de movimentações de custódia.\n"
+                    "- IMBARQ014: Garantias e colaterais alocados.\n"
+                    "- IMBARQ018: Proventos em dinheiro e eventos corporativos pendentes/creditados.",
+                ),
+                (
+                    "Eventos Corporativos (Corporate Actions)",
+                    "Processamento com respeito estrito a Data Com, Data Ex e Data de Pagamento.\n"
+                    "Dividendos, Juros sobre Capital Próprio (JCP), Bonificações, Desdobramentos e Subscrições.",
+                ),
+                (
+                    "Portabilidade STVM (CVM 179)",
+                    "Transferência 100% digital e auditada de títulos e valores mobiliários entre custodiantes.",
+                ),
+            ],
+        },
+        "bsm": {
+            "title": "MÓDULO 7: SUPERVISÃO & AUTORREGULAÇÃO DE MERCADOS (BSM)",
+            "subtitle": "Auditoria algorítmica independente e repressão a práticas não equitativas",
+            "sections": [
+                (
+                    "Papel Institucional",
+                    "Entidade autorreguladora que fiscaliza corretoras, investidores e participantes da B3.\n"
+                    "Monitora negociações em tempo real e em batimentos analíticos post-trade.",
+                ),
+                (
+                    "Algoritmos de Detecção",
+                    "- Wash Trading: Negociações consigo mesmo (mesmo beneficiário final / CPF).\n"
+                    "- Spoofing & Layering: Ofertas falsas sem intenção de fechar negócio para manipular o book L2/L3.\n"
+                    "- MOC Front-Running: Inserção abusiva de ordens no leilão de fechamento para manipular PTP.\n"
+                    "- Churning & Quebra de Segregação: Desvio patrimonial e sobrecolateralização cruzada.",
+                ),
+            ],
+        },
+    }
+
+    info = modules_data.get(target)
+    if not info:
+        print(f"Módulo desconhecido '{target}'. Módulos válidos: overview, pre-trade, puma, balcao, ccp, spb, csd, bsm.")
+        return 1
+
+    if getattr(args, "json", False):
+        print(json.dumps(info, indent=2, ensure_ascii=False))
+        return 0
+
+    print("\n" + "=" * 80)
+    print(f" {info['title']}")
+    print(f" {info['subtitle']}")
+    print("=" * 80)
+    for sec_title, sec_content in info["sections"]:
+        print(f"\n[+] {sec_title}")
+        print("-" * 80)
+        for line in sec_content.split("\n"):
+            print(f"    {line}")
+    print("\n" + "=" * 80)
+    print(" Para simular um trade na prática percorrendo todos os módulos: b3-atlas trace-trade")
+    print("=" * 80 + "\n")
+    return 0
+
+
+def cmd_trace_trade(args: argparse.Namespace) -> int:
+    """Executa e exibe no terminal a simulação didática de um trade percorrendo os 7 módulos."""
+    from src.b3_unified_lifecycle import (
+        B3UnifiedLifecycleEngine,
+        InvestorAccount,
+        Order,
+        OrderSide,
+        OrderType,
+        Participant,
+    )
+    from decimal import Decimal
+
+    engine = B3UnifiedLifecycleEngine()
+
+    p_itau = Participant(
+        participant_id="PART-001",
+        name="Itaú Corretora",
+        dma_tier="DMA4",
+        collateral_limit=Decimal("50000000.00"),
+    )
+    p_xp = Participant(
+        participant_id="PART-002",
+        name="XP Investimentos",
+        dma_tier="DMA3",
+        collateral_limit=Decimal("30000000.00"),
+    )
+    engine.register_participant(p_itau)
+    engine.register_participant(p_xp)
+
+    buyer_cpf = "CPF-111.222.333-44"
+    seller_cpf = "CPF-555.666.777-88"
+
+    if getattr(args, "wash_trade", False):
+        seller_cpf = buyer_cpf
+
+    acc_buyer = InvestorAccount(
+        investor_id=buyer_cpf,
+        name="Investidor Comprador",
+        participant_id="PART-001",
+        available_cash=Decimal("1000000.00"),
+        custody_shares={"PETR4": 5000},
+    )
+    acc_seller = InvestorAccount(
+        investor_id=seller_cpf,
+        name="Investidor Vendedor",
+        participant_id="PART-002",
+        available_cash=Decimal("500000.00"),
+        custody_shares={"PETR4": 10000},
+    )
+    engine.register_account(acc_buyer)
+    engine.register_account(acc_seller)
+
+    symbol = getattr(args, "symbol", "PETR4")
+    qty = getattr(args, "qty", 1000)
+    ref_price = Decimal(str(getattr(args, "ref_price", 38.40)))
+
+    if getattr(args, "fat_finger", False):
+        buy_price = Decimal("55.00")
+    else:
+        buy_price = Decimal(str(getattr(args, "price", 38.50)))
+
+    sell_price = Decimal(str(getattr(args, "price", 38.50)))
+
+    order_buy = Order(
+        order_id="ORD-CLI-BUY-01",
+        investor_id=buyer_cpf,
+        participant_id="PART-001",
+        symbol=symbol,
+        side=OrderSide.BUY,
+        quantity=qty,
+        price=buy_price,
+    )
+    order_sell = Order(
+        order_id="ORD-CLI-SELL-02",
+        investor_id=seller_cpf,
+        participant_id="PART-002",
+        symbol=symbol,
+        side=OrderSide.SELL,
+        quantity=qty,
+        price=sell_price,
+    )
+
+    report = engine.execute_listed_trade(
+        buy_order=order_buy,
+        sell_order=order_sell,
+        reference_price=ref_price,
+    )
+
+    if getattr(args, "json", False):
+        data = {
+            "operation_id": report.operation_id,
+            "operation_type": report.operation_type,
+            "instrument": report.instrument,
+            "total_volume": report.total_volume,
+            "executed_price": str(report.executed_price),
+            "total_notional": str(report.total_notional),
+            "is_settled": report.is_settled,
+            "is_compliant": report.is_compliant,
+            "bsm_flags": report.bsm_flags,
+            "steps": [
+                {
+                    "module": s.module.value,
+                    "status": s.status.value,
+                    "latency_micros": str(s.latency_micros),
+                    "summary": s.summary,
+                    "conservation_law": s.conservation_law,
+                    "details": s.details,
+                }
+                for s in report.steps
+            ],
+        }
+        print(json.dumps(data, indent=2, ensure_ascii=False))
+        return 0
+
+    print("\n" + report.summary_text() + "\n")
+    return 0
+
+
+def cmd_trace_balcao(args: argparse.Namespace) -> int:
+    """Executa e exibe no terminal a simulação de registro de um ativo de balcão (NoMe/Cetip)."""
+    from src.b3_unified_lifecycle import (
+        B3UnifiedLifecycleEngine,
+        OTCAssetType,
+        OTCContract,
+    )
+    from decimal import Decimal
+
+    engine = B3UnifiedLifecycleEngine()
+
+    asset_str = getattr(args, "asset", "CDB").upper()
+    try:
+        asset_type = OTCAssetType[asset_str]
+    except KeyError:
+        asset_type = OTCAssetType.CDB
+
+    notional = Decimal(str(getattr(args, "notional", 250000.00)))
+    annual_rate = Decimal(str(getattr(args, "rate", 0.1175)))
+    with_lien = getattr(args, "with_lien", True)
+    lien_holder = "BANCO-CREDOR-02" if with_lien else None
+
+    contract = OTCContract(
+        contract_id="OTC-REG-CLI-9001",
+        issuer_id="BANCO-EMISSOR-01",
+        investor_id="CPF-111.222.333-44",
+        asset_type=asset_type,
+        notional=notional,
+        annual_rate=annual_rate,
+        maturity_days=730,
+        lien_holder=lien_holder,
+        asset_reference="TRAVA-DOMICILIO-RECEIVABLE" if with_lien else None,
+    )
+
+    report = engine.execute_otc_registration(contract)
+
+    if getattr(args, "json", False):
+        data = {
+            "operation_id": report.operation_id,
+            "operation_type": report.operation_type,
+            "instrument": report.instrument,
+            "total_notional": str(report.total_notional),
+            "is_settled": report.is_settled,
+            "is_compliant": report.is_compliant,
+            "steps": [
+                {
+                    "module": s.module.value,
+                    "status": s.status.value,
+                    "latency_micros": str(s.latency_micros),
+                    "summary": s.summary,
+                    "conservation_law": s.conservation_law,
+                    "details": s.details,
+                }
+                for s in report.steps
+            ],
+        }
+        print(json.dumps(data, indent=2, ensure_ascii=False))
+        return 0
+
+    print("\n" + report.summary_text() + "\n")
+    return 0
+
+
 # ==============================================================================
 # Entrypoints dos CLI Scripts
 # ==============================================================================
@@ -835,6 +1244,56 @@ def build_atlas_parser() -> argparse.ArgumentParser:
     p_sflow.add_argument("--stress-default", action="store_true", help="Parâmetro para fluxo de Barramento Central")
     p_sflow.add_argument("--json", action="store_true", help="Saída em formato JSON")
     p_sflow.set_defaults(func=cmd_simulate_flow)
+
+    # b3-atlas explain [module]
+    p_explain = subparsers.add_parser(
+        "explain",
+        aliases=["modulo", "modulos"],
+        help="Exibe guia didático e arquitetural dos 7 módulos do ecossistema B3",
+    )
+    p_explain.add_argument(
+        "module",
+        nargs="?",
+        default="overview",
+        choices=["overview", "pre-trade", "puma", "balcao", "ccp", "spb", "csd", "bsm"],
+        help="Módulo a explicar (overview, pre-trade, puma, balcao, ccp, spb, csd, bsm)",
+    )
+    p_explain.add_argument("--json", action="store_true", help="Saída em formato JSON")
+    p_explain.set_defaults(func=cmd_explain)
+
+    # b3-atlas trace-trade
+    p_trace = subparsers.add_parser(
+        "trace-trade",
+        aliases=["trace", "trade"],
+        help="Simula e rastreia uma negociação listada através de todos os 7 módulos da B3",
+    )
+    p_trace.add_argument("--symbol", default="PETR4", help="Código do ativo (ex: PETR4, VALE3)")
+    p_trace.add_argument("--qty", type=int, default=1000, help="Quantidade de ações")
+    p_trace.add_argument("--price", type=float, default=38.50, help="Preço executado")
+    p_trace.add_argument("--ref-price", type=float, default=38.40, help="Preço de referência de abertura")
+    p_trace.add_argument("--fat-finger", action="store_true", help="Simula erro de digitação com desvio excessivo")
+    p_trace.add_argument("--wash-trade", action="store_true", help="Simula mesmo investidor em ambas as pontas (alerta BSM)")
+    p_trace.add_argument("--json", action="store_true", help="Saída em formato JSON")
+    p_trace.set_defaults(func=cmd_trace_trade)
+
+    # b3-atlas trace-balcao
+    p_tbalcao = subparsers.add_parser(
+        "trace-balcao",
+        aliases=["balcao", "otc"],
+        help="Simula o ciclo de registro de um ativo de balcão (NoMe/Cetip) com gravames",
+    )
+    p_tbalcao.add_argument(
+        "--asset",
+        default="CDB",
+        choices=["CDB", "DEBENTURE", "CARD_RECEIVABLE", "CIR"],
+        help="Tipo de ativo de balcão",
+    )
+    p_tbalcao.add_argument("--notional", type=float, default=250000.00, help="Valor nocional do título")
+    p_tbalcao.add_argument("--rate", type=float, default=0.1175, help="Taxa anual do título (ex: 0.1175)")
+    p_tbalcao.add_argument("--no-lien", dest="with_lien", action="store_false", help="Desativa trava de gravame/domicílio")
+    p_tbalcao.set_defaults(with_lien=True)
+    p_tbalcao.add_argument("--json", action="store_true", help="Saída em formato JSON")
+    p_tbalcao.set_defaults(func=cmd_trace_balcao)
 
     return parser
 

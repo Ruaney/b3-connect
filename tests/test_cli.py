@@ -11,6 +11,7 @@ from src.cli import (
     VERSION,
     build_atlas_parser,
     build_verify_parser,
+    cmd_explain,
     cmd_flow_info,
     cmd_list_flows,
     cmd_list_sources,
@@ -19,6 +20,8 @@ from src.cli import (
     cmd_simulate_moc,
     cmd_simulate_triparty,
     cmd_stats,
+    cmd_trace_balcao,
+    cmd_trace_trade,
     load_catalog,
     main_atlas,
     main_verify,
@@ -385,6 +388,68 @@ class TestAtlasCLI(unittest.TestCase):
             # simulate-flow e alias run-flow
             self.assertEqual(main_atlas(["simulate-flow", "FL-100", "--json"]), 0)
             self.assertEqual(main_atlas(["run-flow", "FL-098", "--json"]), 0)
+
+    def test_explain_command_all_modules(self):
+        """Testa o comando b3-atlas explain para todos os 7 módulos e overview."""
+        modules = ["overview", "pre-trade", "puma", "balcao", "ccp", "spb", "csd", "bsm"]
+        for mod in modules:
+            with patch("sys.stdout", new=StringIO()) as fake_out:
+                code = main_atlas(["explain", mod])
+                self.assertEqual(code, 0, f"Falha no explain para {mod}")
+                self.assertIn("MÓDULO", fake_out.getvalue().upper() if mod != "overview" else fake_out.getvalue())
+
+    def test_explain_json_output(self):
+        """Testa explain com formato JSON."""
+        with patch("sys.stdout", new=StringIO()) as fake_out:
+            code = main_atlas(["explain", "puma", "--json"])
+            self.assertEqual(code, 0)
+            data = json.loads(fake_out.getvalue())
+            self.assertIn("title", data)
+            self.assertIn("PUMA", data["title"])
+
+    def test_trace_trade_normal_and_flags(self):
+        """Testa simulação interativa de negociação listada percorrendo os 7 módulos."""
+        # Caso normal
+        with patch("sys.stdout", new=StringIO()) as fake_out:
+            code = main_atlas(["trace-trade"])
+            self.assertEqual(code, 0)
+            self.assertIn("LIQUIDAÇÃO CONCLUÍDA", fake_out.getvalue())
+            self.assertIn("TOTALMENTE CONFORME", fake_out.getvalue())
+
+        # Caso Fat-Finger
+        with patch("sys.stdout", new=StringIO()) as fake_out:
+            code = main_atlas(["trace-trade", "--fat-finger"])
+            self.assertEqual(code, 0)
+            self.assertIn("FAT_FINGER_REJECTION", fake_out.getvalue())
+
+        # Caso Wash Trading
+        with patch("sys.stdout", new=StringIO()) as fake_out:
+            code = main_atlas(["trace-trade", "--wash-trade"])
+            self.assertEqual(code, 0)
+            self.assertIn("WASH_TRADING_DETECTED", fake_out.getvalue())
+
+        # JSON output
+        with patch("sys.stdout", new=StringIO()) as fake_out:
+            code = main_atlas(["trace-trade", "--json"])
+            self.assertEqual(code, 0)
+            data = json.loads(fake_out.getvalue())
+            self.assertTrue(data["is_settled"])
+            self.assertEqual(len(data["steps"]), 7)
+
+    def test_trace_balcao_lifecycle(self):
+        """Testa simulação de registro em balcão NoMe com gravame de recebível."""
+        with patch("sys.stdout", new=StringIO()) as fake_out:
+            code = main_atlas(["trace-balcao", "--asset", "CDB", "--notional", "300000"])
+            self.assertEqual(code, 0)
+            self.assertIn("Trava de domicílio", fake_out.getvalue())
+            self.assertIn("LIQUIDAÇÃO CONCLUÍDA", fake_out.getvalue())
+
+        with patch("sys.stdout", new=StringIO()) as fake_out:
+            code = main_atlas(["trace-balcao", "--json"])
+            self.assertEqual(code, 0)
+            data = json.loads(fake_out.getvalue())
+            self.assertEqual(data["operation_type"], "OTC_REGISTRATION")
+            self.assertTrue(data["is_settled"])
 
     def test_main_verify_execution(self):
         """Testa execução do verificador formal de invariantes via main_verify."""
