@@ -577,6 +577,46 @@
       "status": "localizada",
       "kind": "manual_tecnico",
       "limitation": "Arquitetura de 3 camadas da rede Drex (Real Digital CBDC, Real Tokenizado de varejo e TPFt na B3/SELIC), liquidação atômica DvP e PvP em Smart Contracts EVM, HTLC com timeouts regulatórios e paridade 1:1."
+    },
+    {
+      "id": "SRC-073",
+      "title": "B3 PUMA Trading System — Manual de Procedimentos Operacionais: Túneis de Negociação, Acionamento de Circuit Breaker e Leilões Não-Programados",
+      "url": "https://www.b3.com.br/pt_br/solucoes/plataformas/puma-trading-system/regras-e-parametros-de-negociacao/tuncis-e-circuit-breaker.htm",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Regras de túneis de rejeição, leilão estático e dinâmico, apuração de PTP e conservação de ordens no book PUMA."
+    },
+    {
+      "id": "SRC-074",
+      "title": "B3 Balcão NoMe — Manual de Registro de Empréstimo Eletrônico de Ativos Estruturados e Crédito Privado (Resolução CMN nº 4.952/2021)",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/registro/renda-fixa/emprestimo-de-credito-privado.htm",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Contratos de empréstimo de debêntures, CRI, CRA e LF, depósitos de colateral, pass-through de rendimentos e conservação física."
+    },
+    {
+      "id": "SRC-075",
+      "title": "Câmara B3 — Manual de Compensação Multilateral, Marcação a Mercado Diária e Margem de Variação de Contratos a Termo de Moedas (NDF FX)",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/compensacao-e-liquidacao/camara-b3/compensacao-multilateral-ndf-fx.htm",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Compensação multilateral de NDF cambial, apuração de variação diária soma-zero, modelo CORE e retenção na fonte IRRF."
+    },
+    {
+      "id": "SRC-076",
+      "title": "B3 Plataforma de Fundos — Manual Operacional de Liquidação Financeira e Split Automático de Resgates (Resolução CVM nº 175/2022)",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/registro/fundos-de-investimento/split-resgates-cvm175.htm",
+      "status": "localizada",
+      "kind": "norma_regulatoria",
+      "limitation": "Rotina de cotização, divisão automática de taxas de administração e performance pela linha d'água e liquidação financeira STR/PI."
+    },
+    {
+      "id": "SRC-077",
+      "title": "B3 Balcão NoMe Agro — Manual de Registro Escritural e Custódia de Cédulas Imobiliárias Rurais com Patrimônio de Afetação (Lei nº 13.986/2020 e Resolução CMN nº 4.818/2020)",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/registro/agronegocio/cedula-imobiliaria-rural-cir.htm",
+      "status": "localizada",
+      "kind": "norma_regulatoria",
+      "limitation": "Escrituração e custódia de CIR vinculada a fração de terra sob afetação, validação SIGEF/INCRA, limite prudencial e excussão fiduciária."
     }
   ]
 }

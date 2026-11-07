@@ -1311,12 +1311,12 @@
       }
     },
     {
-      "id": "FL-068",
-      "name": "Roteamento Inteligente de Ordens (Smart Order Router - SOR) e Agregação de Liquidez Multi-Venue",
-      "system": "B3 PUMA Trading System & Plataforma de Roteamento",
-      "interface": "Motor Algorítmico Split SOR e Agregação Multi-Venue",
+      "id": "FL-063",
+      "name": "Operações Estruturadas de Volatilidade e Opções Combinadas no PUMA Trading (Straddle, Strangle, Iron Condor, Collar, Butterfly)",
+      "system": "PUMA Trading System & Câmara B3",
+      "interface": "Motor de Negociação Multi-Leg, Validador Estrutural e Margem por Spread de Volatilidade",
       "sources": [
-        "SRC-056"
+        "SRC-060"
       ],
       "confidence": "confirmado_em_documentacao_oficial",
       "mapped": true,
@@ -1324,20 +1324,20 @@
       "implemented": true,
       "tested_locally": true,
       "validated_b3": false,
-      "pending": "Divisão determinística de ordens (Split SOR), estratégias Best Execution/Minimal Impact, prevenção de trade-through e conservação de lote original implementados. Pendente homologação B3.",
+      "pending": "Validação de pernas combinadas, execução atômica All-or-None, Lei de Conservação de Razão de Pernas e mitigação de margem CORE implementados. Pendente homologação B3.",
       "evidence": {
-        "documented": "docs/layout-smart-order-router.md",
-        "implemented": "src/smart_order_router.py",
-        "tested_locally": "tests/test_smart_order_router.py"
+        "documented": "docs/layout-volatility-strategies.md",
+        "implemented": "src/volatility_strategies.py",
+        "tested_locally": "tests/test_volatility_strategies.py"
       }
     },
     {
-      "id": "FL-069",
-      "name": "Registro e Constituição de Gravames sobre Recebíveis de Arranjos de Pagamento no Balcão NoMe B3",
-      "system": "Balcão NoMe B3 & Sistema Registrador",
-      "interface": "Motor de Registro de URs, Opt-in de Consentimento, Constituição/Baixa de Gravames e Trava de Domicílio",
+      "id": "FL-064",
+      "name": "Negociação, Precificação Black-76 e Exercício de Opções sobre Futuros de Commodities Agrícolas (Soja SOJ/SJC, Milho CCM, Boi Gordo BGI, Café Arábica ICF)",
+      "system": "PUMA Trading System & Câmara B3",
+      "interface": "Motor Analítico Black-76, Exercício Automático e Conversão em Futuros B3",
       "sources": [
-        "SRC-067"
+        "SRC-033"
       ],
       "confidence": "confirmado_em_documentacao_oficial",
       "mapped": true,
@@ -1345,11 +1345,11 @@
       "implemented": true,
       "tested_locally": true,
       "validated_b3": false,
-      "pending": "Agrupamento de Unidades de Recebíveis (UR), consentimento opt-in, unicidade e trava de domicílio bancário, liquidação de antecipações implementados. Pendente homologação B3.",
+      "pending": "Modelo Black-76 analítico com gregas de 1ª e 2ª ordem, paridade Put-Call, exercício automático (mínimo 1 tick), contrary instruction e conversão conservativa em posições de futuros agropecuários implementados com 100% de aprovação em testes unitários.",
       "evidence": {
-        "documented": "docs/layout-card-receivables.md",
-        "implemented": "src/card_receivables_registry.py",
-        "tested_locally": "tests/test_card_receivables.py"
+        "documented": "docs/layout-commodity-options-black76.md",
+        "implemented": "src/commodity_options_black76.py",
+        "tested_locally": "tests/test_commodity_options_black76.py"
       }
     },
     {
@@ -1418,12 +1418,12 @@
       }
     },
     {
-      "id": "FL-063",
-      "name": "Operações Estruturadas de Volatilidade e Opções Combinadas no PUMA Trading (Straddle, Strangle, Iron Condor, Collar, Butterfly)",
-      "system": "PUMA Trading System & Câmara B3",
-      "interface": "Motor de Negociação Multi-Leg, Validador Estrutural e Margem por Spread de Volatilidade",
+      "id": "FL-068",
+      "name": "Roteamento Inteligente de Ordens (Smart Order Router - SOR) e Agregação de Liquidez Multi-Venue",
+      "system": "B3 PUMA Trading System & Plataforma de Roteamento",
+      "interface": "Motor Algorítmico Split SOR e Agregação Multi-Venue",
       "sources": [
-        "SRC-060"
+        "SRC-056"
       ],
       "confidence": "confirmado_em_documentacao_oficial",
       "mapped": true,
@@ -1431,11 +1431,32 @@
       "implemented": true,
       "tested_locally": true,
       "validated_b3": false,
-      "pending": "Validação de pernas combinadas, execução atômica All-or-None, Lei de Conservação de Razão de Pernas e mitigação de margem CORE implementados. Pendente homologação B3.",
+      "pending": "Divisão determinística de ordens (Split SOR), estratégias Best Execution/Minimal Impact, prevenção de trade-through e conservação de lote original implementados. Pendente homologação B3.",
       "evidence": {
-        "documented": "docs/layout-volatility-strategies.md",
-        "implemented": "src/volatility_strategies.py",
-        "tested_locally": "tests/test_volatility_strategies.py"
+        "documented": "docs/layout-smart-order-router.md",
+        "implemented": "src/smart_order_router.py",
+        "tested_locally": "tests/test_smart_order_router.py"
+      }
+    },
+    {
+      "id": "FL-069",
+      "name": "Registro e Constituição de Gravames sobre Recebíveis de Arranjos de Pagamento no Balcão NoMe B3",
+      "system": "Balcão NoMe B3 & Sistema Registrador",
+      "interface": "Motor de Registro de URs, Opt-in de Consentimento, Constituição/Baixa de Gravames e Trava de Domicílio",
+      "sources": [
+        "SRC-067"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Agrupamento de Unidades de Recebíveis (UR), consentimento opt-in, unicidade e trava de domicílio bancário, liquidação de antecipações implementados. Pendente homologação B3.",
+      "evidence": {
+        "documented": "docs/layout-card-receivables.md",
+        "implemented": "src/card_receivables_registry.py",
+        "tested_locally": "tests/test_card_receivables.py"
       }
     },
     {
@@ -1565,6 +1586,49 @@
       }
     },
     {
+      "id": "FL-076",
+      "name": "Empréstimo e Operações Compromissadas com Títulos Públicos Federais (TPFs) no Balcão B3 e SELIC",
+      "system": "Balcão NoMe B3 & SELIC",
+      "interface": "Aluguel Soberano de TPFs (LTN, LFT, NTN-B, NTN-F), Operações Compromissadas (Repos) e Repasse de Cupons",
+      "sources": [
+        "SRC-009",
+        "SRC-011"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Conservação de custódia soberana, paridade de recompra repo, repasse integral de cupons sem quebra fiscal e liquidação DvP comprovadas formalmente.",
+      "evidence": {
+        "documented": "docs/layout-sovereign-tpf-lending.md",
+        "implemented": "src/sovereign_tpf_lending.py",
+        "tested_locally": "tests/test_sovereign_tpf_lending.py"
+      }
+    },
+    {
+      "id": "FL-077",
+      "name": "Escrituração, Liquidação e Gestão de Cotas de Fundos de Investimento Imobiliário (FII) e Cotas Subordinadas/Seniores de FIDC no Balcão NoMe B3 (Resolução CVM nº 175 - Anexos II e III)",
+      "system": "Balcão NoMe B3 & Central Depositária (CSD)",
+      "interface": "Motor de Escrituração de Cotas, Cascata de Subordinação FIDC (Water-Tight Priority), Pagamento de Proventos 95% Caixa FII (Lei 8.668/93) e Liquidação Financeira",
+      "sources": [
+        "SRC-070"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Conservação patrimonial de cotas, cascata de subordinação estrita (first-loss piece Júnior e Mezanino), proventos mínimos de 95% do lucro caixa e payment waterfall implementados. Pendente homologação B3.",
+      "evidence": {
+        "documented": "docs/layout-structured-funds-fidc-fii.md",
+        "implemented": "src/structured_funds_fidc_fii.py",
+        "tested_locally": "tests/test_structured_funds_fidc_fii.py"
+      }
+    },
+    {
       "id": "FL-078",
       "name": "Gestão de Garantias em Commodities Agrícolas (CDA e WA) com Armazéns Credenciados B3",
       "system": "Câmara B3 (CORE) & Balcão Agrícola",
@@ -1583,48 +1647,6 @@
         "documented": "docs/layout-agricultural-warrant-collateral.md",
         "implemented": "src/agricultural_warrant_collateral.py",
         "tested_locally": "tests/test_agricultural_warrant_collateral.py"
-      }
-    },
-    {
-      "id": "FL-083",
-      "name": "Depósito, Haircut e Bloqueio de Ativos Financeiros Offshore e Eurobonds como Colateral Multilateral na Câmara B3",
-      "system": "Câmara B3 (CORE) & Custódia Internacional",
-      "interface": "Motor de Colateral Offshore, Haircuts por Rating/Tenor/FX, Bloqueio Multilateral e Custódia Segregada DTC/Euroclear/Clearstream",
-      "sources": [
-        "SRC-068"
-      ],
-      "confidence": "confirmado_em_documentacao_oficial",
-      "mapped": true,
-      "documented": true,
-      "implemented": true,
-      "tested_locally": true,
-      "validated_b3": false,
-      "pending": "Matriz de haircuts por risco país, rating e volatilidade cambial PTAX, invariantes de não-negatividade e segregação internacional de custódia implementados. Pendente homologação B3.",
-      "evidence": {
-        "documented": "docs/layout-offshore-eurobonds-collateral.md",
-        "implemented": "src/offshore_eurobonds_collateral.py",
-        "tested_locally": "tests/test_offshore_eurobonds_collateral.py"
-      }
-    },
-    {
-      "id": "FL-085",
-      "name": "Emissão, Registro e Gestão de Fundo de Reserva de Certificados de Recebíveis de Saúde (CR Saúde) e Educação (CR Educação) no Balcão NoMe B3",
-      "system": "Balcão NoMe B3",
-      "interface": "Motor de Securitização Social, Segregação Fiduciária com Patrimônio Separado, Cascata de Pagamentos e Fundo de Reserva",
-      "sources": [
-        "SRC-069"
-      ],
-      "confidence": "confirmado_em_documentacao_oficial",
-      "mapped": true,
-      "documented": true,
-      "implemented": true,
-      "tested_locally": true,
-      "validated_b3": false,
-      "pending": "Segregação fiduciária, incomunicabilidade patrimonial (Lei 14.430/2022), cascata de amortização de tranches e recomposição mandatória do fundo de reserva implementados. Pendente homologação B3.",
-      "evidence": {
-        "documented": "docs/layout-health-education-securitization.md",
-        "implemented": "src/health_education_securitization.py",
-        "tested_locally": "tests/test_health_education_securitization.py"
       }
     },
     {
@@ -1650,12 +1672,13 @@
       }
     },
     {
-      "id": "FL-064",
-      "name": "Negociação, Precificação Black-76 e Exercício de Opções sobre Futuros de Commodities Agrícolas (Soja SOJ/SJC, Milho CCM, Boi Gordo BGI, Café Arábica ICF)",
-      "system": "PUMA Trading System & Câmara B3",
-      "interface": "Motor Analítico Black-76, Exercício Automático e Conversão em Futuros B3",
+      "id": "FL-080",
+      "name": "Registro e Liquidação Periódica de Swaps de Taxa de Juros com Ajustes Periódicos (IRS - Interest Rate Swap Pré x DI e IPCA x DI com Reset Periódico) no Balcão NoMe B3",
+      "system": "Balcão NoMe B3 & Câmara B3",
+      "interface": "Motor IRS de Resets Periódicos, Acumulação CDI Diário Cetip (DU/252), Cash Settlement e Invariante de Não-Arbitragem",
       "sources": [
-        "SRC-033"
+        "SRC-011",
+        "SRC-034"
       ],
       "confidence": "confirmado_em_documentacao_oficial",
       "mapped": true,
@@ -1663,32 +1686,11 @@
       "implemented": true,
       "tested_locally": true,
       "validated_b3": false,
-      "pending": "Modelo Black-76 analítico com gregas de 1ª e 2ª ordem, paridade Put-Call, exercício automático (mínimo 1 tick), contrary instruction e conversão conservativa em posições de futuros agropecuários implementados com 100% de aprovação em testes unitários.",
+      "pending": "Acumulação de CDI diário via produto dos fatores diários, resets periódicos trimestrais/semestrais/anuais, ajuste diferencial cash settlement, invariante formal bilateral soma-zero (LAW-080) e não-arbitragem na curva Pré/DI (LAW-081) implementados e testados com sucesso 100%.",
       "evidence": {
-        "documented": "docs/layout-commodity-options-black76.md",
-        "implemented": "src/commodity_options_black76.py",
-        "tested_locally": "tests/test_commodity_options_black76.py"
-      }
-    },
-    {
-      "id": "FL-077",
-      "name": "Escrituração, Liquidação e Gestão de Cotas de Fundos de Investimento Imobiliário (FII) e Cotas Subordinadas/Seniores de FIDC no Balcão NoMe B3 (Resolução CVM nº 175 - Anexos II e III)",
-      "system": "Balcão NoMe B3 & Central Depositária (CSD)",
-      "interface": "Motor de Escrituração de Cotas, Cascata de Subordinação FIDC (Water-Tight Priority), Pagamento de Proventos 95% Caixa FII (Lei 8.668/93) e Liquidação Financeira",
-      "sources": [
-        "SRC-070"
-      ],
-      "confidence": "confirmado_em_documentacao_oficial",
-      "mapped": true,
-      "documented": true,
-      "implemented": true,
-      "tested_locally": true,
-      "validated_b3": false,
-      "pending": "Conservação patrimonial de cotas, cascata de subordinação estrita (first-loss piece Júnior e Mezanino), proventos mínimos de 95% do lucro caixa e payment waterfall implementados. Pendente homologação B3.",
-      "evidence": {
-        "documented": "docs/layout-structured-funds-fidc-fii.md",
-        "implemented": "src/structured_funds_fidc_fii.py",
-        "tested_locally": "tests/test_structured_funds_fidc_fii.py"
+        "documented": "docs/layout-interest-rate-swap-irs.md",
+        "implemented": "src/interest_rate_swap_irs.py",
+        "tested_locally": "tests/test_interest_rate_swap_irs.py"
       }
     },
     {
@@ -1710,6 +1712,49 @@
         "documented": "src/special_insolvency_auction.py",
         "implemented": "src/special_insolvency_auction.py",
         "tested_locally": "tests/test_special_insolvency_auction.py"
+      }
+    },
+    {
+      "id": "FL-082",
+      "name": "Registro, Validação Geoespacial e Liquidação de CPR Verde e Serviços Ambientais no Balcão NoMe B3",
+      "system": "Balcão NoMe B3 (Agro & Sustentabilidade)",
+      "interface": "Escrituração de CPR Verde (Decreto 10.828/2021), Validação CAR/IBAMA, Certificação de Biomassa e Liquidação DvP",
+      "sources": [
+        "SRC-026",
+        "SRC-057"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Unicidade de hectare preservado, conformidade CAR sem sobreposição, conservação financeira de liquidação e repasse aos produtores provados formalmente.",
+      "evidence": {
+        "documented": "docs/layout-green-cpr-environmental-services.md",
+        "implemented": "src/green_cpr_environmental_services.py",
+        "tested_locally": "tests/test_green_cpr_environmental_services.py"
+      }
+    },
+    {
+      "id": "FL-083",
+      "name": "Depósito, Haircut e Bloqueio de Ativos Financeiros Offshore e Eurobonds como Colateral Multilateral na Câmara B3",
+      "system": "Câmara B3 (CORE) & Custódia Internacional",
+      "interface": "Motor de Colateral Offshore, Haircuts por Rating/Tenor/FX, Bloqueio Multilateral e Custódia Segregada DTC/Euroclear/Clearstream",
+      "sources": [
+        "SRC-068"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Matriz de haircuts por risco país, rating e volatilidade cambial PTAX, invariantes de não-negatividade e segregação internacional de custódia implementados. Pendente homologação B3.",
+      "evidence": {
+        "documented": "docs/layout-offshore-eurobonds-collateral.md",
+        "implemented": "src/offshore_eurobonds_collateral.py",
+        "tested_locally": "tests/test_offshore_eurobonds_collateral.py"
       }
     },
     {
@@ -1735,6 +1780,27 @@
       }
     },
     {
+      "id": "FL-085",
+      "name": "Emissão, Registro e Gestão de Fundo de Reserva de Certificados de Recebíveis de Saúde (CR Saúde) e Educação (CR Educação) no Balcão NoMe B3",
+      "system": "Balcão NoMe B3",
+      "interface": "Motor de Securitização Social, Segregação Fiduciária com Patrimônio Separado, Cascata de Pagamentos e Fundo de Reserva",
+      "sources": [
+        "SRC-069"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Segregação fiduciária, incomunicabilidade patrimonial (Lei 14.430/2022), cascata de amortização de tranches e recomposição mandatória do fundo de reserva implementados. Pendente homologação B3.",
+      "evidence": {
+        "documented": "docs/layout-health-education-securitization.md",
+        "implemented": "src/health_education_securitization.py",
+        "tested_locally": "tests/test_health_education_securitization.py"
+      }
+    },
+    {
       "id": "FL-086",
       "name": "Negociação, Ajuste Diário e Liquidação Financeira de Contratos Futuros de Crédito de Descarbonização (Futuro de CBIO - CBI) no PUMA e Câmara B3",
       "system": "PUMA Trading System & Câmara B3",
@@ -1754,28 +1820,6 @@
         "documented": "docs/layout-cbio-futures-puma.md",
         "implemented": "src/cbio_futures_puma.py",
         "tested_locally": "tests/test_cbio_futures_puma.py"
-      }
-    },
-    {
-      "id": "FL-080",
-      "name": "Registro e Liquidação Periódica de Swaps de Taxa de Juros com Ajustes Periódicos (IRS - Interest Rate Swap Pré x DI e IPCA x DI com Reset Periódico) no Balcão NoMe B3",
-      "system": "Balcão NoMe B3 & Câmara B3",
-      "interface": "Motor IRS de Resets Periódicos, Acumulação CDI Diário Cetip (DU/252), Cash Settlement e Invariante de Não-Arbitragem",
-      "sources": [
-        "SRC-011",
-        "SRC-034"
-      ],
-      "confidence": "confirmado_em_documentacao_oficial",
-      "mapped": true,
-      "documented": true,
-      "implemented": true,
-      "tested_locally": true,
-      "validated_b3": false,
-      "pending": "Acumulação de CDI diário via produto dos fatores diários, resets periódicos trimestrais/semestrais/anuais, ajuste diferencial cash settlement, invariante formal bilateral soma-zero (LAW-080) e não-arbitragem na curva Pré/DI (LAW-081) implementados e testados com sucesso 100%.",
-      "evidence": {
-        "documented": "docs/layout-interest-rate-swap-irs.md",
-        "implemented": "src/interest_rate_swap_irs.py",
-        "tested_locally": "tests/test_interest_rate_swap_irs.py"
       }
     },
     {
@@ -1908,6 +1952,116 @@
         "documented": "docs/layout-asian-exotic-options.md",
         "implemented": "src/asian_exotic_options.py",
         "tested_locally": "tests/test_asian_exotic_options.py"
+      }
+    },
+    {
+      "id": "FL-093",
+      "name": "Motor de Túneis de Oscilação de Preços (Rejeição, Leilão Estático e Dinâmico) e Leilão Contínuo de Circuit Breaker no PUMA Trading System B3",
+      "system": "PUMA Trading System & Fix Entrypoint B3",
+      "interface": "Motor de Túneis PUMA, Acionamento Automático de Circuit Breaker, Apuração de PTP e Uncross de Leilão",
+      "sources": [
+        "SRC-008",
+        "SRC-073"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Túneis de rejeição (+-15-20%), estático (+-5-10%) e dinâmico (+-1-3%), engatilhamento de leilão não-programado, apuração determinística de PTP com desempate e conservação de ordens no book implementados com 100% de sucesso.",
+      "evidence": {
+        "documented": "docs/layout-puma-circuit-breaker-tunnels.md",
+        "implemented": "src/puma_circuit_breaker_tunnels.py",
+        "tested_locally": "tests/test_puma_circuit_breaker_tunnels.py"
+      }
+    },
+    {
+      "id": "FL-094",
+      "name": "Empréstimo Eletrônico Registrado de Ativos Estruturados e Crédito Privado (Debêntures, CRI, CRA e Letras Financeiras) no Balcão NoMe B3",
+      "system": "Balcão NoMe B3 & Central Depositária",
+      "interface": "Motor de Contratos de Empréstimo de Crédito Privado, Margem com Haircut por Rating, Pass-Through de Proventos e Devolução",
+      "sources": [
+        "SRC-011",
+        "SRC-074"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Contratos de empréstimo bilateral com transferência de custódia física, margem dinâmica com haircut baseado em rating (AAA a BBB-), repasse compulsório de cupons/amortizações ao doador (LAW-099B) e conservação física (LAW-099A) implementados.",
+      "evidence": {
+        "documented": "docs/layout-structured-debt-lending.md",
+        "implemented": "src/structured_debt_lending.py",
+        "tested_locally": "tests/test_structured_debt_lending.py"
+      }
+    },
+    {
+      "id": "FL-095",
+      "name": "Compensação Multilateral, Marcação a Mercado Diária e Margem de Variação de Termo de Moedas (NDF FX) na Câmara B3",
+      "system": "Câmara B3 & Sistema de Risco CORE",
+      "interface": "Motor de Compensação Multilateral NDF, Marcação a Mercado PTAX Diária, Ajuste Soma-Zero e Retenção IRRF",
+      "sources": [
+        "SRC-011",
+        "SRC-075"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Novação de NDF cambial, fechamento multilateral soma-zero de variação diária (LAW-101A), paridade de cupom cambial (LAW-101B) e liquidação diferencial no vencimento com retenção na fonte IRRF (LAW-101C) implementados.",
+      "evidence": {
+        "documented": "docs/layout-ndf-fx-multilateral-clearing.md",
+        "implemented": "src/ndf_fx_multilateral_clearing.py",
+        "tested_locally": "tests/test_ndf_fx_multilateral_clearing.py"
+      }
+    },
+    {
+      "id": "FL-096",
+      "name": "Processamento de Resgates de Cotas com Split Automático de Taxas e Linha d'Água (High-Water Mark) em Fundos CVM 175 na Plataforma de Fundos B3",
+      "system": "Plataforma de Fundos B3 & Sistema STR/PI",
+      "interface": "Esteira de Cotização D+n, Split de Taxa de Administração, Performance HWM, Retenção IRRF e Liquidação STR/PI",
+      "sources": [
+        "SRC-070",
+        "SRC-076"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Ciclo de cotização e liquidação financeira de resgates, inviolabilidade de Linha d'Água (LAW-102B), fechamento contábil soma-zero no split de taxas (LAW-102C) e conciliação de transferências bancárias implementados.",
+      "evidence": {
+        "documented": "docs/layout-funds-redemption-split-settlement.md",
+        "implemented": "src/funds_redemption_split_settlement.py",
+        "tested_locally": "tests/test_funds_redemption_split_settlement.py"
+      }
+    },
+    {
+      "id": "FL-097",
+      "name": "Registro Escritural e Custódia de Cédulas Imobiliárias Rurais (CIR) com Patrimônio de Afetação no Balcão NoMe Agro B3 (Lei do Agro nº 13.986/2020)",
+      "system": "Balcão NoMe Agro B3 & Central Depositária",
+      "interface": "Motor de Escrituração de CIR, Controle de Patrimônio de Afetação SIGEF/INCRA, Limite Prudencial e Excussão Fiduciária",
+      "sources": [
+        "SRC-026",
+        "SRC-077"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Escrituração de CIR vinculada a fração georreferenciada de terra, inviolabilidade do limite de afetação (LAW-103A), anti-dupla afetação (LAW-103B), liquidação regular DvP e excussão fiduciária em leilão soma-zero (LAW-103C) implementados.",
+      "evidence": {
+        "documented": "docs/layout-rural-real-estate-cir.md",
+        "implemented": "src/rural_real_estate_cir.py",
+        "tested_locally": "tests/test_rural_real_estate_cir.py"
       }
     }
   ]

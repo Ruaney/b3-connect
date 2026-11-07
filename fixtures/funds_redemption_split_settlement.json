@@ -1,0 +1,49 @@
+{
+  "flow": "FL-096",
+  "name": "Processamento de Resgates de Cotas de Fundos com Split Automático de Taxas (CVM 175)",
+  "funds": [
+    {
+      "fund_id": "FND-ALPHA-01",
+      "class_name": "Alpha Macro FIC FIM",
+      "fund_type": "MULTIMERCADO",
+      "total_quotas": "100000.00000000",
+      "quota_value": "15.00000000",
+      "net_asset_value": "1500000.00",
+      "high_water_mark": "14.50000000",
+      "admin_fee_annual_rate": "0.0200",
+      "performance_fee_rate": "0.2000",
+      "benchmark_name": "CDI"
+    }
+  ],
+  "redemptions": [
+    {
+      "redemption_id": "RED-001",
+      "fund_id": "FND-ALPHA-01",
+      "investor_id": "INV-INST-001",
+      "quotas_to_redeem": "1000.00000000",
+      "gross_amount": "15000.00",
+      "admin_fee_amount": "1.19",
+      "performance_fee_amount": "100.00",
+      "tax_retention_irrf": "434.82",
+      "net_credit_amount": "14463.99",
+      "quota_at_cotizacao": "15.00000000",
+      "hwm_at_cotizacao": "14.50000000",
+      "status": "SETTLED",
+      "settlement_channel": "STR_PI",
+      "created_at_utc": "2026-11-05T10:00:00+00:00"
+    }
+  ],
+  "settlement_audit_log": [
+    {
+      "redemption_id": "RED-001",
+      "fund_id": "FND-ALPHA-01",
+      "fund_debit_gross": "15000.00",
+      "cotista_credit_net": "14463.99",
+      "admin_fee_credit": "1.19",
+      "manager_perf_fee_credit": "100.00",
+      "tax_irrf_retention": "434.82",
+      "settlement_channel": "STR_PI",
+      "settled_at_utc": "2026-11-05T10:05:00+00:00"
+    }
+  ]
+}

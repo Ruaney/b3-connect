@@ -1,0 +1,34 @@
+{
+  "flow": "FL-095",
+  "name": "Compensação Multilateral, Marcação a Mercado e Margem de Variação de NDF FX (Câmara B3)",
+  "contracts": [
+    {
+      "contract_id": "NDF-USD-001",
+      "participant_id": "PART-BANK-A",
+      "currency_pair": "USDBRL",
+      "side": "BUY",
+      "notional_foreign": "1000000.00",
+      "forward_rate": "5.4500",
+      "trade_date": "2026-11-01",
+      "maturity_date": "2026-12-01",
+      "last_mtm_rate": "5.4500",
+      "accumulated_vm": "0.00",
+      "status": "ACTIVE"
+    },
+    {
+      "contract_id": "NDF-USD-002",
+      "participant_id": "PART-BANK-B",
+      "currency_pair": "USDBRL",
+      "side": "SELL",
+      "notional_foreign": "1000000.00",
+      "forward_rate": "5.4500",
+      "trade_date": "2026-11-01",
+      "maturity_date": "2026-12-01",
+      "last_mtm_rate": "5.4500",
+      "accumulated_vm": "0.00",
+      "status": "ACTIVE"
+    }
+  ],
+  "daily_vm_history": [],
+  "settlement_receipts": []
+}

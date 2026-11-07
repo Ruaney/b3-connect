@@ -1249,6 +1249,45 @@ from src.drex_phase2_atomic_dvp import (
     InstitutionAccount as DrexInstitutionAccount,
     TpftInstrument as DrexTpftInstrument,
 )
+from src.puma_circuit_breaker_tunnels import (
+    AssetSegment as PumaAssetSegment,
+    MarketState as PumaMarketState,
+    Order as PumaOrder,
+    OrderSide as PumaOrderSide,
+    OrderType as PumaOrderType,
+    PumaCircuitBreakerEngine,
+    TheoreticalPriceSummary as PumaTheoreticalPriceSummary,
+    TradeExecution as PumaTradeExecution,
+    TunnelBandConfig as PumaTunnelBandConfig,
+    TunnelBounds as PumaTunnelBounds,
+)
+from src.structured_debt_lending import (
+    CreditRating as StructuredCreditRating,
+    LoanStatus as StructuredLoanStatus,
+    StructuredAssetType,
+    StructuredDebtLendingEngine,
+    StructuredDebtLoanContract,
+)
+from src.ndf_fx_multilateral_clearing import (
+    ContractSide as NdfContractSide,
+    CurrencyPair as NdfCurrencyPair,
+    NdfContract,
+    NdfFxMultilateralClearingEngine,
+    NdfStatus,
+)
+from src.funds_redemption_split_settlement import (
+    FundClassState as FundsSplitClassState,
+    FundClassType as FundsSplitClassType,
+    FundsRedemptionSplitEngine,
+    RedemptionSplitOrder as FundsRedemptionOrder,
+    RedemptionStatus as FundsRedemptionStatus,
+)
+from src.rural_real_estate_cir import (
+    CedulaImobiliariaRural,
+    CirStatus,
+    RuralPropertyLandParcel,
+    RuralRealEstateCirEngine,
+)
 
 
 __all__ = [
@@ -2447,6 +2486,40 @@ __all__ = [
     "assert_drex_atomic_dvp_conservation",
     "assert_drex_sovereign_parity_conservation",
     "assert_drex_token_non_negative_conservation",
+    # PUMA Circuit Breaker e Túneis de Oscilação (FL-093)
+    "PumaAssetSegment",
+    "PumaMarketState",
+    "PumaOrder",
+    "PumaOrderSide",
+    "PumaOrderType",
+    "PumaCircuitBreakerEngine",
+    "PumaTheoreticalPriceSummary",
+    "PumaTradeExecution",
+    "PumaTunnelBandConfig",
+    "PumaTunnelBounds",
+    # Empréstimo Eletrônico de Ativos Estruturados (FL-094)
+    "StructuredCreditRating",
+    "StructuredLoanStatus",
+    "StructuredAssetType",
+    "StructuredDebtLendingEngine",
+    "StructuredDebtLoanContract",
+    # Compensação Multilateral NDF FX (FL-095)
+    "NdfContractSide",
+    "NdfCurrencyPair",
+    "NdfContract",
+    "NdfFxMultilateralClearingEngine",
+    "NdfStatus",
+    # Split de Resgate de Fundos CVM 175 (FL-096)
+    "FundsSplitClassState",
+    "FundsSplitClassType",
+    "FundsRedemptionSplitEngine",
+    "FundsRedemptionOrder",
+    "FundsRedemptionStatus",
+    # Cédula Imobiliária Rural CIR (FL-097)
+    "CedulaImobiliariaRural",
+    "CirStatus",
+    "RuralPropertyLandParcel",
+    "RuralRealEstateCirEngine",
 ]
 
 

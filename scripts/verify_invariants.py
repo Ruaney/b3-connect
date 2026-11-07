@@ -1746,6 +1746,106 @@ def verify_asian_exotic_options_invariants(fixtures_dir: Path):
     print("      ✓ Paridade put-call asiática, limite de volatilidade e liquidação soma-zero comprovadas.")
 
 
+def verify_puma_circuit_breaker_tunnels_invariants(fixtures_dir: Path):
+    """
+    Lei 77: Leilão Contínuo de Circuit Breaker e Túneis de Oscilação PUMA (FL-093).
+    1. Não-transgressão de túnel em mercado contínuo (LAW-098A).
+    2. Maximização de volume no desfecho do leilão PTP (LAW-098B).
+    3. Conservação de ordens no book durante transições de estado (LAW-098C).
+    """
+    print("[77/81] Verificando Invariante de Túneis e Circuit Breaker PUMA (FL-093)...")
+    from src.puma_circuit_breaker_tunnels import PumaCircuitBreakerEngine
+    with open(fixtures_dir / "puma_circuit_breaker_tunnels.json", "r", encoding="utf-8") as f:
+        data = json.load(f)
+    engine = PumaCircuitBreakerEngine.from_dict(data)
+    audit = engine.verify_invariants()
+    check(audit["all_invariants_hold"], "Violação formal nos túneis de negociação PUMA")
+    check(audit["continuous_tunnel_compliance_verified"], "Transgressão de túnel contínuo detectada")
+    check(audit["auction_volume_maximization_verified"], "Violação de maximização de volume PTP")
+    check(audit["order_conservation_verified"], "Quebra de conservação de ordens no book")
+    print("      ✓ Não-transgressão de túneis, maximização de PTP e conservação de ordens comprovadas.")
+
+
+def verify_structured_debt_lending_invariants(fixtures_dir: Path):
+    """
+    Lei 78: Empréstimo Eletrônico de Ativos Estruturados e Crédito Privado (FL-094).
+    1. Conservação de Saldo Físico do Doador e Tomador (LAW-099A).
+    2. Repasse Integral de Rendimentos e Amortizações (Pass-Through) (LAW-099B).
+    3. Não-Negatividade de Custódia e Garantias (LAW-099C).
+    """
+    print("[78/81] Verificando Invariante de Empréstimo de Crédito Privado NoMe (FL-094)...")
+    from src.structured_debt_lending import StructuredDebtLendingEngine
+    with open(fixtures_dir / "structured_debt_lending.json", "r", encoding="utf-8") as f:
+        data = json.load(f)
+    engine = StructuredDebtLendingEngine.from_dict(data)
+    audit = engine.verify_invariants()
+    check(audit["all_invariants_hold"], "Violação formal no empréstimo de crédito privado")
+    check(audit["physical_custody_conservation_verified"], "Quebra de conservação física doativo emprestado")
+    check(audit["pass_through_integrity_verified"], "Falha no repasse integral de rendimentos (pass-through)")
+    check(audit["non_negativity_verified"], "Saldo negativo detectado em conta de custódia ou garantia")
+    print("      ✓ Conservação física, pass-through de rendimentos e não-negatividade comprovadas.")
+
+
+def verify_ndf_fx_multilateral_clearing_invariants(fixtures_dir: Path):
+    """
+    Lei 79: Compensação Multilateral e Margem de Variação de NDF FX (FL-095).
+    1. Fechamento Multilateral Soma-Zero de Margem de Variação (LAW-101A).
+    2. Paridade e Coerência de Taxas Forward (LAW-101B).
+    3. Conservação Financeira na Liquidação Diferencial em D0 (LAW-101C).
+    """
+    print("[79/81] Verificando Invariante de Compensação Multilateral NDF FX (FL-095)...")
+    from src.ndf_fx_multilateral_clearing import NdfFxMultilateralClearingEngine
+    with open(fixtures_dir / "ndf_fx_multilateral_clearing.json", "r", encoding="utf-8") as f:
+        data = json.load(f)
+    engine = NdfFxMultilateralClearingEngine.from_dict(data)
+    audit = engine.verify_invariants()
+    check(audit["all_invariants_hold"], "Violação formal na compensação multilateral de NDF FX")
+    check(audit["multilateral_zero_sum_verified"], "Quebra de fechamento multilateral soma-zero em margem de variação")
+    check(audit["forward_rates_coherence_verified"], "Inconsistência de paridade de taxa a termo")
+    check(audit["settlement_financial_conservation_verified"], "Quebra contábil na liquidação diferencial D0 com IRRF")
+    print("      ✓ Fechamento multilateral soma-zero, paridade a termo e conservação com IRRF comprovadas.")
+
+
+def verify_funds_redemption_split_settlement_invariants(fixtures_dir: Path):
+    """
+    Lei 80: Resgate de Cotas com Split Automático de Taxas — CVM 175 (FL-096).
+    1. Conservação do Patrimônio Líquido no Resgate (LAW-102A).
+    2. Inviolabilidade da Linha d'Água / High-Water Mark (LAW-102B).
+    3. Fechamento Financeiro Soma-Zero no Split de Pagamento (LAW-102C).
+    """
+    print("[80/81] Verificando Invariante de Split de Resgates CVM 175 (FL-096)...")
+    from src.funds_redemption_split_settlement import FundsRedemptionSplitEngine
+    with open(fixtures_dir / "funds_redemption_split_settlement.json", "r", encoding="utf-8") as f:
+        data = json.load(f)
+    engine = FundsRedemptionSplitEngine.from_dict(data)
+    audit = engine.verify_invariants()
+    check(audit["all_invariants_hold"], "Violação formal no split de resgate de fundos CVM 175")
+    check(audit["nav_conservation_verified"], "Quebra de conservação de cotas e patrimônio líquido")
+    check(audit["high_water_mark_inviolability_verified"], "Violação de cobrança de performance abaixo da Linha d'Água")
+    check(audit["split_settlement_zero_sum_verified"], "Divergência financeira no split de taxas e liquidação STR/PI")
+    print("      ✓ Conservação de PL, respeito estrito à Linha d'Água e split financeiro soma-zero comprovadas.")
+
+
+def verify_rural_real_estate_cir_invariants(fixtures_dir: Path):
+    """
+    Lei 81: Registro de Cédula Imobiliária Rural (CIR) com Afetação (FL-097).
+    1. Inviolabilidade e Limite Prudencial do Patrimônio de Afetação (LAW-103A).
+    2. Unicidade de Matrícula e SIGEF / Anti-Dupla Afetação (LAW-103B).
+    3. Liquidação Financeira Bilateral Soma-Zero centavo a centavo (LAW-103C).
+    """
+    print("[81/81] Verificando Invariante de Cédula Imobiliária Rural CIR (FL-097)...")
+    from src.rural_real_estate_cir import RuralRealEstateCirEngine
+    with open(fixtures_dir / "rural_real_estate_cir.json", "r", encoding="utf-8") as f:
+        data = json.load(f)
+    engine = RuralRealEstateCirEngine.from_dict(data)
+    audit = engine.verify_invariants()
+    check(audit["all_invariants_hold"], "Violação formal na escrituração ou afetação de CIR")
+    check(audit["affected_patrimony_limit_verified"], "Limite prudencial violado: Notional excede avaliação da terra")
+    check(audit["anti_double_affection_verified"], "Dupla afetação detectada sobre mesma poligonal SIGEF")
+    check(audit["settlement_zero_sum_verified"], "Divergência bilateral soma-zero na liquidação da CIR")
+    print("      ✓ Limite prudencial de terra, unicidade SIGEF e liquidação bilateral soma-zero comprovadas.")
+
+
 def main():
     print("=" * 70)
     print(" B3 INTEGRATION ATLAS — VERIFICAÇÃO FORMAL DE INVARIANTES")
@@ -1834,9 +1934,14 @@ def main():
         verify_pix_automatico_margin_calls_invariants(fixtures_dir)
         verify_market_by_order_l3_book_invariants(fixtures_dir)
         verify_asian_exotic_options_invariants(fixtures_dir)
+        verify_puma_circuit_breaker_tunnels_invariants(fixtures_dir)
+        verify_structured_debt_lending_invariants(fixtures_dir)
+        verify_ndf_fx_multilateral_clearing_invariants(fixtures_dir)
+        verify_funds_redemption_split_settlement_invariants(fixtures_dir)
+        verify_rural_real_estate_cir_invariants(fixtures_dir)
         
         print("\n" + "=" * 70)
-        print("✓ TODAS AS 76 LEIS DE CONSERVAÇÃO E INVARIANTES DA B3 FORAM PROVADAS!")
+        print("✓ TODAS AS 81 LEIS DE CONSERVAÇÃO E INVARIANTES DA B3 FORAM PROVADAS!")
         print("  Garantia matemática de consistência em todas as fixtures e módulos.")
         print("=" * 70)
         sys.exit(0)

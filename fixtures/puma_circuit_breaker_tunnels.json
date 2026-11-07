@@ -1,0 +1,38 @@
+{
+  "flow": "FL-093",
+  "name": "Mecanismo de Leilão Contínuo de Circuit Breaker e Túneis de Oscilação de Preços (PUMA B3)",
+  "symbol": "PETR4",
+  "segment": "IBOV_EQUITY",
+  "opening_price": "30.00",
+  "last_traded_price": "30.00",
+  "market_state": "CONTINUOUS",
+  "orders": [
+    {
+      "order_id": "ORD-BUY-001",
+      "symbol": "PETR4",
+      "side": "BUY",
+      "order_type": "LIMIT",
+      "price": "29.90",
+      "quantity": 1000,
+      "cum_qty": 0,
+      "remaining_qty": 1000,
+      "participant_id": "BR-BROKER-01",
+      "timestamp_utc": "2026-11-05T13:00:00+00:00"
+    },
+    {
+      "order_id": "ORD-SELL-001",
+      "symbol": "PETR4",
+      "side": "SELL",
+      "order_type": "LIMIT",
+      "price": "30.10",
+      "quantity": 1000,
+      "cum_qty": 0,
+      "remaining_qty": 1000,
+      "participant_id": "BR-BROKER-02",
+      "timestamp_utc": "2026-11-05T13:00:01+00:00"
+    }
+  ],
+  "trades": [],
+  "rejected_orders_count": 0,
+  "auction_history": []
+}

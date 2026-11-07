@@ -1,0 +1,36 @@
+{
+  "flow": "FL-094",
+  "name": "Empréstimo Eletrônico Registrado de Ativos Estruturados e Crédito Privado (NoMe B3)",
+  "contracts": [
+    {
+      "contract_id": "LOAN-DEB-001",
+      "asset_code": "DEB-VALE-2030",
+      "asset_type": "DEBENTURE",
+      "rating": "AAA",
+      "unit_price": "1000.00",
+      "quantity": 500,
+      "notional_value": "500000.00",
+      "lender_account": "ACC-LENDER-01",
+      "borrower_account": "ACC-BORROWER-01",
+      "annual_rate": "0.0250",
+      "start_date": "2026-11-01",
+      "due_date": "2026-12-01",
+      "status": "OPEN",
+      "required_collateral": "550000.00",
+      "collateral_posted": "550000.00",
+      "accrued_interest_remuneration": "0.00",
+      "total_yield_passed_through": "0.00",
+      "total_amortization_passed_through": "0.00"
+    }
+  ],
+  "custody_balances": {
+    "ACC-LENDER-01": {
+      "DEB-VALE-2030": 500
+    },
+    "ACC-BORROWER-01": {
+      "DEB-VALE-2030": 500
+    }
+  },
+  "pass_through_events": [],
+  "settlement_receipts": []
+}

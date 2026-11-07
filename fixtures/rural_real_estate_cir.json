@@ -1,0 +1,61 @@
+{
+  "flow": "FL-097",
+  "name": "Registro Escritural e Custódia de Cédulas Imobiliárias Rurais (CIR) com Afetação — NoMe Agro B3",
+  "parcels": [
+    {
+      "parcel_id": "PARCEL-MT-001",
+      "property_sncr_code": "950.123.456.789-0",
+      "sigef_certification_code": "SIGEF-MT-2026-99881",
+      "registry_office_code": "CRI-SORRISO-MT",
+      "property_deed_number": "MAT-44120",
+      "total_area_ha": "1250.5000",
+      "affected_fraction_ha": "450.0000",
+      "appraisal_value_brl": "18000000.00"
+    },
+    {
+      "parcel_id": "PARCEL-GO-002",
+      "property_sncr_code": "951.789.012.345-6",
+      "sigef_certification_code": "SIGEF-GO-2026-11223",
+      "registry_office_code": "CRI-RIO-VERDE-GO",
+      "property_deed_number": "MAT-19800",
+      "total_area_ha": "800.0000",
+      "affected_fraction_ha": "300.0000",
+      "appraisal_value_brl": "12000000.00"
+    }
+  ],
+  "cirs": [
+    {
+      "cir_id": "CIR-2026-0001",
+      "issuer_tax_id": "12.345.678/0001-90",
+      "creditor_tax_id": "98.765.432/0001-10",
+      "parcel_id": "PARCEL-MT-001",
+      "nominal_amount": "12000000.00",
+      "interest_rate_annual": "0.1250",
+      "issue_date": "2026-11-01",
+      "due_date": "2027-11-01",
+      "status": "SETTLED",
+      "accrued_amount": "12000000.00"
+    },
+    {
+      "cir_id": "CIR-2026-0002",
+      "issuer_tax_id": "33.444.555/0001-22",
+      "creditor_tax_id": "98.765.432/0001-10",
+      "parcel_id": "PARCEL-GO-002",
+      "nominal_amount": "9000000.00",
+      "interest_rate_annual": "0.1180",
+      "issue_date": "2026-11-02",
+      "due_date": "2027-11-02",
+      "status": "ACTIVE",
+      "accrued_amount": "9000000.00"
+    }
+  ],
+  "settlement_records": [
+    {
+      "cir_id": "CIR-2026-0001",
+      "issuer_paid": "12000000.00",
+      "creditor_received": "12000000.00",
+      "status": "SETTLED",
+      "settled_at_utc": "2026-11-05T12:00:00+00:00"
+    }
+  ]
+}
