@@ -2063,6 +2063,72 @@
         "implemented": "src/rural_real_estate_cir.py",
         "tested_locally": "tests/test_rural_real_estate_cir.py"
       }
+    },
+    {
+      "id": "FL-098",
+      "name": "Leilão de Fechamento (Closing Cross) PUMA com Ordens MOC/LOC, Janela de Congelamento e Desempate Oficial B3",
+      "system": "PUMA Trading System",
+      "interface": "Motor de Closing Auction, Proteção Freeze Window (No-Cancel), Prioridade Absoluta MOC e Apuração Determinística do PTP",
+      "sources": [
+        "SRC-053",
+        "SRC-078"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Suporte a MOC/LOC/LIMIT, janela de congelamento com rejeição sumária de cancelamentos (LAW-104A), prioridade absoluta de alocação MOC sobre LOC (LAW-104B), apuração determinística de PTP com 3 regras oficiais B3 e conservação de volume no uncross (LAW-104C) implementados.",
+      "evidence": {
+        "documented": "docs/layout-puma-closing-cross-moc.md",
+        "implemented": "src/puma_closing_cross_moc.py",
+        "tested_locally": "tests/test_puma_closing_cross_moc.py"
+      }
+    },
+    {
+      "id": "FL-099",
+      "name": "Gestão de Garantias Transfronteiriças e Operações de Triparty Repo Internacional com Euroclear, Clearstream e DTC na Câmara B3",
+      "system": "Câmara B3 & Custódia Internacional (Euroclear/Clearstream/DTC)",
+      "interface": "Mensageria SWIFT MT540/MT542, Conversão PTAX, Matriz de Haircuts Soberanos e Safe-Release Guardrail",
+      "sources": [
+        "SRC-059",
+        "SRC-079"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Haircut prudencial soberano e buffer cambial (LAW-105A), inviolabilidade do bloqueio internacional seguro (LAW-105B) e conservação bilateral soma-zero na liquidação de Triparty Repo (LAW-105C) implementados.",
+      "evidence": {
+        "documented": "docs/layout-triparty-international-collateral.md",
+        "implemented": "src/triparty_international_collateral.py",
+        "tested_locally": "tests/test_triparty_international_collateral.py"
+      }
+    },
+    {
+      "id": "FL-100",
+      "name": "Barramento Central de Liquidação Unificada e Compensação Multilateral Contínua Multi-Câmaras da B3 (B3 Central Settlement & Liquidity Bus)",
+      "system": "B3 Central Settlement & Liquidity Bus (10 Subsistemas B3)",
+      "interface": "Barramento Central de Compensação Unificada, Fechamento Contábil D0/D+1/D+2 e Default Waterfall Integrado",
+      "sources": [
+        "SRC-025",
+        "SRC-080"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Equilíbrio contábil global estrito Soma Ativos == Soma Passivos (LAW-106A), absorção de default em camadas sem contágio (LAW-106B) e liquidação atômica inter-sistemas multi-câmara (LAW-106C) implementados.",
+      "evidence": {
+        "documented": "docs/layout-central-settlement-liquidity-bus.md",
+        "implemented": "src/central_settlement_liquidity_bus.py",
+        "tested_locally": "tests/test_central_settlement_liquidity_bus.py"
+      }
     }
   ]
 }

@@ -1846,6 +1846,70 @@ def verify_rural_real_estate_cir_invariants(fixtures_dir: Path):
     print("      ✓ Limite prudencial de terra, unicidade SIGEF e liquidação bilateral soma-zero comprovadas.")
 
 
+def verify_puma_closing_cross_invariants(fixtures_dir: Path):
+    """
+    Lei 82: Leilão de Fechamento PUMA e Ordens MOC/LOC (FL-098).
+    1. Inviolabilidade da Janela de Congelamento / Freeze Period (LAW-104A).
+    2. Prioridade de Alocação de Ordens Market-On-Close (MOC) sobre LOC (LAW-104B).
+    3. Conservação de Volume no Uncross e Preço Único de Liquidação PTP (LAW-104C).
+    """
+    print("[82/84] Verificando Invariante de Leilão de Fechamento PUMA & MOC/LOC (FL-098)...")
+    from src.puma_closing_cross_moc import PumaClosingCrossEngine
+    fixture_path = fixtures_dir / "puma_closing_cross_moc.json"
+    with open(fixture_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+    engine = PumaClosingCrossEngine.from_dict(data)
+    audit = engine.verify_invariants()
+    check(audit["all_invariants_hold"], "Violação formal no leilão de fechamento PUMA & MOC/LOC")
+    check(audit["law_104a_freeze_inviolability"], "Quebra da inviolabilidade da janela de congelamento (LAW-104A)")
+    check(audit["law_104b_moc_priority"], "Violação da prioridade estrita de ordens MOC sobre LOC (LAW-104B)")
+    check(audit["law_104c_volume_conservation"], "Quebra de conservação de volume ou unicidade PTP no uncross (LAW-104C)")
+    print("      ✓ Inviolabilidade do congelamento, prioridade MOC sobre LOC e conservação PTP comprovadas.")
+
+
+def verify_triparty_international_collateral_invariants(fixtures_dir: Path):
+    """
+    Lei 83: Custódia Internacional e Gestão de Garantias Triparty (FL-099).
+    1. Cobertura Cambial e Haircut Prudencial (LAW-105A).
+    2. Inviolabilidade do Bloqueio Internacional Fiduciário e Segregação (LAW-105B).
+    3. Conservação Bilateral Soma-Zero na Liquidação de Repo (LAW-105C).
+    """
+    print("[83/84] Verificando Invariante de Gestão de Garantias Triparty Internacional (FL-099)...")
+    from src.triparty_international_collateral import TripartyInternationalCollateralEngine
+    fixture_path = fixtures_dir / "triparty_international_collateral.json"
+    with open(fixture_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+    engine = TripartyInternationalCollateralEngine.from_dict(data)
+    audit = engine.verify_invariants()
+    check(audit["all_invariants_hold"], "Violação formal na custódia internacional ou triparty repo")
+    check(audit["law_105a_collateral_haircut_coverage_verified"], "Cobertura cambial ou haircut violado (LAW-105A)")
+    check(audit["law_105b_international_lock_inviolability_verified"], "Inviolabilidade de bloqueio ou segregação violada (LAW-105B)")
+    check(audit["law_105c_settlement_zero_sum_verified"], "Divergência bilateral soma-zero na liquidação triparty (LAW-105C)")
+    print("      ✓ Cobertura cambial, bloqueio internacional fiduciário e liquidação soma-zero comprovadas.")
+
+
+def verify_central_settlement_liquidity_bus_invariants(fixtures_dir: Path):
+    """
+    Lei 84: Barramento Central de Liquidação Unificada e Compensação Multilateral (FL-100).
+    1. Equilíbrio Contábil Global Estrito e Conservação Multilateral Soma-Zero (LAW-106A).
+    2. Não-propagação de Default e Absorção Determinística em Camadas (LAW-106B).
+    3. Atomicidade de Liquidação Inter-Sistemas All-or-Nothing (LAW-106C).
+    """
+    print("[84/84] Verificando Invariante do Barramento Central de Liquidação Unificada (FL-100)...")
+    from src.central_settlement_liquidity_bus import B3CentralSettlementBus
+    fixture_path = fixtures_dir / "central_settlement_liquidity_bus.json"
+    with open(fixture_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+    engine = B3CentralSettlementBus.from_dict(data)
+    audit = engine.verify_invariants(raise_on_error=False)
+    check(audit["all_invariants_hold"], "Violação formal no Barramento Central de Liquidação Unificada")
+    check(audit["LAW-106A_global_accounting_equilibrium"], "Desequilíbrio contábil global: Ativos != Passivos (LAW-106A)")
+    check(audit["LAW-106A_multilateral_zero_sum_conservation"], "Quebra da conservação soma-zero multilateral inter-sistemas (LAW-106A)")
+    check(audit["LAW-106B_no_default_propagation_and_layered_absorption"], "Falha na contenção de default ou propagação em cascata (LAW-106B)")
+    check(audit["LAW-106C_intersystem_settlement_atomicity"], "Quebra de atomicidade em liquidação inter-sistemas (LAW-106C)")
+    print("      ✓ Equilíbrio contábil global, contenção de default e atomicidade inter-sistemas comprovadas.")
+
+
 def main():
     print("=" * 70)
     print(" B3 INTEGRATION ATLAS — VERIFICAÇÃO FORMAL DE INVARIANTES")
@@ -1939,9 +2003,12 @@ def main():
         verify_ndf_fx_multilateral_clearing_invariants(fixtures_dir)
         verify_funds_redemption_split_settlement_invariants(fixtures_dir)
         verify_rural_real_estate_cir_invariants(fixtures_dir)
+        verify_puma_closing_cross_invariants(fixtures_dir)
+        verify_triparty_international_collateral_invariants(fixtures_dir)
+        verify_central_settlement_liquidity_bus_invariants(fixtures_dir)
         
         print("\n" + "=" * 70)
-        print("✓ TODAS AS 81 LEIS DE CONSERVAÇÃO E INVARIANTES DA B3 FORAM PROVADAS!")
+        print("✓ TODAS AS 84 LEIS DE CONSERVAÇÃO E INVARIANTES DA B3 FORAM PROVADAS!")
         print("  Garantia matemática de consistência em todas as fixtures e módulos.")
         print("=" * 70)
         sys.exit(0)

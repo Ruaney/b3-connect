@@ -1,0 +1,223 @@
+{
+  "flow": "FL-099",
+  "name": "Custódia Internacional e Gestão de Garantias Triparty Repo — Câmara B3",
+  "ptax_table": [
+    {
+      "currency": "USD",
+      "ptax_bid": "5.452000",
+      "ptax_ask": "5.453000",
+      "rate_date": "2026-11-06"
+    },
+    {
+      "currency": "EUR",
+      "ptax_bid": "5.921000",
+      "ptax_ask": "5.923000",
+      "rate_date": "2026-11-06"
+    },
+    {
+      "currency": "GBP",
+      "ptax_bid": "7.085000",
+      "ptax_ask": "7.088000",
+      "rate_date": "2026-11-06"
+    }
+  ],
+  "accounts": [
+    {
+      "account_id": "EC-HOUSE-PARTICIPANT-088",
+      "custodian": "EUROCLEAR",
+      "category": "HOUSE",
+      "participant_id": "PARTICIPANT-088",
+      "is_fiduciary_segregated": true,
+      "positions": {
+        "DE0001102580": {
+          "isin": "DE0001102580",
+          "symbol": "BUND-2032-1.70",
+          "currency": "EUR",
+          "total_quantity": "5000.0000",
+          "available_quantity": "2000.0000",
+          "locked_quantity": "3000.0000"
+        }
+      }
+    },
+    {
+      "account_id": "EC-CLIENT-PARTICIPANT-088",
+      "custodian": "EUROCLEAR",
+      "category": "CLIENT",
+      "participant_id": "PARTICIPANT-088",
+      "is_fiduciary_segregated": true,
+      "positions": {
+        "DE0001102580": {
+          "isin": "DE0001102580",
+          "symbol": "BUND-2032-1.70",
+          "currency": "EUR",
+          "total_quantity": "1500.0000",
+          "available_quantity": "1500.0000",
+          "locked_quantity": "0.0000"
+        }
+      }
+    },
+    {
+      "account_id": "DTC-HOUSE-PARTICIPANT-088",
+      "custodian": "DTC",
+      "category": "HOUSE",
+      "participant_id": "PARTICIPANT-088",
+      "is_fiduciary_segregated": true,
+      "positions": {
+        "US912810TL44": {
+          "isin": "US912810TL44",
+          "symbol": "UST-10Y-4.125",
+          "currency": "USD",
+          "total_quantity": "10000.0000",
+          "available_quantity": "4000.0000",
+          "locked_quantity": "6000.0000"
+        }
+      }
+    },
+    {
+      "account_id": "CS-HOUSE-PARTICIPANT-042",
+      "custodian": "CLEARSTREAM",
+      "category": "HOUSE",
+      "participant_id": "PARTICIPANT-042",
+      "is_fiduciary_segregated": true,
+      "positions": {
+        "US91282CDJ71": {
+          "isin": "US91282CDJ71",
+          "symbol": "UST-2Y-4.875",
+          "currency": "USD",
+          "total_quantity": "8000.0000",
+          "available_quantity": "8000.0000",
+          "locked_quantity": "0.0000"
+        }
+      }
+    }
+  ],
+  "contracts": [
+    {
+      "repo_id": "TRIPARTY-REPO-2026-001",
+      "borrower_participant_id": "PARTICIPANT-088",
+      "lender_participant_id": "B3_CLEARING_HOUSE",
+      "triparty_custodian": "EUROCLEAR",
+      "nominal_cash_brl": "3800000.00",
+      "repo_rate_annual": "0.132500",
+      "start_date": "2026-11-06",
+      "end_date": "2026-12-06",
+      "business_days": 21,
+      "required_margin_brl": "4100000.00",
+      "status": "LOCKED_FIDUCIARY",
+      "allocations": [
+        {
+          "allocation_id": "ALLOC-TRIPARTY-REPO-2026-001-DE0001102580-001",
+          "isin": "DE0001102580",
+          "custodian": "EUROCLEAR",
+          "account_id": "EC-HOUSE-PARTICIPANT-088",
+          "rating": "AAA",
+          "tenor_years": "6.0",
+          "quantity": "3000.0000",
+          "unit_price_foreign": "101.500000",
+          "currency": "EUR",
+          "ptax_bid_rate": "5.921000",
+          "base_haircut": "0.075000",
+          "fx_haircut_buffer": "0.100000",
+          "total_haircut": "0.175000",
+          "gross_value_foreign": "304500.000000",
+          "gross_value_brl": "1802944.50",
+          "eligible_value_brl": "1487429.21",
+          "fiduciary_lock_reference": "B3-FIDUCIARY-LOCK-LAW13986-TRIPARTY-REPO-2026-001-DE0001102580",
+          "swift_message_id": "SWIFT-MT540-TRIPARTY-REPO-2026-001-0001"
+        },
+        {
+          "allocation_id": "ALLOC-TRIPARTY-REPO-2026-001-US912810TL44-002",
+          "isin": "US912810TL44",
+          "custodian": "DTC",
+          "account_id": "DTC-HOUSE-PARTICIPANT-088",
+          "rating": "AA+",
+          "tenor_years": "7.5",
+          "quantity": "6000.0000",
+          "unit_price_foreign": "99.800000",
+          "currency": "USD",
+          "ptax_bid_rate": "5.452000",
+          "base_haircut": "0.085000",
+          "fx_haircut_buffer": "0.080000",
+          "total_haircut": "0.165000",
+          "gross_value_foreign": "598800.000000",
+          "gross_value_brl": "3264657.60",
+          "eligible_value_brl": "2725989.10",
+          "fiduciary_lock_reference": "B3-FIDUCIARY-LOCK-LAW13986-TRIPARTY-REPO-2026-001-US912810TL44",
+          "swift_message_id": "SWIFT-MT540-TRIPARTY-REPO-2026-001-0002"
+        }
+      ],
+      "repurchase_cash_brl": "3839607.05"
+    },
+    {
+      "repo_id": "TRIPARTY-REPO-2026-002",
+      "borrower_participant_id": "PARTICIPANT-042",
+      "lender_participant_id": "B3_CLEARING_HOUSE",
+      "triparty_custodian": "CLEARSTREAM",
+      "nominal_cash_brl": "1000000.00",
+      "repo_rate_annual": "0.125000",
+      "start_date": "2026-10-01",
+      "end_date": "2026-11-01",
+      "business_days": 22,
+      "required_margin_brl": "1050000.00",
+      "status": "SETTLED",
+      "allocations": [],
+      "repurchase_cash_brl": "1010335.69"
+    }
+  ],
+  "swift_messages": [
+    {
+      "message_id": "SWIFT-MT540-TRIPARTY-REPO-2026-001-0001",
+      "message_type": "MT540",
+      "sender_bic": "EACLBBEB",
+      "receiver_bic": "BVMFBRSPXXX",
+      "settlement_date": "2026-11-06",
+      "isin": "DE0001102580",
+      "quantity": "3000.0000",
+      "safekeeping_account": "EC-HOUSE-PARTICIPANT-088",
+      "status": "SETTLED",
+      "fiduciary_lien_tag": "B3-FIDUCIARY-LOCK-LAW13986-TRIPARTY-REPO-2026-001-DE0001102580",
+      "raw_mt_text": ":16R:GENL\n:20C::SEME//SWIFT-MT540-TRIPARTY-REPO-2026-001-0001\n:23G:NEWM\n:98A::SETT//20261106\n:16S:GENL\n:16R:CONFDET\n:35B:ISIN DE0001102580\n:36B::SETT//UNIT/3000.0000\n:97A::SAFE//EC-HOUSE-PARTICIPANT-088\n:70D::SPCL//INCOMUNICABILIDADE PATRIMONIAL LEI 13986 GARANTIA B3\n:16S:CONFDET"
+    },
+    {
+      "message_id": "SWIFT-MT540-TRIPARTY-REPO-2026-001-0002",
+      "message_type": "MT540",
+      "sender_bic": "DTCXPENY",
+      "receiver_bic": "BVMFBRSPXXX",
+      "settlement_date": "2026-11-06",
+      "isin": "US912810TL44",
+      "quantity": "6000.0000",
+      "safekeeping_account": "DTC-HOUSE-PARTICIPANT-088",
+      "status": "SETTLED",
+      "fiduciary_lien_tag": "B3-FIDUCIARY-LOCK-LAW13986-TRIPARTY-REPO-2026-001-US912810TL44",
+      "raw_mt_text": ":16R:GENL\n:20C::SEME//SWIFT-MT540-TRIPARTY-REPO-2026-001-0002\n:23G:NEWM\n:98A::SETT//20261106\n:16S:GENL\n:16R:CONFDET\n:35B:ISIN US912810TL44\n:36B::SETT//UNIT/6000.0000\n:97A::SAFE//DTC-HOUSE-PARTICIPANT-088\n:70D::SPCL//INCOMUNICABILIDADE PATRIMONIAL LEI 13986 GARANTIA B3\n:16S:CONFDET"
+    },
+    {
+      "message_id": "SWIFT-MT542-TRIPARTY-REPO-2026-002-0001",
+      "message_type": "MT542",
+      "sender_bic": "BVMFBRSPXXX",
+      "receiver_bic": "MRQCLULL",
+      "settlement_date": "2026-11-01",
+      "isin": "US91282CDJ71",
+      "quantity": "8000.0000",
+      "safekeeping_account": "CS-HOUSE-PARTICIPANT-042",
+      "status": "SETTLED",
+      "fiduciary_lien_tag": "FINAL-SETTLEMENT-TRIPARTY-REPO-2026-002",
+      "raw_mt_text": ":16R:GENL\n:20C::SEME//SWIFT-MT542-TRIPARTY-REPO-2026-002-0001\n:23G:NEWM\n:98A::SETT//20261101\n:16S:GENL\n:16R:CONFDET\n:35B:ISIN US91282CDJ71\n:36B::SETT//UNIT/8000.0000\n:97A::SAFE//CS-HOUSE-PARTICIPANT-042\n:70D::SPCL//LIQUIDACAO FINAL DVP DEVOLUCAO COLATERAL B3\n:16S:CONFDET"
+    }
+  ],
+  "settlement_records": [
+    {
+      "record_id": "SETTLE-DVP-TRIPARTY-REPO-2026-002",
+      "repo_id": "TRIPARTY-REPO-2026-002",
+      "settlement_type": "REGULAR_DvP",
+      "borrower_paid_brl": "1010335.69",
+      "lender_received_brl": "1010335.69",
+      "surplus_returned_to_borrower_brl": "0.00",
+      "collateral_released_qty": {
+        "US91282CDJ71": "8000.0000"
+      },
+      "net_financial_delta_brl": "0.00",
+      "settled_at_utc": "2026-11-01T17:30:00+00:00"
+    }
+  ]
+}

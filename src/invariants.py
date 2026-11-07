@@ -151,15 +151,17 @@ def assert_bilateral_zero_sum(
     party_b_amount: Decimal,
     tolerance: Decimal = Decimal("0.00"),
     context_desc: str = "Derivativo Bilateral",
+    **kwargs: Any,
 ) -> None:
     """Lei 24/26: Conservação Bilateral Soma-Zero em Derivativos (Swap, NDF, Opções Flexíveis).
 
     party_a_amount + party_b_amount == 0.00
     """
+    desc = kwargs.get("context", context_desc)
     net_sum = party_a_amount + party_b_amount
     check(
         abs(net_sum) <= tolerance,
-        f"Violação de soma-zero em {context_desc}: Parte A ({party_a_amount}) + Parte B ({party_b_amount}) = {net_sum} != 0.00",
+        f"Violação de soma-zero em {desc}: Parte A ({party_a_amount}) + Parte B ({party_b_amount}) = {net_sum} != 0.00",
         law_code="LAW-ZERO-SUM",
     )
 
@@ -874,6 +876,463 @@ def assert_drex_token_non_negative_conservation(
                 "balance": str(balance),
             },
         )
+
+
+def assert_closing_cross_freeze_inviolability(
+    freeze_active: bool = True,
+    cancellations_attempted: int = 0,
+    modifications_attempted: int = 0,
+    symbol: str = "",
+    auction_id: str = "",
+) -> None:
+    """Lei 74 / LAW-104A: Inviolabilidade do Congelamento (Freeze) no Leilão de Fechamento (FL-104).
+
+    Durante o período de congelamento (Freeze Window / Random Ending / Uncross) do Leilão de Fechamento
+    (PUMA Closing Call), o livro de ofertas torna-se estritamente imutável:
+    1. É proibido qualquer cancelamento de ordens existentes (cancellations_attempted == 0).
+    2. É proibida qualquer alteração ou redução de ordens (modifications_attempted == 0).
+    3. Nenhuma remoção de liquidez é tolerada antes da formação e desempate do Preço Teórico de Fechamento (PTF).
+
+    Args:
+        freeze_active: Se o estado de congelamento está ativado.
+        cancellations_attempted: Quantidade de cancelamentos tentados/registrados durante o freeze.
+        modifications_attempted: Quantidade de modificações de preço/quantidade tentadas durante o freeze.
+        symbol: Código de negociação do instrumento (ex: 'PETR4', 'VALE3').
+        auction_id: Identificador da sessão ou leilão de fechamento.
+    """
+    if isinstance(freeze_active, (int, Decimal)) and not isinstance(freeze_active, bool):
+        canc = int(freeze_active)
+        mod = int(cancellations_attempted)
+        is_frozen = True
+    else:
+        canc = int(cancellations_attempted)
+        mod = int(modifications_attempted)
+        is_frozen = bool(freeze_active)
+
+    if is_frozen:
+        check(
+            canc == 0 and mod == 0,
+            f"Violação da Inviolabilidade de Congelamento do Leilão de Fechamento (LAW-104A) em '{symbol}': "
+            f"Cancelamentos={canc}, Modificações={mod} durante estado de freeze ativo (auction_id='{auction_id}')",
+            law_code="LAW-104A",
+            details={
+                "symbol": symbol,
+                "auction_id": auction_id,
+                "freeze_active": is_frozen,
+                "cancellations_attempted": canc,
+                "modifications_attempted": mod,
+            },
+        )
+
+
+def assert_moc_loc_allocation_priority(
+    unexecuted_moc_quantity: Union[int, Decimal],
+    executed_loc_or_limit_quantity: Union[int, Decimal],
+    side: str = "",
+    symbol: str = "",
+    auction_id: str = "",
+) -> None:
+    """Lei 75 / LAW-104B: Prioridade Estrita de Alocação de Ordens MOC sobre LOC e Limitadas (FL-104).
+
+    No cruzamento do Leilão de Fechamento B3 PUMA (Closing Cross):
+    1. Ordens Market-on-Close (MOC) possuem prioridade absoluta de execução frente a ordens Limit-on-Close (LOC)
+       e ordens limitadas comuns (LIMIT) na mesma ponta negociadora.
+    2. Nenhuma ordem LOC ou LIMIT elegível ao PTF pode receber alocação (execução parcial ou total)
+       se houver saldo remanescente não executado de ordens MOC na mesma ponta.
+       Formalmente: Se unexecuted_moc_quantity > 0, então executed_loc_or_limit_quantity == 0.
+
+    Args:
+        unexecuted_moc_quantity: Saldo residual não-executado de ordens MOC na ponta analisada.
+        executed_loc_or_limit_quantity: Volume de ordens LOC ou limitadas executadas na mesma ponta.
+        side: Ponta da negociação ('BUY' / 'SELL' ou 'C' / 'V').
+        symbol: Código do ativo transacionado.
+        auction_id: Identificador do leilão PUMA.
+    """
+    violation = (unexecuted_moc_quantity > 0) and (executed_loc_or_limit_quantity > 0)
+    check(
+        not violation,
+        f"Violação da Prioridade Estrita MOC vs LOC (LAW-104B) no leilão de '{symbol}' (ponta {side}): "
+        f"Ordens LOC/LIMIT executaram {executed_loc_or_limit_quantity} lotes havendo {unexecuted_moc_quantity} "
+        f"lotes de MOC pendentes sem execução.",
+        law_code="LAW-104B",
+        details={
+            "symbol": symbol,
+            "side": side,
+            "auction_id": auction_id,
+            "unexecuted_moc_quantity": str(unexecuted_moc_quantity),
+            "executed_loc_or_limit_quantity": str(executed_loc_or_limit_quantity),
+        },
+    )
+
+
+def assert_closing_auction_volume_maximization(
+    selected_volume: Union[int, Decimal],
+    candidate_volumes: Sequence[Union[int, Decimal]],
+    selected_price: Optional[Decimal] = None,
+    candidate_prices: Optional[Sequence[Decimal]] = None,
+    symbol: str = "",
+    auction_id: str = "",
+) -> None:
+    """Lei 76 / LAW-104C: Maximização Estrita de Volume Executável no Leilão de Fechamento (FL-104).
+
+    Princípio nº 1 de apuração do Preço Teórico de Fechamento (PTF) da B3 PUMA:
+    O preço de fechamento escolhido para o uncross DEVE ser aquele que proporciona o maior volume
+    acumulado de lotes executáveis entre todos os níveis de preço com ordens no livro.
+    Formalmente: selected_volume >= v para todo v em candidate_volumes.
+
+    Args:
+        selected_volume: Volume executável apurado ao Preço Teórico de Fechamento (PTF) escolhido.
+        candidate_volumes: Sequência com os volumes executáveis calculados para todos os níveis de preço candidatos.
+        selected_price: O preço PTF selecionado (opcional, para enriquecer o diagnóstico de auditoria).
+        candidate_prices: Sequência dos preços candidatos correspondentes aos candidate_volumes (opcional).
+        symbol: Código de negociação do ativo.
+        auction_id: Identificador do leilão de fechamento.
+    """
+    check(
+        selected_volume >= 0,
+        f"Volume selecionado no leilão '{symbol}' não pode ser negativo: {selected_volume}",
+        law_code="LAW-104C",
+    )
+    if candidate_volumes:
+        max_possible_volume = max(candidate_volumes)
+        check(
+            selected_volume >= max_possible_volume,
+            f"Violação da Maximização de Volume no Fechamento (LAW-104C) para '{symbol}': "
+            f"Volume selecionado ({selected_volume} lotes ao preço {selected_price}) é inferior "
+            f"ao volume máximo executável ({max_possible_volume} lotes) entre os preços candidatos.",
+            law_code="LAW-104C",
+            details={
+                "symbol": symbol,
+                "auction_id": auction_id,
+                "selected_volume": str(selected_volume),
+                "selected_price": str(selected_price) if selected_price is not None else None,
+                "max_possible_volume": str(max_possible_volume),
+                "total_candidate_levels": len(candidate_volumes),
+            },
+        )
+
+
+def assert_cross_border_collateral_coverage(
+    total_collateral_net_value_brl: Decimal,
+    required_margin_brl: Decimal,
+    participant_id: str = "",
+    tolerance: Decimal = Decimal("0.00"),
+) -> None:
+    """Lei 77 / LAW-105A: Cobertura Integral de Margem por Garantias Transfronteiriças (FL-105).
+
+    Garantias internacionais depositadas (US Treasuries, German Bunds, UK Gilts, moeda estrangeira),
+    precificadas a valor de mercado, convertidas a BRL pela taxa de câmbio PTAX conservadora de compra (bid)
+    e deduzidos os haircuts soberanos de maturidade e buffer de volatilidade cambial FX, devem cobrir
+    integralmente a chamada de margem CORE da Câmara B3:
+    total_collateral_net_value_brl + tolerance >= required_margin_brl.
+
+    Args:
+        total_collateral_net_value_brl: Valor líquido total das garantias transfronteiriças em BRL após haircuts.
+        required_margin_brl: Margem requerida em BRL calculada pelo sistema de risco CORE da Câmara B3.
+        participant_id: Código ou identificador do Participante de Liquidação / Clearing Member.
+        tolerance: Margem de tolerância para arredondamentos de centavos (padrão 0.00).
+    """
+    deficit = required_margin_brl - (total_collateral_net_value_brl + tolerance)
+    check(
+        deficit <= Decimal("0.00"),
+        f"Violação de Cobertura de Garantias Transfronteiriças (LAW-105A) para participante '{participant_id}': "
+        f"Valor Líquido de Garantias (R$ {total_collateral_net_value_brl:.2f}) < Margem Requerida (R$ {required_margin_brl:.2f}) "
+        f"[Déficit de Cobertura: R$ {deficit:.2f}]",
+        law_code="LAW-105A",
+        details={
+            "participant_id": participant_id,
+            "total_collateral_net_value_brl": str(total_collateral_net_value_brl),
+            "required_margin_brl": str(required_margin_brl),
+            "deficit_brl": str(deficit if deficit > Decimal("0.00") else Decimal("0.00")),
+        },
+    )
+
+
+def assert_international_fiduciary_lock(
+    international_locked_quantity: Union[int, Decimal],
+    b3_recorded_pledge_quantity: Union[int, Decimal],
+    total_deposited_quantity: Optional[Union[int, Decimal]] = None,
+    depository_name: str = "",
+    asset_isin: str = "",
+) -> None:
+    """Lei 78 / LAW-105B: Inviolabilidade da Trava Fiduciária Internacional de Custódia (FL-105).
+
+    Garante a estrita paridade e integridade da afetação fiduciária de garantias custodiadas
+    em depositários centrais internacionais (Euroclear, Clearstream, DTC / DTCC):
+    1. A quantidade de títulos com status de bloqueio fiduciário (pledge lock) no depositário internacional
+       deve ser rigorosamente igual à quantidade de garantias registrada no sistema de colateral da B3.
+    2. A quantidade travada fiduciariamente não pode exceder o saldo total em custódia segregada.
+    3. Impede desalienação unilateral, vazamento de colateral ou dupla oneração de títulos soberanos.
+
+    Args:
+        international_locked_quantity: Quantidade de títulos bloqueados/penhorados no CSD internacional.
+        b3_recorded_pledge_quantity: Quantidade de penhor fiduciário registrada nos livros da Câmara B3.
+        total_deposited_quantity: Posição total sob custódia na conta internacional (opcional).
+        depository_name: Nome do depositário internacional (ex: 'Euroclear', 'Clearstream', 'DTC').
+        asset_isin: Código ISIN do ativo soberano ou título internacional.
+    """
+    check(
+        international_locked_quantity == b3_recorded_pledge_quantity,
+        f"Violação da Trava Fiduciária Internacional (LAW-105B) no depositário '{depository_name}' ativo '{asset_isin}': "
+        f"Bloqueado no CSD Internacional ({international_locked_quantity}) != Registrado na B3 ({b3_recorded_pledge_quantity})",
+        law_code="LAW-105B",
+        details={
+            "depository_name": depository_name,
+            "asset_isin": asset_isin,
+            "international_locked_quantity": str(international_locked_quantity),
+            "b3_recorded_pledge_quantity": str(b3_recorded_pledge_quantity),
+        },
+    )
+    if total_deposited_quantity is not None:
+        check(
+            b3_recorded_pledge_quantity <= total_deposited_quantity,
+            f"Violação de Limite de Custódia em Trava Fiduciária (LAW-105B) no depositário '{depository_name}': "
+            f"Penhor registrado ({b3_recorded_pledge_quantity}) excede o saldo total sob custódia ({total_deposited_quantity})",
+            law_code="LAW-105B",
+            details={
+                "depository_name": depository_name,
+                "asset_isin": asset_isin,
+                "b3_recorded_pledge_quantity": str(b3_recorded_pledge_quantity),
+                "total_deposited_quantity": str(total_deposited_quantity),
+            },
+        )
+
+
+def assert_triparty_zero_sum_settlement(
+    movements_or_debits: Union[Sequence[Decimal], Decimal],
+    credits: Optional[Union[Sequence[Decimal], Decimal]] = None,
+    tolerance: Decimal = Decimal("0.00"),
+    agreement_id: str = "",
+) -> None:
+    """Lei 79 / LAW-105C: Conservação Financeira Soma-Zero em Liquidação Triparty (FL-105).
+
+    Em operações de custódia e empréstimo/garantia triparty internacionais (B3 - Agente Triparty - Participante):
+    1. Se fornecidos débitos e créditos separadamente: sum(debits) == sum(credits).
+    2. Se fornecido fluxo líquido de caixa/ativos: sum(movements) == 0,00 centavo a centavo.
+    Nenhuma unidade monetária ou fração de ativo pode ser criada ou destruída na alocação/desalocação triparty.
+
+    Args:
+        movements_or_debits: Sequência de movimentações financeiras com sinal ou total/sequência de débitos.
+        credits: Sequência ou total de créditos correspondentes (opcional, quando passado no modelo bilateral).
+        tolerance: Tolerância para resíduos de arredondamento cambial (padrão 0.00).
+        agreement_id: Identificador do contrato ou instrução de liquidação triparty.
+    """
+    if credits is not None:
+        tot_deb = sum(movements_or_debits) if isinstance(movements_or_debits, (list, tuple)) else movements_or_debits
+        tot_cred = sum(credits) if isinstance(credits, (list, tuple)) else credits
+        diff = abs(tot_deb - tot_cred)
+        check(
+            diff <= tolerance,
+            f"Violação de Soma-Zero na Liquidação Triparty (LAW-105C) no acordo '{agreement_id}': "
+            f"Total Débitos ({tot_deb}) != Total Créditos ({tot_cred}) [Diff={diff}]",
+            law_code="LAW-105C",
+            details={
+                "agreement_id": agreement_id,
+                "total_debits": str(tot_deb),
+                "total_credits": str(tot_cred),
+                "diff": str(diff),
+            },
+        )
+    else:
+        if isinstance(movements_or_debits, (list, tuple)):
+            net_sum = sum(movements_or_debits, Decimal("0.00"))
+        else:
+            net_sum = movements_or_debits
+        diff = abs(net_sum)
+        check(
+            diff <= tolerance,
+            f"Violação de Soma-Zero na Liquidação Triparty (LAW-105C) no acordo '{agreement_id}': "
+            f"Soma líquida das pernas ({net_sum}) != 0.00 [Diff={diff}]",
+            law_code="LAW-105C",
+            details={
+                "agreement_id": agreement_id,
+                "net_sum": str(net_sum),
+                "diff": str(diff),
+            },
+        )
+
+
+def assert_central_bus_global_balance(
+    inbound_total: Union[int, Decimal],
+    settled_or_processed: Union[int, Decimal],
+    rejected: Union[int, Decimal],
+    pending_in_flight: Union[int, Decimal] = 0,
+    bus_channel: str = "",
+) -> None:
+    """Lei 80 / LAW-106A: Conservação Global de Mensagens e Fluxos no Barramento Central (FL-106).
+
+    Invariante de conservação contábil e de mensageria no Barramento Central de Integração (Enterprise Service Bus / SPB / Selic / B3):
+    O volume total recebido na entrada (inbound_total) DEVE ser estritamente igual à soma de:
+    inbound_total == settled_or_processed + rejected + pending_in_flight.
+    Garante que nenhuma mensagem ou evento de liquidação se perde em trânsito, é descartado silenciosamente
+    ou gerado de forma espúria sem trilha de auditoria.
+
+    Args:
+        inbound_total: Total de mensagens, eventos ou valores financeiros despachados para o barramento.
+        settled_or_processed: Total de mensagens/operações confirmadas, processadas ou liquidadas com sucesso.
+        rejected: Total de mensagens/operações rejeitadas, canceladas ou encaminhadas para Dead Letter Queue (DLQ).
+        pending_in_flight: Total de mensagens/operações em trânsito ou pendentes de confirmação.
+        bus_channel: Nome do canal, fila ou tópico do barramento central (ex: 'SPB-LDL', 'RTC-ALLOCATION').
+    """
+    expected_sum = settled_or_processed + rejected + pending_in_flight
+    check(
+        inbound_total == expected_sum,
+        f"Violação do Balanço Global do Barramento Central (LAW-106A) no canal '{bus_channel}': "
+        f"Inbound ({inbound_total}) != Processadas ({settled_or_processed}) + Rejeitadas ({rejected}) + Pendentes ({pending_in_flight}) "
+        f"[Soma Esperada={expected_sum}]",
+        law_code="LAW-106A",
+        details={
+            "bus_channel": bus_channel,
+            "inbound_total": str(inbound_total),
+            "settled_or_processed": str(settled_or_processed),
+            "rejected": str(rejected),
+            "pending_in_flight": str(pending_in_flight),
+            "expected_sum": str(expected_sum),
+        },
+    )
+
+
+def assert_default_waterfall_containment(
+    gross_loss: Decimal,
+    total_absorbed: Decimal,
+    residual_deficit: Decimal = Decimal("0.00"),
+    safeguards_capacity: Optional[Decimal] = None,
+    clearing_member_id: str = "",
+) -> None:
+    """Lei 81 / LAW-106B: Contenção Absoluta na Cascata de Inadimplência e Risco Sistêmico (FL-106).
+
+    Exigência dos Princípios para Infraestruturas do Mercado Financeiro CPMI-IOSCO (PFMI 4 e 7):
+    1. Conservação Contábil Estrita da Perda:
+       gross_loss == total_absorbed + residual_deficit.
+    2. Contenção Plena sem Transbordamento Insolvente:
+       residual_deficit == 0,00 (a perda deve ser 100% contida pelas salvaguardas da câmara).
+    3. Se safeguards_capacity fornecido:
+       total_absorbed <= safeguards_capacity (a perda absorvida não pode exceder o patrimônio de garantias mobilizado).
+
+    Args:
+        gross_loss: Perda bruta total provocada pela inadimplência do participante.
+        total_absorbed: Soma das perdas absorvidas pelas camadas sequenciais de salvaguardas da B3.
+        residual_deficit: Déficit não absorvido remanescente (deve ser estritamente zero para contenção bem-sucedida).
+        safeguards_capacity: Capacidade máxima agregada dos recursos de salvaguarda disponíveis (opcional).
+        clearing_member_id: Identificador do membro de compensação inadimplente.
+    """
+    expected_loss = total_absorbed + residual_deficit
+    check(
+        gross_loss == expected_loss,
+        f"Violação Contábil na Cascata de Inadimplência (LAW-106B) para membro '{clearing_member_id}': "
+        f"Perda Bruta ({gross_loss}) != Absorvido ({total_absorbed}) + Déficit Residual ({residual_deficit})",
+        law_code="LAW-106B",
+        details={
+            "clearing_member_id": clearing_member_id,
+            "gross_loss": str(gross_loss),
+            "total_absorbed": str(total_absorbed),
+            "residual_deficit": str(residual_deficit),
+        },
+    )
+
+    check(
+        residual_deficit == Decimal("0.00"),
+        f"Falha Crítica de Contenção da Cascata de Inadimplência (LAW-106B) para membro '{clearing_member_id}': "
+        f"Déficit Residual Descoberto de R$ {residual_deficit:.2f} excede capacidade de salvaguardas (Risco Sistêmico).",
+        law_code="LAW-106B",
+        details={
+            "clearing_member_id": clearing_member_id,
+            "gross_loss": str(gross_loss),
+            "residual_deficit": str(residual_deficit),
+        },
+    )
+
+    if safeguards_capacity is not None:
+        check(
+            total_absorbed <= safeguards_capacity,
+            f"Violação de Capacidade de Salvaguardas na Cascata (LAW-106B) para membro '{clearing_member_id}': "
+            f"Total Absorvido ({total_absorbed}) excede Capacidade Máxima ({safeguards_capacity})",
+            law_code="LAW-106B",
+            details={
+                "clearing_member_id": clearing_member_id,
+                "total_absorbed": str(total_absorbed),
+                "safeguards_capacity": str(safeguards_capacity),
+            },
+        )
+
+
+def assert_cross_system_atomic_settlement(
+    system_a_completed: Union[bool, str],
+    system_b_completed: Union[bool, str],
+    system_a_status: str = "",
+    system_b_status: str = "",
+    transaction_id: str = "",
+    system_a_name: str = "B3",
+    system_b_name: str = "ExternalSystem",
+    amount_system_a: Optional[Decimal] = None,
+    amount_system_b: Optional[Decimal] = None,
+) -> None:
+    """Lei 82 / LAW-106C: Atomicidade Estrita de Liquidação Entre Sistemas (All-or-None) (FL-106).
+
+    Princípio de liquidação atômica e eliminação do Risco de Principal (Herstatt Risk) em integrações
+    inter-sistemas (ex: B3 CSD vs Banco Central STR/SPB, Selic, C3 ou Depositários Internacionais):
+    1. Ambas as pernas do negócio devem atingir o mesmo estado de terminação: ou ambas são liquidadas
+       com sucesso ('SETTLED', 'COMPLETED', True), ou ambas são abortadas/revertidas ('FAILED', 'CANCELLED', False).
+    2. Nenhuma perna pode ser liquidada unilateralmente se a contraparte falhar (proibição de liquidação assimétrica).
+    3. Se valores nominais são fornecidos: amount_system_a == amount_system_b.
+
+    Args:
+        system_a_completed: Booleano ou status string indicando se o Sistema A concluiu a liquidação com sucesso.
+        system_b_completed: Booleano ou status string indicando se o Sistema B concluiu a liquidação com sucesso.
+        system_a_status: Descrição textual do status no Sistema A (ex: 'SETTLED', 'ACK').
+        system_b_status: Descrição textual do status no Sistema B (ex: 'REJECTED', 'CONFIRMED').
+        transaction_id: Identificador único da transação de liquidação cruzada.
+        system_a_name: Nome do Sistema A (ex: 'B3-CLEARING', 'B3-CSD').
+        system_b_name: Nome do Sistema B (ex: 'BACEN-STR', 'SELIC', 'EUROCLEAR').
+        amount_system_a: Montante financeiro liquidado no Sistema A (opcional).
+        amount_system_b: Montante financeiro liquidado no Sistema B (opcional).
+    """
+    success_states = {"SETTLED", "COMPLETED", "SUCCESS", "EXECUTED", "CONFIRMED", "COMMITTED"}
+
+    if isinstance(system_a_completed, str):
+        a_ok = system_a_completed.upper() in success_states
+        st_a = system_a_status or system_a_completed
+    else:
+        a_ok = bool(system_a_completed)
+        st_a = system_a_status or ("COMPLETED" if a_ok else "FAILED")
+
+    if isinstance(system_b_completed, str):
+        b_ok = system_b_completed.upper() in success_states
+        st_b = system_b_status or system_b_completed
+    else:
+        b_ok = bool(system_b_completed)
+        st_b = system_b_status or ("COMPLETED" if b_ok else "FAILED")
+
+    check(
+        a_ok == b_ok,
+        f"Violação da Atomicidade de Liquidação Entre Sistemas (LAW-106C) na transação '{transaction_id}': "
+        f"Assimetria detectada entre {system_a_name} (sucesso={a_ok}, status='{st_a}') e "
+        f"{system_b_name} (sucesso={b_ok}, status='{st_b}'). Princípio All-or-None quebrado.",
+        law_code="LAW-106C",
+        details={
+            "transaction_id": transaction_id,
+            "system_a_name": system_a_name,
+            "system_b_name": system_b_name,
+            "system_a_success": a_ok,
+            "system_b_success": b_ok,
+            "system_a_status": st_a,
+            "system_b_status": st_b,
+        },
+    )
+
+    if amount_system_a is not None and amount_system_b is not None:
+        check(
+            amount_system_a == amount_system_b,
+            f"Violação de Paridade Financeira na Liquidação Entre Sistemas (LAW-106C) na transação '{transaction_id}': "
+            f"Montante {system_a_name} ({amount_system_a}) != Montante {system_b_name} ({amount_system_b})",
+            law_code="LAW-106C",
+            details={
+                "transaction_id": transaction_id,
+                "amount_system_a": str(amount_system_a),
+                "amount_system_b": str(amount_system_b),
+            },
+        )
+
 
 
 

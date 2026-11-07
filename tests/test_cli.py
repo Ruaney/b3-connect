@@ -8,11 +8,16 @@ import unittest
 from unittest.mock import patch
 
 from src.cli import (
+    VERSION,
     build_atlas_parser,
     build_verify_parser,
     cmd_flow_info,
     cmd_list_flows,
     cmd_list_sources,
+    cmd_simulate_central_bus,
+    cmd_simulate_flow,
+    cmd_simulate_moc,
+    cmd_simulate_triparty,
     cmd_stats,
     load_catalog,
     main_atlas,
@@ -23,13 +28,17 @@ from src.cli import (
 
 
 class TestAtlasCLI(unittest.TestCase):
-    """Bateria de testes unitários para a CLI b3-atlas e b3-verify."""
+    """Bateria de testes unitários para a CLI b3-atlas e b3-verify (Marco de 100 Fluxos)."""
 
     @classmethod
     def setUpClass(cls):
         cls.repo_root = Path(__file__).resolve().parent.parent
         cls.catalog_dir = cls.repo_root / "catalog"
         cls.fixtures_dir = cls.repo_root / "fixtures"
+
+    def test_version_constant(self):
+        """Verifica a versão 2.2.0 celebrando o marco de 100 fluxos B3."""
+        self.assertEqual(VERSION, "2.2.0")
 
     def test_resolve_catalog_dir(self):
         """Verifica se resolve_catalog_dir encontra a pasta catalog válida."""
@@ -44,12 +53,17 @@ class TestAtlasCLI(unittest.TestCase):
         self.assertTrue(fix_dir.is_dir(), f"Pasta fixtures não encontrada: {fix_dir}")
 
     def test_load_catalog(self):
-        """Verifica carregamento estruturado de flows.json e sources.json."""
+        """Verifica carregamento estruturado e integridade total dos 100 fluxos B3."""
         flows_data, sources_data = load_catalog(self.catalog_dir)
         self.assertIn("flows", flows_data)
         self.assertIn("sources", sources_data)
-        self.assertGreater(len(flows_data["flows"]), 50)
-        self.assertGreater(len(sources_data["sources"]), 30)
+        self.assertEqual(len(flows_data["flows"]), 100)
+        self.assertGreaterEqual(len(sources_data["sources"]), 30)
+
+        flow_ids = {f["id"] for f in flows_data["flows"]}
+        self.assertIn("FL-098", flow_ids)
+        self.assertIn("FL-099", flow_ids)
+        self.assertIn("FL-100", flow_ids)
 
     def test_cmd_list_flows_text(self):
         """Testa list-flows em formato tabular texto."""
@@ -60,7 +74,8 @@ class TestAtlasCLI(unittest.TestCase):
             output = fake_out.getvalue()
             self.assertEqual(code, 0)
             self.assertIn("FL-001", output)
-            self.assertIn("B3 Integration Atlas", output)
+            self.assertIn("FL-100", output)
+            self.assertIn("100 fluxos encontrados", output)
 
     def test_cmd_list_flows_filter_system(self):
         """Testa list-flows com filtro por sistema."""
@@ -73,7 +88,7 @@ class TestAtlasCLI(unittest.TestCase):
             self.assertIn("Puma", output)
 
     def test_cmd_list_flows_json(self):
-        """Testa list-flows com saída JSON válida."""
+        """Testa list-flows com saída JSON válida dos 100 fluxos."""
         parser = build_atlas_parser()
         args = parser.parse_args(["list-flows", "--json"])
         with patch("sys.stdout", new=StringIO()) as fake_out:
@@ -82,7 +97,7 @@ class TestAtlasCLI(unittest.TestCase):
             self.assertEqual(code, 0)
             parsed = json.loads(output)
             self.assertIsInstance(parsed, list)
-            self.assertGreater(len(parsed), 50)
+            self.assertEqual(len(parsed), 100)
             self.assertIn("id", parsed[0])
 
     def test_cmd_flow_info_found(self):
@@ -96,17 +111,28 @@ class TestAtlasCLI(unittest.TestCase):
             self.assertIn("FL-001", output)
             self.assertIn("Estágios de Homologação", output)
 
+    def test_cmd_flow_info_fl100(self):
+        """Testa consulta detalhada do fluxo FL-100 (Barramento Central)."""
+        parser = build_atlas_parser()
+        args = parser.parse_args(["info", "FL-100"])
+        with patch("sys.stdout", new=StringIO()) as fake_out:
+            code = cmd_flow_info(args)
+            output = fake_out.getvalue()
+            self.assertEqual(code, 0)
+            self.assertIn("FL-100", output)
+            self.assertIn("Barramento Central", output)
+
     def test_cmd_flow_info_json(self):
         """Testa consulta detalhada de fluxo com saída JSON."""
         parser = build_atlas_parser()
-        args = parser.parse_args(["info", "FL-001", "--json"])
+        args = parser.parse_args(["info", "FL-098", "--json"])
         with patch("sys.stdout", new=StringIO()) as fake_out:
             code = cmd_flow_info(args)
             output = fake_out.getvalue()
             self.assertEqual(code, 0)
             parsed = json.loads(output)
-            self.assertEqual(parsed.get("id"), "FL-001")
-            self.assertIn("sources_detail", parsed)
+            self.assertEqual(parsed.get("id"), "FL-098")
+            self.assertIn("MOC/LOC", parsed.get("name", ""))
 
     def test_cmd_flow_info_not_found(self):
         """Testa consulta de fluxo inexistente gerando código 1."""
@@ -118,7 +144,7 @@ class TestAtlasCLI(unittest.TestCase):
             self.assertIn("não encontrado", fake_err.getvalue())
 
     def test_cmd_stats(self):
-        """Testa exibição de estatísticas gerais."""
+        """Testa exibição de estatísticas gerais dos 100 fluxos."""
         parser = build_atlas_parser()
         args = parser.parse_args(["stats"])
         with patch("sys.stdout", new=StringIO()) as fake_out:
@@ -126,7 +152,7 @@ class TestAtlasCLI(unittest.TestCase):
             output = fake_out.getvalue()
             self.assertEqual(code, 0)
             self.assertIn("ESTATÍSTICAS E MÉTRICAS", output)
-            self.assertIn("Total de Fluxos Mapeados", output)
+            self.assertIn("Total de Fluxos Mapeados: 100", output)
 
     def test_cmd_stats_json(self):
         """Testa exibição de estatísticas em JSON."""
@@ -137,7 +163,7 @@ class TestAtlasCLI(unittest.TestCase):
             output = fake_out.getvalue()
             self.assertEqual(code, 0)
             parsed = json.loads(output)
-            self.assertIn("total_flows", parsed)
+            self.assertEqual(parsed.get("total_flows"), 100)
             self.assertIn("total_sources", parsed)
             self.assertIn("stages", parsed)
 
@@ -163,6 +189,170 @@ class TestAtlasCLI(unittest.TestCase):
             self.assertIsInstance(parsed, list)
             self.assertGreater(len(parsed), 30)
 
+    # --------------------------------------------------------------------------
+    # Testes dos Novos Comandos de Simulação: MOC/LOC, Triparty e Barramento Central
+    # --------------------------------------------------------------------------
+
+    def test_cmd_simulate_moc_text_and_json(self):
+        """Testa simulação do Leilão de Fechamento MOC/LOC (FL-098)."""
+        parser = build_atlas_parser()
+
+        # Modo texto
+        args_text = parser.parse_args(["simulate-moc"])
+        with patch("sys.stdout", new=StringIO()) as fake_out:
+            code = cmd_simulate_moc(args_text)
+            output = fake_out.getvalue()
+            self.assertEqual(code, 0)
+            self.assertIn("SIMULAÇÃO: LEILÃO DE FECHAMENTO PUMA (MOC/LOC)", output)
+            self.assertIn("FL-098", output)
+            self.assertIn("Prioridade MOC Cumprida:      Sim (LAW-104B)", output)
+
+        # Modo JSON
+        args_json = parser.parse_args(["simulate-moc", "--json"])
+        with patch("sys.stdout", new=StringIO()) as fake_out:
+            code = cmd_simulate_moc(args_json)
+            self.assertEqual(code, 0)
+            data = json.loads(fake_out.getvalue())
+            self.assertEqual(data["flow"], "FL-098")
+            self.assertEqual(data["status"], "SUCCESS")
+            self.assertIn("LAW-104A", data["invariants_verified"])
+            self.assertIn("LAW-104B", data["invariants_verified"])
+            self.assertIn("LAW-104C", data["invariants_verified"])
+
+    def test_cmd_simulate_moc_freeze_window(self):
+        """Testa leilão de fechamento com auditoria da Janela de Congelamento."""
+        parser = build_atlas_parser()
+        args = parser.parse_args(["simulate-moc", "--test-freeze", "--json"])
+        with patch("sys.stdout", new=StringIO()) as fake_out:
+            code = cmd_simulate_moc(args)
+            self.assertEqual(code, 0)
+            data = json.loads(fake_out.getvalue())
+            self.assertTrue(data["freeze_protection_tested"])
+            self.assertTrue(data["freeze_inviolability_verified"])
+
+    def test_cmd_simulate_moc_custom_orders(self):
+        """Testa leilão de fechamento com ordens customizadas."""
+        parser = build_atlas_parser()
+        args = parser.parse_args(["simulate-moc", "--custom", "--symbol", "VALE3", "--ref-price", "60.00", "--json"])
+        with patch("sys.stdout", new=StringIO()) as fake_out:
+            code = cmd_simulate_moc(args)
+            self.assertEqual(code, 0)
+            data = json.loads(fake_out.getvalue())
+            self.assertEqual(data["symbol"], "VALE3")
+            self.assertEqual(data["status"], "SUCCESS")
+
+    def test_cmd_simulate_triparty_text_and_json(self):
+        """Testa simulação de Garantias Triparty Repo Internacional (FL-099)."""
+        parser = build_atlas_parser()
+
+        # Modo texto
+        args_text = parser.parse_args(["simulate-triparty"])
+        with patch("sys.stdout", new=StringIO()) as fake_out:
+            code = cmd_simulate_triparty(args_text)
+            output = fake_out.getvalue()
+            self.assertEqual(code, 0)
+            self.assertIn("SIMULAÇÃO: TRIPARTY REPO & GARANTIAS INTERNACIONAIS", output)
+            self.assertIn("FL-099", output)
+            self.assertIn("Segregação Fiduciária", output)
+
+        # Modo JSON
+        args_json = parser.parse_args(["simulate-triparty", "--custodian", "CLEARSTREAM", "--json"])
+        with patch("sys.stdout", new=StringIO()) as fake_out:
+            code = cmd_simulate_triparty(args_json)
+            self.assertEqual(code, 0)
+            data = json.loads(fake_out.getvalue())
+            self.assertEqual(data["flow"], "FL-099")
+            self.assertEqual(data["custodian"], "CLEARSTREAM")
+            self.assertEqual(data["status"], "SUCCESS")
+            self.assertIn("LAW-105A", data["invariants_verified"])
+            self.assertIn("LAW-105B", data["invariants_verified"])
+            self.assertIn("LAW-105C", data["invariants_verified"])
+
+    def test_cmd_simulate_central_bus_text_and_json(self):
+        """Testa simulação do Barramento Central de Liquidação Unificada (FL-100)."""
+        parser = build_atlas_parser()
+
+        # Modo texto
+        args_text = parser.parse_args(["simulate-central-bus"])
+        with patch("sys.stdout", new=StringIO()) as fake_out:
+            code = cmd_simulate_central_bus(args_text)
+            output = fake_out.getvalue()
+            self.assertEqual(code, 0)
+            self.assertIn("SIMULAÇÃO: BARRAMENTO CENTRAL DE LIQUIDAÇÃO MULTILATERAL", output)
+            self.assertIn("FL-100", output)
+            self.assertIn("10 (Equities, Deriv, Balcão, RF, Agro, Fundos, Drex, Pix, CCEE, Carbono)", output)
+
+        # Modo JSON
+        args_json = parser.parse_args(["simulate-central-bus", "--json"])
+        with patch("sys.stdout", new=StringIO()) as fake_out:
+            code = cmd_simulate_central_bus(args_json)
+            self.assertEqual(code, 0)
+            data = json.loads(fake_out.getvalue())
+            self.assertEqual(data["flow"], "FL-100")
+            self.assertEqual(data["subsystems_count"], 10)
+            self.assertEqual(data["accounting_imbalance_brl"], "0.00")
+            self.assertIn("LAW-106A", data["invariants_verified"])
+            self.assertIn("LAW-106B", data["invariants_verified"])
+            self.assertIn("LAW-106C", data["invariants_verified"])
+
+    def test_cmd_simulate_central_bus_stress_default(self):
+        """Testa simulação do barramento central com cenário de Default Waterfall."""
+        parser = build_atlas_parser()
+        args = parser.parse_args(["simulate-central-bus", "--stress-default", "--json"])
+        with patch("sys.stdout", new=StringIO()) as fake_out:
+            code = cmd_simulate_central_bus(args)
+            self.assertEqual(code, 0)
+            data = json.loads(fake_out.getvalue())
+            self.assertTrue(data["stress_default_tested"])
+            self.assertTrue(data["default_absorbed"])
+            self.assertGreater(data["stages_activated"], 0)
+
+    def test_cmd_simulate_flow_dispatcher(self):
+        """Testa comando unificado simulate-flow para os 100 fluxos B3."""
+        parser = build_atlas_parser()
+
+        # FL-098 (MOC/LOC)
+        args_fl98 = parser.parse_args(["simulate-flow", "FL-098", "--json"])
+        with patch("sys.stdout", new=StringIO()) as fake_out:
+            code = cmd_simulate_flow(args_fl98)
+            self.assertEqual(code, 0)
+            data = json.loads(fake_out.getvalue())
+            self.assertEqual(data["flow"], "FL-098")
+
+        # FL-099 (Triparty)
+        args_fl99 = parser.parse_args(["simulate-flow", "FL-099", "--json"])
+        with patch("sys.stdout", new=StringIO()) as fake_out:
+            code = cmd_simulate_flow(args_fl99)
+            self.assertEqual(code, 0)
+            data = json.loads(fake_out.getvalue())
+            self.assertEqual(data["flow"], "FL-099")
+
+        # FL-100 (Barramento Central)
+        args_fl100 = parser.parse_args(["simulate-flow", "FL-100", "--json"])
+        with patch("sys.stdout", new=StringIO()) as fake_out:
+            code = cmd_simulate_flow(args_fl100)
+            self.assertEqual(code, 0)
+            data = json.loads(fake_out.getvalue())
+            self.assertEqual(data["flow"], "FL-100")
+
+        # FL-001 (Fluxo genérico dos 100)
+        args_fl01 = parser.parse_args(["simulate-flow", "FL-001", "--json"])
+        with patch("sys.stdout", new=StringIO()) as fake_out:
+            code = cmd_simulate_flow(args_fl01)
+            self.assertEqual(code, 0)
+            data = json.loads(fake_out.getvalue())
+            self.assertEqual(data["flow_id"], "FL-001")
+            self.assertEqual(data["simulation_status"], "VERIFIED_FORMALLY")
+
+    def test_cmd_simulate_flow_not_found(self):
+        """Testa simulate-flow com ID inválido."""
+        parser = build_atlas_parser()
+        args = parser.parse_args(["simulate-flow", "FL-999"])
+        with patch("sys.stderr", new=StringIO()) as fake_err:
+            code = cmd_simulate_flow(args)
+            self.assertEqual(code, 1)
+            self.assertIn("não encontrado", fake_err.getvalue())
+
     def test_main_atlas_no_args_prints_help(self):
         """Testa chamada sem argumentos imprimindo help e retornando 0."""
         with patch("sys.stdout", new=StringIO()) as fake_out:
@@ -176,9 +366,28 @@ class TestAtlasCLI(unittest.TestCase):
             code = main_atlas(["stats", "--json"])
             self.assertEqual(code, 0)
 
+    def test_main_atlas_dispatch_simulations_and_aliases(self):
+        """Testa execução dos novos subcomandos e aliases via entrypoint principal."""
+        with patch("sys.stdout", new=StringIO()):
+            # simulate-moc e alias moc
+            self.assertEqual(main_atlas(["simulate-moc", "--json"]), 0)
+            self.assertEqual(main_atlas(["moc", "--json"]), 0)
+
+            # simulate-triparty e alias triparty
+            self.assertEqual(main_atlas(["simulate-triparty", "--json"]), 0)
+            self.assertEqual(main_atlas(["triparty", "--json"]), 0)
+
+            # simulate-central-bus e aliases central-bus / barramento
+            self.assertEqual(main_atlas(["simulate-central-bus", "--json"]), 0)
+            self.assertEqual(main_atlas(["central-bus", "--json"]), 0)
+            self.assertEqual(main_atlas(["barramento", "--json"]), 0)
+
+            # simulate-flow e alias run-flow
+            self.assertEqual(main_atlas(["simulate-flow", "FL-100", "--json"]), 0)
+            self.assertEqual(main_atlas(["run-flow", "FL-098", "--json"]), 0)
+
     def test_main_verify_execution(self):
         """Testa execução do verificador formal de invariantes via main_verify."""
-        # Redireciona stdout para suprimir o log volumoso das 70 leis
         with patch("sys.stdout", new=StringIO()) as fake_out:
             code = main_verify([])
             self.assertEqual(code, 0)

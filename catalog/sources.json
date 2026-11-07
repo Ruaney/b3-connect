@@ -617,6 +617,30 @@
       "status": "localizada",
       "kind": "norma_regulatoria",
       "limitation": "Escrituração e custódia de CIR vinculada a fração de terra sob afetação, validação SIGEF/INCRA, limite prudencial e excussão fiduciária."
+    },
+    {
+      "id": "SRC-078",
+      "title": "B3 PUMA Trading System — Manual de Regras de Leilão de Fechamento (MOC/LOC)",
+      "url": "https://www.b3.com.br/pt_br/solucoes/plataformas/puma-trading-system/regras-de-negociacao/leilao-de-fechamento-moc-loc.htm",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Regras de leilão de fechamento no PUMA Trading System, apuração do preço de fechamento (PTP), freeze period e prioridade estrita de ordens MOC sobre LOC."
+    },
+    {
+      "id": "SRC-079",
+      "title": "B3 Câmara & Euroclear/Clearstream — Manual de Gestão de Garantias Transfronteiriças e Triparty Repo",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/compensacao-e-liquidacao/garantias/triparty-repo-internacional.htm",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Gestão de garantias transfronteiriças, operações de Triparty Repo com Euroclear, Clearstream e DTC, conversão PTAX, haircuts prudenciais e safe-release guardrail."
+    },
+    {
+      "id": "SRC-080",
+      "title": "B3 — Manual do Barramento Central de Liquidação Unificada e Compensação Multilateral",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/compensacao-e-liquidacao/camara-b3/barramento-central-liquidacao-unificada.htm",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Barramento Central de Liquidação Unificada e Compensação Multilateral Contínua unificando os 10 subsistemas B3, equilíbrio contábil global estrito e prevenção de contágio em cascata."
     }
   ]
 }

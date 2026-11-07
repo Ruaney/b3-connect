@@ -39,6 +39,8 @@ class AbusePatternType(str, Enum):
     LAYERING = "LAYERING"  # Manipulação por estratificação em camadas
     CHURNING = "CHURNING"  # Giro excessivo de carteira discricionária
     EXCESSIVE_OTR = "EXCESSIVE_OTR"  # Order-to-Trade Ratio acima do teto normativo
+    FRONT_RUNNING = "FRONT_RUNNING"  # Operação antecedente com uso de informação privilegiada de ordem de cliente
+    PTP_MANIPULATION = "PTP_MANIPULATION"  # Manipulação do Preço Teórico de Previsão/Fechamento em leilão
 
 
 class ActionType(str, Enum):
@@ -1168,6 +1170,190 @@ class BsmSurveillanceEngine:
         return alerts
 
     # -----------------------------------------------------------------
+    # DETECTOR 5: FRONT-RUNNING (Uso Indevido de Ordem de Cliente)
+    # -----------------------------------------------------------------
+    def detect_front_running(
+        self,
+        time_window_seconds: float = 5.0,
+        min_client_volume: int = 1000,
+    ) -> List[SurveillanceAlert]:
+        """Detecta Front-running (CVM 35 art. 3º / CVM 8): operação prévia de corretora,
+        operador ou carteira proprietária antecipando ordem relevante de cliente.
+
+        Identifica ordens proprietárias inseridas imediatamente antes de uma ordem
+        institucional de cliente (incluindo ordens MOC/LOC no call de fechamento),
+        no mesmo sentido, auferindo vantagem indevida de preço.
+        """
+        alerts: List[SurveillanceAlert] = []
+        alert_counter = 1
+
+        by_symbol: Dict[str, List[AuditRecord]] = {}
+        for r in self._records:
+            by_symbol.setdefault(r.symbol, []).append(r)
+
+        for symbol, recs in by_symbol.items():
+            sorted_recs = sorted(recs, key=lambda x: x.timestamp)
+
+            client_orders = [
+                r for r in sorted_recs
+                if r.action_type in (ActionType.NEW, ActionType.TRADE)
+                and (
+                    r.metadata.get("account_type") in ("CLIENT", "INSTITUTIONAL", "RETAIL")
+                    or r.metadata.get("is_client") is True
+                    or (
+                        r.beneficiary_type in (BeneficiaryType.PF, BeneficiaryType.INVESTMENT_FUND, BeneficiaryType.NON_RESIDENT)
+                        and r.metadata.get("account_type") != "PROPRIETARY"
+                    )
+                )
+                and r.quantity >= min_client_volume
+            ]
+
+            prop_orders = [
+                r for r in sorted_recs
+                if r.action_type in (ActionType.NEW, ActionType.TRADE)
+                and (
+                    r.metadata.get("account_type") == "PROPRIETARY"
+                    or r.metadata.get("is_proprietary") is True
+                    or r.metadata.get("trading_desk") in ("PROP", "PROPRIETARY", "MESA_PROPRIA")
+                )
+            ]
+
+            for c_ord in client_orders:
+                for p_ord in prop_orders:
+                    if p_ord.participant_id != c_ord.participant_id:
+                        continue
+                    if p_ord.beneficiary_id == c_ord.beneficiary_id:
+                        continue
+                    if p_ord.side != c_ord.side:
+                        continue
+                    delta = (c_ord.timestamp - p_ord.timestamp).total_seconds()
+                    if 0.0 <= delta <= time_window_seconds:
+                        alert = SurveillanceAlert(
+                            alert_id=f"ALT-FRONTRUN-{symbol}-{alert_counter:04d}",
+                            pattern_type=AbusePatternType.FRONT_RUNNING,
+                            severity=SeverityLevel.CRITICAL,
+                            symbol=symbol,
+                            participant_id=p_ord.participant_id,
+                            beneficiary_id=p_ord.beneficiary_id,
+                            operator_id=p_ord.operator_id or c_ord.operator_id,
+                            algo_id=p_ord.algo_id,
+                            timestamp=p_ord.timestamp,
+                            description=(
+                                f"Detecção de Front-running em {symbol}: ordem proprietária {p_ord.order_id} "
+                                f"({p_ord.side.value} {p_ord.quantity} @ {p_ord.price}) inserida {delta:.3f}s antes "
+                                f"da ordem institucional de cliente {c_ord.order_id} ({c_ord.side.value} {c_ord.quantity}) "
+                                f"pelo mesmo participante {p_ord.participant_id}."
+                            ),
+                            metrics={
+                                "delta_seconds": round(delta, 4),
+                                "prop_order_id": p_ord.order_id,
+                                "prop_beneficiary": p_ord.beneficiary_id,
+                                "prop_quantity": p_ord.quantity,
+                                "prop_price": float(p_ord.price),
+                                "client_order_id": c_ord.order_id,
+                                "client_beneficiary": c_ord.beneficiary_id,
+                                "client_quantity": c_ord.quantity,
+                                "client_price": float(c_ord.price),
+                                "side": p_ord.side.value,
+                                "order_type": c_ord.metadata.get("order_type", "LIMIT"),
+                            },
+                            evidence_records=[p_ord.record_id, c_ord.record_id],
+                        )
+                        alerts.append(alert)
+                        alert_counter += 1
+
+        return alerts
+
+    # -----------------------------------------------------------------
+    # DETECTOR 6: MANIPULAÇÃO DE PTP EM LEILÃO DE FECHAMENTO (MOC/LOC)
+    # -----------------------------------------------------------------
+    def detect_auction_ptp_manipulation(
+        self,
+        ptp_shift_threshold_pct: float = 0.015,
+        cancel_window_seconds: float = 120.0,
+    ) -> List[SurveillanceAlert]:
+        """Detecta manipulação do Preço Teórico de Previsão / Fechamento (PTP/PTF)
+        em leilões da B3 (Closing Auction / MOC / Banging the Close).
+
+        Identifica a inserção de ordens agressivas MOC/LOC ou de grande volume no call
+        que deslocam significativamente o PTP (> 1.5%), seguido de cancelamento abrupto
+        antes do encerramento (uncross) ou tentativa de distorcer o desbalanceamento.
+        """
+        alerts: List[SurveillanceAlert] = []
+        alert_counter = 1
+
+        by_symbol: Dict[str, List[AuditRecord]] = {}
+        for r in self._records:
+            by_symbol.setdefault(r.symbol, []).append(r)
+
+        for symbol, recs in by_symbol.items():
+            new_orders = {
+                r.order_id: r for r in recs
+                if r.action_type == ActionType.NEW and (
+                    r.metadata.get("order_type") in ("MOC", "LOC")
+                    or r.metadata.get("auction_phase") in ("CALL_PHASE", "AUCTION", "PRE_CLOSE")
+                    or r.metadata.get("is_auction_order") is True
+                    or "ptp_before" in r.metadata
+                )
+            }
+            cancels = [
+                r for r in recs
+                if r.action_type == ActionType.CANCEL and r.order_id in new_orders
+            ]
+
+            for c in cancels:
+                orig = new_orders[c.order_id]
+                delta_cancel = (c.timestamp - orig.timestamp).total_seconds()
+
+                ptp_shift = orig.metadata.get("ptp_shift_pct")
+                if ptp_shift is None and "ptp_before" in orig.metadata and "ptp_after" in orig.metadata:
+                    before = Decimal(str(orig.metadata["ptp_before"]))
+                    after = Decimal(str(orig.metadata["ptp_after"]))
+                    if before > 0:
+                        ptp_shift = float(abs(after - before) / before)
+
+                is_aggressive_moc = orig.metadata.get("order_type") == "MOC" and orig.quantity >= 5000
+                is_ptp_skew = (ptp_shift is not None and ptp_shift >= ptp_shift_threshold_pct)
+                is_late_cancel = delta_cancel <= cancel_window_seconds
+
+                if (is_ptp_skew or is_aggressive_moc) and is_late_cancel:
+                    desc = (
+                        f"Detecção de manipulação de PTP/Leilão de Fechamento em {symbol}: ordem "
+                        f"{orig.metadata.get('order_type', 'AUCTION')} {orig.order_id} ({orig.side.value} {orig.quantity}) "
+                        f"inserida no call e cancelada após {delta_cancel:.2f}s "
+                        f"(distorção de PTP={ptp_shift*100:.2f}%)."
+                        if ptp_shift
+                        else f"Detecção de manipulação de PTP em leilão MOC: cancelamento de ordem {orig.order_id}."
+                    )
+                    alert = SurveillanceAlert(
+                        alert_id=f"ALT-PTP-MANIP-{symbol}-{alert_counter:04d}",
+                        pattern_type=AbusePatternType.PTP_MANIPULATION,
+                        severity=SeverityLevel.CRITICAL if is_ptp_skew else SeverityLevel.HIGH,
+                        symbol=symbol,
+                        participant_id=orig.participant_id,
+                        beneficiary_id=orig.beneficiary_id,
+                        operator_id=orig.operator_id,
+                        algo_id=orig.algo_id,
+                        timestamp=c.timestamp,
+                        description=desc,
+                        metrics={
+                            "order_id": orig.order_id,
+                            "order_type": orig.metadata.get("order_type", "MOC"),
+                            "side": orig.side.value,
+                            "quantity": orig.quantity,
+                            "price": float(orig.price),
+                            "cancel_latency_seconds": round(delta_cancel, 3),
+                            "ptp_shift_pct": round(ptp_shift, 4) if ptp_shift is not None else 0.0,
+                            "banging_the_close": True,
+                        },
+                        evidence_records=[orig.record_id, c.record_id],
+                    )
+                    alerts.append(alert)
+                    alert_counter += 1
+
+        return alerts
+
+    # -----------------------------------------------------------------
     # EXECUÇÃO INTEGRADA DE TODOS OS DETECTORES
     # -----------------------------------------------------------------
     def run_all_detectors(
@@ -1193,6 +1379,8 @@ class BsmSurveillanceEngine:
         )
         alerts.extend(self.detect_layering())
         alerts.extend(self.detect_churning())
+        alerts.extend(self.detect_front_running())
+        alerts.extend(self.detect_auction_ptp_manipulation())
         return alerts
 
     # -----------------------------------------------------------------

@@ -1,0 +1,83 @@
+{
+  "version": "1.0.0",
+  "as_of": "2026-11-07",
+  "flow_id": "FL-098",
+  "scope": "B3 PUMA Trading System — Leilão de Fechamento com Ordens MOC/LOC e Janela de Congelamento",
+  "symbol": "PETR4",
+  "reference_price": "35.00",
+  "tick_size": "0.01",
+  "orders": [
+    {
+      "order_id": "ORD-MOC-BUY-001",
+      "symbol": "PETR4",
+      "side": "BUY",
+      "order_type": "MOC",
+      "quantity": 30000,
+      "price": null,
+      "timestamp_ms": 1731000000100
+    },
+    {
+      "order_id": "ORD-LOC-BUY-002",
+      "symbol": "PETR4",
+      "side": "BUY",
+      "order_type": "LOC",
+      "quantity": 20000,
+      "price": "35.10",
+      "timestamp_ms": 1731000000200
+    },
+    {
+      "order_id": "ORD-LOC-BUY-003",
+      "symbol": "PETR4",
+      "side": "BUY",
+      "order_type": "LOC",
+      "quantity": 15000,
+      "price": "35.00",
+      "timestamp_ms": 1731000000300
+    },
+    {
+      "order_id": "ORD-LIM-BUY-004",
+      "symbol": "PETR4",
+      "side": "BUY",
+      "order_type": "LIMIT",
+      "quantity": 10000,
+      "price": "34.90",
+      "timestamp_ms": 1731000000400
+    },
+    {
+      "order_id": "ORD-MOC-SELL-001",
+      "symbol": "PETR4",
+      "side": "SELL",
+      "order_type": "MOC",
+      "quantity": 25000,
+      "price": null,
+      "timestamp_ms": 1731000000150
+    },
+    {
+      "order_id": "ORD-LOC-SELL-002",
+      "symbol": "PETR4",
+      "side": "SELL",
+      "order_type": "LOC",
+      "quantity": 20000,
+      "price": "34.95",
+      "timestamp_ms": 1731000000250
+    },
+    {
+      "order_id": "ORD-LOC-SELL-003",
+      "symbol": "PETR4",
+      "side": "SELL",
+      "order_type": "LOC",
+      "quantity": 15000,
+      "price": "35.00",
+      "timestamp_ms": 1731000000350
+    },
+    {
+      "order_id": "ORD-LIM-SELL-004",
+      "symbol": "PETR4",
+      "side": "SELL",
+      "order_type": "LIMIT",
+      "quantity": 20000,
+      "price": "35.15",
+      "timestamp_ms": 1731000000450
+    }
+  ]
+}
