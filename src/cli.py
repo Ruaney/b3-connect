@@ -9,9 +9,11 @@ Zero dependências externas: 100% biblioteca padrão do Python.
 from __future__ import annotations
 
 import argparse
+from decimal import Decimal
 import json
 import os
 from pathlib import Path
+import re
 import sys
 from typing import Any, Dict, List, Optional, Sequence, Tuple
 
@@ -1178,6 +1180,107 @@ def cmd_harvest_docs(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_simulate_day(args: argparse.Namespace) -> int:
+    """Simula um dia útil de mercado completo (E2E) cobrindo todos os 7 módulos da B3."""
+    from src.b3_market_simulator import B3MarketSimulator
+
+    trading_date = getattr(args, "date", "2026-11-03")
+    base_shares = getattr(args, "shares", 100_000)
+    base_price = Decimal(str(getattr(args, "price", 35.50)))
+    notional_balcao = Decimal(str(getattr(args, "notional_balcao", 10_000_000.00)))
+
+    sim = B3MarketSimulator(trading_date=trading_date)
+    result = sim.run_full_market_day(
+        base_shares=base_shares,
+        base_price=base_price,
+        notional_balcao=notional_balcao,
+    )
+
+    if getattr(args, "json", False):
+        print(json.dumps(result.to_dict(), indent=2, ensure_ascii=False))
+        return 0
+
+    print("\n" + result.summary_text() + "\n")
+    return 0
+
+
+def cmd_doc_read(args: argparse.Namespace) -> int:
+    """Lê e renderiza um documento oficial do acervo local raw_docs."""
+    from src.b3_doc_harvester import B3DocHarvester
+
+    target_dir = Path(_PKG_ROOT) / "raw_docs"
+    harvester = B3DocHarvester(target_dir=target_dir)
+
+    doc_id = args.doc_id.upper()
+    doc = harvester.documents.get(doc_id)
+    if not doc:
+        print(f"Erro: Documento '{doc_id}' não encontrado no manifesto do acervo.")
+        return 1
+
+    local_file = Path(_PKG_ROOT) / doc.local_path if doc.local_path else None
+    if not local_file or not local_file.is_file():
+        print(f"Erro: Arquivo físico do documento '{doc_id}' não encontrado em {local_file}.")
+        return 1
+
+    print("\n" + "=" * 80)
+    print(f" DOCUMENTO OFICIAL B3: {doc.doc_id} — {doc.title}")
+    print("=" * 80)
+    print(f" Categoria:       {doc.category}")
+    print(f" Formato:         {doc.file_type.upper()}")
+    print(f" Tamanho:         {doc.size_bytes:,} bytes")
+    print(f" Hash SHA-256:    {doc.sha256}")
+    print(f" Arquivo Local:   {doc.local_path}")
+    print(f" URL Canônica:    {doc.url}")
+    print("=" * 80)
+
+    try:
+        if doc.file_type == "pdf":
+            print(f"\n[Arquivo Binário PDF 1.4 — {doc.size_bytes:,} bytes]")
+            print(f"Localização física para leitura externa: {local_file}")
+        else:
+            with open(local_file, "r", encoding="utf-8", errors="replace") as f:
+                content = f.read()
+            # Remove tags HTML básicas para leitura limpa no terminal
+            clean_text = re.sub(r"<style[\s\S]*?</style>", "", content)
+            clean_text = re.sub(r"<[^>]+>", " ", clean_text)
+            clean_text = re.sub(r"\n\s*\n+", "\n\n", clean_text).strip()
+            print("\n" + clean_text[:2500] + ("\n\n[... conteúdo completo arquivado no disco ...]" if len(clean_text) > 2500 else ""))
+    except Exception as e:
+        print(f"Erro ao ler arquivo: {e}")
+        return 1
+
+    print("\n" + "=" * 80 + "\n")
+    return 0
+
+
+def cmd_modules(args: argparse.Namespace) -> int:
+    """Exibe o mapa arquitetural holístico dos 7 módulos da B3."""
+    from src.b3_doc_harvester import DOCUMENT_CATEGORIES
+
+    modules_data = [
+        ("1. PUMA Trading System", "PUMA_TRADING", "Negociação de Ações, Derivativos e Leilões MOC/LOC", "FIX 4.4/5.0, SBE, UMDF 2.0", "LAW-001, LAW-002, LAW-104A/B"),
+        ("2. Câmara B3 & Risco", "CLEARING_RISK", "Contraparte Central (CCP), Risco CORE e Salvaguardas", "Netting Multilateral, Margens CORE", "LAW-004, LAW-005, LAW-006, LAW-106B"),
+        ("3. Central Depositária", "CSD_DEPOSITARY", "Contas Individualizadas CPF/CNPJ e Eventos", "IMBARQ 004/006/012/018, iMercado", "LAW-008, LAW-024, LAW-046"),
+        ("4. Balcão NoMe / Cetip", "NOME_BALCAO", "Registro de Renda Fixa, Swaps, Recebíveis e Gravames", "XML Cetip, Registro D0, Cartórios", "LAW-011, LAW-015, LAW-018, LAW-097"),
+        ("5. SPB, BACEN & Drex", "SPB_SETTLEMENT", "Liquidação Financeira STR, Pix Margem SPI e Drex", "STR LDL0001, pacs.008, Besu HTLC", "LAW-007, LAW-089A, LAW-090"),
+        ("6. Tarifação B3", "TARIFF_CATALOG", "Tabelas Regressivas de Emolumentos e Day-Trade", "Escadinha ADTV Tiers 1-7, PMM", "LAW-047, LAW-087"),
+        ("7. Supervisão BSM", "BSM_SURVEILLANCE", "Prevenção a Abusos, Auditoria RPA e OTR Ratio", "Vigilância L2/L3, Tagging Algoritmos", "LAW-024, LAW-041"),
+    ]
+
+    print("\n" + "=" * 90)
+    print(" ARQUITETURA HOLÍSTICA DOS 7 MÓDULOS INTEGRADOS DA B3 S.A.")
+    print("=" * 90)
+    for name, cat, desc, proto, laws in modules_data:
+        print(f" {name:<26} [{cat}]")
+        print(f"   Descrição:        {desc}")
+        print(f"   Protocolos/Dados: {proto}")
+        print(f"   Leis Formais:     {laws}")
+        print("-" * 90)
+    print(" Execute 'b3-atlas simulate-day' para rodar a simulação integrada de todos os módulos.")
+    print("=" * 90 + "\n")
+    return 0
+
+
 # ==============================================================================
 # Entrypoints dos CLI Scripts
 # ==============================================================================
@@ -1369,6 +1472,36 @@ def build_atlas_parser() -> argparse.ArgumentParser:
     p_harvest.add_argument("--target-dir", type=Path, default=None, help="Diretório de destino personalizado")
     p_harvest.add_argument("--json", action="store_true", help="Saída em formato JSON")
     p_harvest.set_defaults(func=cmd_harvest_docs)
+
+    # b3-atlas simulate-day
+    p_sim = subparsers.add_parser(
+        "simulate-day",
+        aliases=["sim-day", "run-day"],
+        help="Simula o ciclo diário completo de mercado (E2E) através de todos os 7 módulos da B3",
+    )
+    p_sim.add_argument("--date", default="2026-11-03", help="Data do pregão simulado (YYYY-MM-DD)")
+    p_sim.add_argument("--shares", type=int, default=100000, help="Quantidade base de ações negociadas")
+    p_sim.add_argument("--price", type=float, default=35.50, help="Preço unitário base da ação")
+    p_sim.add_argument("--notional-balcao", type=float, default=10000000.00, help="Volume nocional de Balcão NoMe")
+    p_sim.add_argument("--json", action="store_true", help="Saída em formato JSON")
+    p_sim.set_defaults(func=cmd_simulate_day)
+
+    # b3-atlas doc-read
+    p_doc = subparsers.add_parser(
+        "doc-read",
+        aliases=["read-doc", "view-doc"],
+        help="Lê e renderiza um documento oficial B3 do acervo local raw_docs",
+    )
+    p_doc.add_argument("doc_id", help="Identificador do documento oficial (ex: SRC-006, SRC-011, SRC-078)")
+    p_doc.set_defaults(func=cmd_doc_read)
+
+    # b3-atlas modules
+    p_mods = subparsers.add_parser(
+        "modules",
+        aliases=["map", "architecture", "overview"],
+        help="Exibe o mapa arquitetural holístico dos 7 módulos da B3",
+    )
+    p_mods.set_defaults(func=cmd_modules)
 
     return parser
 

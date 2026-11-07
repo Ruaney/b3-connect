@@ -464,6 +464,41 @@ class TestAtlasCLI(unittest.TestCase):
             self.assertEqual(code, 0)
             self.assertIn("B3 DOCUMENTATION HARVESTER", fake_out.getvalue())
 
+    def test_simulate_day_cli(self):
+        """Testa o comando b3-atlas simulate-day e formato JSON."""
+        with patch("sys.stdout", new=StringIO()) as fake_out:
+            code = main_atlas(["simulate-day"])
+            self.assertEqual(code, 0)
+            self.assertIn("B3 SIMULADOR MULTI-MÓDULO", fake_out.getvalue())
+
+        with patch("sys.stdout", new=StringIO()) as fake_out:
+            code = main_atlas(["simulate-day", "--json"])
+            self.assertEqual(code, 0)
+            data = json.loads(fake_out.getvalue())
+            self.assertIn("metrics", data)
+            self.assertIn("events", data)
+
+    def test_doc_read_cli(self):
+        """Testa a leitura de documentos locais via b3-atlas doc-read."""
+        with patch("sys.stdout", new=StringIO()) as fake_out:
+            code = main_atlas(["doc-read", "SRC-006"])
+            self.assertEqual(code, 0)
+            self.assertIn("DOCUMENTO OFICIAL B3: SRC-006", fake_out.getvalue())
+
+        with patch("sys.stdout", new=StringIO()) as fake_out:
+            code = main_atlas(["doc-read", "SRC-004"])
+            self.assertEqual(code, 0)
+            self.assertIn("Arquivo Binário PDF 1.4", fake_out.getvalue())
+
+    def test_modules_cli(self):
+        """Testa o mapa arquitetural holístico dos 7 módulos via b3-atlas modules."""
+        with patch("sys.stdout", new=StringIO()) as fake_out:
+            code = main_atlas(["modules"])
+            self.assertEqual(code, 0)
+            self.assertIn("ARQUITETURA HOLÍSTICA DOS 7 MÓDULOS", fake_out.getvalue())
+            self.assertIn("PUMA Trading System", fake_out.getvalue())
+            self.assertIn("Balcão NoMe / Cetip", fake_out.getvalue())
+
     def test_main_verify_execution(self):
         """Testa execução do verificador formal de invariantes via main_verify."""
         with patch("sys.stdout", new=StringIO()) as fake_out:
