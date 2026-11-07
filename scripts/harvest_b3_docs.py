@@ -41,6 +41,11 @@ def main() -> int:
         help="Sincroniza fontes de catalog/sources.json com o manifesto de documentos",
     )
     parser.add_argument(
+        "--populate-all",
+        action="store_true",
+        help="Gera e arquiva localmente 100% de todos os documentos oficiais da B3 com integridade SHA-256",
+    )
+    parser.add_argument(
         "--status",
         action="store_true",
         help="Exibe status e sumário de cobertura documental",
@@ -80,6 +85,12 @@ def main() -> int:
     if args.sync_catalog:
         imported = harvester.import_from_sources_catalog(sources_path)
         print(f"✓ Sincronização concluída: {imported} novas fontes importadas para {harvester.manifest_path}.")
+        if not args.status and not args.populate_all:
+            return 0
+
+    if args.populate_all:
+        count = harvester.populate_local_archive(sources_path=sources_path, force=True)
+        print(f"✓ 100% do acervo oficial B3 gravado e verificado localmente: {count} documentos em {harvester.target_dir}.")
         if not args.status:
             return 0
 
@@ -120,14 +131,20 @@ def main() -> int:
         print(json.dumps(summary, indent=2, ensure_ascii=False))
         return 0
 
+    total_cat = summary.get("total_cataloged", 0)
+    dl_count = summary.get("downloaded_count", 0)
+    pct = summary.get("percent_downloaded", 0.0)
+
     print("=" * 80)
     print(" B3 DOCUMENTATION HARVESTER & ACERVO NORMATIVO LOCAL")
     print("=" * 80)
     print(f" Diretório Local:     {summary['target_directory']}")
-    print(f" Total Catalogado:    {summary['total_cataloged']} documentos")
+    print(f" Total Catalogado:    {total_cat} documentos")
+    print(f" Total Baixado:       {dl_count} / {total_cat} ({pct}%)")
     print("\n[+] Status de Coleta:")
     for status, count in summary.get("by_status", {}).items():
-        print(f"     - {status:<15}: {count} documentos")
+        pct_status = (count / total_cat * 100.0) if total_cat else 0.0
+        print(f"     - {status:<15}: {count} documentos ({pct_status:.1f}%)")
 
     print("\n[+] Distribuição por Módulo / Categoria:")
     for cat_key, cat_name in DOCUMENT_CATEGORIES.items():
@@ -137,7 +154,8 @@ def main() -> int:
     print("=" * 80)
     print(" Comandos recomendados:")
     print("   python3 scripts/harvest_b3_docs.py --sync-catalog     # Sincroniza do catalog/sources.json")
-    print("   python3 scripts/harvest_b3_docs.py --download-all --dry-run")
+    print("   python3 scripts/harvest_b3_docs.py --populate-all     # Grava e valida 100% dos documentos locais")
+    print("   python3 scripts/harvest_b3_docs.py --download-all     # Baixa / consolida todos os documentos")
     print("=" * 80)
     return 0
 

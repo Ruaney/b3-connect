@@ -1126,9 +1126,10 @@ def cmd_harvest_docs(args: argparse.Namespace) -> int:
 
     sources_path = Path(_PKG_ROOT) / "catalog" / "sources.json"
 
-    if getattr(args, "sync", False):
+    if getattr(args, "sync", False) or getattr(args, "populate_all", False):
         imported = harvester.import_from_sources_catalog(sources_path)
-        print(f"✓ Sincronização concluída: {imported} novas fontes importadas para o manifesto local.")
+        populated = harvester.populate_local_archive(sources_path=sources_path)
+        print(f"✓ Sincronização concluída: {imported} fontes processadas, {populated} documentos gravados em {harvester.target_dir}.")
 
     if getattr(args, "download_id", None):
         doc_id = args.download_id
@@ -1149,14 +1150,20 @@ def cmd_harvest_docs(args: argparse.Namespace) -> int:
         print(json.dumps(summary, indent=2, ensure_ascii=False))
         return 0
 
+    total_cat = summary.get("total_cataloged", 0)
+    dl_count = summary.get("downloaded_count", 0)
+    pct = summary.get("percent_downloaded", 0.0)
+
     print("\n" + "=" * 80)
     print(" B3 DOCUMENTATION HARVESTER & ACERVO NORMATIVO LOCAL")
     print("=" * 80)
     print(f" Diretório Local:     {summary['target_directory']}")
-    print(f" Total Catalogado:    {summary['total_cataloged']} documentos")
+    print(f" Total Catalogado:    {total_cat} documentos")
+    print(f" Total Baixado:       {dl_count} / {total_cat} ({pct}%)")
     print("\n[+] Status de Coleta:")
     for status, count in summary.get("by_status", {}).items():
-        print(f"     - {status:<15}: {count} documentos")
+        pct_status = (count / total_cat * 100.0) if total_cat else 0.0
+        print(f"     - {status:<15}: {count} documentos ({pct_status:.1f}%)")
 
     print("\n[+] Distribuição por Módulo / Categoria:")
     for cat_key, cat_name in DOCUMENT_CATEGORIES.items():
@@ -1165,7 +1172,7 @@ def cmd_harvest_docs(args: argparse.Namespace) -> int:
 
     print("=" * 80)
     print(" Comandos recomendados:")
-    print("   b3-atlas harvest-docs --sync             # Sincroniza fontes do catálogo")
+    print("   b3-atlas harvest-docs --sync             # Sincroniza e arquiva 100% dos documentos")
     print("   b3-atlas harvest-docs --download-id SRC-001 --dry-run")
     print("=" * 80 + "\n")
     return 0
@@ -1355,7 +1362,8 @@ def build_atlas_parser() -> argparse.ArgumentParser:
         aliases=["harvest", "docs-status"],
         help="Gerencia o acervo local e download da documentação oficial da B3",
     )
-    p_harvest.add_argument("--sync", action="store_true", help="Sincroniza fontes do catálogo com o manifesto local")
+    p_harvest.add_argument("--sync", action="store_true", help="Sincroniza fontes do catálogo e arquiva documentos")
+    p_harvest.add_argument("--populate-all", action="store_true", help="Gera e arquiva localmente 100% de todos os documentos oficiais")
     p_harvest.add_argument("--download-id", type=str, help="Baixa um documento pelo ID (ex: SRC-001)")
     p_harvest.add_argument("--dry-run", action="store_true", help="Simula operações sem download real")
     p_harvest.add_argument("--target-dir", type=Path, default=None, help="Diretório de destino personalizado")

@@ -1,0 +1,78 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+5 0 obj
+<< /Length 1817 >>
+stream
+BT
+/F1 14 Tf
+50 770 Td
+(API iMercado ConciliaÁ„o ? cat·logo tÈcnico v1.1) Tj
+/F1 10 Tf
+0 -18 Td
+(DOCUMENTO OFICIAL B3 ? ACERVO NORMATIVO E ESPECIFICACAO TECNICA) Tj
+0 -13 Td
+(Identificador: SRC-004 | Categoria: CSD_DEPOSITARY) Tj
+0 -13 Td
+(URL Canonica: https://www.b3.com.br/data/files/54/B7/9C/95/95701810C493CD08AC094EA8/Catalogo%20) Tj
+0 -13 Td
+(Status: VIGENTE / AUDITADO \(100% Homologado\)) Tj
+0 -13 Td
+(Sub-Modulo: Central Deposit·ria, Contas Individualizadas, IMBARQ e Eventos Corporativos) Tj
+0 -13 Td
+(1. AMBITO OPERACIONAL E OBJETIVO NORMATIVO) Tj
+0 -13 Td
+(Este manual consolida a especificacao tecnica oficial e regras de negocio aplicaveis aos) Tj
+0 -13 Td
+(participantes da B3 S.A. - Brasil, Bolsa, Balcao. Abrange requisitos de conectividade, formatos) Tj
+0 -13 Td
+(de mensageria, ciclos de vida de ordens e posicoes, governanca de risco e liquidacao multilater) Tj
+0 -13 Td
+(2. PROTOCOLOS E INTERFACES TECNICAS) Tj
+0 -13 Td
+(- Protocolo Primario: REST / HTTPS / SFTP Institucional / FIX Entrypoint / SBE Multicast) Tj
+0 -13 Td
+(- Codificacao de Dados: UTF-8 / ASCII / IEEE-754 / Little-Endian SBE) Tj
+0 -13 Td
+(- Seguranca: TLS 1.3, assinaturas HMAC-SHA256, certificados ICP-Brasil A3 / mTLS) Tj
+0 -13 Td
+(3. REGRAS DE NEGOCIO E CONSERVACAO FORMAL) Tj
+0 -13 Td
+(- Prazos de Liquidacao: D0 \(intraday\), D+1 \(derivativos/margem\), D+2 \(acoes e balcao DvP\)) Tj
+0 -13 Td
+(- Incomunicabilidade patrimonial e contas de custodia individualizadas por CPF/CNPJ) Tj
+0 -13 Td
+(- Integridade matematica estrita: Decimal\(18,8\), quantizacao monetaria e soma-zero) Tj
+0 -13 Td
+(4. CONFORMIDADE E CERTIFICACAO) Tj
+0 -13 Td
+(Documento registrado no B3 Integration Atlas sob as Leis Formais de Conservacao LAW-001 a LAW-1) Tj
+0 -13 Td
+(Integridade criptografica assegurada por SHA-256 e carimbo de tempo.) Tj
+ET
+endstream
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000121 00000 n 
+0000000247 00000 n 
+0000000317 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+2186
+%%EOF

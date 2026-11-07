@@ -42,6 +42,26 @@ class TestB3DocHarvester(unittest.TestCase):
         self.assertEqual(cat, "CSD_DEPOSITARY")
         self.assertEqual(ext, "zip")
 
+        # SPB / Liquidação Bacen / Pix / Drex
+        cat, ext = self.harvester._classify_url("https://b3.com.br/spb/mensageria-str.pdf", "Catálogo SPB")
+        self.assertEqual(cat, "SPB_SETTLEMENT")
+        self.assertEqual(ext, "pdf")
+
+        # BSM Supervisão de Mercados
+        cat, ext = self.harvester._classify_url("https://bsm.com.br/auditoria/roteiro-rpa.pdf", "Roteiro BSM")
+        self.assertEqual(cat, "BSM_SURVEILLANCE")
+        self.assertEqual(ext, "pdf")
+
+        # Tarifas e Emolumentos
+        cat, ext = self.harvester._classify_url("https://b3.com.br/tarifas/tabela-emolumentos.xlsx", "Tarifas e Custos")
+        self.assertEqual(cat, "TARIFF_CATALOG")
+        self.assertEqual(ext, "xlsx")
+
+        # Circulares Regulatórias
+        cat, ext = self.harvester._classify_url("https://b3.com.br/regulacao/oficio-circular-001.pdf", "Ofício Circular CVM")
+        self.assertEqual(cat, "REGULATORY_CIRCULARS")
+        self.assertEqual(ext, "pdf")
+
     def test_import_from_sources_catalog(self) -> None:
         """Testa importação de fontes JSON para o manifesto do coletor."""
         mock_sources = {
@@ -117,6 +137,44 @@ class TestB3DocHarvester(unittest.TestCase):
         self.assertEqual(doc.download_status, "DOWNLOADED")
         self.assertEqual(doc.size_bytes, len(b"CONTEUDO_PDF_SIMULADO_B3"))
         self.assertIsNotNone(doc.sha256)
+
+    def test_populate_local_archive_and_summary(self) -> None:
+        """Testa a geração local autoritativa e o cálculo estatístico de cobertura."""
+        mock_sources = {
+            "sources": [
+                {
+                    "id": "SRC-POP-01",
+                    "title": "Especificação FIX Entrada",
+                    "url": "https://www.b3.com.br/puma-fix.html",
+                },
+                {
+                    "id": "SRC-POP-02",
+                    "title": "Manual de Conciliação IMBARQ",
+                    "url": "https://www.b3.com.br/imercado-doc.pdf",
+                },
+            ]
+        }
+        sources_file = self.target_dir / "test_pop_sources.json"
+        with open(sources_file, "w", encoding="utf-8") as f:
+            json.dump(mock_sources, f)
+
+        count = self.harvester.populate_local_archive(sources_path=sources_file, force=True)
+        self.assertEqual(count, 2)
+
+        summary = self.harvester.get_summary()
+        self.assertEqual(summary["total_cataloged"], 2)
+        self.assertEqual(summary["downloaded_count"], 2)
+        self.assertEqual(summary["percent_downloaded"], 100.0)
+        self.assertEqual(summary["by_status"]["DOWNLOADED"], 2)
+
+        # Verifica existência física dos arquivos e hashes
+        for doc in self.harvester.documents.values():
+            self.assertEqual(doc.download_status, "DOWNLOADED")
+            self.assertGreater(doc.size_bytes, 0)
+            self.assertIsNotNone(doc.sha256)
+            self.assertEqual(len(doc.sha256), 64)
+            disk_path = self.target_dir.parent / doc.local_path
+            self.assertTrue(disk_path.is_file())
 
 
 if __name__ == "__main__":
