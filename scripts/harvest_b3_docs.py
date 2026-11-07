@@ -56,6 +56,12 @@ def main() -> int:
         help="Inicia download de todos os documentos pendentes no manifesto",
     )
     parser.add_argument(
+        "--category",
+        type=str,
+        choices=list(DOCUMENT_CATEGORIES.keys()),
+        help="Filtra a execução por categoria temática (ex: PUMA_TRADING, CLEARING_RISK)",
+    )
+    parser.add_argument(
         "--dry-run",
         action="store_true",
         help="Simula as ações sem executar requisições ou gravações em disco",
@@ -90,13 +96,17 @@ def main() -> int:
         return 0 if success else 1
 
     if args.download_all:
-        total = len(harvester.documents)
-        print(f"Iniciando download em lote de {total} documentos (Dry-run: {args.dry_run})...")
+        docs_to_download = {
+            doc_id: doc
+            for doc_id, doc in harvester.documents.items()
+            if (not args.category or doc.category == args.category) and doc.download_status != "DOWNLOADED"
+        }
+        total = len(docs_to_download)
+        cat_info = f" na categoria {args.category}" if args.category else ""
+        print(f"Iniciando download em lote de {total} documentos{cat_info} (Dry-run: {args.dry_run})...")
         success_count = 0
-        for doc_id, doc in harvester.documents.items():
-            if doc.download_status == "DOWNLOADED":
-                continue
-            print(f"  -> Coletando {doc_id}: {doc.title[:50]}...")
+        for doc_id, doc in docs_to_download.items():
+            print(f"  -> Coletando {doc_id} [{doc.category}]: {doc.title[:50]}...")
             if harvester.download_document(doc_id, dry_run=args.dry_run):
                 success_count += 1
         harvester.save_manifest()

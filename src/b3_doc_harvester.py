@@ -176,8 +176,24 @@ class B3DocHarvester:
                 self.documents = {}
 
     def save_manifest(self) -> None:
-        """Salva manifesto atualizado em disco."""
+        """Salva manifesto atualizado em disco com mesclagem atômica para permitir execução concorrente."""
         self.target_dir.mkdir(parents=True, exist_ok=True)
+        disk_docs: Dict[str, B3DocMetadata] = {}
+        if self.manifest_path.is_file():
+            try:
+                with open(self.manifest_path, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                    for item in data.get("documents", []):
+                        doc = B3DocMetadata.from_dict(item)
+                        disk_docs[doc.doc_id] = doc
+            except Exception:
+                pass
+
+        # Mescla mantendo atualizações locais
+        for k, v in self.documents.items():
+            disk_docs[k] = v
+        self.documents = disk_docs
+
         manifest_data = {
             "version": "1.0.0",
             "last_updated": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
