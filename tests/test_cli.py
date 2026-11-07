@@ -451,6 +451,19 @@ class TestAtlasCLI(unittest.TestCase):
             self.assertEqual(data["operation_type"], "OTC_REGISTRATION")
             self.assertTrue(data["is_settled"])
 
+    def test_harvest_docs_cli(self):
+        """Testa o comando b3-atlas harvest-docs para status e json."""
+        with patch("sys.stdout", new=StringIO()) as fake_out:
+            code = main_atlas(["harvest-docs", "--json"])
+            self.assertEqual(code, 0)
+            data = json.loads(fake_out.getvalue())
+            self.assertIn("total_cataloged", data)
+
+        with patch("sys.stdout", new=StringIO()) as fake_out:
+            code = main_atlas(["harvest-docs", "--sync"])
+            self.assertEqual(code, 0)
+            self.assertIn("B3 DOCUMENTATION HARVESTER", fake_out.getvalue())
+
     def test_main_verify_execution(self):
         """Testa execução do verificador formal de invariantes via main_verify."""
         with patch("sys.stdout", new=StringIO()) as fake_out:

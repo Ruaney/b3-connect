@@ -1117,6 +1117,60 @@ def cmd_trace_balcao(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_harvest_docs(args: argparse.Namespace) -> int:
+    """Executa o utilitário de coleta e diagnóstico do acervo de documentação oficial B3."""
+    from src.b3_doc_harvester import B3DocHarvester, DOCUMENT_CATEGORIES
+
+    target_dir = getattr(args, "target_dir", None) or (Path(_PKG_ROOT) / "raw_docs")
+    harvester = B3DocHarvester(target_dir=Path(target_dir))
+
+    sources_path = Path(_PKG_ROOT) / "catalog" / "sources.json"
+
+    if getattr(args, "sync", False):
+        imported = harvester.import_from_sources_catalog(sources_path)
+        print(f"✓ Sincronização concluída: {imported} novas fontes importadas para o manifesto local.")
+
+    if getattr(args, "download_id", None):
+        doc_id = args.download_id
+        doc = harvester.documents.get(doc_id)
+        if not doc:
+            print(f"Erro: Documento '{doc_id}' não encontrado no manifesto.")
+            return 1
+        print(f"Iniciando download de {doc.doc_id} ({doc.title})...")
+        success = harvester.download_document(doc_id, dry_run=getattr(args, "dry_run", False))
+        harvester.save_manifest()
+        status_msg = "SUCESSO" if success else f"FALHA ({doc.error_message})"
+        print(f"Resultado: {status_msg}")
+        return 0 if success else 1
+
+    summary = harvester.get_summary()
+
+    if getattr(args, "json", False):
+        print(json.dumps(summary, indent=2, ensure_ascii=False))
+        return 0
+
+    print("\n" + "=" * 80)
+    print(" B3 DOCUMENTATION HARVESTER & ACERVO NORMATIVO LOCAL")
+    print("=" * 80)
+    print(f" Diretório Local:     {summary['target_directory']}")
+    print(f" Total Catalogado:    {summary['total_cataloged']} documentos")
+    print("\n[+] Status de Coleta:")
+    for status, count in summary.get("by_status", {}).items():
+        print(f"     - {status:<15}: {count} documentos")
+
+    print("\n[+] Distribuição por Módulo / Categoria:")
+    for cat_key, cat_name in DOCUMENT_CATEGORIES.items():
+        count = summary.get("by_category", {}).get(cat_key, 0)
+        print(f"     - {cat_key:<20}: {count:>3} docs | {cat_name}")
+
+    print("=" * 80)
+    print(" Comandos recomendados:")
+    print("   b3-atlas harvest-docs --sync             # Sincroniza fontes do catálogo")
+    print("   b3-atlas harvest-docs --download-id SRC-001 --dry-run")
+    print("=" * 80 + "\n")
+    return 0
+
+
 # ==============================================================================
 # Entrypoints dos CLI Scripts
 # ==============================================================================
@@ -1294,6 +1348,19 @@ def build_atlas_parser() -> argparse.ArgumentParser:
     p_tbalcao.set_defaults(with_lien=True)
     p_tbalcao.add_argument("--json", action="store_true", help="Saída em formato JSON")
     p_tbalcao.set_defaults(func=cmd_trace_balcao)
+
+    # b3-atlas harvest-docs
+    p_harvest = subparsers.add_parser(
+        "harvest-docs",
+        aliases=["harvest", "docs-status"],
+        help="Gerencia o acervo local e download da documentação oficial da B3",
+    )
+    p_harvest.add_argument("--sync", action="store_true", help="Sincroniza fontes do catálogo com o manifesto local")
+    p_harvest.add_argument("--download-id", type=str, help="Baixa um documento pelo ID (ex: SRC-001)")
+    p_harvest.add_argument("--dry-run", action="store_true", help="Simula operações sem download real")
+    p_harvest.add_argument("--target-dir", type=Path, default=None, help="Diretório de destino personalizado")
+    p_harvest.add_argument("--json", action="store_true", help="Saída em formato JSON")
+    p_harvest.set_defaults(func=cmd_harvest_docs)
 
     return parser
 

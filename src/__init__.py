@@ -1365,6 +1365,12 @@ from src.b3_unified_lifecycle import (
     StepAuditRecord,
     StepStatus,
 )
+from src.b3_doc_harvester import (
+    B3DocHarvester,
+    B3DocMetadata,
+    B3LinkExtractor,
+    DOCUMENT_CATEGORIES,
+)
 
 
 __all__ = [
@@ -2670,6 +2676,11 @@ __all__ = [
     "Participant",
     "StepAuditRecord",
     "StepStatus",
+    # Coletor e Harvester de Documentação Oficial B3
+    "B3DocHarvester",
+    "B3DocMetadata",
+    "B3LinkExtractor",
+    "DOCUMENT_CATEGORIES",
 ]
 
 
