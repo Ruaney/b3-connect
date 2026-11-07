@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 import sys
 import unittest
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
 from src.cli import (
     VERSION,
@@ -498,6 +498,44 @@ class TestAtlasCLI(unittest.TestCase):
             self.assertIn("ARQUITETURA HOLÍSTICA DOS 7 MÓDULOS", fake_out.getvalue())
             self.assertIn("PUMA Trading System", fake_out.getvalue())
             self.assertIn("Balcão NoMe / Cetip", fake_out.getvalue())
+
+    def test_chaos_cli_scenarios(self):
+        """Testa o simulador de cenários de crise e engenharia do caos via b3-atlas chaos."""
+        # Execução padrão (ALL)
+        with patch("sys.stdout", new=StringIO()) as fake_out:
+            code = main_atlas(["chaos"])
+            self.assertEqual(code, 0)
+            output = fake_out.getvalue()
+            self.assertIn("SIMULADOR DE CRISES", output)
+            self.assertIn("CIRCUIT_BREAKER", output)
+            self.assertIn("CLEARING_DEFAULT", output)
+            self.assertIn("RECEIVABLES_LIEN_CONFLICT", output)
+            self.assertIn("SPB_NETWORK_DISRUPTION", output)
+
+        # Execução específica com saída JSON
+        with patch("sys.stdout", new=StringIO()) as fake_out:
+            code = main_atlas(["chaos", "--scenario", "CLEARING_DEFAULT", "--json"])
+            self.assertEqual(code, 0)
+            data = json.loads(fake_out.getvalue())
+            self.assertEqual(data["scenario"], "CLEARING_DEFAULT")
+            self.assertTrue(data["is_resilient"])
+            self.assertIn("LAW-106B", data["laws_verified"])
+
+    def test_ui_cli_invocation(self):
+        """Testa o comando b3-atlas ui com mock do servidor HTTP."""
+        with patch("src.b3_ui_server.run_dashboard_server") as mock_server_builder:
+            mock_server = MagicMock()
+            mock_server_builder.return_value = mock_server
+            mock_server.serve_forever.side_effect = KeyboardInterrupt
+
+            with patch("sys.stdout", new=StringIO()) as fake_out:
+                code = main_atlas(["ui", "--port", "19090", "--no-browser"])
+                self.assertEqual(code, 0)
+                self.assertIn("DASHBOARD INTERATIVO LOCAL", fake_out.getvalue())
+                self.assertIn("19090", fake_out.getvalue())
+                mock_server_builder.assert_called_once_with(host="127.0.0.1", port=19090)
+                mock_server.serve_forever.assert_called_once()
+                mock_server.server_close.assert_called_once()
 
     def test_main_verify_execution(self):
         """Testa execução do verificador formal de invariantes via main_verify."""

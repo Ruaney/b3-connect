@@ -1281,6 +1281,81 @@ def cmd_modules(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_chaos(args: argparse.Namespace) -> int:
+    """Executa simulações de Engenharia do Caos e cenários de crise na infraestrutura da B3."""
+    from src.b3_chaos_simulator import B3ChaosSimulator, ChaosScenarioType
+
+    scenario_arg = getattr(args, "scenario", "ALL") or "ALL"
+    scenario_arg = scenario_arg.strip().upper()
+
+    trading_date = getattr(args, "date", "2026-11-03")
+    sim = B3ChaosSimulator(trading_date=trading_date)
+
+    if scenario_arg == "ALL":
+        scenarios = list(ChaosScenarioType)
+    else:
+        try:
+            scenarios = [ChaosScenarioType[scenario_arg]]
+        except KeyError:
+            sys.stderr.write(
+                f"Erro: Cenário '{scenario_arg}' inválido. "
+                f"Opções disponíveis: {', '.join(s.name for s in ChaosScenarioType)} ou ALL.\n"
+            )
+            return 1
+
+    results = [sim.run_scenario(s) for s in scenarios]
+
+    if getattr(args, "json", False):
+        if len(results) == 1:
+            print(json.dumps(results[0].to_dict(), indent=2, ensure_ascii=False))
+        else:
+            print(json.dumps([r.to_dict() for r in results], indent=2, ensure_ascii=False))
+        return 0
+
+    print("\n" + "=" * 90)
+    print(" B3 CHAOS ENGINEERING & RESILIÊNCIA INSTITUCIONAL — SIMULADOR DE CRISES")
+    print("=" * 90)
+    for r in results:
+        print("\n" + r.summary_text())
+    print("\n" + "=" * 90 + "\n")
+    return 0
+
+
+def cmd_ui(args: argparse.Namespace) -> int:
+    """Inicia o servidor de visualização e dashboard web interativo off-line."""
+    import webbrowser
+    from src.b3_ui_server import run_dashboard_server
+
+    host = getattr(args, "host", "127.0.0.1") or "127.0.0.1"
+    port = int(getattr(args, "port", 8080) or 8080)
+    no_browser = getattr(args, "no_browser", False)
+
+    server = run_dashboard_server(host=host, port=port)
+    url = f"http://{host}:{port}/"
+    print("\n" + "=" * 80)
+    print(f" B3 INTEGRATION ATLAS — DASHBOARD INTERATIVO LOCAL (OFF-LINE)")
+    print("=" * 80)
+    print(f" Servidor iniciado com sucesso:")
+    print(f" URL do Dashboard:  {url}")
+    print(f" REST API Base:     {url}api/status")
+    print(f" Pressione Ctrl+C para encerrar o servidor.")
+    print("=" * 80 + "\n")
+
+    if not no_browser:
+        try:
+            webbrowser.open(url)
+        except Exception:
+            pass
+
+    try:
+        server.serve_forever()
+    except KeyboardInterrupt:
+        print("\nEncerrando servidor dashboard...")
+    finally:
+        server.server_close()
+    return 0
+
+
 # ==============================================================================
 # Entrypoints dos CLI Scripts
 # ==============================================================================
@@ -1502,6 +1577,33 @@ def build_atlas_parser() -> argparse.ArgumentParser:
         help="Exibe o mapa arquitetural holístico dos 7 módulos da B3",
     )
     p_mods.set_defaults(func=cmd_modules)
+
+    # b3-atlas chaos
+    p_chaos = subparsers.add_parser(
+        "chaos",
+        aliases=["stress-test", "crisis"],
+        help="Simula cenários de crise extrema e testes de estresse (Circuit Breaker, Default Waterfall, Gravames, SPB)",
+    )
+    p_chaos.add_argument(
+        "--scenario",
+        default="ALL",
+        choices=["ALL", "CIRCUIT_BREAKER", "CLEARING_DEFAULT", "RECEIVABLES_LIEN_CONFLICT", "SPB_NETWORK_DISRUPTION"],
+        help="Cenário de caos a simular (padrão: ALL)",
+    )
+    p_chaos.add_argument("--date", default="2026-11-03", help="Data do pregão simulado (YYYY-MM-DD)")
+    p_chaos.add_argument("--json", action="store_true", help="Saída em formato JSON")
+    p_chaos.set_defaults(func=cmd_chaos)
+
+    # b3-atlas ui
+    p_ui = subparsers.add_parser(
+        "ui",
+        aliases=["dashboard", "web", "server"],
+        help="Inicia o dashboard visual interativo e visualizador off-line (http://127.0.0.1:8080)",
+    )
+    p_ui.add_argument("--host", default="127.0.0.1", help="Endereço de bind do servidor HTTP (padrão: 127.0.0.1)")
+    p_ui.add_argument("--port", type=int, default=8080, help="Porta TCP do servidor HTTP (padrão: 8080)")
+    p_ui.add_argument("--no-browser", action="store_true", help="Não abre automaticamente a página no navegador")
+    p_ui.set_defaults(func=cmd_ui)
 
     return parser
 
