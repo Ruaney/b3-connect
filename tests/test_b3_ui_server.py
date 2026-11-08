@@ -65,6 +65,16 @@ class TestB3UiServer(unittest.TestCase):
         self.assertIn("NOME_BALCAO", ids)
         self.assertIn("CLEARING_RISK", ids)
 
+    def test_api_flows(self) -> None:
+        """Verifica endpoint /api/flows com os 107 fluxos institucionais."""
+        status, body, headers = self._get("/api/flows")
+        self.assertEqual(status, 200)
+        data = json.loads(body.decode("utf-8"))
+        self.assertEqual(len(data), 107)
+        ids = [f["id"] for f in data]
+        self.assertIn("FL-001", ids)
+        self.assertIn("FL-107", ids)
+
     def test_api_docs_list_and_single(self) -> None:
         """Verifica /api/docs e /api/docs/<doc_id>."""
         status, body, headers = self._get("/api/docs")
@@ -105,8 +115,8 @@ class TestB3UiServer(unittest.TestCase):
         self.assertTrue(data["offline"])
 
     def test_api_phase7_and_tla_check(self) -> None:
-        """Verifica endpoints da Fase 7 (/api/phase7/FL-101..105) e Model Checker (/api/tla-check)."""
-        for fid in ("FL-101", "FL-102", "FL-103", "FL-104", "FL-105"):
+        """Verifica endpoints da Fase 7 (/api/phase7/FL-101..107) e Model Checker (/api/tla-check)."""
+        for fid in ("FL-101", "FL-102", "FL-103", "FL-104", "FL-105", "FL-106", "FL-107"):
             status, body, _ = self._get(f"/api/phase7/{fid}")
             self.assertEqual(status, 200)
             data = json.loads(body.decode("utf-8"))

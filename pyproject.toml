@@ -39,6 +39,7 @@ classifiers = [
 dependencies = []
 
 [project.scripts]
+b3 = "src.cli:main_b3"
 b3-atlas = "src.cli:main_atlas"
 b3-verify = "src.cli:main_verify"
 

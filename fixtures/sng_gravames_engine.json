@@ -3,15 +3,35 @@
   "version": "1.0.0",
   "regulatory_framework": ["Resolucao_CONTRAN_807_2020", "Lei_13111_2015", "Art_1361_Codigo_Civil"],
   "law": "LAW-112",
+  "lgpd_governance": {
+    "framework": "LGPD (Lei nº 13.709/2018)",
+    "bases_legais": [
+      "Art. 7º, II - Cumprimento de obrigação legal ou regulatória (Resolução CONTRAN nº 807/2020)",
+      "Art. 7º, V - Execução de contrato de financiamento/arrendamento mercantil"
+    ],
+    "principios_atendidos": [
+      "Finalidade (registro formal de gravames veiculares)",
+      "Adequação e Necessidade (minimização de dados pessoais)",
+      "Segurança (Hashing criptográfico SHA-256 e mascaramento de CPFs/CNPJs)",
+      "Não Discriminação e Prevenção"
+    ],
+    "pseudonimizacao_algoritmo": "SHA-256",
+    "telemetria_invasiva": false,
+    "compartilhamento_terceiros_nao_autorizados": false
+  },
   "gravames": [
     {
       "gravame_id": "SNG-SP-0000001",
       "contrato_numero": "CTR-BV-2026-8812",
       "modalidade": "ALIENACAO_FIDUCIARIA",
       "credor_cnpj": "01444506000183",
+      "credor_cnpj_mascarado": "01.***.***/0001-83",
       "credor_nome": "Banco Votorantim S/A (BV Financiamentos)",
       "devedor_documento": "12345678909",
+      "devedor_documento_mascarado": "123.***.***-09",
+      "devedor_documento_sha256": "7ec94663084bd506d4f0c3e21042df233681fd7426e93f397c921b1d3e397bba",
       "devedor_nome": "Carlos Eduardo Silva",
+      "devedor_nome_mascarado": "Ca*** Ed*** Si***",
       "veiculo": {
         "chassi": "9BWCA41V01P123456",
         "renavam": "12345678901",
@@ -36,9 +56,13 @@
       "contrato_numero": "CTR-ITAU-2026-3391",
       "modalidade": "ARRENDAMENTO_MERCANTIL",
       "credor_cnpj": "60701190000104",
+      "credor_cnpj_mascarado": "60.***.***/0001-04",
       "credor_nome": "Itaú Unibanco Veículos S/A",
       "devedor_documento": "98765432100",
+      "devedor_documento_mascarado": "987.***.***-00",
+      "devedor_documento_sha256": "fe63757c49af2f9466851ad0b5cd915a5097ab13354c15e42114958b7173521d",
       "devedor_nome": "Mariana Santos",
+      "devedor_nome_mascarado": "Ma*** Sa***",
       "veiculo": {
         "chassi": "9BD158220G0456789",
         "renavam": "98765432109",

@@ -122,6 +122,50 @@ class TestSngGravamesEngine(unittest.TestCase):
         self.assertEqual(novo_rec.status, StatusGravame.ATIVO)
         self.engine.verify_invariants()
 
+    def test_lgpd_masking_and_sha256_audit_trail(self) -> None:
+        """Audita a conformidade com a LGPD (Lei nº 13.709/2018):
+        - Hashing criptográfico SHA-256 do CPF/CNPJ.
+        - Mascaramento estrito de dados identificadores de financiados/devedores.
+        - Preservação da minimização de dados e ausência de plaintext de PII na trilha de auditoria.
+        """
+        rec = self.engine.registrar_gravame(
+            contrato_numero="CTR-LGPD-2026",
+            modalidade=ModalidadeGravame.ALIENACAO_FIDUCIARIA,
+            credor_cnpj="01444506000183",
+            credor_nome="Banco Votorantim S/A",
+            devedor_documento="12345678909",
+            devedor_nome="Carlos Eduardo Silva",
+            veiculo=self.veiculo_valido,
+            valor_financiamento=Decimal("120000.00"),
+            quantidade_parcelas=48,
+            taxa_juros_anual_pct=Decimal("17.9"),
+        )
+
+        # 1. Propriedades de mascaramento LGPD
+        self.assertEqual(rec.devedor_documento_mascarado, "123.***.***-09")
+        self.assertEqual(rec.credor_cnpj_mascarado, "01.***.***/0001-83")
+        self.assertEqual(rec.devedor_nome_mascarado, "Ca*** Ed*** Si***")
+        self.assertEqual(
+            rec.devedor_documento_sha256,
+            "7ec94663084bd506d4f0c3e21042df233681fd7426e93f397c921b1d3e397bba",
+        )
+
+        # 2. Representação minimizada to_masked_dict
+        masked_dict = rec.to_masked_dict()
+        self.assertTrue(masked_dict["lgpd_minimizada"])
+        self.assertEqual(masked_dict["devedor_documento_mascarado"], "123.***.***-09")
+
+        # 3. Trilha de auditoria em conformidade LGPD
+        audit_entry = self.engine.audit_log[-1]
+        self.assertEqual(audit_entry["action"], "INCLUSAO_GRAVAME")
+        self.assertEqual(audit_entry["devedor_documento_masked"], "123.***.***-09")
+        self.assertEqual(
+            audit_entry["devedor_documento_sha256"],
+            "7ec94663084bd506d4f0c3e21042df233681fd7426e93f397c921b1d3e397bba",
+        )
+        self.assertTrue(audit_entry["lgpd_audit"]["minimization"])
+        self.assertTrue(audit_entry["lgpd_audit"]["pseudonymized"])
+
 
 if __name__ == "__main__":
     unittest.main()

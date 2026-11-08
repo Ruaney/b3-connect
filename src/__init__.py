@@ -285,6 +285,8 @@ from src.bsm_surveillance import (
     is_same_economic_entity,
     normalize_document,
     parse_timestamp,
+    audit_sng_gravames,
+    audit_sro_claims,
 )
 from src.pretrade_risk_limits import (
     AccountExposureState,
@@ -1352,7 +1354,9 @@ from src.central_settlement_liquidity_bus import (
     SafeguardLayer,
     SettlementCycle,
     SettlementInstruction,
+    StrBacenPartitionError,
     WaterfallStageResolution,
+    ZeroAllocCentralBusEngine,
 )
 from src.b3_unified_lifecycle import (
     B3Module,
@@ -1776,6 +1780,8 @@ __all__ = [
     "format_document",
     "normalize_document",
     "parse_timestamp",
+    "audit_sng_gravames",
+    "audit_sro_claims",
     # Registro e Escrituração de Títulos do Agronegócio NoMe Agro (FL-026)
     "CommodityType",
     "CprType",
@@ -2784,6 +2790,7 @@ __all__ = [
     "SafeguardLayer",
     "SettlementCycle",
     "SettlementInstruction",
+    "StrBacenPartitionError",
     "WaterfallStageResolution",
     # Ciclo de Vida Unificado dos 7 Módulos B3
     "B3Module",

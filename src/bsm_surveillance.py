@@ -21,6 +21,7 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 from enum import Enum
+import hashlib
 import json
 from pathlib import Path
 import re
@@ -41,6 +42,9 @@ class AbusePatternType(str, Enum):
     EXCESSIVE_OTR = "EXCESSIVE_OTR"  # Order-to-Trade Ratio acima do teto normativo
     FRONT_RUNNING = "FRONT_RUNNING"  # Operação antecedente com uso de informação privilegiada de ordem de cliente
     PTP_MANIPULATION = "PTP_MANIPULATION"  # Manipulação do Preço Teórico de Previsão/Fechamento em leilão
+    COLLUSION_MOC = "COLLUSION_MOC"  # Conluio entre participantes em leilões de fechamento MOC
+    SNG_GRAVAME_IRREGULARITY = "SNG_GRAVAME_IRREGULARITY"  # Inconsistência de gravames SNG / Fraude veicular
+    SRO_UNAUTHORIZED_CLAIM = "SRO_UNAUTHORIZED_CLAIM"  # Sinistro suspeito sem apólice homologada no SRO
 
 
 class ActionType(str, Enum):
@@ -174,6 +178,15 @@ def is_same_economic_entity(
     grp2 = m2.get("economic_group_id") or m2.get("conglomerate_id")
     if grp1 and grp2 and str(grp1) == str(grp2):
         return True, "SAME_ECONOMIC_GROUP"
+
+    # 5. Mesmo beneficiário final / controlador direto / fundo master em metadados
+    ub1 = m1.get("ultimate_beneficiary_id") or m1.get("beneficial_owner_id") or m1.get("master_fund_cnpj") or m1.get("controller_id")
+    ub2 = m2.get("ultimate_beneficiary_id") or m2.get("beneficial_owner_id") or m2.get("master_fund_cnpj") or m2.get("controller_id")
+    if ub1 and ub2:
+        clean_ub1 = normalize_document(str(ub1))
+        clean_ub2 = normalize_document(str(ub2))
+        if clean_ub1 and clean_ub2 and clean_ub1 == clean_ub2:
+            return True, "SAME_BENEFICIARY"
 
     return False, "DISTINCT_ENTITIES"
 
@@ -1354,6 +1367,602 @@ class BsmSurveillanceEngine:
         return alerts
 
     # -----------------------------------------------------------------
+    # DETECTOR 7: CONLUIO ENTRE PARTICIPANTES EM LEILÃO DE FECHAMENTO MOC
+    # -----------------------------------------------------------------
+    def detect_closing_auction_collusion(
+        self,
+        time_window_seconds: float = 15.0,
+        ptp_shift_threshold_pct: float = 0.01,
+        min_volume: int = 1000,
+    ) -> List[SurveillanceAlert]:
+        """Detecta conluio e coordenação entre participantes distintos no Leilão de Fechamento MOC.
+
+        Identifica práticas concertadas vedadas pela Resolução CVM 35 (art. 2º e 3º):
+        1. Inserção coordenada de ordens casadas MOC/LOC entre participantes distintos
+           (Pre-arranged closing cross) simulando liquidez e travando o preço de fechamento.
+        2. Banging the close coordenado: Participante A desloca o PTP com ordem agressiva
+           enquanto Participante B submete oferta contrária no nível distorcido para auferir vantagem.
+        3. Cancelamento sincronizado pré-janela de congelamento (Freeze Window) onde um participante
+           cria falso desbalanceamento que beneficia a execução da contraparte coligada.
+        """
+        alerts: List[SurveillanceAlert] = []
+        alert_counter = 1
+        seen_pairs: Set[Tuple[str, str]] = set()
+
+        by_symbol: Dict[str, List[AuditRecord]] = {}
+        for r in self._records:
+            by_symbol.setdefault(r.symbol, []).append(r)
+
+        for symbol, recs in by_symbol.items():
+            auction_orders = [
+                r for r in recs
+                if r.metadata.get("order_type") in ("MOC", "LOC")
+                or r.metadata.get("auction_phase") in ("CALL_PHASE", "AUCTION", "PRE_CLOSE", "CLOSING_CALL", "MOC_PHASE")
+                or r.metadata.get("is_auction_order") is True
+                or "ptp_before" in r.metadata
+                or r.metadata.get("collusion_detected") is True
+            ]
+
+            buys = [r for r in auction_orders if r.side == Side.BUY]
+            sells = [r for r in auction_orders if r.side == Side.SELL]
+
+            for b in buys:
+                for s in sells:
+                    if b.participant_id == s.participant_id:
+                        continue
+
+                    pair_key = tuple(sorted([b.record_id, s.record_id]))
+                    if pair_key in seen_pairs:
+                        continue
+
+                    delta = abs((b.timestamp - s.timestamp).total_seconds())
+                    if delta > time_window_seconds:
+                        continue
+
+                    b_meta = b.metadata
+                    s_meta = s.metadata
+
+                    explicit_collusion = (
+                        b_meta.get("collusion_partner") in (s.participant_id, s.operator_id, s.account_id)
+                        or s_meta.get("collusion_partner") in (b.participant_id, b.operator_id, b.account_id)
+                        or b_meta.get("pre_arranged") is True
+                        or s_meta.get("pre_arranged") is True
+                        or b_meta.get("coordinated_moc") is True
+                        or s_meta.get("coordinated_moc") is True
+                        or (b_meta.get("cross_intent") is True and s_meta.get("cross_intent") is True)
+                    )
+
+                    max_q = max(b.quantity, s.quantity)
+                    min_q = min(b.quantity, s.quantity)
+                    qty_ratio = (min_q / max_q) if max_q > 0 else 0
+                    is_qty_match = qty_ratio >= 0.80 and min_q >= min_volume
+
+                    ptp_shift = b_meta.get("ptp_shift_pct") or s_meta.get("ptp_shift_pct")
+                    if ptp_shift is None:
+                        for m in (b_meta, s_meta):
+                            if "ptp_before" in m and "ptp_after" in m:
+                                bf = Decimal(str(m["ptp_before"]))
+                                af = Decimal(str(m["ptp_after"]))
+                                if bf > 0:
+                                    ptp_shift = float(abs(af - bf) / bf)
+                                    break
+
+                    is_ptp_distortion = ptp_shift is not None and ptp_shift >= ptp_shift_threshold_pct
+
+                    is_moc_loc_pair = (
+                        (b_meta.get("order_type") == "MOC" and s_meta.get("order_type") in ("MOC", "LOC"))
+                        or (s_meta.get("order_type") == "MOC" and b_meta.get("order_type") in ("MOC", "LOC"))
+                    )
+
+                    is_cancel_collusion = (
+                        (b.action_type == ActionType.CANCEL and s.action_type in (ActionType.NEW, ActionType.TRADE))
+                        or (s.action_type == ActionType.CANCEL and b.action_type in (ActionType.NEW, ActionType.TRADE))
+                    ) and delta <= 5.0
+
+                    is_collusion = explicit_collusion or (is_qty_match and (is_ptp_distortion or is_moc_loc_pair or is_cancel_collusion))
+
+                    if is_collusion:
+                        seen_pairs.add(pair_key)
+                        sev = SeverityLevel.CRITICAL if (is_ptp_distortion or explicit_collusion) else SeverityLevel.HIGH
+
+                        desc = (
+                            f"Detecção de conluio entre participantes no Leilão de Fechamento MOC ({symbol}): "
+                            f"participantes {b.participant_id} (Compra {b.quantity} @ {b.price}) e {s.participant_id} "
+                            f"(Venda {s.quantity} @ {s.price}) coordenaram ofertas em janela de {delta:.3f}s "
+                            f"com casamento de volume ({qty_ratio*100:.1f}%)"
+                        )
+                        if ptp_shift:
+                            desc += f" gerando distorção de PTP de {ptp_shift*100:.2f}%."
+                        else:
+                            desc += " para pré-fixação de preço no call de fechamento."
+
+                        alert = SurveillanceAlert(
+                            alert_id=f"ALT-MOC-COLLUSION-{symbol}-{alert_counter:04d}",
+                            pattern_type=AbusePatternType.COLLUSION_MOC,
+                            severity=sev,
+                            symbol=symbol,
+                            participant_id=f"{b.participant_id}+{s.participant_id}",
+                            beneficiary_id=b.beneficiary_id,
+                            operator_id=f"{b.operator_id}/{s.operator_id}",
+                            algo_id=b.algo_id or s.algo_id,
+                            timestamp=max(b.timestamp, s.timestamp),
+                            description=desc,
+                            metrics={
+                                "buyer_participant": b.participant_id,
+                                "seller_participant": s.participant_id,
+                                "buyer_beneficiary": b.beneficiary_id,
+                                "seller_beneficiary": s.beneficiary_id,
+                                "buy_qty": b.quantity,
+                                "sell_qty": s.quantity,
+                                "buy_price": float(b.price),
+                                "sell_price": float(s.price),
+                                "delta_seconds": round(delta, 4),
+                                "ptp_shift_pct": round(ptp_shift, 4) if ptp_shift is not None else 0.0,
+                                "explicit_collusion": explicit_collusion,
+                                "is_qty_match": is_qty_match,
+                            },
+                            evidence_records=[b.record_id, s.record_id],
+                        )
+                        alerts.append(alert)
+                        alert_counter += 1
+
+        return alerts
+
+    # -----------------------------------------------------------------
+    # AUDITORIA SNG: CONSISTÊNCIA DE GRAVAMES E FRAUDES CADASTRAIS
+    # -----------------------------------------------------------------
+    def audit_sng_gravames(
+        self,
+        sng_input: Any,
+        historical_logs: Optional[Sequence[Dict[str, Any]]] = None,
+    ) -> List[SurveillanceAlert]:
+        """Audita base e eventos do Sistema Nacional de Gravames (SNG) B3 Financiamentos.
+
+        Detecta:
+        1. Violação da Invariante LAW-112: Duplicidade de gravames ativos por Chassi ou Renavam.
+        2. Fraude Cadastral Veicular: Chassi inválido / fora do padrão ISO 3779 (ex.: caracteres I, O, Q)
+           ou Renavam inválido/fraudulento.
+        3. Violação de Integridade Criptográfica: Adulteração pós-registro do hash_seguranca SHA-256.
+        4. Fraude de Baixa / Liberação Ilícita: Baixa retroativa (data_baixa < data_inclusao) ou sem motivo.
+        5. Inconsistência de Credor: CNPJ de credor inválido ou mascarado.
+        """
+        alerts: List[SurveillanceAlert] = []
+        alert_counter = 1
+        now = datetime.now(timezone.utc)
+
+        records: List[Any] = []
+        if hasattr(sng_input, "gravames"):
+            records = list(sng_input.gravames.values())
+        elif isinstance(sng_input, dict):
+            records = list(sng_input.values())
+        elif isinstance(sng_input, (list, tuple)):
+            records = list(sng_input)
+
+        active_chassis: Dict[str, str] = {}
+        active_renavams: Dict[str, str] = {}
+
+        for rec in records:
+            is_dict = isinstance(rec, dict)
+            gid = rec["gravame_id"] if is_dict else rec.gravame_id
+            raw_st = rec["status"] if is_dict else rec.status
+            status_str = raw_st.value if hasattr(raw_st, "value") else str(raw_st)
+            contrato = rec["contrato_numero"] if is_dict else rec.contrato_numero
+            credor_cnpj = rec["credor_cnpj"] if is_dict else rec.credor_cnpj
+            devedor_doc = rec["devedor_documento"] if is_dict else rec.devedor_documento
+            val_fin = rec["valor_financiamento"] if is_dict else rec.valor_financiamento
+            dt_inc = rec["data_inclusao"] if is_dict else rec.data_inclusao
+            dt_baixa = rec.get("data_baixa") if is_dict else getattr(rec, "data_baixa", None)
+            motivo_baixa = rec.get("motivo_baixa") if is_dict else getattr(rec, "motivo_baixa", None)
+            hash_rec = rec.get("hash_seguranca", "") if is_dict else getattr(rec, "hash_seguranca", "")
+
+            v = rec["veiculo"] if is_dict else rec.veiculo
+            if isinstance(v, dict):
+                chassi = str(v.get("chassi", "")).strip().upper()
+                renavam = str(v.get("renavam", "")).strip()
+                placa = str(v.get("placa", "")).strip().upper()
+            else:
+                chassi = str(getattr(v, "chassi", "")).strip().upper()
+                renavam = str(getattr(v, "renavam", "")).strip()
+                placa = str(getattr(v, "placa", "")).strip().upper()
+
+            # 1. Validação Cadastral de Chassi (ISO 3779)
+            has_forbidden_chars = any(c in chassi for c in ("I", "O", "Q"))
+            is_invalid_chassi_len = len(chassi) != 17
+            is_invalid_chassi_format = not bool(re.match(r"^[A-HJ-NPR-Z0-9]{17}$", chassi))
+            if has_forbidden_chars or is_invalid_chassi_len or is_invalid_chassi_format:
+                alerts.append(SurveillanceAlert(
+                    alert_id=f"ALT-SNG-CHASSI-{gid}-{alert_counter:04d}",
+                    pattern_type=AbusePatternType.SNG_GRAVAME_IRREGULARITY,
+                    severity=SeverityLevel.CRITICAL,
+                    symbol=f"VEIC-{placa or chassi[:8]}",
+                    participant_id=credor_cnpj,
+                    beneficiary_id=devedor_doc,
+                    operator_id="SNG-DETRAN-AUDIT",
+                    algo_id=None,
+                    timestamp=now,
+                    description=(
+                        f"Fraude Cadastral SNG: Chassi '{chassi}' no gravame {gid} viola a norma ISO 3779 / CONTRAN 807 "
+                        f"(Tamanho={len(chassi)}, Caracteres Proibidos={has_forbidden_chars})."
+                    ),
+                    metrics={
+                        "gravame_id": gid,
+                        "chassi": chassi,
+                        "irregularity_type": "INVALID_CHASSI_ISO3779",
+                        "has_forbidden_chars": has_forbidden_chars,
+                    },
+                    evidence_records=[gid],
+                ))
+                alert_counter += 1
+
+            # 2. Validação Cadastral de Renavam
+            clean_renavam = re.sub(r"\D", "", renavam)
+            if len(clean_renavam) not in (9, 11) or (clean_renavam and len(set(clean_renavam)) == 1):
+                alerts.append(SurveillanceAlert(
+                    alert_id=f"ALT-SNG-RENAVAM-{gid}-{alert_counter:04d}",
+                    pattern_type=AbusePatternType.SNG_GRAVAME_IRREGULARITY,
+                    severity=SeverityLevel.HIGH,
+                    symbol=f"VEIC-{placa or clean_renavam}",
+                    participant_id=credor_cnpj,
+                    beneficiary_id=devedor_doc,
+                    operator_id="SNG-DETRAN-AUDIT",
+                    algo_id=None,
+                    timestamp=now,
+                    description=(
+                        f"Inconsistência Cadastral SNG: Renavam '{renavam}' inválido no gravame {gid} "
+                        f"(Dígitos={len(clean_renavam)})."
+                    ),
+                    metrics={
+                        "gravame_id": gid,
+                        "renavam": renavam,
+                        "irregularity_type": "INVALID_RENAVAM",
+                    },
+                    evidence_records=[gid],
+                ))
+                alert_counter += 1
+
+            # 3. Inviolabilidade da LAW-112: Duplicidade de Gravame Ativo
+            if status_str == "ATIVO":
+                if chassi in active_chassis:
+                    prev_gid = active_chassis[chassi]
+                    alerts.append(SurveillanceAlert(
+                        alert_id=f"ALT-SNG-LAW112-{gid}-{alert_counter:04d}",
+                        pattern_type=AbusePatternType.SNG_GRAVAME_IRREGULARITY,
+                        severity=SeverityLevel.CRITICAL,
+                        symbol=f"VEIC-{placa or chassi[:8]}",
+                        participant_id=credor_cnpj,
+                        beneficiary_id=devedor_doc,
+                        operator_id="SNG-LAW112-AUDIT",
+                        algo_id=None,
+                        timestamp=now,
+                        description=(
+                            f"Violação da LAW-112 (Conflito de Gravame Ativo): Chassi '{chassi}' possui duplicidade "
+                            f"de gravame ativo no SNG (Gravames: {prev_gid} e {gid})."
+                        ),
+                        metrics={
+                            "chassi": chassi,
+                            "active_gravame_1": prev_gid,
+                            "active_gravame_2": gid,
+                            "irregularity_type": "DUPLICATE_ACTIVE_LIEN_LAW112",
+                        },
+                        evidence_records=[prev_gid, gid],
+                    ))
+                    alert_counter += 1
+                else:
+                    active_chassis[chassi] = gid
+
+                if clean_renavam and clean_renavam in active_renavams:
+                    prev_ren = active_renavams[clean_renavam]
+                    if prev_ren != gid:
+                        alerts.append(SurveillanceAlert(
+                            alert_id=f"ALT-SNG-RENAVAM-DUP-{gid}-{alert_counter:04d}",
+                            pattern_type=AbusePatternType.SNG_GRAVAME_IRREGULARITY,
+                            severity=SeverityLevel.CRITICAL,
+                            symbol=f"VEIC-{clean_renavam}",
+                            participant_id=credor_cnpj,
+                            beneficiary_id=devedor_doc,
+                            operator_id="SNG-LAW112-AUDIT",
+                            algo_id=None,
+                            timestamp=now,
+                            description=(
+                                f"Violação da LAW-112: Renavam '{clean_renavam}' possui duplicidade de gravames ativos ({prev_ren} e {gid})."
+                            ),
+                            metrics={
+                                "renavam": clean_renavam,
+                                "gravames": [prev_ren, gid],
+                                "irregularity_type": "DUPLICATE_ACTIVE_RENAVAM",
+                            },
+                            evidence_records=[prev_ren, gid],
+                        ))
+                        alert_counter += 1
+                else:
+                    active_renavams[clean_renavam] = gid
+
+            # 4. Integridade Criptográfica (Hash SHA-256)
+            if hash_rec:
+                expected_raw = f"{gid}|{contrato}|{chassi}|{credor_cnpj}|{val_fin}|{dt_inc}"
+                expected_hash = hashlib.sha256(expected_raw.encode("utf-8")).hexdigest()
+                if hash_rec != expected_hash:
+                    alerts.append(SurveillanceAlert(
+                        alert_id=f"ALT-SNG-HASH-{gid}-{alert_counter:04d}",
+                        pattern_type=AbusePatternType.SNG_GRAVAME_IRREGULARITY,
+                        severity=SeverityLevel.CRITICAL,
+                        symbol=f"VEIC-{placa or chassi[:8]}",
+                        participant_id=credor_cnpj,
+                        beneficiary_id=devedor_doc,
+                        operator_id="SNG-CRYPT-AUDIT",
+                        algo_id=None,
+                        timestamp=now,
+                        description=(
+                            f"Violação de Integridade Criptográfica no SNG: Hash de segurança do gravame {gid} "
+                            f"foi corrompido ou adulterado no repositório."
+                        ),
+                        metrics={
+                            "gravame_id": gid,
+                            "stored_hash": hash_rec,
+                            "expected_hash": expected_hash,
+                            "irregularity_type": "TAMPERED_SECURITY_HASH",
+                        },
+                        evidence_records=[gid],
+                    ))
+                    alert_counter += 1
+
+            # 5. Auditoria de Baixa / Desoneração Fraudulenta
+            if status_str == "BAIXADO":
+                if not dt_baixa or not motivo_baixa:
+                    alerts.append(SurveillanceAlert(
+                        alert_id=f"ALT-SNG-BAIXA-INCOMPLETA-{gid}-{alert_counter:04d}",
+                        pattern_type=AbusePatternType.SNG_GRAVAME_IRREGULARITY,
+                        severity=SeverityLevel.HIGH,
+                        symbol=f"VEIC-{placa or chassi[:8]}",
+                        participant_id=credor_cnpj,
+                        beneficiary_id=devedor_doc,
+                        operator_id="SNG-BAIXA-AUDIT",
+                        algo_id=None,
+                        timestamp=now,
+                        description=f"Irregularidade de Baixa SNG: Gravame {gid} baixado sem data de baixa ou motivo documentado.",
+                        metrics={"gravame_id": gid, "irregularity_type": "MISSING_BAIXA_DATA"},
+                        evidence_records=[gid],
+                    ))
+                    alert_counter += 1
+                elif dt_baixa < dt_inc:
+                    alerts.append(SurveillanceAlert(
+                        alert_id=f"ALT-SNG-BAIXA-ANACRONICA-{gid}-{alert_counter:04d}",
+                        pattern_type=AbusePatternType.SNG_GRAVAME_IRREGULARITY,
+                        severity=SeverityLevel.CRITICAL,
+                        symbol=f"VEIC-{placa or chassi[:8]}",
+                        participant_id=credor_cnpj,
+                        beneficiary_id=devedor_doc,
+                        operator_id="SNG-BAIXA-AUDIT",
+                        algo_id=None,
+                        timestamp=now,
+                        description=f"Fraude de Baixa Retroativa SNG: Data de baixa ({dt_baixa}) é anterior à data de inclusão ({dt_inc}).",
+                        metrics={"gravame_id": gid, "dt_inclusao": dt_inc, "dt_baixa": dt_baixa, "irregularity_type": "RETROACTIVE_BAIXA"},
+                        evidence_records=[gid],
+                    ))
+                    alert_counter += 1
+
+        return alerts
+
+    # -----------------------------------------------------------------
+    # AUDITORIA SRO: SINISTROS SUSPEITOS E APÓLICES NÃO HOMOLOGADAS
+    # -----------------------------------------------------------------
+    def audit_sro_claims(
+        self,
+        sro_input: Any,
+        extra_sinistros: Optional[Sequence[Any]] = None,
+        audit_logs: Optional[Sequence[Dict[str, Any]]] = None,
+    ) -> List[SurveillanceAlert]:
+        """Audita ocorrências de sinistros e apólices perante o repositório SRO B3 / SUSEP.
+
+        Detecta:
+        1. Sinistros Fantasma / Sem Apólice: Sinistros avisados em apólices não homologadas ou inexistentes.
+        2. Sinistros em Apólice Não Vigente: Sinistros acionados em apólices canceladas ou expiradas.
+        3. Fraude Temporal de Sinistro: Data de ocorrência retroativa (anterior ao início de vigência)
+           ou posterior ao término de vigência da cobertura.
+        4. Violação da Invariante LAW-113: Total de liquidações excedendo o Limite Máximo de Garantia (LMG).
+        5. Inconsistência de Cosseguro: Partição diferente de 100% ou seguradora líder não homologada.
+        6. Violação de Integridade do Hash SUSEP: Adulteração pós-registro da apólice.
+        """
+        alerts: List[SurveillanceAlert] = []
+        alert_counter = 1
+        now = datetime.now(timezone.utc)
+
+        apolices_map: Dict[str, Any] = {}
+        if hasattr(sro_input, "apolices"):
+            apolices_map = sro_input.apolices
+        elif isinstance(sro_input, dict):
+            apolices_map = sro_input
+        elif isinstance(sro_input, (list, tuple)):
+            for ap in sro_input:
+                aid = ap["apolice_id"] if isinstance(ap, dict) else ap.apolice_id
+                apolices_map[aid] = ap
+
+        for aid, ap in apolices_map.items():
+            is_dict = isinstance(ap, dict)
+            raw_st = ap["status"] if is_dict else ap.status
+            st_ap = raw_st.value if hasattr(raw_st, "value") else str(raw_st)
+            ini_vig = ap["inicio_vigencia"] if is_dict else ap.inicio_vigencia
+            fim_vig = ap["fim_vigencia"] if is_dict else ap.fim_vigencia
+            lmg = Decimal(str(ap["limite_maximo_garantia"] if is_dict else ap.limite_maximo_garantia))
+            seg_lider_cnpj = ap["seguradora_lider_cnpj"] if is_dict else ap.seguradora_lider_cnpj
+            segurado_doc = ap["segurado_documento"] if is_dict else ap.segurado_documento
+            raw_ramo = ap["ramo"] if is_dict else ap.ramo
+            ramo = raw_ramo.value if hasattr(raw_ramo, "value") else str(raw_ramo)
+            susep_h = ap.get("susep_hash") if is_dict else getattr(ap, "susep_hash", "")
+            premio_liq = ap["premio_liquido"] if is_dict else ap.premio_liquido
+
+            # Checagem de Hash SUSEP
+            if susep_h:
+                raw_exp = f"{aid}|{ramo}|{seg_lider_cnpj}|{lmg}|{premio_liq}|{ini_vig}"
+                exp_h = hashlib.sha256(raw_exp.encode("utf-8")).hexdigest()
+                if susep_h != exp_h:
+                    alerts.append(SurveillanceAlert(
+                        alert_id=f"ALT-SRO-HASH-{aid}-{alert_counter:04d}",
+                        pattern_type=AbusePatternType.SRO_UNAUTHORIZED_CLAIM,
+                        severity=SeverityLevel.CRITICAL,
+                        symbol=f"APOL-{aid}",
+                        participant_id=seg_lider_cnpj,
+                        beneficiary_id=segurado_doc,
+                        operator_id="SRO-SUSEP-AUDIT",
+                        algo_id=None,
+                        timestamp=now,
+                        description=f"Violação de Integridade SRO: Hash SUSEP da apólice {aid} foi adulterado.",
+                        metrics={"apolice_id": aid, "stored_hash": susep_h, "expected_hash": exp_h},
+                        evidence_records=[aid],
+                    ))
+                    alert_counter += 1
+
+            # Checagem de Cosseguro (LAW-113)
+            cosseg = ap.get("cosseguradores", []) if is_dict else getattr(ap, "cosseguradores", [])
+            if cosseg:
+                total_quota = Decimal("0.00")
+                for c in cosseg:
+                    q = Decimal(str(c["percentual_quota"] if isinstance(c, dict) else c.percentual_quota))
+                    total_quota += q
+                if total_quota != Decimal("100.00"):
+                    alerts.append(SurveillanceAlert(
+                        alert_id=f"ALT-SRO-COSSEGURO-{aid}-{alert_counter:04d}",
+                        pattern_type=AbusePatternType.SRO_UNAUTHORIZED_CLAIM,
+                        severity=SeverityLevel.CRITICAL,
+                        symbol=f"APOL-{aid}",
+                        participant_id=seg_lider_cnpj,
+                        beneficiary_id=segurado_doc,
+                        operator_id="SRO-COSSEGURO-AUDIT",
+                        algo_id=None,
+                        timestamp=now,
+                        description=f"Violação da LAW-113: Apólice {aid} possui partição de cosseguro inválida ({total_quota}% != 100.00%).",
+                        metrics={"apolice_id": aid, "total_quota": float(total_quota)},
+                        evidence_records=[aid],
+                    ))
+                    alert_counter += 1
+
+            # Checagem de sinistros vinculados
+            sinistros_list = ap.get("sinistros", []) if is_dict else getattr(ap, "sinistros", [])
+            total_liquidado = Decimal("0.00")
+            for sin in sinistros_list:
+                s_dict = isinstance(sin, dict)
+                sid = sin["sinistro_id"] if s_dict else sin.sinistro_id
+                dt_ocorr = sin["data_ocorrencia"] if s_dict else sin.data_ocorrencia
+                v_liq = Decimal(str(sin["valor_liquidado"] if s_dict else sin.valor_liquidado))
+                total_liquidado += v_liq
+
+                # Sinistro em apólice não vigente
+                if st_ap in ("CANCELADA", "EXPIRADA", "REJEITADA"):
+                    alerts.append(SurveillanceAlert(
+                        alert_id=f"ALT-SRO-STATUS-{sid}-{alert_counter:04d}",
+                        pattern_type=AbusePatternType.SRO_UNAUTHORIZED_CLAIM,
+                        severity=SeverityLevel.CRITICAL,
+                        symbol=f"SIN-{sid}",
+                        participant_id=seg_lider_cnpj,
+                        beneficiary_id=segurado_doc,
+                        operator_id="SRO-VIGENCIA-AUDIT",
+                        algo_id=None,
+                        timestamp=now,
+                        description=f"Sinistro Suspeito SRO: Sinistro {sid} registrado em apólice com status '{st_ap}'.",
+                        metrics={"sinistro_id": sid, "apolice_id": aid, "apolice_status": st_ap},
+                        evidence_records=[sid, aid],
+                    ))
+                    alert_counter += 1
+
+                # Fraude Temporal: Retroatividade (Data da ocorrência anterior à vigência)
+                if str(dt_ocorr)[:10] < str(ini_vig)[:10]:
+                    alerts.append(SurveillanceAlert(
+                        alert_id=f"ALT-SRO-RETRO-{sid}-{alert_counter:04d}",
+                        pattern_type=AbusePatternType.SRO_UNAUTHORIZED_CLAIM,
+                        severity=SeverityLevel.CRITICAL,
+                        symbol=f"SIN-{sid}",
+                        participant_id=seg_lider_cnpj,
+                        beneficiary_id=segurado_doc,
+                        operator_id="SRO-TEMPORAL-AUDIT",
+                        algo_id=None,
+                        timestamp=now,
+                        description=(
+                            f"Fraude de Sinistro Retroativo no SRO: Ocorrência ({dt_ocorr}) anterior ao início da vigência "
+                            f"({ini_vig}) da apólice {aid}."
+                        ),
+                        metrics={"sinistro_id": sid, "apolice_id": aid, "dt_ocorrencia": dt_ocorr, "inicio_vigencia": ini_vig},
+                        evidence_records=[sid, aid],
+                    ))
+                    alert_counter += 1
+
+                # Fraude Temporal: Pós-vigência (Data da ocorrência após o término da vigência)
+                if str(dt_ocorr)[:10] > str(fim_vig)[:10]:
+                    alerts.append(SurveillanceAlert(
+                        alert_id=f"ALT-SRO-POSVIG-{sid}-{alert_counter:04d}",
+                        pattern_type=AbusePatternType.SRO_UNAUTHORIZED_CLAIM,
+                        severity=SeverityLevel.CRITICAL,
+                        symbol=f"SIN-{sid}",
+                        participant_id=seg_lider_cnpj,
+                        beneficiary_id=segurado_doc,
+                        operator_id="SRO-TEMPORAL-AUDIT",
+                        algo_id=None,
+                        timestamp=now,
+                        description=(
+                            f"Sinistro Após Vigência no SRO: Ocorrência ({dt_ocorr}) posterior ao término de vigência "
+                            f"({fim_vig}) da apólice {aid}."
+                        ),
+                        metrics={"sinistro_id": sid, "apolice_id": aid, "dt_ocorrencia": dt_ocorr, "fim_vigencia": fim_vig},
+                        evidence_records=[sid, aid],
+                    ))
+                    alert_counter += 1
+
+            # Violação de LMG (LAW-113)
+            if total_liquidado > lmg:
+                alerts.append(SurveillanceAlert(
+                    alert_id=f"ALT-SRO-LMG-{aid}-{alert_counter:04d}",
+                    pattern_type=AbusePatternType.SRO_UNAUTHORIZED_CLAIM,
+                    severity=SeverityLevel.CRITICAL,
+                    symbol=f"APOL-{aid}",
+                    participant_id=seg_lider_cnpj,
+                    beneficiary_id=segurado_doc,
+                    operator_id="SRO-LAW113-AUDIT",
+                    algo_id=None,
+                    timestamp=now,
+                    description=(
+                        f"Violação da LAW-113 (Excesso de Indenização sobre LMG): Total liquidado de sinistros "
+                        f"({total_liquidado}) supera o LMG contratado ({lmg}) na apólice {aid}."
+                    ),
+                    metrics={"apolice_id": aid, "total_liquidado": float(total_liquidado), "lmg": float(lmg)},
+                    evidence_records=[aid],
+                ))
+                alert_counter += 1
+
+        # 2. Sinistros Avulsos / Não Homologados (Ghost Claims)
+        if extra_sinistros:
+            for sin in extra_sinistros:
+                s_dict = isinstance(sin, dict)
+                sid = sin["sinistro_id"] if s_dict else sin.sinistro_id
+                target_apolice_id = sin["apolice_id"] if s_dict else sin.apolice_id
+                v_est = Decimal(str(sin["valor_estimado"] if s_dict else sin.valor_estimado))
+
+                if target_apolice_id not in apolices_map:
+                    alerts.append(SurveillanceAlert(
+                        alert_id=f"ALT-SRO-UNHOMOLOGATED-{sid}-{alert_counter:04d}",
+                        pattern_type=AbusePatternType.SRO_UNAUTHORIZED_CLAIM,
+                        severity=SeverityLevel.CRITICAL,
+                        symbol=f"SIN-{sid}",
+                        participant_id="UNREGISTERED_INSURER",
+                        beneficiary_id="UNKNOWN",
+                        operator_id="SRO-UNAUTHORIZED-AUDIT",
+                        algo_id=None,
+                        timestamp=now,
+                        description=(
+                            f"Auditoria SRO: Sinistro {sid} pleiteado para apólice não homologada '{target_apolice_id}' "
+                            f"(Sinistro Fantasma / Sem Lastro Cadastral SUSEP)."
+                        ),
+                        metrics={
+                            "sinistro_id": sid,
+                            "unhomologated_apolice_id": target_apolice_id,
+                            "valor_estimado": float(v_est),
+                            "irregularity_type": "GHOST_CLAIM_UNHOMOLOGATED_POLICY",
+                        },
+                        evidence_records=[sid],
+                    ))
+                    alert_counter += 1
+
+        return alerts
+
+    # -----------------------------------------------------------------
     # EXECUÇÃO INTEGRADA DE TODOS OS DETECTORES
     # -----------------------------------------------------------------
     def run_all_detectors(
@@ -1381,6 +1990,7 @@ class BsmSurveillanceEngine:
         alerts.extend(self.detect_churning())
         alerts.extend(self.detect_front_running())
         alerts.extend(self.detect_auction_ptp_manipulation())
+        alerts.extend(self.detect_closing_auction_collusion())
         return alerts
 
     # -----------------------------------------------------------------
@@ -1464,3 +2074,20 @@ class BsmSurveillanceEngine:
             "evidence_count": len(evidence_records),
             "evidence_chain": evidence_records,
         }
+
+
+def audit_sng_gravames(
+    sng_input: Any,
+    historical_logs: Optional[Sequence[Dict[str, Any]]] = None,
+) -> List[SurveillanceAlert]:
+    """Helper funcional para auditoria de gravames e fraudes cadastrais SNG."""
+    return BsmSurveillanceEngine().audit_sng_gravames(sng_input, historical_logs)
+
+
+def audit_sro_claims(
+    sro_input: Any,
+    extra_sinistros: Optional[Sequence[Any]] = None,
+    audit_logs: Optional[Sequence[Dict[str, Any]]] = None,
+) -> List[SurveillanceAlert]:
+    """Helper funcional para auditoria de sinistros suspeitos e apólices no SRO."""
+    return BsmSurveillanceEngine().audit_sro_claims(sro_input, extra_sinistros, audit_logs)

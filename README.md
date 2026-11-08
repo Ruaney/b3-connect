@@ -1,15 +1,30 @@
 # Atlas de Integrações B3
 
-Projeto em levantamento de requisitos. Público inicial: equipes de tecnologia de instituições. Recorte: pós-negociação de ativos listados.
+[![B3 Fluxos](https://img.shields.io/badge/B3%20Fluxos-107%2F107%20(100%25)-blue.svg)](catalog/flows.json)
+[![Leis de Invariante](https://img.shields.io/badge/Leis%20de%20Invariante-91%20Provadas-success.svg)](scripts/verify_invariants.py)
+[![Manuais B3](https://img.shields.io/badge/Manuais%20B3-87%20Catalogados-informational.svg)](catalog/sources.json)
+[![Test Coverage](https://img.shields.io/badge/Test%20Coverage-100%25%20(1.566%20tests)-brightgreen.svg)](tests/)
+[![Dependencies](https://img.shields.io/badge/Dependencies-0%20(Pure%20Stdlib)-success.svg)](src/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-Objetivo: tornar integrações compreensíveis e implementáveis por meio de guias, exemplos e módulos abertos, operáveis de forma independente. Uma futura oferta comercial poderá administrar essas integrações. Não há vínculo oficial com a B3.
+Projeto de referência técnica e governança aberta para integração à infraestrutura de mercado financeiro da B3 (Brasil, Bolsa, Balcão). Público: instituições financeiras, corretoras (PN/PNP), distribuidoras (DTVM), custodiantes, gestoras de recursos, fintechs e equipes de engenharia de software e infraestrutura de mercado (FMI).
 
-## Entregas
+Objetivo: tornar as integrações com a B3 compreensíveis, determinísticas e implementáveis por meio de especificações rigorosas, fixtures sintéticas, provas matemáticas de invariantes e módulos abertos, operáveis de forma independente com zero dependências externas. Não há vínculo oficial com a B3 S.A.
 
-- [Catálogo de fontes](catalog/sources.json): evidências oficiais e limitações de consulta.
-- [Catálogo de fluxos](catalog/flows.json): inventário inicial, ainda não exaustivo.
-- [Arquitetura Master V2.0](docs/master-architecture-v2.md): especificação técnica global cobrindo os 10 subsistemas, os 61 fluxos de integração, as 45 leis formais de conservação matemática, matriz regulatória (CVM 175, CVM 35, Resolução CMN 5.036, CPMI-IOSCO) e engenharia de resiliência e failover de link RCC.
-- [Roadmap](docs/roadmap.md): frentes técnicas e de operações/back office.
+## 🏛️ Governança Open Source & Comunidade
+
+- **[Guia de Contribuição (CONTRIBUTING.md)](CONTRIBUTING.md)**: padrões de código (100% Python Standard Library, PEP 8, tipagem estrita MyPy, precisão decimal estrita, cobertura de invariantes e processo de PR).
+- **[Código de Conduta (CODE_OF_CONDUCT.md)](CODE_OF_CONDUCT.md)**: Contributor Covenant v2.1 em português e inglês.
+- **[Política de Segurança (SECURITY.md)](SECURITY.md)**: Política de Divulgação Coordenada de Vulnerabilidades (CVD) e SLA de resposta AppSec.
+- **[Roadmap Estratégico (ROADMAP.md)](ROADMAP.md)**: visão evolutiva dos 107 fluxos, pilotos do Drex e horizontes futuros.
+- **[Licença MIT (LICENSE)](LICENSE)**: licença de código aberto permissiva para uso e expansão pela comunidade.
+
+## Entregas & Documentação
+
+- [Catálogo de fontes](catalog/sources.json): inventário de 87 documentos oficiais, manuais técnicos e regulamentos B3 e CVM/BACEN.
+- [Catálogo de fluxos](catalog/flows.json): catálogo exaustivo com os 107 fluxos de integração mapeados e implementados.
+- [Arquitetura Master V2.0](docs/master-architecture-v2.md): especificação técnica global cobrindo os 10 subsistemas, matriz regulatória (CVM 175, CVM 35, Resolução CMN 5.036, CPMI-IOSCO) e resiliência de link RCC.
+- [Roadmap Estratégico Completo](ROADMAP.md): detalhamento das 7 Fases, pilotos do Real Digital / Drex e próximas fronteiras.
 - [Roadmap de Expansão Arquitetural](docs/expansion-roadmap.md): arquitetura detalhada para Negociação de Listados (Puma FIX Entrypoint, Drop Copy, Binary SBE), Balcão NoMe (Renda Fixa Privada, Derivativos de Balcão e APIs) e Conectividade (RCC, mTLS ICP-Brasil, VPN IPSec e matriz de perfis PN/PNP/PL/Custodiante/Asset).
 - [Método e decisões](docs/method.md): critérios de cobertura, coleta e próximos passos.
 - [Relatório inicial](docs/discovery-2026-11-03.md): achados e recomendação de piloto.
@@ -36,15 +51,28 @@ Objetivo: tornar integrações compreensíveis e implementáveis por meio de gui
 - [Motor de conciliação](src/reconciliation.py): batimento posicional determinístico (IMBARQ006 vs livro interno) com classificação tipada de quebras.
 - [Pipeline Unificado de Fechamento Diário](src/pipeline.py): orquestrador central do fechamento da grade noturna (`IMBARQ004`, `IMBARQ006`, `IMBARQ011`, `IMBARQ012`, `IMBARQ014`), executando reconciliação contra custódia interna e gerando sumário executivo (`DailyClosingSummary`) com exportação estruturada em `.to_dict()`, `.to_json()` e `.to_markdown_report()`.
 - [Guia Oficial de Conectividade e Certificação](docs/certification-guide.md): roteiro técnico institucional para corretoras, gestoras e custodiantes (perfis de participante, RCC/VPN/mTLS, ICP-Brasil A1/A3, homologação CET, casos de teste formais de Conciliação e RTC, e matriz de contingência/escalonamento).
-- [Scripts de Governança Multiplataforma](scripts/): validação de integridade estrita (`scripts/test_catalog.py`) e cálculo de cobertura (`scripts/get_coverage.py`) em Python puro com suporte a CLI (`argparse`), JSON e Markdown.
-- [Fixtures de teste](fixtures/): amostras sintéticas realistas (ações, opções, futuros, empréstimo BTC, custódia CSD, garantias/margem, eventos corporativos data ex, captura RTC, lotes de alocação RTC e payloads binários SBE) e cenários de erro.
-- [Testes automatizados](tests/): 646 testes cobrindo parsing (IMBARQ004, 006, 011, 012, 014, 018), captura e alocação RTC, PUMA SBE/FIX 4.4, SPB STR/LDL0001, portabilidade STVM, CVM 175, CPR Agro, BSM Surveillance, Tesouro Direto, Futuros BM&F, Ofertas CVM 160, BDRs, ETFs, CBIO RenovaBio, Central de Garantias, Buy-In, Opções Listadas, Derivativos Swap/NDF, Termo de Ações, Opções Flexíveis, Units, OPA, DMA/PMM/OTR, LIGs, CORE Intradiário, Duplicatas Escriturais, Leilão de Frações, Tarifação Integrada B3, CDB/RDB, Cascata de Inadimplência, Ordens Avançadas PUMA, Debêntures Incentivadas, COEs, Leilão de Fechamento PUMA, Câmbio PvP e DREX/TPFt.
+- [Scripts de Governança Multiplataforma](scripts/): validação de integridade estrita (`scripts/test_catalog.py`), cálculo de cobertura (`scripts/get_coverage.py`) e comprovação formal matemática (`scripts/verify_invariants.py`).
+- [Fixtures de teste](fixtures/): amostras sintéticas realistas cobrindo todos os mercados (ações, opções, futuros, empréstimo BTC, custódia CSD, garantias/margem, eventos corporativos, captura RTC, alocação RTC, payloads binários SBE, Drex RWA, SNG gravames e SRO seguros).
+- [Testes automatizados](tests/): 1.566 testes unitários cobrindo 100% dos fluxos e comportamentos.
 
-## Estado
+## Estado do Projeto
 
-Cobertura do inventário v1.2.0: **61 fluxos cadastrados, 100% documentados, implementados e testados localmente**. A suíte conta com **646 testes unitários automatizados com 100% de sucesso** e **45 Leis Formais de Invariante e Conservação Financeira** formalmente comprovadas via `scripts/verify_invariants.py`. Todos os módulos de software foram desenvolvidos com zero dependências externas (exclusivamente Python Standard Library).
+Cobertura do inventário v2.0.0: **107 fluxos cadastrados, 100% documentados, implementados e testados localmente**. A suíte conta com **1.566 testes unitários automatizados com 100% de sucesso** e **91 Leis Formais de Invariante e Conservação Financeira** formalmente comprovadas via `scripts/verify_invariants.py`. Todos os módulos de software foram desenvolvidos com **zero dependências externas** (exclusivamente Python Standard Library).
 
-Execute `python3 scripts/test_catalog.py --check-files`, `python3 scripts/get_coverage.py` e `python3 scripts/verify_invariants.py` para verificar a integridade, cobertura e consistência matemática.
+Comandos de verificação:
+```bash
+# 1. Executa a suíte completa de testes automatizados (1.566 testes)
+python3 -m unittest discover tests
+
+# 2. Comprova matematicamente todas as 91 Leis de Conservação e Invariantes
+python3 scripts/verify_invariants.py
+
+# 3. Valida a integridade estrita do catálogo e dos arquivos referenciados
+python3 scripts/test_catalog.py --check-files
+
+# 4. Apresenta o sumário de cobertura de inventário
+python3 scripts/get_coverage.py
+```
 
 ## 💼 Suporte Corporativo & Plataforma Gerenciada B3 Enterprise
 

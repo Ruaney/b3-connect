@@ -1990,7 +1990,7 @@ def verify_drex_rwa_primary_issuance_invariants(fixtures_dir: Path):
     2. Paridade Financeira: Real Digital recebido == Valor nominal liquidado (LAW-111).
     3. Conservação de Cupons e Proventos: Provisão on-chain == Distribuição aos detentores (LAW-111).
     """
-    print("[89/89] Verificando Invariante de Emissão Primária RWA e DvP no Drex (FL-105)...")
+    print("[89/91] Verificando Invariante de Emissão Primária RWA e DvP no Drex (FL-105)...")
     from src.drex_rwa_primary_issuance import DrexRwaPrimaryIssuanceEngine
     fixture_path = fixtures_dir / "drex_rwa_primary_issuance.json"
     engine = DrexRwaPrimaryIssuanceEngine.load_from_fixture(fixture_path)
@@ -1999,6 +1999,46 @@ def verify_drex_rwa_primary_issuance_invariants(fixtures_dir: Path):
     check(audit["LAW-111_primary_dvp_financial_parity"], "Violação da paridade financeira DvP RWA (LAW-111)")
     check(audit["LAW-111_coupon_conservation"], "Violação de conservação de cupons RWA (LAW-111)")
     print("      ✓ Atomicidade DvP primária, paridade financeira e conservação de cupons comprovadas (LAW-111).")
+
+
+def verify_sng_gravames_invariants(fixtures_dir: Path):
+    """
+    Lei 90: Unicidade e Inviolabilidade de Gravame Ativo por Chassi/Renavam (FL-106).
+    1. Unicidade de Gravame Ativo: Vedada duplicidade de gravame ativo por chassi (LAW-112).
+    2. Imutabilidade e Rastreabilidade Criptográfica com Hash SHA-256 (LAW-112).
+    """
+    print("[90/91] Verificando Invariante de Gravames Veiculares SNG (FL-106)...")
+    from src.sng_gravames_engine import SngGravamesEngine, GravameRecord, StatusGravame
+    with open(fixtures_dir / "sng_gravames_engine.json", "r", encoding="utf-8") as f:
+        d = json.load(f)
+    eng = SngGravamesEngine()
+    for g in d["gravames"]:
+        rec = GravameRecord.from_dict(g)
+        eng.gravames[rec.gravame_id] = rec
+        if rec.status == StatusGravame.ATIVO:
+            eng.chassi_ativo_index[rec.veiculo.chassi.upper()] = rec.gravame_id
+    rep = eng.verify_invariants()
+    check(rep["verified"], "Violação de invariante LAW-112 no SNG Gravames")
+    print("      ✓ Unicidade de gravame ativo por chassi e hash de segurança comprovadas (LAW-112).")
+
+
+def verify_sro_seguros_invariants(fixtures_dir: Path):
+    """
+    Lei 91: Conservação de Cosseguro (100%) e Inviolabilidade do LMG no SRO Seguros (FL-107).
+    1. Partição Estrita de Cosseguro: Soma das cotas == 100,00% (LAW-113).
+    2. Inviolabilidade do Limite Máximo de Garantia (LMG) na liquidação de sinistros (LAW-113).
+    """
+    print("[91/91] Verificando Invariante de Registro de Operações de Seguros SRO (FL-107)...")
+    from src.sro_seguros_engine import SroSegurosEngine, ApoliceRecord
+    with open(fixtures_dir / "sro_seguros_engine.json", "r", encoding="utf-8") as f:
+        d = json.load(f)
+    eng = SroSegurosEngine()
+    for a in d["apolices"]:
+        rec = ApoliceRecord.from_dict(a)
+        eng.apolices[rec.apolice_id] = rec
+    rep = eng.verify_invariants()
+    check(rep["verified"], "Violação de invariante LAW-113 no SRO Seguros")
+    print("      ✓ Conservação de cosseguro 100% e teto do LMG em sinistros comprovadas (LAW-113).")
 
 
 def main():
@@ -2102,9 +2142,11 @@ def main():
         verify_market_maker_pmm_engine_invariants(fixtures_dir)
         verify_algorithmic_sor_twap_vwap_invariants(fixtures_dir)
         verify_drex_rwa_primary_issuance_invariants(fixtures_dir)
+        verify_sng_gravames_invariants(fixtures_dir)
+        verify_sro_seguros_invariants(fixtures_dir)
         
         print("\n" + "=" * 70)
-        print("✓ TODAS AS 89 LEIS DE CONSERVAÇÃO E INVARIANTES DA B3 FORAM PROVADAS!")
+        print("✓ TODAS AS 91 LEIS DE CONSERVAÇÃO E INVARIANTES DA B3 FORAM PROVADAS!")
         print("  Garantia matemática de consistência em todas as fixtures e módulos.")
         print("=" * 70)
         sys.exit(0)

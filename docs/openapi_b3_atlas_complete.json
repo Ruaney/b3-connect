@@ -1,0 +1,4066 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "B3 Integration Atlas & Institutional Gateway API",
+    "version": "2.3.0",
+    "summary": "Especificação Formal OpenAPI 3.1 da Infraestrutura de Mercado B3",
+    "description": "## B3 Integration Atlas — Especificação Formal OpenAPI 3.1\n\nEspecificação canônica de interface de integração, catálogo de mensagens e barramento institucional da B3 (Brasil, Bolsa, Balcão). Cobre a totalidade dos 7 módulos de infraestrutura de mercado de capitais, os 107 fluxos ponta a ponta homologados, 91 leis formais de conservação de valor e risco, catálogo pedagógico, motor determinístico de simulação de pregão (D+2), cenários de estresse e resiliência sistêmica (Chaos), verificação formal TLA+ do barramento de liquidação multilateral, roteamento eletrônico PUMA (FIX / SBE), leilão de fechamento MOC/LOC com Janela de Congelamento (Freeze Window / LAW-104A), Sistema Nacional de Gravames (SNG) e Sistema de Registro de Operações (SRO SUSEP).\n\n### Fundamentação Legal e Regulatória\n- Lei Federal nº 10.214/2001 (Compensação e liquidação SPB)\n- Lei Federal nº 12.810/2013 (Registro e depósito centralizado)\n- Lei Federal nº 14.711/2023 (Marco Legal das Garantias)\n- Resoluções BCB/CMN nº 4.734/2019 e 4.737/2019 (Recebíveis de cartões)\n- Resolução CONTRAN nº 807/2020 (SNG gravames veiculares)\n- Resoluções CNSP nº 382/2020, 399/2020 e Circulares SUSEP nº 605/2020, 612/2020, 642/2021 (SRO)\n- Instrução CVM nº 505/2011 e Resolução CVM nº 35/2021 (Governança e limites pré-operacionais)\n- Regulamento de Operações Câmara B3 e Manual PUMA Trading System.",
+    "contact": {
+      "name": "B3 Integration Atlas Architecture & Engineering Team",
+      "url": "https://www.b3.com.br",
+      "email": "integracao-sistemas@b3.com.br"
+    },
+    "license": {
+      "name": "B3 Proprietary Market Infrastructure Standards & MIT Open Architecture",
+      "url": "https://github.com/ruanp/b3-integration-atlas"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Servidor Visual Local do B3 Integration Atlas (100% Offline Python StdLib)"
+    },
+    {
+      "url": "https://api.b3.com.br",
+      "description": "Gateway de Produção Institucional B3 (PUMA, Clearing, NoMe, SNG, SRO)"
+    },
+    {
+      "url": "https://cert.api.b3.com.br",
+      "description": "Ambiente de Homologação, Certificação Externa e Piloto B3"
+    }
+  ],
+  "tags": [
+    {
+      "name": "System & Diagnostics",
+      "description": "Endpoints operacionais: status geral, healthcheck, 7 módulos e documentação oficial"
+    },
+    {
+      "name": "Market Simulation & Chaos",
+      "description": "Simulação determinística de dia de pregão completo (8 fases, D+2) e cenários de estresse"
+    },
+    {
+      "name": "Phase 7 Advanced Flows",
+      "description": "Motores quantitativos da Fase 7: SABR/SVI, COE, PMM, Algorithmic SOR e Drex RWA"
+    },
+    {
+      "name": "Formal Verification TLA+",
+      "description": "Verificação matemática formal de invariantes de liquidação multilateral e ausência de deadlocks"
+    },
+    {
+      "name": "Educational Concepts",
+      "description": "Catálogo pedagógico exaustivo e motor de simulação analítica dos mecanismos B3"
+    },
+    {
+      "name": "Institutional Orders Gateway",
+      "description": "Roteamento e governança de ordens eletrônicas PUMA com validação de limites pré-operacionais (CVM 505)"
+    },
+    {
+      "name": "Closing Auction & MOC/LOC",
+      "description": "Leilão de Fechamento PUMA: Ordens MOC/LOC, Janela de Congelamento (LAW-104A) e Preço Teórico (PTP)"
+    },
+    {
+      "name": "SNG — Financiamentos",
+      "description": "Sistema Nacional de Gravames (B3 Financiamentos) — Registro e baixa de alienação fiduciária sobre veículos (LAW-112)"
+    },
+    {
+      "name": "SRO — Seguros & SUSEP",
+      "description": "Sistema de Registro de Operações (B3 Seguros) — Registro de apólices, cosseguro conservado a 100% (LAW-113) e regulação de sinistros"
+    }
+  ],
+  "components": {
+    "parameters": {
+      "IdempotencyKeyHeader": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "description": "Chave única de idempotência (UUIDv4) para prevenir duplicidade de operações financeiras",
+        "schema": {
+          "type": "string",
+          "format": "uuid",
+          "example": "9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d"
+        }
+      },
+      "CorrelationIdHeader": {
+        "name": "X-Correlation-Id",
+        "in": "header",
+        "required": false,
+        "description": "Identificador de correlação para rastreabilidade de transações ponta a ponta",
+        "schema": {
+          "type": "string",
+          "example": "corr-b3-20261108-001928"
+        }
+      },
+      "DocIdPathParam": {
+        "name": "doc_id",
+        "in": "path",
+        "required": true,
+        "description": "Identificador único do documento oficial (ex.: PUMA_TRADING_RULES, CORE_MANUAL)",
+        "schema": {
+          "type": "string",
+          "example": "CORE_MANUAL"
+        }
+      },
+      "ScenarioPathParam": {
+        "name": "scenario",
+        "in": "path",
+        "required": true,
+        "description": "Identificador do cenário de estresse e caos financeiro sistêmico",
+        "schema": {
+          "$ref": "#/components/schemas/ChaosScenarioEnum"
+        }
+      },
+      "FlowIdPathParam": {
+        "name": "flow_id",
+        "in": "path",
+        "required": true,
+        "description": "Identificador do fluxo avançado da Fase 7 (FL-101 a FL-105)",
+        "schema": {
+          "$ref": "#/components/schemas/Phase7FlowIdEnum"
+        }
+      },
+      "ConceptIdPathParam": {
+        "name": "concept_id",
+        "in": "path",
+        "required": true,
+        "description": "Identificador canônico do conceito complexo B3 (ex.: novacao-ccp, default-waterfall, risco-core)",
+        "schema": {
+          "type": "string",
+          "example": "novacao-ccp"
+        }
+      },
+      "OrderIdPathParam": {
+        "name": "order_id",
+        "in": "path",
+        "required": true,
+        "description": "Identificador da ordem no PUMA Trading System",
+        "schema": {
+          "type": "string",
+          "example": "ORD-20261108-0010928"
+        }
+      },
+      "GravameIdPathParam": {
+        "name": "gravame_id",
+        "in": "path",
+        "required": true,
+        "description": "Identificador único do registro de gravame no SNG B3 Financiamentos",
+        "schema": {
+          "type": "string",
+          "example": "GRV-SP-20261108-00981"
+        }
+      },
+      "ApoliceIdPathParam": {
+        "name": "apolice_id",
+        "in": "path",
+        "required": true,
+        "description": "Identificador único da apólice no repositório SRO SUSEP B3 Seguros",
+        "schema": {
+          "type": "string",
+          "example": "APOL-2026-0531-998811"
+        }
+      },
+      "SinistroIdPathParam": {
+        "name": "sinistro_id",
+        "in": "path",
+        "required": true,
+        "description": "Identificador único do sinistro no repositório SRO",
+        "schema": {
+          "type": "string",
+          "example": "SIN-2026-00441"
+        }
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "Requisição inválida ou parâmetros incorretos",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiError"
+            }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "Autenticação ausente ou credenciais corporativas mTLS/API-Key inválidas",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiError"
+            }
+          }
+        }
+      },
+      "Forbidden": {
+        "description": "Acesso não autorizado para o perfil do participante B3",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiError"
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "Recurso solicitado não foi encontrado",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiError"
+            }
+          }
+        }
+      },
+      "Conflict": {
+        "description": "Conflito de estado do recurso ou violação de regra de unicidade (ex.: gravame ativo concorrente LAW-112)",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiError"
+            }
+          }
+        }
+      },
+      "UnprocessableEntity": {
+        "description": "Violação de regras de validação estrita de negócio ou invariantes formais",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ValidationError"
+            }
+          }
+        }
+      },
+      "TooManyRequests": {
+        "description": "Taxa de requisições excedeu os limites de governança (Rate Limit / Quota)",
+        "headers": {
+          "Retry-After": {
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Segundos até a liberação de novas requisições"
+          },
+          "X-RateLimit-Limit": {
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Limite máximo de requisições por janela"
+          },
+          "X-RateLimit-Remaining": {
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Requisições restantes na janela atual"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiError"
+            }
+          }
+        }
+      },
+      "InternalError": {
+        "description": "Erro interno no processamento do servidor ou falha não recuperável",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiError"
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "OAuth2MutualTLS": {
+        "type": "oauth2",
+        "description": "Autenticação corporativa B3 via OAuth 2.0 com mTLS (Certificado Digital ICP-Brasil A3/A4)",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "https://api.b3.com.br/oauth2/token",
+            "scopes": {
+              "trading:orders": "Roteamento e cancelamento de ordens no PUMA",
+              "trading:auction": "Submissão e consulta no Leilão de Fechamento MOC/LOC",
+              "clearing:risk": "Consulta de margens e posições de compensação",
+              "sng:gravames": "Inclusão e desalienação no Sistema Nacional de Gravames",
+              "sro:apolices": "Registro e administração de apólices e sinistros no SRO SUSEP",
+              "atlas:simulation": "Execução de simulações e diagnósticos do Atlas"
+            }
+          }
+        }
+      },
+      "InstitutionalApiKey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-B3-Api-Key",
+        "description": "Chave de acesso institucional emitida pela B3 aos Participantes de Negociação (PN) e Liquidação (PL)"
+      }
+    },
+    "schemas": {
+      "ApiError": {
+        "type": "object",
+        "required": [
+          "code",
+          "message",
+          "timestamp"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "Código de erro estável",
+            "example": "FREEZE_WINDOW_VIOLATION"
+          },
+          "message": {
+            "type": "string",
+            "description": "Mensagem detalhada",
+            "example": "Cancelamentos são proibidos na Janela de Congelamento (LAW-104A)."
+          },
+          "details": {
+            "type": "object",
+            "description": "Metadados adicionais",
+            "additionalProperties": true
+          },
+          "request_id": {
+            "type": "string",
+            "example": "req-98e1163e-001"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-11-08T02:45:00Z"
+          }
+        }
+      },
+      "ValidationErrorItem": {
+        "type": "object",
+        "required": [
+          "field",
+          "issue"
+        ],
+        "properties": {
+          "field": {
+            "type": "string",
+            "example": "veiculo.chassi"
+          },
+          "issue": {
+            "type": "string",
+            "example": "Chassi inválido conforme ISO 3779"
+          },
+          "rejected_value": {
+            "type": "string",
+            "example": "9BWZZZ377VT00421"
+          }
+        }
+      },
+      "ValidationError": {
+        "type": "object",
+        "required": [
+          "code",
+          "message",
+          "validation_errors",
+          "timestamp"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "VALIDATION_FAILED"
+          },
+          "message": {
+            "type": "string",
+            "example": "Falha na validação dos campos obrigatórios da requisição"
+          },
+          "validation_errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ValidationErrorItem"
+            }
+          },
+          "request_id": {
+            "type": "string",
+            "example": "req-98e1163e-002"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-11-08T02:45:00Z"
+          }
+        }
+      },
+      "SystemStatusResponse": {
+        "type": "object",
+        "required": [
+          "version",
+          "homologated_flows",
+          "formal_conservation_laws",
+          "architecture_modules",
+          "documents_summary",
+          "timestamp"
+        ],
+        "properties": {
+          "version": {
+            "type": "string",
+            "example": "2.3.0"
+          },
+          "homologated_flows": {
+            "type": "integer",
+            "description": "Fluxos ponta a ponta homologados",
+            "example": 107
+          },
+          "formal_conservation_laws": {
+            "type": "integer",
+            "description": "Leis formais de conservação auditadas",
+            "example": 91
+          },
+          "architecture_modules": {
+            "type": "integer",
+            "description": "Módulos estruturais B3",
+            "example": 7
+          },
+          "documents_summary": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-11-08T02:45:00Z"
+          }
+        }
+      },
+      "HealthResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "version",
+          "offline"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "UP",
+              "DOWN",
+              "DEGRADED"
+            ],
+            "example": "UP"
+          },
+          "version": {
+            "type": "string",
+            "example": "2.3.0"
+          },
+          "offline": {
+            "type": "boolean",
+            "example": true
+          }
+        }
+      },
+      "ArchitectureModule": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "scope",
+          "protocols",
+          "laws",
+          "color"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "enum": [
+              "PUMA_TRADING",
+              "CLEARING_RISK",
+              "CSD_DEPOSITARY",
+              "NOME_BALCAO",
+              "SPB_SETTLEMENT",
+              "TARIFF_CATALOG",
+              "BSM_SURVEILLANCE"
+            ],
+            "example": "PUMA_TRADING"
+          },
+          "name": {
+            "type": "string",
+            "example": "PUMA Trading System"
+          },
+          "scope": {
+            "type": "string",
+            "example": "Negociação eletrônica listada de ações, opções, futuros e leilões MOC/LOC"
+          },
+          "protocols": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "FIX 4.4 / 5.0 SP2",
+              "PUMA SBE v2 (Binary)",
+              "UMDF 2.0 (Multicast)"
+            ]
+          },
+          "laws": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "LAW-001",
+              "LAW-002",
+              "LAW-093",
+              "LAW-104A",
+              "LAW-104B",
+              "LAW-104C"
+            ]
+          },
+          "color": {
+            "type": "string",
+            "example": "#0284c7"
+          }
+        }
+      },
+      "DocumentMetadata": {
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "category",
+          "format"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "PUMA_TRADING_RULES"
+          },
+          "title": {
+            "type": "string",
+            "example": "Manual de Procedimentos Operacionais PUMA Trading System"
+          },
+          "category": {
+            "type": "string",
+            "example": "PUMA_TRADING"
+          },
+          "format": {
+            "type": "string",
+            "example": "markdown"
+          },
+          "page_count": {
+            "type": "integer",
+            "example": 142
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://www.b3.com.br/pt_br/regulacao/estrutura-normativa/regulamentos-e-manuais/"
+          },
+          "sha256": {
+            "type": "string",
+            "example": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "local_path": {
+            "type": "string",
+            "example": "raw_docs/manual_negociacao_puma.md"
+          }
+        }
+      },
+      "DocumentDetailResponse": {
+        "type": "object",
+        "required": [
+          "doc",
+          "raw_content"
+        ],
+        "properties": {
+          "doc": {
+            "$ref": "#/components/schemas/DocumentMetadata"
+          },
+          "raw_content": {
+            "type": "string",
+            "example": "# Manual de Negociação PUMA..."
+          }
+        }
+      },
+      "MarketEvent": {
+        "type": "object",
+        "required": [
+          "sequence",
+          "timestamp_sim",
+          "module",
+          "phase",
+          "event_type",
+          "details",
+          "conservation_laws"
+        ],
+        "properties": {
+          "sequence": {
+            "type": "integer",
+            "example": 1
+          },
+          "timestamp_sim": {
+            "type": "string",
+            "example": "08:30:00"
+          },
+          "module": {
+            "type": "string",
+            "example": "CLEARING_RISK"
+          },
+          "phase": {
+            "type": "string",
+            "example": "Fase 1: Pré-Abertura & Colaterais Internacionais Triparty"
+          },
+          "event_type": {
+            "type": "string",
+            "example": "INGESTAO_COLATERAL_TRIPARTY"
+          },
+          "details": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "conservation_laws": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "LAW-005",
+              "LAW-088"
+            ]
+          }
+        }
+      },
+      "DailySimulationSummary": {
+        "type": "object",
+        "required": [
+          "total_equities_volume",
+          "total_balcao_notional",
+          "total_spb_settled",
+          "total_drex_rwa_volume",
+          "total_tariffs_collected",
+          "bsm_surveillance_alerts"
+        ],
+        "properties": {
+          "total_equities_volume": {
+            "type": "string",
+            "example": "3550000.00"
+          },
+          "total_balcao_notional": {
+            "type": "string",
+            "example": "10000000.00"
+          },
+          "total_spb_settled": {
+            "type": "string",
+            "example": "13550000.00"
+          },
+          "total_drex_rwa_volume": {
+            "type": "string",
+            "example": "5000000.00"
+          },
+          "total_tariffs_collected": {
+            "type": "string",
+            "example": "1065.00"
+          },
+          "bsm_surveillance_alerts": {
+            "type": "integer",
+            "example": 0
+          }
+        }
+      },
+      "DailySimulationResult": {
+        "type": "object",
+        "required": [
+          "simulation_id",
+          "trading_date",
+          "elapsed_seconds",
+          "phases_completed",
+          "events_count",
+          "summary",
+          "laws_verified",
+          "events"
+        ],
+        "properties": {
+          "simulation_id": {
+            "type": "string",
+            "example": "SIM-B3-1731034000123"
+          },
+          "trading_date": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-11-06"
+          },
+          "elapsed_seconds": {
+            "type": "number",
+            "example": 0.084
+          },
+          "phases_completed": {
+            "type": "integer",
+            "example": 8
+          },
+          "events_count": {
+            "type": "integer",
+            "example": 24
+          },
+          "summary": {
+            "$ref": "#/components/schemas/DailySimulationSummary"
+          },
+          "laws_verified": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "LAW-001",
+              "LAW-004",
+              "LAW-006",
+              "LAW-104A",
+              "LAW-104C",
+              "LAW-106C"
+            ]
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MarketEvent"
+            }
+          }
+        }
+      },
+      "ChaosScenarioEnum": {
+        "type": "string",
+        "enum": [
+          "CIRCUIT_BREAKER",
+          "CLEARING_DEFAULT",
+          "RECEIVABLES_LIEN_CONFLICT",
+          "SPB_NETWORK_DISRUPTION"
+        ],
+        "example": "CIRCUIT_BREAKER"
+      },
+      "ChaosStep": {
+        "type": "object",
+        "required": [
+          "sequence",
+          "timestamp_sim",
+          "phase",
+          "action",
+          "outcome",
+          "conservation_law"
+        ],
+        "properties": {
+          "sequence": {
+            "type": "integer",
+            "example": 1
+          },
+          "timestamp_sim": {
+            "type": "string",
+            "example": "10:15:00"
+          },
+          "phase": {
+            "type": "string",
+            "example": "PUMA_CIRCUIT_BREAKER_TRIGGER"
+          },
+          "action": {
+            "type": "string",
+            "example": "Queda do Ibovespa atinge 10.02%"
+          },
+          "outcome": {
+            "type": "string",
+            "example": "Suspensão automática das negociações por 30 minutos"
+          },
+          "conservation_law": {
+            "type": "string",
+            "example": "LAW-001"
+          },
+          "financial_impact": {
+            "type": "string",
+            "example": "0.00"
+          },
+          "details": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      },
+      "ChaosSimulationResult": {
+        "type": "object",
+        "required": [
+          "scenario",
+          "title",
+          "trading_date",
+          "description",
+          "is_resilient",
+          "total_loss_absorbed_by_safeguards",
+          "spb_liquidity_injected",
+          "steps"
+        ],
+        "properties": {
+          "scenario": {
+            "$ref": "#/components/schemas/ChaosScenarioEnum"
+          },
+          "title": {
+            "type": "string",
+            "example": "Cenário 1: Acionamento de Circuit Breaker Nível 1 & 2"
+          },
+          "trading_date": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-11-06"
+          },
+          "description": {
+            "type": "string",
+            "example": "Simula queda de 10% seguida de reabertura..."
+          },
+          "is_resilient": {
+            "type": "boolean",
+            "example": true
+          },
+          "total_loss_absorbed_by_safeguards": {
+            "type": "string",
+            "example": "450000000.00"
+          },
+          "spb_liquidity_injected": {
+            "type": "string",
+            "example": "0.00"
+          },
+          "steps": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChaosStep"
+            }
+          }
+        }
+      },
+      "Phase7FlowIdEnum": {
+        "type": "string",
+        "enum": [
+          "FL-101",
+          "FL-102",
+          "FL-103",
+          "FL-104",
+          "FL-105",
+          "FL-106",
+          "FL-107"
+        ],
+        "example": "FL-101"
+      },
+      "TLAModelCheckReport": {
+        "type": "object",
+        "required": [
+          "spec_path",
+          "passed",
+          "distinct_states_explored",
+          "transitions_evaluated",
+          "max_depth_reached",
+          "deadlocks_found",
+          "properties"
+        ],
+        "properties": {
+          "spec_path": {
+            "type": "string",
+            "example": "specs/tla/CentralLiquidityBus.tla"
+          },
+          "passed": {
+            "type": "boolean",
+            "example": true
+          },
+          "distinct_states_explored": {
+            "type": "integer",
+            "example": 48
+          },
+          "transitions_evaluated": {
+            "type": "integer",
+            "example": 96
+          },
+          "max_depth_reached": {
+            "type": "integer",
+            "example": 12
+          },
+          "deadlocks_found": {
+            "type": "integer",
+            "example": 0
+          },
+          "properties": {
+            "type": "object",
+            "required": [
+              "TypeOK",
+              "ZeroSumAccountingConservation_LAW_106A",
+              "WaterfallOrderInviolability_LAW_106B",
+              "NoUnabsorbedDefaultAtSettlement_LAW_106B",
+              "IntersystemSettlementAtomicity_LAW_106C",
+              "EventualCycleTermination_Liveness"
+            ],
+            "properties": {
+              "TypeOK": {
+                "type": "boolean",
+                "example": true
+              },
+              "ZeroSumAccountingConservation_LAW_106A": {
+                "type": "boolean",
+                "example": true
+              },
+              "WaterfallOrderInviolability_LAW_106B": {
+                "type": "boolean",
+                "example": true
+              },
+              "NoUnabsorbedDefaultAtSettlement_LAW_106B": {
+                "type": "boolean",
+                "example": true
+              },
+              "IntersystemSettlementAtomicity_LAW_106C": {
+                "type": "boolean",
+                "example": true
+              },
+              "EventualCycleTermination_Liveness": {
+                "type": "boolean",
+                "example": true
+              }
+            }
+          }
+        }
+      },
+      "B3ConceptSummary": {
+        "type": "object",
+        "required": [
+          "id",
+          "category",
+          "title",
+          "badge",
+          "summary"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "novacao-ccp"
+          },
+          "category": {
+            "type": "string",
+            "example": "CÂMARA & RISCO"
+          },
+          "title": {
+            "type": "string",
+            "example": "Novação Legal e Contraparte Central (Lei nº 10.214/2001)"
+          },
+          "badge": {
+            "type": "string",
+            "example": "Lei 10.214 / LAW-004"
+          },
+          "summary": {
+            "type": "string",
+            "example": "A Câmara B3 extingue o risco bilateral tornando-se compradora de todo vendedor."
+          }
+        }
+      },
+      "B3ConceptDetail": {
+        "type": "object",
+        "required": [
+          "id",
+          "category",
+          "title",
+          "badge",
+          "summary",
+          "what_is",
+          "why_exists",
+          "how_it_works",
+          "math_rule",
+          "practical_example",
+          "diagram_ascii",
+          "related_flows",
+          "related_laws"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "novacao-ccp"
+          },
+          "category": {
+            "type": "string",
+            "example": "CÂMARA & RISCO"
+          },
+          "title": {
+            "type": "string",
+            "example": "Novação Legal e Contraparte Central (Lei nº 10.214/2001)"
+          },
+          "badge": {
+            "type": "string",
+            "example": "Lei 10.214 / LAW-004"
+          },
+          "summary": {
+            "type": "string",
+            "example": "A Câmara B3 extingue o risco bilateral..."
+          },
+          "what_is": {
+            "type": "string",
+            "example": "No exato milissegundo em que uma ordem é casada..."
+          },
+          "why_exists": {
+            "type": "string",
+            "example": "Sem a novação, a quebra de um único participante causaria risco sistêmico..."
+          },
+          "how_it_works": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "Trade Execution",
+              "Novação civil",
+              "Criação de 2 pernas garantidas"
+            ]
+          },
+          "math_rule": {
+            "type": "string",
+            "example": "∑ Netting + Posição_B3 = 0, onde Posição_B3 ≡ 0"
+          },
+          "practical_example": {
+            "type": "string",
+            "example": "Banco A compra ações de Corretora B..."
+          },
+          "diagram_ascii": {
+            "type": "string",
+            "example": "[A] <-> [B3 CCP] <-> [B]"
+          },
+          "related_flows": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "FL-001",
+              "FL-004"
+            ]
+          },
+          "related_laws": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "LAW-004",
+              "LAW-005"
+            ]
+          }
+        }
+      },
+      "ConceptSimulationRequest": {
+        "type": "object",
+        "properties": {
+          "buyer": {
+            "type": "string",
+            "example": "Alpha DTVM"
+          },
+          "seller": {
+            "type": "string",
+            "example": "Beta Corretora"
+          },
+          "symbol": {
+            "type": "string",
+            "example": "PETR4"
+          },
+          "quantity": {
+            "type": "integer",
+            "minimum": 1,
+            "example": 10000
+          },
+          "price": {
+            "type": "number",
+            "minimum": 0.01,
+            "example": 38.5
+          }
+        }
+      },
+      "OrderSideEnum": {
+        "type": "string",
+        "enum": [
+          "BUY",
+          "SELL"
+        ],
+        "example": "BUY"
+      },
+      "OrderTypeEnum": {
+        "type": "string",
+        "enum": [
+          "MARKET",
+          "LIMIT",
+          "STOP_LIMIT",
+          "ICEBERG",
+          "MOC",
+          "LOC",
+          "TWAP",
+          "VWAP"
+        ],
+        "example": "LIMIT"
+      },
+      "TimeInForceEnum": {
+        "type": "string",
+        "enum": [
+          "DAY",
+          "IOC",
+          "FOK",
+          "GTC",
+          "GTD",
+          "AT_THE_CLOSE"
+        ],
+        "example": "DAY"
+      },
+      "OrderStatusEnum": {
+        "type": "string",
+        "enum": [
+          "NEW",
+          "PARTIALLY_FILLED",
+          "FILLED",
+          "CANCELLED",
+          "REJECTED",
+          "EXPIRED",
+          "FROZEN_IN_AUCTION"
+        ],
+        "example": "NEW"
+      },
+      "PreTradeRiskCheckResult": {
+        "type": "object",
+        "required": [
+          "passed",
+          "fat_finger_limit_passed",
+          "price_tunnel_passed",
+          "timestamp"
+        ],
+        "properties": {
+          "passed": {
+            "type": "boolean",
+            "example": true
+          },
+          "fat_finger_limit_passed": {
+            "type": "boolean",
+            "example": true
+          },
+          "gross_notional_limit_passed": {
+            "type": "boolean",
+            "example": true
+          },
+          "price_tunnel_passed": {
+            "type": "boolean",
+            "example": true
+          },
+          "order_rate_limit_passed": {
+            "type": "boolean",
+            "example": true
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-11-08T02:45:00Z"
+          },
+          "governance_rule": {
+            "type": "string",
+            "example": "Instrução CVM nº 505 / Manual de Riscos B3 (LAW-001)"
+          }
+        }
+      },
+      "OrderCreateRequest": {
+        "type": "object",
+        "required": [
+          "client_order_id",
+          "account",
+          "investor_id",
+          "symbol",
+          "side",
+          "order_type",
+          "quantity",
+          "time_in_force"
+        ],
+        "properties": {
+          "client_order_id": {
+            "type": "string",
+            "example": "CLORD-20261108-001"
+          },
+          "account": {
+            "type": "string",
+            "example": "100982-1"
+          },
+          "investor_id": {
+            "type": "string",
+            "example": "01234567890"
+          },
+          "symbol": {
+            "type": "string",
+            "pattern": "^[A-Z0-9]{4,8}$",
+            "example": "PETR4"
+          },
+          "side": {
+            "$ref": "#/components/schemas/OrderSideEnum"
+          },
+          "order_type": {
+            "$ref": "#/components/schemas/OrderTypeEnum"
+          },
+          "quantity": {
+            "type": "integer",
+            "minimum": 1,
+            "example": 1000
+          },
+          "price": {
+            "type": "number",
+            "minimum": 0.01,
+            "example": 38.45
+          },
+          "stop_price": {
+            "type": "number",
+            "minimum": 0.01,
+            "example": 37.9
+          },
+          "display_qty": {
+            "type": "integer",
+            "example": 100
+          },
+          "time_in_force": {
+            "$ref": "#/components/schemas/TimeInForceEnum"
+          },
+          "expire_date": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-11-30"
+          },
+          "memo": {
+            "type": "string",
+            "example": "SOR-REBALANCE-Q4"
+          }
+        }
+      },
+      "OrderFill": {
+        "type": "object",
+        "required": [
+          "fill_id",
+          "match_exec_id",
+          "price",
+          "quantity",
+          "timestamp"
+        ],
+        "properties": {
+          "fill_id": {
+            "type": "string",
+            "example": "FILL-998811"
+          },
+          "match_exec_id": {
+            "type": "string",
+            "example": "EXEC-PUMA-0012398"
+          },
+          "price": {
+            "type": "string",
+            "example": "38.45"
+          },
+          "quantity": {
+            "type": "integer",
+            "example": 500
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-11-08T02:45:00.123Z"
+          },
+          "counterparty_clearing_member": {
+            "type": "string",
+            "example": "0088"
+          },
+          "fee_brl": {
+            "type": "string",
+            "example": "5.76"
+          }
+        }
+      },
+      "OrderResponse": {
+        "type": "object",
+        "required": [
+          "order_id",
+          "client_order_id",
+          "account",
+          "investor_id",
+          "symbol",
+          "side",
+          "order_type",
+          "quantity",
+          "executed_quantity",
+          "leaves_quantity",
+          "status",
+          "time_in_force",
+          "created_at",
+          "pre_trade_risk"
+        ],
+        "properties": {
+          "order_id": {
+            "type": "string",
+            "example": "ORD-20261108-0010928"
+          },
+          "client_order_id": {
+            "type": "string",
+            "example": "CLORD-20261108-001"
+          },
+          "account": {
+            "type": "string",
+            "example": "100982-1"
+          },
+          "investor_id": {
+            "type": "string",
+            "example": "01234567890"
+          },
+          "symbol": {
+            "type": "string",
+            "example": "PETR4"
+          },
+          "side": {
+            "$ref": "#/components/schemas/OrderSideEnum"
+          },
+          "order_type": {
+            "$ref": "#/components/schemas/OrderTypeEnum"
+          },
+          "quantity": {
+            "type": "integer",
+            "example": 1000
+          },
+          "executed_quantity": {
+            "type": "integer",
+            "example": 500
+          },
+          "leaves_quantity": {
+            "type": "integer",
+            "example": 500
+          },
+          "price": {
+            "type": "string",
+            "example": "38.45"
+          },
+          "avg_executed_price": {
+            "type": "string",
+            "example": "38.45"
+          },
+          "status": {
+            "$ref": "#/components/schemas/OrderStatusEnum"
+          },
+          "time_in_force": {
+            "$ref": "#/components/schemas/TimeInForceEnum"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-11-08T02:45:00.100Z"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-11-08T02:45:00.123Z"
+          },
+          "pre_trade_risk": {
+            "$ref": "#/components/schemas/PreTradeRiskCheckResult"
+          },
+          "fills": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrderFill"
+            }
+          }
+        }
+      },
+      "OrderCancelResponse": {
+        "type": "object",
+        "required": [
+          "order_id",
+          "client_order_id",
+          "symbol",
+          "cancelled_quantity",
+          "status",
+          "timestamp"
+        ],
+        "properties": {
+          "order_id": {
+            "type": "string",
+            "example": "ORD-20261108-0010928"
+          },
+          "client_order_id": {
+            "type": "string",
+            "example": "CLORD-20261108-001"
+          },
+          "symbol": {
+            "type": "string",
+            "example": "PETR4"
+          },
+          "cancelled_quantity": {
+            "type": "integer",
+            "example": 500
+          },
+          "status": {
+            "type": "string",
+            "example": "CANCELLED"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-11-08T02:46:10Z"
+          }
+        }
+      },
+      "ClosingAuctionPhaseEnum": {
+        "type": "string",
+        "enum": [
+          "CALL_PHASE",
+          "FREEZE_WINDOW",
+          "RANDOM_EXTENSION",
+          "UNCROSS",
+          "CLOSED"
+        ],
+        "example": "FREEZE_WINDOW"
+      },
+      "MocLocOrderCreateRequest": {
+        "type": "object",
+        "required": [
+          "client_order_id",
+          "account",
+          "investor_id",
+          "symbol",
+          "side",
+          "order_type",
+          "quantity"
+        ],
+        "properties": {
+          "client_order_id": {
+            "type": "string",
+            "example": "MOC-20261108-0099"
+          },
+          "account": {
+            "type": "string",
+            "example": "100982-1"
+          },
+          "investor_id": {
+            "type": "string",
+            "example": "01234567890"
+          },
+          "symbol": {
+            "type": "string",
+            "example": "VALE3"
+          },
+          "side": {
+            "$ref": "#/components/schemas/OrderSideEnum"
+          },
+          "order_type": {
+            "type": "string",
+            "enum": [
+              "MOC",
+              "LOC"
+            ],
+            "example": "MOC"
+          },
+          "quantity": {
+            "type": "integer",
+            "minimum": 1,
+            "example": 50000
+          },
+          "limit_price": {
+            "type": "number",
+            "minimum": 0.01,
+            "example": 62.5
+          }
+        }
+      },
+      "MocLocOrderResponse": {
+        "type": "object",
+        "required": [
+          "order_id",
+          "client_order_id",
+          "symbol",
+          "side",
+          "order_type",
+          "quantity",
+          "executed_quantity",
+          "residual_quantity",
+          "status",
+          "freeze_window_protected",
+          "priority_rank",
+          "submitted_at"
+        ],
+        "properties": {
+          "order_id": {
+            "type": "string",
+            "example": "AUCT-ORD-001928"
+          },
+          "client_order_id": {
+            "type": "string",
+            "example": "MOC-20261108-0099"
+          },
+          "symbol": {
+            "type": "string",
+            "example": "VALE3"
+          },
+          "side": {
+            "$ref": "#/components/schemas/OrderSideEnum"
+          },
+          "order_type": {
+            "type": "string",
+            "enum": [
+              "MOC",
+              "LOC"
+            ],
+            "example": "MOC"
+          },
+          "quantity": {
+            "type": "integer",
+            "example": 50000
+          },
+          "executed_quantity": {
+            "type": "integer",
+            "example": 0
+          },
+          "residual_quantity": {
+            "type": "integer",
+            "example": 50000
+          },
+          "limit_price": {
+            "type": "string",
+            "example": "MARKET"
+          },
+          "status": {
+            "type": "string",
+            "example": "NEW"
+          },
+          "freeze_window_protected": {
+            "type": "boolean",
+            "example": true
+          },
+          "priority_rank": {
+            "type": "integer",
+            "example": 1
+          },
+          "submitted_at": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-11-08T16:56:00Z"
+          }
+        }
+      },
+      "TheoreticalPriceResponse": {
+        "type": "object",
+        "required": [
+          "symbol",
+          "timestamp",
+          "auction_phase",
+          "is_freeze_window_active",
+          "theoretical_price",
+          "projected_volume",
+          "imbalance_side",
+          "imbalance_volume",
+          "price_tunnel_lower",
+          "price_tunnel_upper"
+        ],
+        "properties": {
+          "symbol": {
+            "type": "string",
+            "example": "VALE3"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-11-08T16:58:30Z"
+          },
+          "auction_phase": {
+            "$ref": "#/components/schemas/ClosingAuctionPhaseEnum"
+          },
+          "is_freeze_window_active": {
+            "type": "boolean",
+            "example": true
+          },
+          "theoretical_price": {
+            "type": "string",
+            "example": "62.45"
+          },
+          "projected_volume": {
+            "type": "integer",
+            "example": 1250000
+          },
+          "imbalance_side": {
+            "type": "string",
+            "enum": [
+              "BUY",
+              "SELL",
+              "BALANCED"
+            ],
+            "example": "BUY"
+          },
+          "imbalance_volume": {
+            "type": "integer",
+            "example": 80000
+          },
+          "total_moc_buy_volume": {
+            "type": "integer",
+            "example": 750000
+          },
+          "total_moc_sell_volume": {
+            "type": "integer",
+            "example": 670000
+          },
+          "total_loc_buy_volume": {
+            "type": "integer",
+            "example": 500000
+          },
+          "total_loc_sell_volume": {
+            "type": "integer",
+            "example": 580000
+          },
+          "price_tunnel_lower": {
+            "type": "string",
+            "example": "61.20"
+          },
+          "price_tunnel_upper": {
+            "type": "string",
+            "example": "63.70"
+          }
+        }
+      },
+      "UncrossSimulationRequest": {
+        "type": "object",
+        "required": [
+          "symbol"
+        ],
+        "properties": {
+          "symbol": {
+            "type": "string",
+            "example": "VALE3"
+          },
+          "force_uncross": {
+            "type": "boolean",
+            "example": false
+          }
+        }
+      },
+      "UncrossSimulationResult": {
+        "type": "object",
+        "required": [
+          "symbol",
+          "uncross_timestamp",
+          "clearing_price",
+          "total_volume_executed",
+          "buy_orders_matched",
+          "sell_orders_matched",
+          "conservation_law_104c_verified"
+        ],
+        "properties": {
+          "symbol": {
+            "type": "string",
+            "example": "VALE3"
+          },
+          "uncross_timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-11-08T17:00:00Z"
+          },
+          "clearing_price": {
+            "type": "string",
+            "example": "62.45"
+          },
+          "total_volume_executed": {
+            "type": "integer",
+            "example": 1250000
+          },
+          "buy_orders_matched": {
+            "type": "integer",
+            "example": 42
+          },
+          "sell_orders_matched": {
+            "type": "integer",
+            "example": 38
+          },
+          "conservation_law_104c_verified": {
+            "type": "boolean",
+            "example": true
+          }
+        }
+      },
+      "ModalidadeGravameEnum": {
+        "type": "string",
+        "enum": [
+          "ALIENACAO_FIDUCIARIA",
+          "ARRENDAMENTO_MERCANTIL",
+          "RESERVA_DOMINIO",
+          "PENHOR_VEICULAR"
+        ],
+        "example": "ALIENACAO_FIDUCIARIA"
+      },
+      "StatusGravameEnum": {
+        "type": "string",
+        "enum": [
+          "ATIVO",
+          "BAIXADO",
+          "CANCELADO",
+          "REJEITADO"
+        ],
+        "example": "ATIVO"
+      },
+      "DetranUFEnum": {
+        "type": "string",
+        "enum": [
+          "SP",
+          "RJ",
+          "MG",
+          "PR",
+          "RS",
+          "SC",
+          "BA",
+          "PE",
+          "GO",
+          "DF",
+          "ES",
+          "CE",
+          "MT",
+          "MS",
+          "PA",
+          "AM",
+          "PB",
+          "RN",
+          "AL",
+          "SE",
+          "PI",
+          "MA",
+          "TO",
+          "RO",
+          "AC",
+          "AP",
+          "RR"
+        ],
+        "example": "SP"
+      },
+      "VeiculoIdentificacao": {
+        "type": "object",
+        "required": [
+          "chassi",
+          "renavam",
+          "placa",
+          "uf_emplacamento",
+          "marca_modelo",
+          "ano_fabricacao",
+          "ano_modelo"
+        ],
+        "properties": {
+          "chassi": {
+            "type": "string",
+            "pattern": "^[A-HJ-NPR-Z0-9]{17}$",
+            "example": "9BWZZZ377VT004211"
+          },
+          "renavam": {
+            "type": "string",
+            "pattern": "^[0-9]{9,11}$",
+            "example": "00123456789"
+          },
+          "placa": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}[0-9][A-Z0-9][0-9]{2}$",
+            "example": "BRA2E19"
+          },
+          "uf_emplacamento": {
+            "$ref": "#/components/schemas/DetranUFEnum"
+          },
+          "marca_modelo": {
+            "type": "string",
+            "example": "VOLKSWAGEN POLO TRACK 1.0"
+          },
+          "ano_fabricacao": {
+            "type": "integer",
+            "minimum": 1900,
+            "maximum": 2030,
+            "example": 2025
+          },
+          "ano_modelo": {
+            "type": "integer",
+            "minimum": 1900,
+            "maximum": 2030,
+            "example": 2026
+          }
+        }
+      },
+      "GravameCreateRequest": {
+        "type": "object",
+        "required": [
+          "contrato_numero",
+          "modalidade",
+          "credor_cnpj",
+          "credor_nome",
+          "devedor_documento",
+          "devedor_nome",
+          "veiculo",
+          "valor_financiamento",
+          "quantidade_parcelas",
+          "taxa_juros_anual_pct"
+        ],
+        "properties": {
+          "contrato_numero": {
+            "type": "string",
+            "example": "FIN-2026-990182"
+          },
+          "modalidade": {
+            "$ref": "#/components/schemas/ModalidadeGravameEnum"
+          },
+          "credor_cnpj": {
+            "type": "string",
+            "pattern": "^[0-9]{14}$",
+            "example": "60746948000112"
+          },
+          "credor_nome": {
+            "type": "string",
+            "example": "BANCO BRADESCO FINANCIAMENTOS S.A."
+          },
+          "devedor_documento": {
+            "type": "string",
+            "pattern": "^[0-9]{11}([0-9]{3})?$",
+            "example": "12345678909"
+          },
+          "devedor_nome": {
+            "type": "string",
+            "example": "CARLOS EDUARDO PEREIRA"
+          },
+          "veiculo": {
+            "$ref": "#/components/schemas/VeiculoIdentificacao"
+          },
+          "valor_financiamento": {
+            "type": "number",
+            "minimum": 100.0,
+            "example": 68500.0
+          },
+          "quantidade_parcelas": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 120,
+            "example": 48
+          },
+          "taxa_juros_anual_pct": {
+            "type": "number",
+            "minimum": 0.0,
+            "maximum": 200.0,
+            "example": 18.5
+          }
+        }
+      },
+      "GravameRecord": {
+        "type": "object",
+        "required": [
+          "gravame_id",
+          "contrato_numero",
+          "modalidade",
+          "credor_cnpj",
+          "credor_nome",
+          "devedor_documento",
+          "devedor_nome",
+          "veiculo",
+          "valor_financiamento",
+          "quantidade_parcelas",
+          "taxa_juros_anual_pct",
+          "data_inclusao",
+          "status",
+          "sha256_hash",
+          "detran_protocolo"
+        ],
+        "properties": {
+          "gravame_id": {
+            "type": "string",
+            "example": "GRV-SP-20261108-00981"
+          },
+          "contrato_numero": {
+            "type": "string",
+            "example": "FIN-2026-990182"
+          },
+          "modalidade": {
+            "$ref": "#/components/schemas/ModalidadeGravameEnum"
+          },
+          "credor_cnpj": {
+            "type": "string",
+            "example": "60746948000112"
+          },
+          "credor_nome": {
+            "type": "string",
+            "example": "BANCO BRADESCO FINANCIAMENTOS S.A."
+          },
+          "devedor_documento": {
+            "type": "string",
+            "example": "12345678909"
+          },
+          "devedor_nome": {
+            "type": "string",
+            "example": "CARLOS EDUARDO PEREIRA"
+          },
+          "veiculo": {
+            "$ref": "#/components/schemas/VeiculoIdentificacao"
+          },
+          "valor_financiamento": {
+            "type": "string",
+            "example": "68500.00"
+          },
+          "quantidade_parcelas": {
+            "type": "integer",
+            "example": 48
+          },
+          "taxa_juros_anual_pct": {
+            "type": "string",
+            "example": "18.50"
+          },
+          "data_inclusao": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-11-08T02:45:00Z"
+          },
+          "status": {
+            "$ref": "#/components/schemas/StatusGravameEnum"
+          },
+          "data_baixa": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "example": null
+          },
+          "motivo_baixa": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "example": null
+          },
+          "sha256_hash": {
+            "type": "string",
+            "example": "3a7b9c1d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b"
+          },
+          "detran_protocolo": {
+            "type": "string",
+            "example": "DETRAN-SP-AVERB-2026-88910"
+          }
+        }
+      },
+      "GravameBaixaRequest": {
+        "type": "object",
+        "required": [
+          "motivo_baixa",
+          "data_quitacao"
+        ],
+        "properties": {
+          "motivo_baixa": {
+            "type": "string",
+            "enum": [
+              "QUITACAO_INTEGRAL",
+              "SUBSTITUICAO_GARANTIA",
+              "DETERMINACAO_JUDICIAL",
+              "PERDA_TOTAL_INDENIZACAO"
+            ],
+            "example": "QUITACAO_INTEGRAL"
+          },
+          "data_quitacao": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-11-08"
+          },
+          "documento_comprobatorio": {
+            "type": "string",
+            "example": "TERMO-QUIT-2026-990182"
+          }
+        }
+      },
+      "GravameBaixaResponse": {
+        "type": "object",
+        "required": [
+          "gravame_id",
+          "status",
+          "data_baixa",
+          "desalienacao_protocolo",
+          "detran_status"
+        ],
+        "properties": {
+          "gravame_id": {
+            "type": "string",
+            "example": "GRV-SP-20261108-00981"
+          },
+          "status": {
+            "type": "string",
+            "example": "BAIXADO"
+          },
+          "data_baixa": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-11-08T02:47:00Z"
+          },
+          "desalienacao_protocolo": {
+            "type": "string",
+            "example": "DESAL-SP-2026-99812"
+          },
+          "detran_status": {
+            "type": "string",
+            "example": "LIBERADO_PARA_TRANSFERENCIA"
+          }
+        }
+      },
+      "GravameCancelamentoRequest": {
+        "type": "object",
+        "required": [
+          "motivo_cancelamento",
+          "justificativa_legal"
+        ],
+        "properties": {
+          "motivo_cancelamento": {
+            "type": "string",
+            "enum": [
+              "ERRO_DIGITACAO",
+              "DESISTENCIA_FINANCIAMENTO",
+              "FRAUDE_DETECTADA"
+            ],
+            "example": "ERRO_DIGITACAO"
+          },
+          "justificativa_legal": {
+            "type": "string",
+            "example": "Contrato cadastrado com divergência de chassi."
+          }
+        }
+      },
+      "GravameCancelamentoResponse": {
+        "type": "object",
+        "required": [
+          "gravame_id",
+          "status",
+          "data_cancelamento",
+          "protocolo_cancelamento"
+        ],
+        "properties": {
+          "gravame_id": {
+            "type": "string",
+            "example": "GRV-SP-20261108-00981"
+          },
+          "status": {
+            "type": "string",
+            "example": "CANCELADO"
+          },
+          "data_cancelamento": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-11-08T02:48:00Z"
+          },
+          "protocolo_cancelamento": {
+            "type": "string",
+            "example": "CANC-SNG-2026-0012"
+          }
+        }
+      },
+      "RamoSeguroEnum": {
+        "type": "string",
+        "enum": [
+          "0531_AUTOMOVEL",
+          "0118_PATRIMONIAL_EMPRESARIAL",
+          "0993_VIDA",
+          "1101_RURAL_AGRICOLA",
+          "0622_TRANSPORTE_NACIONAL",
+          "0351_RC_DO",
+          "0775_GARANTIA_CONTRATUAL"
+        ],
+        "example": "0531_AUTOMOVEL"
+      },
+      "StatusApoliceEnum": {
+        "type": "string",
+        "enum": [
+          "VIGENTE",
+          "ENDOSSADA",
+          "CANCELADA",
+          "EXPIRADA"
+        ],
+        "example": "VIGENTE"
+      },
+      "StatusSinistroEnum": {
+        "type": "string",
+        "enum": [
+          "AVISADO",
+          "EM_REGULACAO",
+          "LIQUIDADO",
+          "ENCERRADO_SEM_INDENIZACAO"
+        ],
+        "example": "AVISADO"
+      },
+      "CosseguradorShare": {
+        "type": "object",
+        "required": [
+          "cnpj",
+          "razao_social",
+          "percentual_quota"
+        ],
+        "properties": {
+          "cnpj": {
+            "type": "string",
+            "pattern": "^[0-9]{14}$",
+            "example": "33041210000103"
+          },
+          "razao_social": {
+            "type": "string",
+            "example": "SUL AMERICA SEGUROS S.A."
+          },
+          "percentual_quota": {
+            "type": "number",
+            "minimum": 0.01,
+            "maximum": 100.0,
+            "example": 60.0
+          },
+          "is_lider": {
+            "type": "boolean",
+            "example": true
+          }
+        }
+      },
+      "ApoliceCreateRequest": {
+        "type": "object",
+        "required": [
+          "numero_proposta",
+          "ramo",
+          "seguradora_lider_cnpj",
+          "seguradora_lider_nome",
+          "segurado_documento",
+          "segurado_nome",
+          "inicio_vigencia",
+          "fim_vigencia",
+          "limite_maximo_garantia",
+          "premio_liquido"
+        ],
+        "properties": {
+          "numero_proposta": {
+            "type": "string",
+            "example": "PROP-2026-AUTO-9988"
+          },
+          "ramo": {
+            "$ref": "#/components/schemas/RamoSeguroEnum"
+          },
+          "seguradora_lider_cnpj": {
+            "type": "string",
+            "pattern": "^[0-9]{14}$",
+            "example": "33041210000103"
+          },
+          "seguradora_lider_nome": {
+            "type": "string",
+            "example": "SUL AMERICA SEGUROS S.A."
+          },
+          "segurado_documento": {
+            "type": "string",
+            "pattern": "^[0-9]{11}([0-9]{3})?$",
+            "example": "09876543210"
+          },
+          "segurado_nome": {
+            "type": "string",
+            "example": "MARIA FERNANDA SILVEIRA"
+          },
+          "inicio_vigencia": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-11-08"
+          },
+          "fim_vigencia": {
+            "type": "string",
+            "format": "date",
+            "example": "2027-11-08"
+          },
+          "limite_maximo_garantia": {
+            "type": "number",
+            "minimum": 1.0,
+            "example": 150000.0
+          },
+          "premio_liquido": {
+            "type": "number",
+            "minimum": 0.01,
+            "example": 3200.0
+          },
+          "cosseguradores": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CosseguradorShare"
+            }
+          }
+        }
+      },
+      "ApoliceRecord": {
+        "type": "object",
+        "required": [
+          "apolice_id",
+          "numero_proposta",
+          "ramo",
+          "seguradora_lider_cnpj",
+          "seguradora_lider_nome",
+          "segurado_documento",
+          "segurado_nome",
+          "data_emissao",
+          "inicio_vigencia",
+          "fim_vigencia",
+          "limite_maximo_garantia",
+          "premio_liquido",
+          "status",
+          "cosseguradores",
+          "sha256_hash",
+          "susep_hash_protocolo",
+          "saldo_lmg_disponivel"
+        ],
+        "properties": {
+          "apolice_id": {
+            "type": "string",
+            "example": "APOL-2026-0531-998811"
+          },
+          "numero_proposta": {
+            "type": "string",
+            "example": "PROP-2026-AUTO-9988"
+          },
+          "ramo": {
+            "$ref": "#/components/schemas/RamoSeguroEnum"
+          },
+          "seguradora_lider_cnpj": {
+            "type": "string",
+            "example": "33041210000103"
+          },
+          "seguradora_lider_nome": {
+            "type": "string",
+            "example": "SUL AMERICA SEGUROS S.A."
+          },
+          "segurado_documento": {
+            "type": "string",
+            "example": "09876543210"
+          },
+          "segurado_nome": {
+            "type": "string",
+            "example": "MARIA FERNANDA SILVEIRA"
+          },
+          "data_emissao": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-11-08T02:45:00Z"
+          },
+          "inicio_vigencia": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-11-08"
+          },
+          "fim_vigencia": {
+            "type": "string",
+            "format": "date",
+            "example": "2027-11-08"
+          },
+          "limite_maximo_garantia": {
+            "type": "string",
+            "example": "150000.00"
+          },
+          "saldo_lmg_disponivel": {
+            "type": "string",
+            "example": "150000.00"
+          },
+          "premio_liquido": {
+            "type": "string",
+            "example": "3200.00"
+          },
+          "status": {
+            "$ref": "#/components/schemas/StatusApoliceEnum"
+          },
+          "cosseguradores": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CosseguradorShare"
+            }
+          },
+          "sha256_hash": {
+            "type": "string",
+            "example": "fa1c841e4649b934ca495991b7852b855e3b0c44298fc1c149afbf4c8996fb92"
+          },
+          "susep_hash_protocolo": {
+            "type": "string",
+            "example": "SUSEP-SRO-V3-REC-2026-881923"
+          },
+          "total_sinistros_avisados": {
+            "type": "integer",
+            "example": 0
+          }
+        }
+      },
+      "EndossoCreateRequest": {
+        "type": "object",
+        "required": [
+          "tipo_endosso",
+          "data_alteracao",
+          "justificativa"
+        ],
+        "properties": {
+          "tipo_endosso": {
+            "type": "string",
+            "enum": [
+              "PRORROGACAO_VIGENCIA",
+              "ALTERACAO_LMG",
+              "ALTERACAO_PREMIO",
+              "MUDANCA_SEGURADO",
+              "CANCELAMENTO_ENDOSSO"
+            ],
+            "example": "ALTERACAO_LMG"
+          },
+          "data_alteracao": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-11-08"
+          },
+          "novo_fim_vigencia": {
+            "type": "string",
+            "format": "date",
+            "example": "2028-05-08"
+          },
+          "alteracao_premio": {
+            "type": "number",
+            "example": 450.0
+          },
+          "alteracao_lmg": {
+            "type": "number",
+            "example": 25000.0
+          },
+          "justificativa": {
+            "type": "string",
+            "example": "Inclusão de cobertura adicional."
+          }
+        }
+      },
+      "SinistroCreateRequest": {
+        "type": "object",
+        "required": [
+          "data_ocorrencia",
+          "data_aviso",
+          "valor_estimado",
+          "descricao_cobertura"
+        ],
+        "properties": {
+          "data_ocorrencia": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-11-07"
+          },
+          "data_aviso": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-11-08"
+          },
+          "valor_estimado": {
+            "type": "number",
+            "minimum": 0.01,
+            "example": 32000.0
+          },
+          "descricao_cobertura": {
+            "type": "string",
+            "example": "COLISAO_PARCIAL_TERCEIROS"
+          }
+        }
+      },
+      "SinistroRecord": {
+        "type": "object",
+        "required": [
+          "sinistro_id",
+          "apolice_id",
+          "data_ocorrencia",
+          "data_aviso",
+          "valor_estimado",
+          "valor_liquidado",
+          "status",
+          "descricao_cobertura"
+        ],
+        "properties": {
+          "sinistro_id": {
+            "type": "string",
+            "example": "SIN-2026-00441"
+          },
+          "apolice_id": {
+            "type": "string",
+            "example": "APOL-2026-0531-998811"
+          },
+          "data_ocorrencia": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-11-07"
+          },
+          "data_aviso": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-11-08"
+          },
+          "valor_estimado": {
+            "type": "string",
+            "example": "32000.00"
+          },
+          "valor_liquidado": {
+            "type": "string",
+            "example": "0.00"
+          },
+          "status": {
+            "$ref": "#/components/schemas/StatusSinistroEnum"
+          },
+          "data_liquidacao": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "example": null
+          },
+          "descricao_cobertura": {
+            "type": "string",
+            "example": "COLISAO_PARCIAL_TERCEIROS"
+          }
+        }
+      },
+      "SinistroLiquidarRequest": {
+        "type": "object",
+        "required": [
+          "valor_liquidado",
+          "data_liquidacao",
+          "comprovante_pagamento"
+        ],
+        "properties": {
+          "valor_liquidado": {
+            "type": "number",
+            "minimum": 0.01,
+            "example": 31500.0
+          },
+          "data_liquidacao": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-11-08"
+          },
+          "comprovante_pagamento": {
+            "type": "string",
+            "example": "TED-STR-BACEN-20261108-99210"
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/api/status": {
+      "get": {
+        "tags": [
+          "System & Diagnostics"
+        ],
+        "summary": "Status do Atlas, contagem de fluxos homologados e leis de conservação",
+        "description": "Retorna os metadados da versão do Atlas, total de fluxos ponta a ponta homologados (107), leis formais de conservação (91), módulos de mercado (7) e sumarização dos manuais oficiais indexados.",
+        "operationId": "getSystemStatus",
+        "responses": {
+          "200": {
+            "description": "Status operacional do B3 Integration Atlas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemStatusResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/api/health": {
+      "get": {
+        "tags": [
+          "System & Diagnostics"
+        ],
+        "summary": "Healthcheck e disponibilidade do servidor",
+        "description": "Sonda de liveness e readiness do servidor web local, atestando execução 100% autônoma.",
+        "operationId": "getHealthCheck",
+        "responses": {
+          "200": {
+            "description": "Servidor em perfeita integridade operacional",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/modules": {
+      "get": {
+        "tags": [
+          "System & Diagnostics"
+        ],
+        "summary": "Listagem dos 7 módulos da arquitetura de mercado financeiro B3",
+        "description": "Retorna as definições estruturais dos 7 pilares canônicos da B3: PUMA Trading, Câmara & Risco CORE, Central Depositária (CSD), Balcão NoMe, SPB/BACEN/Drex, Tarifação e Supervisão BSM.",
+        "operationId": "getArchitectureModules",
+        "responses": {
+          "200": {
+            "description": "Lista dos 7 módulos arquiteturais",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ArchitectureModule"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/docs": {
+      "get": {
+        "tags": [
+          "System & Diagnostics"
+        ],
+        "summary": "Catálogo de documentação e manuais oficiais B3",
+        "description": "Lista os 80+ manuais normativos, regulamentos de compensação, catálogos de mensagens e especificações técnicas indexadas no Atlas.",
+        "operationId": "listOfficialDocs",
+        "responses": {
+          "200": {
+            "description": "Lista de metadados dos manuais e especificações oficiais",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DocumentMetadata"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/docs/{doc_id}": {
+      "get": {
+        "tags": [
+          "System & Diagnostics"
+        ],
+        "summary": "Obtém documento oficial e manual normativo na íntegra",
+        "description": "Recupera os metadados e o conteúdo textual/markdown bruto de um manual normativo oficial da B3 indexado localmente.",
+        "operationId": "getSingleDoc",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/DocIdPathParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Documento oficial recuperado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentDetailResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/api/simulate-day": {
+      "get": {
+        "tags": [
+          "Market Simulation & Chaos"
+        ],
+        "summary": "Executa simulação determinística de dia de mercado completo (8 fases, D+2)",
+        "description": "Executa a jornada operacional diária completa do mercado de capitais brasileiro: Ingestão de garantias Triparty, pré-abertura, leilão de abertura, negociação contínua, leilão de fechamento MOC/LOC, compensação multilateral e margens CORE, liquidação financeira no STR/BACEN e liquidação atômica Drex Fase 2.",
+        "operationId": "simulateFullMarketDayGet",
+        "parameters": [
+          {
+            "name": "shares",
+            "in": "query",
+            "required": false,
+            "description": "Quantidade base de ações",
+            "schema": {
+              "type": "integer",
+              "default": 100000,
+              "minimum": 100
+            }
+          },
+          {
+            "name": "base_price",
+            "in": "query",
+            "required": false,
+            "description": "Preço base de referência (BRL)",
+            "schema": {
+              "type": "number",
+              "default": 35.5
+            }
+          },
+          {
+            "name": "notional_balcao",
+            "in": "query",
+            "required": false,
+            "description": "Nocional em BRL (NoMe)",
+            "schema": {
+              "type": "number",
+              "default": 10000000.0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado detalhado da simulação",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DailySimulationResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Market Simulation & Chaos"
+        ],
+        "summary": "Dispara simulação de pregão institucional com payload parametrizado",
+        "description": "Permite configurar parâmetros corporativos detalhados para simulação em lote de pregão diário e estresse de liquidação multilateral.",
+        "operationId": "simulateFullMarketDayPost",
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "shares": {
+                    "type": "integer",
+                    "default": 100000
+                  },
+                  "base_price": {
+                    "type": "number",
+                    "default": 35.5
+                  },
+                  "notional_balcao": {
+                    "type": "number",
+                    "default": 10000000.0
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Resultado da simulação diária",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DailySimulationResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/chaos/{scenario}": {
+      "get": {
+        "tags": [
+          "Market Simulation & Chaos"
+        ],
+        "summary": "Executa cenário de caos e estresse financeiro sistêmico",
+        "description": "Submete os motores da B3 a estresses severos: acionamento de Circuit Breaker Nível 1 & 2 no PUMA, Default de Membro de Compensação e cascata de salvaguardas (Waterfall), Conflito de gravames e ônus em recebíveis de cartões, ou Interrupção do barramento SPB/BACEN.",
+        "operationId": "runChaosScenarioGet",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ScenarioPathParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Execução do cenário com auditoria de leis de conservação",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChaosSimulationResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Market Simulation & Chaos"
+        ],
+        "summary": "Injeta estresse sistêmico com parâmetros avançados",
+        "description": "Execução programada de cenário de caos financeiro para homologação contínua de resiliência e failover.",
+        "operationId": "runChaosScenarioPost",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ScenarioPathParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado da auditoria de resiliência ao estresse",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChaosSimulationResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/phase7/{flow_id}": {
+      "get": {
+        "tags": [
+          "Phase 7 Advanced Flows"
+        ],
+        "summary": "Executa e audita fluxos quantitativos avançados da Fase 7 (FL-101 a FL-105)",
+        "description": "Executa os motores canônicos da Fase 7: FL-101 (Superfícies SABR/SVI e ausência de arbitragem), FL-102 (COE Capital Protegido e payoff), FL-103 (Formador de Mercado PMM e obrigação de presença), FL-104 (Algorithmic SOR TWAP/VWAP/POV) e FL-105 (Emissão Primária RWA Drex Fase 2 DvP).",
+        "operationId": "getPhase7Flow",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/FlowIdPathParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Fluxo quantitativo executado e invariantes verificadas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "flow",
+                    "title",
+                    "laws"
+                  ],
+                  "properties": {
+                    "flow": {
+                      "type": "string",
+                      "example": "FL-101"
+                    },
+                    "title": {
+                      "type": "string",
+                      "example": "Superfícies SABR/SVI"
+                    },
+                    "laws": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "example": [
+                        "LAW-107A",
+                        "LAW-107B"
+                      ]
+                    }
+                  },
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          }
+        }
+      }
+    },
+    "/api/tla-check": {
+      "get": {
+        "tags": [
+          "Formal Verification TLA+"
+        ],
+        "summary": "Executa verificação formal TLA+ do Barramento Central de Liquidez",
+        "description": "Executa o verificador formal de modelo para CentralLiquidityBus.tla, demonstrando matematicamente TypeOK, conservação contábil zero-sum (LAW-106A), inviolabilidade da ordem do waterfall (LAW-106B), atomicidade entre sistemas (LAW-106C) e ausência de deadlocks.",
+        "operationId": "runTlaModelCheckGet",
+        "responses": {
+          "200": {
+            "description": "Relatório formal com invariantes provadas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TLAModelCheckReport"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Formal Verification TLA+"
+        ],
+        "summary": "Dispara checagem formal TLA+ com profundidade parametrizada",
+        "description": "Executa a verificação matemática formal do barramento de liquidação sob demanda.",
+        "operationId": "runTlaModelCheckPost",
+        "responses": {
+          "200": {
+            "description": "Relatório formal de verificação matemática",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TLAModelCheckReport"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/concepts": {
+      "get": {
+        "tags": [
+          "Educational Concepts"
+        ],
+        "summary": "Lista todos os conceitos complexos e pedagógicos catalogados da B3",
+        "description": "Retorna o catálogo completo de conceitos analíticos do mercado de capitais: Novação CCP, Default Waterfall, Risco CORE, Multilateral Netting, MOC/LOC, Túneis de Preço, Central de Gravames, Drex DvP e SABR/SVI.",
+        "operationId": "listConcepts",
+        "responses": {
+          "200": {
+            "description": "Catálogo completo de conceitos analíticos B3",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/B3ConceptSummary"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/concepts/{concept_id}": {
+      "get": {
+        "tags": [
+          "Educational Concepts"
+        ],
+        "summary": "Obtém o fichamento detalhado e a formulação matemática de um conceito B3",
+        "description": "Fornece explicação profunda: O que é, Por que existe, Como funciona, Regra matemática/fórmula, Exemplo prático real, Diagrama ASCII, Leis de conservação associadas e Fluxos relacionados.",
+        "operationId": "getConceptById",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ConceptIdPathParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Fichamento analítico completo do conceito",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/B3ConceptDetail"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/api/concepts/{concept_id}/simulate": {
+      "get": {
+        "tags": [
+          "Educational Concepts"
+        ],
+        "summary": "Executa simulação quantitativa e matemática do conceito via Query Params",
+        "description": "Calcula os efeitos operacionais, contratos novados, payoffs de opções ou redistribuição de margens em tempo real com parâmetros informados via URL.",
+        "operationId": "simulateConceptGet",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ConceptIdPathParam"
+          },
+          {
+            "name": "quantity",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10000
+            }
+          },
+          {
+            "name": "price",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "default": 38.5
+            }
+          },
+          {
+            "name": "symbol",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "PETR4"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado detalhado da simulação quantitativa",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Educational Concepts"
+        ],
+        "summary": "Executa simulação quantitativa do conceito via Payload JSON",
+        "description": "Submete parâmetros corporativos customizados para simulação pedagógica da regra de negócio.",
+        "operationId": "simulateConceptPost",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ConceptIdPathParam"
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConceptSimulationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Resultado analítico da simulação",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/api/flows": {
+      "get": {
+        "tags": [
+          "System & Diagnostics"
+        ],
+        "summary": "Catálogo dos 107 fluxos operacionais e transacionais homologados",
+        "description": "Lista a totalidade dos 107 fluxos canônicos de ponta a ponta da B3 (mercado à vista, derivativos, balcão, garantias, SPB, Drex e seguros), detalhando participantes, mensagens e regras de negócio.",
+        "operationId": "listHomologatedFlows",
+        "responses": {
+          "200": {
+            "description": "Lista de fluxos homologados recuperada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "flow_id": {
+                        "type": "string",
+                        "example": "FL-001"
+                      },
+                      "title": {
+                        "type": "string",
+                        "example": "Negociação PUMA Equity Market Order"
+                      },
+                      "module": {
+                        "type": "string",
+                        "example": "PUMA_TRADING"
+                      }
+                    },
+                    "additionalProperties": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orders": {
+      "get": {
+        "tags": [
+          "Institutional Orders Gateway"
+        ],
+        "summary": "Consulta histórico de ordens institucionais submetidas",
+        "description": "Permite aos Participantes de Negociação consultar ordens no PUMA Trading System com filtros por conta, ticker, status ou intervalo de tempo.",
+        "operationId": "listOrders",
+        "security": [
+          {
+            "OAuth2MutualTLS": [
+              "trading:orders"
+            ]
+          },
+          {
+            "InstitutionalApiKey": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "account",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "symbol",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/OrderStatusEnum"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de ordens institucionais encontradas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OrderResponse"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Institutional Orders Gateway"
+        ],
+        "summary": "Submissão de nova ordem de negociação no PUMA Trading System",
+        "description": "Valida limites pré-operacionais (Pre-Trade Risk / CVM 505 / LAW-001 / LAW-002: fat finger, túnel de preço e limite financeiro bruto), registra no livro de ofertas e emite resposta atômica de aceitação com chave de idempotência obrigatória.",
+        "operationId": "createOrder",
+        "security": [
+          {
+            "OAuth2MutualTLS": [
+              "trading:orders"
+            ]
+          },
+          {
+            "InstitutionalApiKey": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKeyHeader"
+          },
+          {
+            "$ref": "#/components/parameters/CorrelationIdHeader"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Ordem aceita e registrada no livro PUMA",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "422": {
+            "description": "Rejeição por violação de risco ou túnel de preço",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
+    },
+    "/api/v1/orders/{order_id}": {
+      "get": {
+        "tags": [
+          "Institutional Orders Gateway"
+        ],
+        "summary": "Consulta situação e histórico de execuções de uma ordem específica",
+        "description": "Retorna o estado detalhado da ordem, volume preenchido, residual e fills apurados.",
+        "operationId": "getOrderById",
+        "security": [
+          {
+            "OAuth2MutualTLS": [
+              "trading:orders"
+            ]
+          },
+          {
+            "InstitutionalApiKey": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/OrderIdPathParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detalhes da ordem recuperados",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Institutional Orders Gateway"
+        ],
+        "summary": "Cancelamento de ordem ativa no PUMA Trading System",
+        "description": "Solicita o cancelamento tempestivo do saldo remanescente da ordem. Se a ordem estiver em leilão durante a Janela de Congelamento (Freeze Window), o cancelamento é sumariamente bloqueado em conformidade com LAW-104A.",
+        "operationId": "cancelOrder",
+        "security": [
+          {
+            "OAuth2MutualTLS": [
+              "trading:orders"
+            ]
+          },
+          {
+            "InstitutionalApiKey": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/OrderIdPathParam"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKeyHeader"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ordem cancelada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderCancelResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Cancelamento proibido na Janela de Congelamento (LAW-104A)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/api/v1/auction/moc": {
+      "get": {
+        "tags": [
+          "Closing Auction & MOC/LOC"
+        ],
+        "summary": "Consulta livro de ordens MOC/LOC ativas no Leilão de Fechamento",
+        "description": "Lista ordens Market-On-Close (MOC) e Limit-On-Close (LOC) elegíveis para participação no closing cross.",
+        "operationId": "listMocLocOrders",
+        "security": [
+          {
+            "OAuth2MutualTLS": [
+              "trading:auction"
+            ]
+          },
+          {
+            "InstitutionalApiKey": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "symbol",
+            "in": "query",
+            "required": true,
+            "description": "Ticker do ativo",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ordens MOC/LOC ativas no leilão",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MocLocOrderResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Closing Auction & MOC/LOC"
+        ],
+        "summary": "Submissão especializada de ordens MOC ou LOC no Leilão de Fechamento PUMA (FL-098)",
+        "description": "Submete ordem MOC ou LOC garantindo prioridade absoluta MOC sobre LOC (LAW-104B) e proteção da Freeze Window (LAW-104A).",
+        "operationId": "createMocLocOrder",
+        "security": [
+          {
+            "OAuth2MutualTLS": [
+              "trading:auction"
+            ]
+          },
+          {
+            "InstitutionalApiKey": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKeyHeader"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MocLocOrderCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Ordem MOC/LOC registrada no leilão",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MocLocOrderResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "422": {
+            "$ref": "#/components/responses/UnprocessableEntity"
+          }
+        }
+      }
+    },
+    "/api/v1/auction/theoretical-price": {
+      "get": {
+        "tags": [
+          "Closing Auction & MOC/LOC"
+        ],
+        "summary": "Consulta em tempo real do Preço Teórico de Fechamento (PTP), desbalanceamento e fase",
+        "description": "Calcula e divulga o Preço Teórico de Fechamento (PTP/PTF), volume transacionável projetado, desbalanceamento de ofertas (Imbalance Side e Qty) e status da Janela de Congelamento.",
+        "operationId": "getTheoreticalPrice",
+        "parameters": [
+          {
+            "name": "symbol",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "VALE3"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Projeção analítica do preço teórico",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TheoreticalPriceResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Closing Auction & MOC/LOC"
+        ],
+        "summary": "Simula ou aciona o Uncross determinístico do Leilão de Fechamento",
+        "description": "Executa o cruzamento atômico de ofertas ao Preço Teórico Único, verificando a conservação estrita de volume: Compras == Vendas == Fills (LAW-104C).",
+        "operationId": "simulateUncross",
+        "security": [
+          {
+            "OAuth2MutualTLS": [
+              "trading:auction"
+            ]
+          },
+          {
+            "InstitutionalApiKey": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UncrossSimulationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Resultado atômico do Uncross consolidado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UncrossSimulationResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sng/gravames": {
+      "get": {
+        "tags": [
+          "SNG — Financiamentos"
+        ],
+        "summary": "Consulta de restrições financeiras registradas no Sistema Nacional de Gravames (SNG)",
+        "description": "Permite consultar a existência de gravame ativo ou histórico por Chassi, RENAVAM, número de contrato ou CNPJ da instituição credora.",
+        "operationId": "listGravames",
+        "security": [
+          {
+            "OAuth2MutualTLS": [
+              "sng:gravames"
+            ]
+          },
+          {
+            "InstitutionalApiKey": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "chassi",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "renavam",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "credor_cnpj",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/StatusGravameEnum"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Registros de gravames localizados",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GravameRecord"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "SNG — Financiamentos"
+        ],
+        "summary": "Registro e inclusão de gravame sobre veículo automotor (Resolução CONTRAN nº 807/2020)",
+        "description": "Averba alienação fiduciária, leasing ou reserva de domínio perante o Detran. Impõe a invariante LAW-112: Unicidade de Gravame Ativo por Chassi/Renavam (conflito 409 se já existir gravame ativo).",
+        "operationId": "createGravame",
+        "security": [
+          {
+            "OAuth2MutualTLS": [
+              "sng:gravames"
+            ]
+          },
+          {
+            "InstitutionalApiKey": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKeyHeader"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GravameCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Gravame averbado com sucesso no SNG",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GravameRecord"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "409": {
+            "description": "Conflito: Gravame ativo existente para Chassi/Renavam (LAW-112)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "$ref": "#/components/responses/UnprocessableEntity"
+          }
+        }
+      }
+    },
+    "/api/v1/sng/gravames/{gravame_id}": {
+      "get": {
+        "tags": [
+          "SNG — Financiamentos"
+        ],
+        "summary": "Consulta detalhe do gravame por identificador único",
+        "description": "Retorna o registro mestre do contrato, hash SHA-256 de auditoria e protocolo do Detran.",
+        "operationId": "getGravameById",
+        "security": [
+          {
+            "OAuth2MutualTLS": [
+              "sng:gravames"
+            ]
+          },
+          {
+            "InstitutionalApiKey": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/GravameIdPathParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Registro do gravame recuperado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GravameRecord"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/api/v1/sng/gravames/{gravame_id}/baixa": {
+      "post": {
+        "tags": [
+          "SNG — Financiamentos"
+        ],
+        "summary": "Baixa e desalienação fiduciária do veículo por quitação integral",
+        "description": "Envia comando oficial de desalienação ao Detran competente após confirmação de quitação integral do crédito automotivo.",
+        "operationId": "baixaGravame",
+        "security": [
+          {
+            "OAuth2MutualTLS": [
+              "sng:gravames"
+            ]
+          },
+          {
+            "InstitutionalApiKey": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/GravameIdPathParam"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKeyHeader"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GravameBaixaRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Baixa efetuada e protocolo emitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GravameBaixaResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "description": "Gravame já baixado ou cancelado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sng/gravames/{gravame_id}/cancelamento": {
+      "post": {
+        "tags": [
+          "SNG — Financiamentos"
+        ],
+        "summary": "Cancelamento administrativo de gravame por erro formal ou desistência",
+        "description": "Anula o registro de gravame antes de sua consolidação formal perante o Detran.",
+        "operationId": "cancelGravame",
+        "security": [
+          {
+            "OAuth2MutualTLS": [
+              "sng:gravames"
+            ]
+          },
+          {
+            "InstitutionalApiKey": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/GravameIdPathParam"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKeyHeader"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GravameCancelamentoRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Cancelamento homologado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GravameCancelamentoResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/api/v1/sro/apolices": {
+      "get": {
+        "tags": [
+          "SRO — Seguros & SUSEP"
+        ],
+        "summary": "Consulta de apólices registradas no repositório SRO SUSEP B3",
+        "description": "Lista apólices vigentes, endossadas ou canceladas com filtros por ramo SUSEP, segurado, seguradora líder ou proposta.",
+        "operationId": "listApolices",
+        "security": [
+          {
+            "OAuth2MutualTLS": [
+              "sro:apolices"
+            ]
+          },
+          {
+            "InstitutionalApiKey": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "ramo",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/RamoSeguroEnum"
+            }
+          },
+          {
+            "name": "seguradora_lider_cnpj",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "segurado_documento",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/StatusApoliceEnum"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Apólices localizadas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApoliceRecord"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "SRO — Seguros & SUSEP"
+        ],
+        "summary": "Registro de apólice de seguro individual ou cosseguro perante a SUSEP",
+        "description": "Registra emissão da apólice. Se houver cosseguro, impõe a verificação estrita da invariante LAW-113: Conservação de Cosseguro a exatamente 100.00% das quotas e respeito ao Limite Máximo de Garantia (LMG).",
+        "operationId": "createApolice",
+        "security": [
+          {
+            "OAuth2MutualTLS": [
+              "sro:apolices"
+            ]
+          },
+          {
+            "InstitutionalApiKey": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKeyHeader"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApoliceCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Apólice registrada e protocolo SUSEP SRO emitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApoliceRecord"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "422": {
+            "description": "Violação da invariante LAW-113 (cosseguro != 100%)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sro/apolices/{apolice_id}": {
+      "get": {
+        "tags": [
+          "SRO — Seguros & SUSEP"
+        ],
+        "summary": "Consulta detalhada de apólice de seguro registrada no SRO",
+        "description": "Retorna o registro mestre, cotas de cosseguro, saldo de LMG remanescente e hash de integridade SUSEP.",
+        "operationId": "getApoliceById",
+        "security": [
+          {
+            "OAuth2MutualTLS": [
+              "sro:apolices"
+            ]
+          },
+          {
+            "InstitutionalApiKey": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ApoliceIdPathParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dados da apólice recuperados com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApoliceRecord"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/api/v1/sro/apolices/{apolice_id}/endosso": {
+      "post": {
+        "tags": [
+          "SRO — Seguros & SUSEP"
+        ],
+        "summary": "Registro de endosso modificativo ou de cancelamento perante a SUSEP",
+        "description": "Aplica alteração formal na vigência, valor de prêmio ou Limite Máximo de Garantia (LMG) da apólice registrada.",
+        "operationId": "createEndosso",
+        "security": [
+          {
+            "OAuth2MutualTLS": [
+              "sro:apolices"
+            ]
+          },
+          {
+            "InstitutionalApiKey": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ApoliceIdPathParam"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKeyHeader"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EndossoCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Endosso homologado e apólice atualizada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApoliceRecord"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/api/v1/sro/apolices/{apolice_id}/sinistros": {
+      "get": {
+        "tags": [
+          "SRO — Seguros & SUSEP"
+        ],
+        "summary": "Consulta histórico de sinistros vinculados a uma apólice",
+        "description": "Lista sinistros avisados, em regulação e liquidados perante a SUSEP.",
+        "operationId": "listSinistros",
+        "security": [
+          {
+            "OAuth2MutualTLS": [
+              "sro:apolices"
+            ]
+          },
+          {
+            "InstitutionalApiKey": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ApoliceIdPathParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de sinistros vinculados",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SinistroRecord"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "SRO — Seguros & SUSEP"
+        ],
+        "summary": "Aviso e regulação de sinistro securitário com dedução de LMG",
+        "description": "Registra ocorrência e aviso de sinistro, verificando a disponibilidade de saldo no Limite Máximo de Garantia (LMG) da apólice conforme a invariante LAW-113.",
+        "operationId": "createSinistro",
+        "security": [
+          {
+            "OAuth2MutualTLS": [
+              "sro:apolices"
+            ]
+          },
+          {
+            "InstitutionalApiKey": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ApoliceIdPathParam"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKeyHeader"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SinistroCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Sinistro registrado no SRO",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SinistroRecord"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "422": {
+            "description": "Sinistro excede o Limite Máximo de Garantia (LAW-113)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sro/apolices/{apolice_id}/sinistros/{sinistro_id}/liquidar": {
+      "post": {
+        "tags": [
+          "SRO — Seguros & SUSEP"
+        ],
+        "summary": "Liquidação e pagamento financeiro de indenização securitária",
+        "description": "Atesta a liquidação financeira do sinistro perante o segurado ou beneficiário com número de ordem bancária no SPB (STR/PIX), encerrando a pendência e consolidando a baixa do LMG.",
+        "operationId": "liquidarSinistro",
+        "security": [
+          {
+            "OAuth2MutualTLS": [
+              "sro:apolices"
+            ]
+          },
+          {
+            "InstitutionalApiKey": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ApoliceIdPathParam"
+          },
+          {
+            "$ref": "#/components/parameters/SinistroIdPathParam"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKeyHeader"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SinistroLiquidarRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Sinistro liquidado e averbado na SUSEP",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SinistroRecord"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    }
+  }
+}

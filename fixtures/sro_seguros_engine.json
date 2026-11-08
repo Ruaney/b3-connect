@@ -3,15 +3,35 @@
   "version": "3.0.0",
   "regulatory_framework": ["Resolucao_CNSP_382_2020", "Resolucao_CNSP_399_2020", "Circular_SUSEP_642_2021"],
   "law": "LAW-113",
+  "lgpd_governance": {
+    "framework": "LGPD (Lei nº 13.709/2018)",
+    "bases_legais": [
+      "Art. 7º, II - Cumprimento de obrigação legal ou regulatória perante a SUSEP (Circular 642/2021)",
+      "Art. 7º, V - Execução de contrato de seguro e cosseguro"
+    ],
+    "principios_atendidos": [
+      "Finalidade (registro regulatório obrigatório de operações de seguros)",
+      "Minimização e Necessidade (retenção estrita de dados de risco e cobertura)",
+      "Segurança e Confidencialidade (Hashing SHA-256 e mascaramento de segurados)",
+      "Transparência e Responsabilização"
+    ],
+    "pseudonimizacao_algoritmo": "SHA-256",
+    "telemetria_invasiva": false,
+    "compartilhamento_terceiros_nao_autorizados": false
+  },
   "apolices": [
     {
       "apolice_id": "SRO-B3-AUTO-0000001",
       "numero_proposta": "PROP-PORTO-2026-9011",
       "ramo": "0531_AUTOMOVEL",
       "seguradora_lider_cnpj": "33000111000100",
+      "seguradora_lider_cnpj_mascarado": "33.***.***/0001-00",
       "seguradora_lider_nome": "Porto Seguro Cia de Seguros Gerais",
       "segurado_documento": "12345678909",
+      "segurado_documento_mascarado": "123.***.***-09",
+      "segurado_documento_sha256": "7ec94663084bd506d4f0c3e21042df233681fd7426e93f397c921b1d3e397bba",
       "segurado_nome": "Ana Carolina Pereira",
+      "segurado_nome_mascarado": "An*** Ca*** Pe***",
       "data_emissao": "2026-11-01",
       "inicio_vigencia": "2026-11-01T00:00:00Z",
       "fim_vigencia": "2027-11-01T23:59:59Z",
@@ -36,9 +56,13 @@
       "numero_proposta": "PROP-BRAD-2026-4402",
       "ramo": "0118_PATRIMONIAL_EMPRESARIAL",
       "seguradora_lider_cnpj": "61550141000172",
+      "seguradora_lider_cnpj_mascarado": "61.***.***/0001-72",
       "seguradora_lider_nome": "Bradesco Seguros S/A",
       "segurado_documento": "05888999000123",
+      "segurado_documento_mascarado": "05.***.***/0001-23",
+      "segurado_documento_sha256": "bbe8be7f9c7611b5bbf06398105e8e46d11c831effa6bd6de59710f42ac8e425",
       "segurado_nome": "Complexo Logístico Barueri Ltda",
+      "segurado_nome_mascarado": "Co*** Lo*** Ba*** Lt***",
       "data_emissao": "2026-10-20",
       "inicio_vigencia": "2026-10-20T00:00:00Z",
       "fim_vigencia": "2027-10-20T23:59:59Z",

@@ -146,6 +146,35 @@ def assert_allocation_conservation(
             )
 
 
+def assert_clearing_position_integrity(
+    bought_positions: Union[int, Decimal, Sequence[Union[int, Decimal]]],
+    sold_positions: Union[int, Decimal, Sequence[Union[int, Decimal]]],
+    tolerance: Union[int, Decimal] = Decimal("0"),
+    symbol: str = "",
+) -> None:
+    """Lei 4 / LAW-004: Integridade Posicional da Câmara e Paridade Comprador-Vendedor (IMBARQ006 / Lei nº 10.214/2001).
+
+    ∑ Posições Compradas == ∑ Posições Vendidas (Posição Líquida CCP == 0).
+    A Contraparte Central (CCP) é neutra: todo contrato comprado por um participante
+    possui exatamente um contraparte vendedora espelhada no pregão / câmara.
+    """
+    total_bought = sum(bought_positions) if isinstance(bought_positions, (list, tuple)) else bought_positions
+    total_sold = sum(sold_positions) if isinstance(sold_positions, (list, tuple)) else sold_positions
+    diff = abs(total_bought - total_sold)
+    check(
+        diff <= tolerance,
+        f"Violação da Integridade Posicional da Câmara (LAW-004) para '{symbol}': "
+        f"Posições Compradas ({total_bought}) != Posições Vendidas ({total_sold}) [Diff={diff}]",
+        law_code="LAW-004",
+        details={
+            "symbol": symbol,
+            "total_bought": str(total_bought),
+            "total_sold": str(total_sold),
+            "diff": str(diff),
+        },
+    )
+
+
 def assert_bilateral_zero_sum(
     party_a_amount: Decimal,
     party_b_amount: Decimal,

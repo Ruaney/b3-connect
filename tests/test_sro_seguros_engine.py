@@ -153,6 +153,51 @@ class TestSroSegurosEngine(unittest.TestCase):
         self.assertEqual(sin2.status, StatusSinistro.LIQUIDADO)
         self.engine.verify_invariants()
 
+    def test_lgpd_masking_and_sha256_audit_trail(self) -> None:
+        """Audita a conformidade com a LGPD (Lei nº 13.709/2018) no SRO SUSEP:
+        - Hashing criptográfico SHA-256 de CPF/CNPJ de segurados.
+        - Mascaramento e minimização em logs de auditoria e fixtures.
+        - Proteção contra vazamento de dados de apólices e beneficiários.
+        """
+        apolice = self.engine.registrar_apolice(
+            numero_proposta="PROP-LGPD-2026",
+            ramo=RamoSeguro.PATRIMONIAL_COMPREENSIVO,
+            seguradora_lider_cnpj="61550141000172",
+            seguradora_lider_nome="Bradesco Seguros S/A",
+            segurado_documento="05888999000123",
+            segurado_nome="Complexo Logístico Barueri Ltda",
+            data_emissao="2026-11-01",
+            inicio_vigencia="2026-11-01T00:00:00Z",
+            fim_vigencia="2027-11-01T23:59:59Z",
+            limite_maximo_garantia=Decimal("2000000.00"),
+            premio_liquido=Decimal("45000.00"),
+        )
+
+        # 1. Mascaramento LGPD
+        self.assertEqual(apolice.segurado_documento_mascarado, "05.***.***/0001-23")
+        self.assertEqual(apolice.seguradora_lider_cnpj_mascarado, "61.***.***/0001-72")
+        self.assertEqual(apolice.segurado_nome_mascarado, "Co*** Lo*** Ba*** Lt***")
+        self.assertEqual(
+            apolice.segurado_documento_sha256,
+            "bbe8be7f9c7611b5bbf06398105e8e46d11c831effa6bd6de59710f42ac8e425",
+        )
+
+        # 2. Representação minimizada
+        masked_dict = apolice.to_masked_dict()
+        self.assertTrue(masked_dict["lgpd_minimizada"])
+        self.assertEqual(masked_dict["segurado_documento_mascarado"], "05.***.***/0001-23")
+
+        # 3. Trilha de auditoria em conformidade LGPD
+        audit_entry = self.engine.audit_log[-1]
+        self.assertEqual(audit_entry["action"], "REGISTRO_APOLICE_SRO")
+        self.assertEqual(audit_entry["segurado_documento_masked"], "05.***.***/0001-23")
+        self.assertEqual(
+            audit_entry["segurado_documento_sha256"],
+            "bbe8be7f9c7611b5bbf06398105e8e46d11c831effa6bd6de59710f42ac8e425",
+        )
+        self.assertTrue(audit_entry["lgpd_audit"]["minimization"])
+        self.assertTrue(audit_entry["lgpd_audit"]["pseudonymized"])
+
 
 if __name__ == "__main__":
     unittest.main()

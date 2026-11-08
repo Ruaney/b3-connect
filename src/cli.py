@@ -1560,6 +1560,13 @@ def cmd_chaos(args: argparse.Namespace) -> int:
 
 def cmd_ui(args: argparse.Namespace) -> int:
     """Inicia o servidor de visualização e dashboard web interativo off-line."""
+    if getattr(args, "export_static", False):
+        from scripts.export_static_dashboard import generate_standalone_bundle
+        repo_root = Path(__file__).resolve().parent.parent
+        out_file = repo_root / getattr(args, "output", "dist/dashboard_standalone.html")
+        generate_standalone_bundle(repo_root, out_file)
+        return 0
+
     import webbrowser
     from src.b3_ui_server import run_dashboard_server
 
@@ -1591,6 +1598,404 @@ def cmd_ui(args: argparse.Namespace) -> int:
     finally:
         server.server_close()
     return 0
+
+
+# ==============================================================================
+# Comandos Institucionais dos 12 Conceitos Estruturantes, SNG e SRO
+# ==============================================================================
+
+
+def cmd_concepts_list(args: argparse.Namespace) -> int:
+    """Lista os 12 conceitos estruturantes da infraestrutura de mercado B3."""
+    try:
+        from src.b3_concepts_catalog import B3ConceptsCatalog
+    except ImportError:
+        from b3_concepts_catalog import B3ConceptsCatalog
+
+    catalog = B3ConceptsCatalog()
+    concepts = catalog.list_all()
+
+    if getattr(args, "json", False):
+        print(json.dumps(concepts, indent=2, ensure_ascii=False))
+        return 0
+
+    print("\n" + "=" * 105)
+    print(" B3 INTEGRATION ATLAS — 12 CONCEITOS ESTRUTURANTES DA INFRAESTRUTURA DE MERCADO")
+    print("=" * 105)
+    print(f" {'ID':<28} {'CATEGORIA':<26} {'TÍTULO E MARCO REGULATÓRIO':<48}")
+    print("-" * 105)
+    for c in concepts:
+        title_badge = f"{c['title']} [{c['badge']}]"
+        print(f" {c['id']:<28} {c['category']:<26} {title_badge:<48}")
+        print(f"   Resumo: {c['summary']}")
+        print(f"   Leis Formais: {', '.join(c['related_laws'])} | Fluxos: {', '.join(c['related_flows'])}")
+        print("-" * 105)
+    print(" Execute 'b3 concepts simulate <concept_id>' para rodar o simulador analítico do conceito.")
+    print("=" * 105 + "\n")
+    return 0
+
+
+def cmd_concepts_simulate(args: argparse.Namespace) -> int:
+    """Dispara o simulador analítico do conceito e exibe JSON ou tabela."""
+    try:
+        from src.b3_concepts_catalog import B3ConceptsCatalog
+    except ImportError:
+        from b3_concepts_catalog import B3ConceptsCatalog
+
+    catalog = B3ConceptsCatalog()
+    concept_id = getattr(args, "concept_id", "").strip().lower()
+
+    concept = catalog.get_by_id(concept_id)
+    if not concept:
+        all_ids = ", ".join(c["id"] for c in catalog.list_all())
+        sys.stderr.write(
+            f"Erro: Conceito '{concept_id}' não encontrado no catálogo.\n"
+            f"Conceitos disponíveis: {all_ids}\n"
+        )
+        return 1
+
+    result = catalog.simulate(concept_id)
+    if "error" in result:
+        sys.stderr.write(f"Erro na simulação: {result['error']}\n")
+        return 1
+
+    if getattr(args, "json", False):
+        print(json.dumps(result, indent=2, ensure_ascii=False))
+        return 0
+
+    print("\n" + "=" * 90)
+    print(f" SIMULAÇÃO ANALÍTICA B3 — CONCEITO: {concept.title.upper()}")
+    print("=" * 90)
+    print(f" ID do Conceito:      {concept.id}")
+    print(f" Categoria:           {concept.category}")
+    print(f" Base Normativa:      {concept.badge}")
+    print(f" Lei Formal Validada: {result.get('law_verified', 'N/A')}")
+    print("-" * 90)
+    print(" PARÂMETROS E RESULTADOS DA EXECUÇÃO:")
+    for k, v in result.items():
+        if k in ("concept_id", "title", "law_verified"):
+            continue
+        if isinstance(v, list):
+            print(f"   {k}:")
+            for item in v:
+                if isinstance(item, dict):
+                    fields = ", ".join(f"{ik}={iv}" for ik, iv in item.items())
+                    print(f"     - {fields}")
+                else:
+                    print(f"     - {item}")
+        elif isinstance(v, dict):
+            print(f"   {k}:")
+            for dk, dv in v.items():
+                print(f"     {dk}: {dv}")
+        else:
+            print(f"   {k:<22}: {v}")
+    print("-" * 90)
+    print(f" Veredito: {result.get('verdict', result.get('status', 'EXECUTADO COM SUCESSO'))}")
+    print("=" * 90 + "\n")
+    return 0
+
+
+def cmd_concepts_dispatch(args: argparse.Namespace) -> int:
+    """Despacha subcomandos do grupo 'concepts'."""
+    action = getattr(args, "concepts_action", None)
+    if action == "list":
+        return cmd_concepts_list(args)
+    elif action == "simulate":
+        return cmd_concepts_simulate(args)
+    return cmd_concepts_list(args)
+
+
+def cmd_sng_include(args: argparse.Namespace) -> int:
+    """Simula inclusão no Sistema Nacional de Gravames (SNG B3 Financiamentos)."""
+    try:
+        from src.sng_gravames_engine import (
+            SngGravamesEngine,
+            VeiculoIdentificacao,
+            ModalidadeGravame,
+        )
+    except ImportError:
+        from sng_gravames_engine import (
+            SngGravamesEngine,
+            VeiculoIdentificacao,
+            ModalidadeGravame,
+        )
+
+    chassi = getattr(args, "chassi", "").strip().upper()
+    credor_cnpj = getattr(args, "credor", "").strip()
+
+    try:
+        valor_financiamento = Decimal(str(getattr(args, "valor", 0)))
+    except Exception as err:
+        sys.stderr.write(f"Erro: Valor de financiamento inválido: {err}\n")
+        return 1
+
+    credor_nome = getattr(args, "credor_nome", "Banco Financiador S/A")
+    renavam = getattr(args, "renavam", "12345678901")
+    placa = getattr(args, "placa", "BRA2E19")
+    uf = getattr(args, "uf", "SP").upper()
+    modelo = getattr(args, "modelo", "VW GOL 1.0 MPI")
+    ano_fab = int(getattr(args, "ano_fab", 2024))
+    ano_mod = int(getattr(args, "ano_mod", 2025))
+    contrato = getattr(args, "contrato", None) or f"CTR-SNG-{chassi[-6:] if len(chassi) >= 6 else '001'}"
+    devedor_doc = getattr(args, "devedor_doc", "12345678909")
+    devedor_nome = getattr(args, "devedor_nome", "Devedor Fiduciante")
+    parcelas = int(getattr(args, "parcelas", 48))
+    taxa = Decimal(str(getattr(args, "taxa", "18.50")))
+
+    mod_str = getattr(args, "modalidade", "ALIENACAO_FIDUCIARIA").upper()
+    try:
+        modalidade = ModalidadeGravame[mod_str]
+    except KeyError:
+        modalidade = ModalidadeGravame.ALIENACAO_FIDUCIARIA
+
+    try:
+        veiculo = VeiculoIdentificacao(
+            chassi=chassi,
+            renavam=renavam,
+            placa=placa,
+            uf_emplacamento=uf,
+            marca_modelo=modelo,
+            ano_fabricacao=ano_fab,
+            ano_modelo=ano_mod,
+        )
+    except ValueError as err:
+        sys.stderr.write(f"Erro nos dados do veículo: {err}\n")
+        return 1
+
+    engine = SngGravamesEngine()
+    try:
+        rec = engine.registrar_gravame(
+            contrato_numero=contrato,
+            modalidade=modalidade,
+            credor_cnpj=credor_cnpj,
+            credor_nome=credor_nome,
+            devedor_documento=devedor_doc,
+            devedor_nome=devedor_nome,
+            veiculo=veiculo,
+            valor_financiamento=valor_financiamento,
+            quantidade_parcelas=parcelas,
+            taxa_juros_anual_pct=taxa,
+        )
+        inv = engine.verify_invariants(raise_on_error=True)
+    except Exception as err:
+        sys.stderr.write(f"Erro na inclusão de gravame SNG: {err}\n")
+        return 1
+
+    if getattr(args, "json", False):
+        data = {
+            "gravame_id": rec.gravame_id,
+            "contrato_numero": rec.contrato_numero,
+            "modalidade": rec.modalidade.value,
+            "credor_cnpj": rec.credor_cnpj,
+            "credor_nome": rec.credor_nome,
+            "devedor_documento": rec.devedor_documento,
+            "devedor_nome": rec.devedor_nome,
+            "chassi": rec.veiculo.chassi,
+            "renavam": rec.veiculo.renavam,
+            "placa": rec.veiculo.placa,
+            "uf": rec.veiculo.uf_emplacamento,
+            "valor_financiamento": str(rec.valor_financiamento),
+            "quantidade_parcelas": rec.quantidade_parcelas,
+            "taxa_juros_anual_pct": str(rec.taxa_juros_anual_pct),
+            "data_inclusao": rec.data_inclusao,
+            "status": rec.status.value,
+            "detran_protocolo": rec.detran_protocolo,
+            "hash_seguranca": rec.hash_seguranca,
+            "law_verified": "LAW-112",
+            "invariants": inv,
+        }
+        print(json.dumps(data, indent=2, ensure_ascii=False))
+        return 0
+
+    print("\n" + "=" * 90)
+    print(" SISTEMA NACIONAL DE GRAVAMES (SNG) — B3 FINANCIAMENTOS")
+    print(" Inclusão de Restrição Financeira Veicular (Resolução CONTRAN nº 807/2020)")
+    print("=" * 90)
+    print(f" ID do Gravame:       {rec.gravame_id}")
+    print(f" Protocolo DETRAN:    {rec.detran_protocolo}")
+    print(f" Status Operacional:  {rec.status.value}")
+    print(f" Modalidade:          {rec.modalidade.value}")
+    print(f" N° do Contrato:      {rec.contrato_numero}")
+    print("-" * 90)
+    print(" DADOS DO VEÍCULO E RESTRIÇÃO:")
+    print(f"   Chassi:            {rec.veiculo.chassi}")
+    print(f"   Renavam:           {rec.veiculo.renavam} | Placa: {rec.veiculo.placa} | UF: {rec.veiculo.uf_emplacamento}")
+    print(f"   Modelo:            {rec.veiculo.marca_modelo} ({rec.veiculo.ano_fabricacao}/{rec.veiculo.ano_modelo})")
+    print("-" * 90)
+    print(" DADOS FINANCEIROS:")
+    print(f"   Credor:            {rec.credor_nome} (CNPJ: {rec.credor_cnpj})")
+    print(f"   Devedor:           {rec.devedor_nome} (Doc: {rec.devedor_documento})")
+    print(f"   Valor Financiado:  R$ {rec.valor_financiamento:,.2f}")
+    print(f"   Condições:         {rec.quantidade_parcelas}x a {rec.taxa_juros_anual_pct}% a.a.")
+    print(f"   Hash de Segurança: {rec.hash_seguranca}")
+    print("-" * 90)
+    print(" Conformidade: LAW-112 Inviolabilidade de Gravame Ativo (Verificado 100%)")
+    print("=" * 90 + "\n")
+    return 0
+
+
+def cmd_sng_dispatch(args: argparse.Namespace) -> int:
+    """Despacha subcomandos do grupo 'sng'."""
+    action = getattr(args, "sng_action", None)
+    if action == "include":
+        return cmd_sng_include(args)
+    sys.stderr.write("Uso: b3 sng include --chassi <chassi> --credor <cnpj> --valor <val>\n")
+    return 1
+
+
+def _resolve_ramo_seguro(ramo_str: str) -> Any:
+    """Mapeia string de ramo para o Enum RamoSeguro do SRO."""
+    try:
+        from src.sro_seguros_engine import RamoSeguro
+    except ImportError:
+        from sro_seguros_engine import RamoSeguro
+
+    r = ramo_str.strip().upper()
+    if r in RamoSeguro.__members__:
+        return RamoSeguro[r]
+
+    for member in RamoSeguro:
+        if r == member.value.upper() or r in member.value.upper():
+            return member
+
+    aliases = {
+        "0118": RamoSeguro.PATRIMONIAL_COMPREENSIVO,
+        "PATRIMONIAL": RamoSeguro.PATRIMONIAL_COMPREENSIVO,
+        "0993": RamoSeguro.VIDA_INDIVIDUAL_COLETIVO,
+        "VIDA": RamoSeguro.VIDA_INDIVIDUAL_COLETIVO,
+        "1101": RamoSeguro.RURAL_AGRICOLA,
+        "RURAL": RamoSeguro.RURAL_AGRICOLA,
+        "AGRICOLA": RamoSeguro.RURAL_AGRICOLA,
+        "0622": RamoSeguro.TRANSPORTE_CARGAS,
+        "TRANSPORTE": RamoSeguro.TRANSPORTE_CARGAS,
+        "0351": RamoSeguro.RESPONSABILIDADE_CIVIL_DO,
+        "RC": RamoSeguro.RESPONSABILIDADE_CIVIL_DO,
+        "RC_DO": RamoSeguro.RESPONSABILIDADE_CIVIL_DO,
+        "0775": RamoSeguro.GARANTIA_SEGURADORA,
+        "GARANTIA": RamoSeguro.GARANTIA_SEGURADORA,
+    }
+    for k, v in aliases.items():
+        if k in r:
+            return v
+
+    raise ValueError(
+        f"Ramo '{ramo_str}' desconhecido. Opções válidas: "
+        f"{', '.join(m.name for m in RamoSeguro)}"
+    )
+
+
+def cmd_sro_register(args: argparse.Namespace) -> int:
+    """Simula registro de apólice no Sistema de Registro de Operações (SRO B3 Seguros / SUSEP)."""
+    try:
+        from src.sro_seguros_engine import SroSegurosEngine
+    except ImportError:
+        from sro_seguros_engine import SroSegurosEngine
+
+    ramo_arg = getattr(args, "ramo", "")
+    try:
+        ramo = _resolve_ramo_seguro(ramo_arg)
+    except ValueError as err:
+        sys.stderr.write(f"Erro: {err}\n")
+        return 1
+
+    try:
+        lmg = Decimal(str(getattr(args, "lmg", 0)))
+        premio = Decimal(str(getattr(args, "premio", 0)))
+    except Exception as err:
+        sys.stderr.write(f"Erro: Valores monetários de LMG ou Prêmio inválidos: {err}\n")
+        return 1
+
+    seguradora_cnpj = getattr(args, "seguradora_cnpj", "33000111000100")
+    seguradora_nome = getattr(args, "seguradora_nome", "Seguradora Líder Nacional S/A")
+    segurado_doc = getattr(args, "segurado_doc", "11222333000144")
+    segurado_nome = getattr(args, "segurado_nome", "Indústria e Comércio Brasil S/A")
+    proposta = getattr(args, "proposta", None) or f"PROP-SRO-CLI-{str(int(lmg))[-4:]}"
+    data_emissao = getattr(args, "data_emissao", "2026-11-01")
+    inicio_vigencia = getattr(args, "inicio_vigencia", "2026-11-01T00:00:00Z")
+    fim_vigencia = getattr(args, "fim_vigencia", "2027-11-01T23:59:59Z")
+
+    engine = SroSegurosEngine()
+    try:
+        rec = engine.registrar_apolice(
+            numero_proposta=proposta,
+            ramo=ramo,
+            seguradora_lider_cnpj=seguradora_cnpj,
+            seguradora_lider_nome=seguradora_nome,
+            segurado_documento=segurado_doc,
+            segurado_nome=segurado_nome,
+            data_emissao=data_emissao,
+            inicio_vigencia=inicio_vigencia,
+            fim_vigencia=fim_vigencia,
+            limite_maximo_garantia=lmg,
+            premio_liquido=premio,
+        )
+        inv = engine.verify_invariants(raise_on_error=True)
+    except Exception as err:
+        sys.stderr.write(f"Erro no registro de apólice SRO: {err}\n")
+        return 1
+
+    if getattr(args, "json", False):
+        data = {
+            "apolice_id": rec.apolice_id,
+            "numero_proposta": rec.numero_proposta,
+            "ramo": rec.ramo.value,
+            "seguradora_lider_cnpj": rec.seguradora_lider_cnpj,
+            "seguradora_lider_nome": rec.seguradora_lider_nome,
+            "segurado_documento": rec.segurado_documento,
+            "segurado_nome": rec.segurado_nome,
+            "limite_maximo_garantia": str(rec.limite_maximo_garantia),
+            "premio_liquido": str(rec.premio_liquido),
+            "premio_total_com_iof": str(rec.premio_total_com_iof),
+            "status": rec.status.value,
+            "susep_hash": rec.susep_hash,
+            "cosseguradores": [
+                {
+                    "cnpj": c.cnpj,
+                    "razao_social": c.razao_social,
+                    "percentual_quota": str(c.percentual_quota),
+                    "is_lider": c.is_lider,
+                }
+                for c in rec.cosseguradores
+            ],
+            "law_verified": "LAW-113",
+            "invariants": inv,
+        }
+        print(json.dumps(data, indent=2, ensure_ascii=False))
+        return 0
+
+    print("\n" + "=" * 90)
+    print(" SISTEMA DE REGISTRO DE OPERAÇÕES (SRO) — B3 SEGUROS / SUSEP")
+    print(" Registro e Escrituração Eletrônica de Apólice (Circular SUSEP nº 642/2021)")
+    print("=" * 90)
+    print(f" ID da Apólice:       {rec.apolice_id}")
+    print(f" N° da Proposta:      {rec.numero_proposta}")
+    print(f" Ramo SUSEP:          {rec.ramo.value}")
+    print(f" Status Operacional:  {rec.status.value}")
+    print(f" SUSEP Hash Oficial:  {rec.susep_hash}")
+    print("-" * 90)
+    print(" PARTES CONTRATUAIS:")
+    print(f"   Seguradora Líder:  {rec.seguradora_lider_nome} (CNPJ: {rec.seguradora_lider_cnpj})")
+    print(f"   Segurado:          {rec.segurado_nome} (Doc: {rec.segurado_documento})")
+    print(f"   Vigência:          {rec.inicio_vigencia} até {rec.fim_vigencia}")
+    print("-" * 90)
+    print(" VALORES E LIMITES (LAW-113):")
+    print(f"   LMG (Garantia):    R$ {rec.limite_maximo_garantia:,.2f}")
+    print(f"   Prêmio Líquido:    R$ {rec.premio_liquido:,.2f}")
+    print(f"   Prêmio c/ IOF:     R$ {rec.premio_total_com_iof:,.2f}")
+    print(f"   Cosseguro Líder:   100.00% (Integral)")
+    print("-" * 90)
+    print(" Conformidade: LAW-113 Cosseguro e Limite Máximo de Garantia (Verificado 100%)")
+    print("=" * 90 + "\n")
+    return 0
+
+
+def cmd_sro_dispatch(args: argparse.Namespace) -> int:
+    """Despacha subcomandos do grupo 'sro'."""
+    action = getattr(args, "sro_action", None)
+    if action == "register":
+        return cmd_sro_register(args)
+    sys.stderr.write("Uso: b3 sro register --ramo <ramo> --lmg <lmg> --premio <premio>\n")
+    return 1
 
 
 # ==============================================================================
@@ -1885,7 +2290,84 @@ def build_atlas_parser() -> argparse.ArgumentParser:
     p_ui.add_argument("--host", default="127.0.0.1", help="Endereço de bind do servidor HTTP (padrão: 127.0.0.1)")
     p_ui.add_argument("--port", type=int, default=8080, help="Porta TCP do servidor HTTP (padrão: 8080)")
     p_ui.add_argument("--no-browser", action="store_true", help="Não abre automaticamente a página no navegador")
+    p_ui.add_argument("--export-static", action="store_true", help="Exporta o dashboard standalone em dist/dashboard_standalone.html")
+    p_ui.add_argument("--output", default="dist/dashboard_standalone.html", help="Caminho de saída para exportação estática")
     p_ui.set_defaults(func=cmd_ui)
+
+    # export-dashboard
+    p_export = subparsers.add_parser(
+        "export-dashboard",
+        aliases=["export-static"],
+        help="Gera o bundle estático standalone em dist/dashboard_standalone.html para publicação offline/Vercel/Pages",
+    )
+    p_export.add_argument("--output", default="dist/dashboard_standalone.html", help="Caminho do arquivo HTML de saída")
+    p_export.set_defaults(func=lambda args: cmd_ui(argparse.Namespace(export_static=True, output=args.output)))
+
+    # b3 concepts list / simulate
+    p_concepts = subparsers.add_parser(
+        "concepts",
+        aliases=["conceitos"],
+        help="Gestão e simulação analítica dos 12 conceitos estruturantes da B3",
+    )
+    p_concepts_sub = p_concepts.add_subparsers(dest="concepts_action", help="Ação de conceitos")
+
+    p_clist = p_concepts_sub.add_parser("list", aliases=["ls"], help="Lista os 12 conceitos estruturantes")
+    p_clist.add_argument("--json", action="store_true", help="Saída em formato JSON")
+    p_clist.set_defaults(func=cmd_concepts_list)
+
+    p_csim = p_concepts_sub.add_parser("simulate", aliases=["sim"], help="Dispara o simulador analítico do conceito")
+    p_csim.add_argument("concept_id", help="Identificador do conceito (ex: novacao-ccp, default-waterfall, sng-gravames-veiculares, sro-seguros-susep)")
+    p_csim.add_argument("--json", action="store_true", help="Saída em formato JSON")
+    p_csim.set_defaults(func=cmd_concepts_simulate)
+    p_concepts.set_defaults(func=cmd_concepts_dispatch)
+
+    # b3 sng include --chassi <chassi> --credor <cnpj> --valor <val>
+    p_sng = subparsers.add_parser(
+        "sng",
+        aliases=["gravames"],
+        help="Sistema Nacional de Gravames (SNG B3 Financiamentos / CONTRAN 807/2020)",
+    )
+    p_sng_sub = p_sng.add_subparsers(dest="sng_action", help="Ação do SNG")
+    p_sng_inc = p_sng_sub.add_parser("include", aliases=["incluir", "registrar"], help="Simula inclusão no SNG")
+    p_sng_inc.add_argument("--chassi", required=True, help="Número do Chassi do veículo (17 caracteres ISO 3779)")
+    p_sng_inc.add_argument("--credor", required=True, help="CNPJ da instituição financeira credora")
+    p_sng_inc.add_argument("--valor", required=True, type=float, help="Valor do financiamento (R$)")
+    p_sng_inc.add_argument("--renavam", default="12345678901", help="Código RENAVAM do veículo (9 ou 11 dígitos)")
+    p_sng_inc.add_argument("--placa", default="BRA2E19", help="Placa do veículo (padrão Mercosul)")
+    p_sng_inc.add_argument("--uf", default="SP", help="UF de emplacamento do Detran (ex: SP, RJ, MG)")
+    p_sng_inc.add_argument("--credor-nome", default="Banco Financiador S/A", help="Razão social do credor")
+    p_sng_inc.add_argument("--modalidade", default="ALIENACAO_FIDUCIARIA", help="Modalidade de gravame")
+    p_sng_inc.add_argument("--contrato", default=None, help="Número do contrato de financiamento")
+    p_sng_inc.add_argument("--devedor-doc", default="12345678909", help="CPF ou CNPJ do devedor fiduciante")
+    p_sng_inc.add_argument("--devedor-nome", default="Devedor Fiduciante", help="Nome ou Razão Social do devedor")
+    p_sng_inc.add_argument("--parcelas", type=int, default=48, help="Quantidade de parcelas")
+    p_sng_inc.add_argument("--taxa", default="18.50", help="Taxa anual de juros em %")
+    p_sng_inc.add_argument("--modelo", default="VW GOL 1.0 MPI", help="Marca e modelo do veículo")
+    p_sng_inc.add_argument("--ano-fab", type=int, default=2024, help="Ano de fabricação")
+    p_sng_inc.add_argument("--ano-mod", type=int, default=2025, help="Ano do modelo")
+    p_sng_inc.add_argument("--json", action="store_true", help="Saída em formato JSON")
+    p_sng_inc.set_defaults(func=cmd_sng_include)
+    p_sng.set_defaults(func=cmd_sng_dispatch)
+
+    # b3 sro register --ramo <ramo> --lmg <lmg> --premio <premio>
+    p_sro = subparsers.add_parser(
+        "sro",
+        aliases=["seguros"],
+        help="Sistema de Registro de Operações (SRO B3 Seguros / SUSEP Circular 642/2021)",
+    )
+    p_sro_sub = p_sro.add_subparsers(dest="sro_action", help="Ação do SRO")
+    p_sro_reg = p_sro_sub.add_parser("register", aliases=["registrar", "emitir"], help="Simula registro de apólice no SRO")
+    p_sro_reg.add_argument("--ramo", required=True, help="Código ou identificador do ramo (ex: 0118, PATRIMONIAL, 0993, VIDA)")
+    p_sro_reg.add_argument("--lmg", required=True, type=float, help="Limite Máximo de Garantia (LMG) em R$")
+    p_sro_reg.add_argument("--premio", required=True, type=float, help="Prêmio líquido da apólice em R$")
+    p_sro_reg.add_argument("--seguradora-cnpj", default="33000111000100", help="CNPJ da seguradora líder")
+    p_sro_reg.add_argument("--seguradora-nome", default="Seguradora Líder Nacional S/A", help="Razão social da seguradora líder")
+    p_sro_reg.add_argument("--segurado-doc", default="11222333000144", help="CPF ou CNPJ do segurado")
+    p_sro_reg.add_argument("--segurado-nome", default="Indústria e Comércio Brasil S/A", help="Nome do segurado")
+    p_sro_reg.add_argument("--proposta", default=None, help="Número da proposta de seguro")
+    p_sro_reg.add_argument("--json", action="store_true", help="Saída em formato JSON")
+    p_sro_reg.set_defaults(func=cmd_sro_register)
+    p_sro.set_defaults(func=cmd_sro_dispatch)
 
     return parser
 
@@ -1943,8 +2425,12 @@ def main_verify(argv: Optional[Sequence[str]] = None) -> int:
     return cmd_verify(args)
 
 
+# Alias institucional para o binário 'b3'
+main_b3 = main_atlas
+
+
 if __name__ == "__main__":
     if Path(sys.argv[0]).stem == "b3-verify":
         sys.exit(main_verify())
     else:
-        sys.exit(main_atlas())
+        sys.exit(main_b3())

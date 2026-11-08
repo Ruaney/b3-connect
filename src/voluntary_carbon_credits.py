@@ -41,6 +41,7 @@ from datetime import date, datetime, timezone
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from enum import Enum
 import hashlib
+import hmac
 import json
 from pathlib import Path
 import re
@@ -1366,7 +1367,7 @@ class VoluntaryCarbonCreditsEngine:
                     scope=c.scope,
                     timestamp_iso=c.retirement_timestamp.isoformat(),
                 )
-                if c.certificate_hash != recomputed_hash:
+                if not hmac.compare_digest(c.certificate_hash.lower(), recomputed_hash.lower()):
                     retirement_valid = False
                     break
 

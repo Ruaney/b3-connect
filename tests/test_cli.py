@@ -11,6 +11,8 @@ from src.cli import (
     VERSION,
     build_atlas_parser,
     build_verify_parser,
+    cmd_concepts_list,
+    cmd_concepts_simulate,
     cmd_explain,
     cmd_flow_info,
     cmd_list_flows,
@@ -19,11 +21,14 @@ from src.cli import (
     cmd_simulate_flow,
     cmd_simulate_moc,
     cmd_simulate_triparty,
+    cmd_sng_include,
+    cmd_sro_register,
     cmd_stats,
     cmd_trace_balcao,
     cmd_trace_trade,
     load_catalog,
     main_atlas,
+    main_b3,
     main_verify,
     resolve_catalog_dir,
     resolve_fixtures_dir,
@@ -60,7 +65,7 @@ class TestAtlasCLI(unittest.TestCase):
         flows_data, sources_data = load_catalog(self.catalog_dir)
         self.assertIn("flows", flows_data)
         self.assertIn("sources", sources_data)
-        self.assertEqual(len(flows_data["flows"]), 105)
+        self.assertEqual(len(flows_data["flows"]), 107)
         self.assertGreaterEqual(len(sources_data["sources"]), 30)
 
         flow_ids = {f["id"] for f in flows_data["flows"]}
@@ -78,7 +83,7 @@ class TestAtlasCLI(unittest.TestCase):
             self.assertEqual(code, 0)
             self.assertIn("FL-001", output)
             self.assertIn("FL-100", output)
-            self.assertIn("105 fluxos encontrados", output)
+            self.assertIn("107 fluxos encontrados", output)
 
     def test_cmd_list_flows_filter_system(self):
         """Testa list-flows com filtro por sistema."""
@@ -100,7 +105,7 @@ class TestAtlasCLI(unittest.TestCase):
             self.assertEqual(code, 0)
             parsed = json.loads(output)
             self.assertIsInstance(parsed, list)
-            self.assertEqual(len(parsed), 105)
+            self.assertEqual(len(parsed), 107)
             self.assertIn("id", parsed[0])
 
     def test_cmd_flow_info_found(self):
@@ -155,7 +160,7 @@ class TestAtlasCLI(unittest.TestCase):
             output = fake_out.getvalue()
             self.assertEqual(code, 0)
             self.assertIn("ESTATÍSTICAS E MÉTRICAS", output)
-            self.assertIn("Total de Fluxos Mapeados: 105", output)
+            self.assertIn("Total de Fluxos Mapeados: 107", output)
 
     def test_cmd_stats_json(self):
         """Testa exibição de estatísticas em JSON."""
@@ -166,7 +171,7 @@ class TestAtlasCLI(unittest.TestCase):
             output = fake_out.getvalue()
             self.assertEqual(code, 0)
             parsed = json.loads(output)
-            self.assertEqual(parsed.get("total_flows"), 105)
+            self.assertEqual(parsed.get("total_flows"), 107)
             self.assertIn("total_sources", parsed)
             self.assertIn("stages", parsed)
 
@@ -552,6 +557,181 @@ class TestAtlasCLI(unittest.TestCase):
             code = main_verify([])
             self.assertEqual(code, 0)
             self.assertIn("LEIS DE CONSERVAÇÃO E INVARIANTES DA B3 FORAM PROVADAS", fake_out.getvalue())
+
+    # ==========================================================================
+    # Testes dos Novos Comandos Institucionais: Concepts, SNG e SRO
+    # ==========================================================================
+
+    def test_concepts_list_text(self):
+        """Testa 'b3 concepts list' em formato tabular de terminal."""
+        with patch("sys.stdout", new=StringIO()) as fake_out:
+            code = main_b3(["concepts", "list"])
+            self.assertEqual(code, 0)
+            output = fake_out.getvalue()
+            self.assertIn("12 CONCEITOS ESTRUTURANTES", output)
+            self.assertIn("novacao-ccp", output)
+            self.assertIn("default-waterfall", output)
+            self.assertIn("sng-gravames-veiculares", output)
+            self.assertIn("sro-seguros-susep", output)
+
+    def test_concepts_list_json(self):
+        """Testa 'b3 concepts list --json' retornando 12 conceitos em JSON."""
+        with patch("sys.stdout", new=StringIO()) as fake_out:
+            code = main_b3(["concepts", "list", "--json"])
+            self.assertEqual(code, 0)
+            data = json.loads(fake_out.getvalue())
+            self.assertIsInstance(data, list)
+            self.assertEqual(len(data), 12)
+            ids = {c["id"] for c in data}
+            self.assertIn("novacao-ccp", ids)
+            self.assertIn("sng-gravames-veiculares", ids)
+            self.assertIn("sro-seguros-susep", ids)
+
+    def test_concepts_default_dispatch(self):
+        """Testa chamada 'b3 concepts' sem ação adicional despachando para list."""
+        with patch("sys.stdout", new=StringIO()) as fake_out:
+            code = main_b3(["concepts"])
+            self.assertEqual(code, 0)
+            self.assertIn("12 CONCEITOS ESTRUTURANTES", fake_out.getvalue())
+
+    def test_concepts_simulate_text(self):
+        """Testa 'b3 concepts simulate <concept_id>' em modo texto/tabela."""
+        with patch("sys.stdout", new=StringIO()) as fake_out:
+            code = main_b3(["concepts", "simulate", "novacao-ccp"])
+            self.assertEqual(code, 0)
+            output = fake_out.getvalue()
+            self.assertIn("SIMULAÇÃO ANALÍTICA B3", output)
+            self.assertIn("novacao-ccp", output)
+            self.assertIn("LAW-004", output)
+
+    def test_concepts_simulate_json(self):
+        """Testa 'b3 concepts simulate <concept_id> --json'."""
+        with patch("sys.stdout", new=StringIO()) as fake_out:
+            code = main_b3(["concepts", "simulate", "sng-gravames-veiculares", "--json"])
+            self.assertEqual(code, 0)
+            data = json.loads(fake_out.getvalue())
+            self.assertEqual(data["concept_id"], "sng-gravames-veiculares")
+            self.assertEqual(data["law_verified"], "LAW-112")
+            self.assertIn("SNG-", data["gravame_id"])
+
+    def test_concepts_simulate_unknown_error(self):
+        """Testa simulação de conceito inexistente gerando código de erro 1."""
+        with patch("sys.stderr", new=StringIO()) as fake_err:
+            code = main_b3(["concepts", "simulate", "conceito-inexistente"])
+            self.assertEqual(code, 1)
+            self.assertIn("não encontrado no catálogo", fake_err.getvalue())
+
+    def test_sng_include_text(self):
+        """Testa 'b3 sng include --chassi <chassi> --credor <cnpj> --valor <val>' em texto."""
+        args = [
+            "sng", "include",
+            "--chassi", "9BWZZZ377VT004251",
+            "--credor", "60701190000104",
+            "--valor", "65000.00",
+        ]
+        with patch("sys.stdout", new=StringIO()) as fake_out:
+            code = main_b3(args)
+            self.assertEqual(code, 0)
+            output = fake_out.getvalue()
+            self.assertIn("SISTEMA NACIONAL DE GRAVAMES", output)
+            self.assertIn("9BWZZZ377VT004251", output)
+            self.assertIn("60701190000104", output)
+            self.assertIn("LAW-112", output)
+
+    def test_sng_include_json(self):
+        """Testa 'b3 sng include ... --json' gerando payload estruturado."""
+        args = [
+            "sng", "include",
+            "--chassi", "9BWZZZ377VT004252",
+            "--credor", "60701190000104",
+            "--valor", "82000.50",
+            "--json",
+        ]
+        with patch("sys.stdout", new=StringIO()) as fake_out:
+            code = main_b3(args)
+            self.assertEqual(code, 0)
+            data = json.loads(fake_out.getvalue())
+            self.assertEqual(data["chassi"], "9BWZZZ377VT004252")
+            self.assertEqual(data["credor_cnpj"], "60701190000104")
+            self.assertEqual(data["valor_financiamento"], "82000.5")
+            self.assertEqual(data["status"], "ATIVO")
+            self.assertEqual(data["law_verified"], "LAW-112")
+            self.assertTrue(data["invariants"]["verified"])
+
+    def test_sng_include_invalid_chassi(self):
+        """Testa rejeição de chassi fora do padrão ISO 3779 no comando SNG."""
+        args = [
+            "sng", "include",
+            "--chassi", "CHASSI-CURTO",
+            "--credor", "60701190000104",
+            "--valor", "50000.00",
+        ]
+        with patch("sys.stderr", new=StringIO()) as fake_err:
+            code = main_b3(args)
+            self.assertEqual(code, 1)
+            self.assertIn("Chassi inválido", fake_err.getvalue())
+
+    def test_sng_dispatch_no_action(self):
+        """Testa chamada de 'b3 sng' sem ação exibindo instrução de uso."""
+        with patch("sys.stderr", new=StringIO()) as fake_err:
+            code = main_b3(["sng"])
+            self.assertEqual(code, 1)
+            self.assertIn("Uso: b3 sng include", fake_err.getvalue())
+
+    def test_sro_register_text(self):
+        """Testa 'b3 sro register --ramo <ramo> --lmg <lmg> --premio <premio>' em texto."""
+        args = [
+            "sro", "register",
+            "--ramo", "0118",
+            "--lmg", "2500000.00",
+            "--premio", "48000.00",
+        ]
+        with patch("sys.stdout", new=StringIO()) as fake_out:
+            code = main_b3(args)
+            self.assertEqual(code, 0)
+            output = fake_out.getvalue()
+            self.assertIn("SISTEMA DE REGISTRO DE OPERAÇÕES", output)
+            self.assertIn("0118_PATRIMONIAL_EMPRESARIAL", output)
+            self.assertIn("LAW-113", output)
+
+    def test_sro_register_json(self):
+        """Testa 'b3 sro register ... --json' gerando payload estruturado."""
+        args = [
+            "sro", "register",
+            "--ramo", "VIDA",
+            "--lmg", "1000000.00",
+            "--premio", "15000.00",
+            "--json",
+        ]
+        with patch("sys.stdout", new=StringIO()) as fake_out:
+            code = main_b3(args)
+            self.assertEqual(code, 0)
+            data = json.loads(fake_out.getvalue())
+            self.assertEqual(data["ramo"], "0993_VIDA")
+            self.assertEqual(data["limite_maximo_garantia"], "1000000.0")
+            self.assertEqual(data["status"], "VIGENTE")
+            self.assertEqual(data["law_verified"], "LAW-113")
+            self.assertTrue(data["invariants"]["verified"])
+
+    def test_sro_register_invalid_ramo(self):
+        """Testa rejeição de ramo de seguro inválido no comando SRO."""
+        args = [
+            "sro", "register",
+            "--ramo", "RAMO_INEXISTENTE_XYZ",
+            "--lmg", "1000000.00",
+            "--premio", "15000.00",
+        ]
+        with patch("sys.stderr", new=StringIO()) as fake_err:
+            code = main_b3(args)
+            self.assertEqual(code, 1)
+            self.assertIn("desconhecido", fake_err.getvalue())
+
+    def test_sro_dispatch_no_action(self):
+        """Testa chamada de 'b3 sro' sem ação exibindo instrução de uso."""
+        with patch("sys.stderr", new=StringIO()) as fake_err:
+            code = main_b3(["sro"])
+            self.assertEqual(code, 1)
+            self.assertIn("Uso: b3 sro register", fake_err.getvalue())
 
 
 if __name__ == "__main__":

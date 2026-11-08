@@ -14,6 +14,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import date, datetime
 import hashlib
+import hmac
 import json
 import logging
 from pathlib import Path
@@ -562,7 +563,7 @@ class IMercadoClient:
                 # 4. Validação estrita de Hash SHA-256
                 if expected_hash_sha256 is not None:
                     normalized_expected = expected_hash_sha256.strip().lower()
-                    if actual_hash.lower() != normalized_expected:
+                    if not hmac.compare_digest(actual_hash.lower(), normalized_expected.lower()):
                         if tmp_path.exists():
                             tmp_path.unlink(missing_ok=True)
                         raise HashMismatchError(

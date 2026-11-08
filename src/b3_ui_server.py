@@ -45,6 +45,8 @@ class B3DashboardHandler(BaseHTTPRequestHandler):
             self._serve_api_status()
         elif path == "/api/modules":
             self._serve_api_modules()
+        elif path == "/api/flows":
+            self._serve_api_flows()
         elif path == "/api/docs":
             self._serve_api_docs()
         elif path.startswith("/api/docs/"):
@@ -90,9 +92,19 @@ class B3DashboardHandler(BaseHTTPRequestHandler):
             "homologated_flows": 107,
             "formal_conservation_laws": 91,
             "architecture_modules": 7,
+            "concepts_count": 12,
             "documents_summary": summary,
             "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         })
+
+    def _serve_api_flows(self) -> None:
+        flows_file = _REPO_ROOT / "catalog" / "flows.json"
+        if not flows_file.is_file():
+            self.send_error(404, "Arquivo flows.json não encontrado")
+            return
+        with open(flows_file, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        self._send_json(data.get("flows", []))
 
     def _serve_api_modules(self) -> None:
         modules = [
@@ -167,7 +179,12 @@ class B3DashboardHandler(BaseHTTPRequestHandler):
             self.send_error(404, f"Documento '{doc_id}' não encontrado")
             return
 
-        file_path = _REPO_ROOT / doc.local_path
+        file_path = (_REPO_ROOT / doc.local_path).resolve()
+        try:
+            file_path.relative_to(_REPO_ROOT)
+        except ValueError:
+            self.send_error(403, "Acesso negado: violação de path traversal")
+            return
         if not file_path.is_file():
             self.send_error(404, "Arquivo físico não encontrado em disco")
             return
@@ -266,6 +283,81 @@ class B3DashboardHandler(BaseHTTPRequestHandler):
                 "laws": ["LAW-111"],
                 "offerings": len(eng.offerings),
                 "dvp_receipts": len(eng.dvp_receipts),
+                "invariants": inv,
+            })
+        elif flow_id == "FL-106":
+            from decimal import Decimal
+            from src.sng_gravames_engine import SngGravamesEngine, ModalidadeGravame, VeiculoIdentificacao
+            with open(fixtures_dir / "sng_gravames_engine.json", "r", encoding="utf-8") as f:
+                d = json.load(f)
+            eng = SngGravamesEngine()
+            for g in d.get("gravames", []):
+                v_data = g["veiculo"]
+                v = VeiculoIdentificacao(
+                    chassi=v_data["chassi"],
+                    renavam=v_data["renavam"],
+                    placa=v_data["placa"],
+                    uf_emplacamento=v_data["uf_emplacamento"],
+                    marca_modelo=v_data["marca_modelo"],
+                    ano_fabricacao=v_data["ano_fabricacao"],
+                    ano_modelo=v_data["ano_modelo"],
+                )
+                eng.registrar_gravame(
+                    contrato_numero=g["contrato_numero"],
+                    modalidade=ModalidadeGravame(g["modalidade"]),
+                    credor_cnpj=g["credor_cnpj"],
+                    credor_nome=g["credor_nome"],
+                    devedor_documento=g["devedor_documento"],
+                    devedor_nome=g["devedor_nome"],
+                    veiculo=v,
+                    valor_financiamento=Decimal(g["valor_financiamento"]),
+                    quantidade_parcelas=g["quantidade_parcelas"],
+                    taxa_juros_anual_pct=Decimal(g["taxa_juros_anual_pct"]),
+                )
+            inv = eng.verify_invariants()
+            self._send_json({
+                "flow": "FL-106",
+                "title": "Sistema Nacional de Gravames (SNG) B3 Financiamentos",
+                "laws": ["LAW-112"],
+                "gravames_registrados": len(eng.gravames),
+                "invariants": inv,
+            })
+        elif flow_id == "FL-107":
+            from decimal import Decimal
+            from src.sro_seguros_engine import SroSegurosEngine, RamoSeguro, CosseguradorShare
+            with open(fixtures_dir / "sro_seguros_engine.json", "r", encoding="utf-8") as f:
+                d = json.load(f)
+            eng = SroSegurosEngine()
+            for a in d.get("apolices", []):
+                cosseg = [
+                    CosseguradorShare(
+                        cnpj=c["cnpj"],
+                        razao_social=c["razao_social"],
+                        percentual_quota=Decimal(c["percentual_quota"]),
+                        is_lider=c["is_lider"],
+                    ) for c in a.get("cosseguradores", [])
+                ]
+                eng.registrar_apolice(
+                    numero_proposta=a["numero_proposta"],
+                    ramo=RamoSeguro(a["ramo"]),
+                    seguradora_lider_cnpj=a["seguradora_lider_cnpj"],
+                    seguradora_lider_nome=a["seguradora_lider_nome"],
+                    segurado_documento=a["segurado_documento"],
+                    segurado_nome=a["segurado_nome"],
+                    data_emissao=a["data_emissao"],
+                    inicio_vigencia=a["inicio_vigencia"],
+                    fim_vigencia=a["fim_vigencia"],
+                    limite_maximo_garantia=Decimal(a["limite_maximo_garantia"]),
+                    premio_liquido=Decimal(a["premio_liquido"]),
+                    iof_aliquota_pct=Decimal("7.38"),
+                    cosseguradores=cosseg,
+                )
+            inv = eng.verify_invariants()
+            self._send_json({
+                "flow": "FL-107",
+                "title": "Sistema de Registro de Operações (SRO) B3 Seguros & SUSEP",
+                "laws": ["LAW-113"],
+                "apolices_registradas": len(eng.apolices),
                 "invariants": inv,
             })
         else:
@@ -408,11 +500,12 @@ class B3DashboardHandler(BaseHTTPRequestHandler):
     </div>
     <ul class="nav">
       <li><a href="#" class="active" onclick="switchTab('overview')">🏛️ 7 Módulos B3</a></li>
+      <li><a href="#" onclick="switchTab('flows')">🧭 Catálogo de 107 Fluxos</a></li>
       <li><a href="#" onclick="switchTab('simulator')">⚡ Simulador do Pregão</a></li>
       <li><a href="#" onclick="switchTab('chaos')">🔥 Laboratório de Caos</a></li>
       <li><a href="#" onclick="switchTab('phase7')">🧮 Fase 7 Quant & TLA+</a></li>
       <li><a href="#" onclick="switchTab('concepts')">🧠 Conceitos Complexos B3</a></li>
-      <li><a href="#" onclick="switchTab('docs')">📚 Acervo Documental (85)</a></li>
+      <li><a href="#" onclick="switchTab('docs')">📚 Acervo Documental (87)</a></li>
     </ul>
     <div class="system-status">
       <span class="dot"></span> 100% Local (Off-line)
@@ -422,7 +515,7 @@ class B3DashboardHandler(BaseHTTPRequestHandler):
   <div class="main">
     <div class="header">
       <h2 id="view-title">Visão Holística dos 7 Módulos da B3</h2>
-      <span class="badge-pill">89 Leis Provadas • 105 Fluxos • 85 Manuais</span>
+      <span class="badge-pill">91 Leis Provadas • 107 Fluxos • 87 Manuais • 12 Conceitos</span>
     </div>
 
     <div class="content">
@@ -430,23 +523,23 @@ class B3DashboardHandler(BaseHTTPRequestHandler):
       <div class="stats-grid">
         <div class="stat-card">
           <div class="stat-title">Fluxos Institucionais</div>
-          <div class="stat-value">105 / 105</div>
-          <div class="stat-sub">FL-001 a FL-105 Homologados</div>
+          <div class="stat-value">107 / 107</div>
+          <div class="stat-sub">FL-001 a FL-107 Homologados</div>
         </div>
         <div class="stat-card">
           <div class="stat-title">Leis Formais de Conservação</div>
-          <div class="stat-value">89 / 89</div>
+          <div class="stat-value">91 / 91</div>
           <div class="stat-sub">100% Provadas Matematicamente</div>
         </div>
         <div class="stat-card">
           <div class="stat-title">Acervo Documental Local</div>
-          <div class="stat-value">85 / 85 (100%)</div>
+          <div class="stat-value">87 / 87 (100%)</div>
           <div class="stat-sub">Gravados em raw_docs/ com SHA-256</div>
         </div>
         <div class="stat-card">
-          <div class="stat-title">Suíte de Testes Unitários</div>
-          <div class="stat-value">1.617 Testes</div>
-          <div class="stat-sub">100% Aprovados em 10s</div>
+          <div class="stat-title">Conceitos Complexos B3</div>
+          <div class="stat-value">12 / 12 (100%)</div>
+          <div class="stat-sub">Guias Pedagógicos & Sandbox Live</div>
         </div>
       </div>
 
@@ -454,6 +547,40 @@ class B3DashboardHandler(BaseHTTPRequestHandler):
       <div id="tab-overview">
         <div class="modules-grid" id="modules-container">
           <!-- Injetado via JS -->
+        </div>
+      </div>
+
+      <!-- Tab Flows (Catálogo de 107 Fluxos) -->
+      <div id="tab-flows" style="display: none;">
+        <div class="panel">
+          <div class="panel-header" style="flex-direction: column; align-items: flex-start; gap: 1rem;">
+            <div>
+              <h3 style="font-size: 1.25rem; color: #fff;">🧭 Catálogo Homologado de 107 Fluxos Institucionais da B3</h3>
+              <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">
+                Mapeamento completo ponta a ponta: do envio de ordens ao PUMA até o registro no NoMe, liquidação SPB e custódia CSD.
+              </p>
+            </div>
+            <div style="display: flex; gap: 0.75rem; width: 100%; flex-wrap: wrap; align-items: center;">
+              <input type="text" id="flow-search" placeholder="Buscar por ID (ex: FL-001), nome, sistema ou interface..." oninput="filterFlows()" style="background: #0c1220; border: 1px solid var(--border); color: #fff; padding: 0.6rem 1rem; border-radius: 6px; font-size: 0.85rem; flex: 1; min-width: 280px;">
+              <div id="flow-system-chips" style="display: flex; gap: 0.4rem; flex-wrap: wrap;"></div>
+            </div>
+          </div>
+          <div style="max-height: 520px; overflow-y: auto;">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width: 100px;">ID</th>
+                  <th>Nome do Fluxo</th>
+                  <th>Sistema</th>
+                  <th>Interface</th>
+                  <th style="width: 120px;">Status</th>
+                  <th style="width: 110px;">Ações</th>
+                </tr>
+              </thead>
+              <tbody id="flows-tbody"></tbody>
+            </table>
+          </div>
+          <div id="flow-modal" class="viewer" style="display: none; margin-top: 1.5rem;"></div>
         </div>
       </div>
 
@@ -510,6 +637,8 @@ class B3DashboardHandler(BaseHTTPRequestHandler):
             <button class="btn" onclick="runPhase7('FL-103')">⚖️ FL-103: Formador PMM B3</button>
             <button class="btn" onclick="runPhase7('FL-104')">🎯 FL-104: Algorithmic SOR</button>
             <button class="btn" onclick="runPhase7('FL-105')">🪙 FL-105: Emissão RWA Drex</button>
+            <button class="btn" onclick="runPhase7('FL-106')">🚗 FL-106: SNG Gravames</button>
+            <button class="btn" onclick="runPhase7('FL-107')">📑 FL-107: SRO Seguros SUSEP</button>
             <button class="btn" style="background: #10b981;" onclick="runTLACheck()">🔬 Rodar Model Checker TLA+ (TLC)</button>
           </div>
           <div id="phase7-output" class="viewer" style="display: none;"></div>
@@ -576,22 +705,26 @@ class B3DashboardHandler(BaseHTTPRequestHandler):
 
   <script>
     let allDocs = [];
+    let allFlows = [];
 
     function switchTab(tabId) {
       document.querySelectorAll('.nav li a').forEach(el => el.classList.remove('active'));
       event.target.classList.add('active');
-      ['overview', 'simulator', 'chaos', 'phase7', 'concepts', 'docs'].forEach(t => {
-        document.getElementById('tab-' + t).style.display = (t === tabId) ? 'block' : 'none';
+      ['overview', 'flows', 'simulator', 'chaos', 'phase7', 'concepts', 'docs'].forEach(t => {
+        const el = document.getElementById('tab-' + t);
+        if (el) el.style.display = (t === tabId) ? 'block' : 'none';
       });
       const titles = {
         'overview': 'Visão Holística dos 7 Módulos da B3',
+        'flows': '🧭 Catálogo Completo de 107 Fluxos Institucionais B3 (FL-001 a FL-107)',
         'simulator': 'Simulador Diário E2E: Todos os Módulos em Execução',
         'chaos': 'Laboratório de Caos e Testes de Estresse Financeiro',
-        'phase7': 'Fase 7 Quantitativa (FL-101 a FL-105) & Model Checking TLA+',
+        'phase7': 'Fase 7 Quantitativa (FL-101 a FL-107) & Model Checking TLA+',
         'concepts': '🧠 Guia Pedagógico de Conceitos Complexos da B3',
-        'docs': 'Acervo Documental Oficial B3 (100% Baixado Localmente)'
+        'docs': 'Acervo Documental Oficial B3 (87 Manuais Locais com SHA-256)'
       };
-      document.getElementById('view-title').innerText = titles[tabId];
+      document.getElementById('view-title').innerText = titles[tabId] || 'B3 Integration Atlas';
+      if (tabId === 'flows' && allFlows.length === 0) loadFlows();
       if (tabId === 'docs' && allDocs.length === 0) loadDocs();
       if (tabId === 'concepts' && allConcepts.length === 0) loadConcepts();
     }
@@ -741,6 +874,101 @@ class B3DashboardHandler(BaseHTTPRequestHandler):
       
       let clean = data.raw_content.replace(/<style[\\s\\S]*?<\\/style>/g, '').replace(/<[^>]+>/g, ' ').replace(/\\n\\s*\\n+/g, '\\n\\n');
       modal.innerText = `[${data.doc.doc_id}] ${data.doc.title}\nCategoria: ${data.doc.category} | Hash: ${data.doc.sha256}\n` + '='.repeat(80) + `\n\n` + clean;
+      modal.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    let selectedFlowSystem = 'TODOS';
+
+    async function loadFlows() {
+      const res = await fetch('/api/flows');
+      allFlows = await res.json();
+      renderFlowSystemChips();
+      renderFlows(allFlows);
+    }
+
+    function renderFlowSystemChips() {
+      const systems = ['TODOS', ...new Set(allFlows.map(f => f.system))];
+      const container = document.getElementById('flow-system-chips');
+      if (!container) return;
+      container.innerHTML = systems.slice(0, 8).map(s => `
+        <button class="btn" style="padding: 0.35rem 0.75rem; font-size: 0.75rem; background: ${selectedFlowSystem === s ? 'var(--accent-blue)' : '#1f2937'}; color: #fff;" onclick="selectFlowSystem('${s}')">
+          ${s}
+        </button>
+      `).join('');
+    }
+
+    function selectFlowSystem(sys) {
+      selectedFlowSystem = sys;
+      renderFlowSystemChips();
+      filterFlows();
+    }
+
+    function filterFlows() {
+      const q = document.getElementById('flow-search').value.toLowerCase().trim();
+      const filtered = allFlows.filter(f => {
+        const matchesSys = (selectedFlowSystem === 'TODOS' || f.system === selectedFlowSystem);
+        const matchesQuery = !q || (
+          f.id.toLowerCase().includes(q) ||
+          f.name.toLowerCase().includes(q) ||
+          f.system.toLowerCase().includes(q) ||
+          (f.interface && f.interface.toLowerCase().includes(q))
+        );
+        return matchesSys && matchesQuery;
+      });
+      renderFlows(filtered);
+    }
+
+    function renderFlows(flows) {
+      const tbody = document.getElementById('flows-tbody');
+      if (!tbody) return;
+      if (flows.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 1.5rem;">Nenhum fluxo encontrado.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = flows.map(f => `
+        <tr>
+          <td><code style="color: var(--accent-gold); font-weight: 700;">${f.id}</code></td>
+          <td style="font-weight: 500; color: #fff;">${f.name}</td>
+          <td><span class="tag" style="background: rgba(2, 132, 199, 0.15); color: #38bdf8;">${f.system}</span></td>
+          <td style="font-size: 0.8rem; color: var(--text-muted);">${f.interface || '-'}</td>
+          <td>
+            <span class="tag" style="background: ${f.tested_locally ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)'}; color: ${f.tested_locally ? '#10b981' : '#ef4444'}; font-weight: 600;">
+              ${f.tested_locally ? 'HOMOLOGADO' : 'PENDENTE'}
+            </span>
+          </td>
+          <td>
+            <button class="btn" style="padding: 0.3rem 0.6rem; font-size: 0.75rem;" onclick="viewFlowDetail('${f.id}')">Ver Detalhes</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function viewFlowDetail(flowId) {
+      const f = allFlows.find(item => item.id === flowId);
+      if (!f) return;
+      const modal = document.getElementById('flow-modal');
+      modal.style.display = 'block';
+      let details = `================================================================================\\n`;
+      details += ` FLUXO INSTITUCIONAL B3: ${f.id} - ${f.name}\\n`;
+      details += `================================================================================\\n`;
+      details += `Sistema:        ${f.system}\\n`;
+      details += `Interface:      ${f.interface}\\n`;
+      details += `Confiança:      ${f.confidence}\\n`;
+      details += `Status:         Mapeado=${f.mapped} | Documentado=${f.documented} | Implementado=${f.implemented} | Testado=${f.tested_locally}\\n`;
+      details += `Fontes B3:      ${(f.sources || []).join(', ')}\\n`;
+      details += `--------------------------------------------------------------------------------\\n`;
+      details += `Evidências:\\n`;
+      if (f.evidence) {
+        details += `  - Documentação: ${f.evidence.documented || 'N/A'}\\n`;
+        details += `  - Implementação:${f.evidence.implemented || 'N/A'}\\n`;
+        details += `  - Testes:       ${f.evidence.tested_locally || 'N/A'}\\n`;
+      }
+      if (f.pending) {
+        details += `--------------------------------------------------------------------------------\\n`;
+        details += `Notas / Pendências:\\n  ${f.pending}\\n`;
+      }
+      details += `================================================================================\\n`;
+      modal.innerText = details;
       modal.scrollIntoView({ behavior: 'smooth' });
     }
 

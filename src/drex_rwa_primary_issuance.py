@@ -36,6 +36,7 @@ from datetime import datetime, timezone
 from decimal import Decimal, ROUND_HALF_EVEN, ROUND_DOWN
 from enum import Enum
 import hashlib
+import hmac
 import json
 from pathlib import Path
 import time
@@ -1418,7 +1419,7 @@ class DrexRwaPrimaryIssuanceEngine:
             raise DrexRwaHtlcError(f"Contrato HTLC '{contract_id}' expirou ({now} > {htlc.time_lock})")
 
         computed_hash = hashlib.sha256(preimage.encode()).hexdigest().lower()
-        if computed_hash != htlc.hash_lock:
+        if not hmac.compare_digest(computed_hash.lower(), htlc.hash_lock.lower()):
             raise DrexRwaHtlcError(f"Preimage inválida para o hash_lock: {computed_hash} != {htlc.hash_lock}")
 
         offering = self.offerings[htlc.offering_id]

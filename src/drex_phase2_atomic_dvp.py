@@ -22,6 +22,7 @@ from datetime import datetime, timezone
 from decimal import Decimal, ROUND_HALF_EVEN
 from enum import Enum
 import hashlib
+import hmac
 import json
 from pathlib import Path
 import time
@@ -990,7 +991,7 @@ class DrexPhase2AtomicDvpEngine:
 
         # Verificação criptográfica da Preimage (SHA-256)
         computed_hash = hashlib.sha256(secret_preimage.encode("utf-8")).hexdigest().lower()
-        if computed_hash != contract.hash_lock.lower():
+        if not hmac.compare_digest(computed_hash, contract.hash_lock.lower()):
             raise DrexHtlcPreimageMismatchError(
                 f"Preimage inválida para HTLC '{contract_id}': "
                 f"SHA256('{secret_preimage}') == {computed_hash} != {contract.hash_lock}"
