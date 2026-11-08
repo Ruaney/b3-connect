@@ -31,7 +31,7 @@ _REPO_ROOT = Path(__file__).resolve().parent.parent
 class B3DashboardHandler(BaseHTTPRequestHandler):
     """Handler HTTP para o Dashboard Web Local da B3."""
 
-    server_version = "B3AtlasDashboard/2.2.0"
+    server_version = "B3AtlasDashboard/2.3.0"
 
     def do_GET(self) -> None:
         parsed_url = urllib.parse.urlparse(self.path)
@@ -55,7 +55,7 @@ class B3DashboardHandler(BaseHTTPRequestHandler):
             scenario_name = path.replace("/api/chaos/", "").upper()
             self._serve_api_chaos(scenario_name)
         elif path == "/api/health":
-            self._send_json({"status": "UP", "version": "2.2.0", "offline": True})
+            self._send_json({"status": "UP", "version": "2.3.0", "offline": True})
         else:
             self.send_error(404, "Rota não encontrada")
 
@@ -72,9 +72,9 @@ class B3DashboardHandler(BaseHTTPRequestHandler):
         harvester = B3DocHarvester(target_dir=_REPO_ROOT / "raw_docs")
         summary = harvester.get_summary()
         self._send_json({
-            "version": "2.2.0",
-            "homologated_flows": 100,
-            "formal_conservation_laws": 84,
+            "version": "2.3.0",
+            "homologated_flows": 105,
+            "formal_conservation_laws": 89,
             "architecture_modules": 7,
             "documents_summary": summary,
             "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
@@ -273,7 +273,7 @@ class B3DashboardHandler(BaseHTTPRequestHandler):
 <body>
   <div class="sidebar">
     <div class="brand">
-      <h1>B3 ATLAS <span>v2.2.0</span></h1>
+      <h1>B3 ATLAS <span>v2.3.0</span></h1>
       <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Arquitetura & Motor Integrado B3</p>
     </div>
     <ul class="nav">

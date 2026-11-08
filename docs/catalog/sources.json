@@ -641,6 +641,46 @@
       "status": "localizada",
       "kind": "manual_tecnico",
       "limitation": "Barramento Central de Liquidação Unificada e Compensação Multilateral Contínua unificando os 10 subsistemas B3, equilíbrio contábil global estrito e prevenção de contágio em cascata."
+    },
+    {
+      "id": "SRC-081",
+      "title": "B3 — Manual de Modelagem de Superfícies de Volatilidade e Curvas de Opções (SABR / SVI)",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/negociacao/derivativos/superficies-volatilidade-sabr-svi.htm",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Calibração paramétrica de superfícies SVI (Gatheral) e SABR (Hagan), consistência intertemporal sem arbitragem de calendário e densidade livre de arbitragem butterfly."
+    },
+    {
+      "id": "SRC-082",
+      "title": "B3 & CVM — Manual de Emissão e Registro de Certificados de Operações Estruturadas (COE) - Lei nº 12.249/2010 e Resolução CVM nº 8",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/registro/renda-fixa/certificados-de-operacoes-estruturadas-coe.htm",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Regras de emissão e registro de COE com capital protegido ou em risco, decomposição entre nota de renda fixa e opções embutidas, apuração de payoff e garantias."
+    },
+    {
+      "id": "SRC-083",
+      "title": "B3 & BSM — Manual do Programa de Metas de Formador de Mercado (PMM) e Roteiro de Auditoria Operacional",
+      "url": "https://www.b3.com.br/pt_br/solucoes/plataformas/puma-trading-system/regras-e-parametros-de-negociacao/programa-formador-de-mercado-pmm.htm",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Obrigações regulamentares de presença contínua em tela (>=80%), spread máximo por classe de ativo e volume mínimo obrigatório de ordens bilaterais."
+    },
+    {
+      "id": "SRC-084",
+      "title": "B3 PUMA Trading System — Guia Técnico de Algoritmos de Execução Institucional (SOR, TWAP, VWAP e POV)",
+      "url": "https://www.b3.com.br/pt_br/solucoes/plataformas/puma-trading-system/conectividade/algoritmos-execucao-sor-twap-vwap.htm",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Smart Order Routing e fatiamento ótimo de ordens institucionais em fatias temporais e proporcionais ao volume intradiário da B3 com conservação estrita de quantidade."
+    },
+    {
+      "id": "SRC-085",
+      "title": "B3, BACEN & CVM — Diretrizes de Emissão Primária de Ativos Tokenizados (RWA) e Liquidação DvP na Rede Drex",
+      "url": "https://www.b3.com.br/pt_br/solucoes/plataformas/inovacao-e-ativos-digitais/emissao-primaria-rwa-drex.htm",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Emissão primária de títulos de crédito privado tokenizados (ERC-1155/ERC-3643), alocação de investidores e liquidação atômica bilateral DvP em Real Digital BACEN."
     }
   ]
 }

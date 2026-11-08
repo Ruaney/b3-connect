@@ -1,0 +1,640 @@
+{
+  "version": "1.0.0",
+  "as_of": "2026-11-04",
+  "scope": "B3 PUMA Trading System & Câmara — Superfícies Paramétricas de Volatilidade SVI e SABR (FL-101)",
+  "market_context": {
+    "trading_system": "PUMA Trading System Derivatives Engine",
+    "clearing_house": "Câmara B3 CORE Margin System",
+    "regulatory_framework": "Manual de Procedimentos Operacionais da Câmara B3 & Teoria de Não-Arbitragem (Gatheral 2004, Hagan 2002)",
+    "underlying_assets": {
+      "DOL": {
+        "name": "Dólar Comercial Futuro",
+        "contract_code": "DOL / WDO",
+        "quotation": "BRL por US$ 1.000 (pontos)",
+        "tick_size": 0.5,
+        "business_days_convention": 252,
+        "primary_model": "SABR (Hagan et al., 2002)",
+        "spot_ref": 5.45
+      },
+      "IBOV": {
+        "name": "Ibovespa Futuro / À Vista",
+        "contract_code": "IBOV / IND / WIN",
+        "quotation": "Pontos de Índice (R$ 1,00 por ponto no cheio, R$ 0,20 no mini)",
+        "tick_size": 5.0,
+        "business_days_convention": 252,
+        "primary_model": "Raw SVI (Gatheral, 2004)",
+        "spot_ref": 130000.0
+      }
+    }
+  },
+  "surfaces": {
+    "SURFACE-B3-DOL-SABR": {
+      "surface_id": "SURFACE-B3-DOL-PARAMETRIC",
+      "asset_type": "DOL",
+      "model_type": "SABR",
+      "as_of_date": "2026-11-04",
+      "day_count": "BUS/252",
+      "spot": 5.45,
+      "metadata": {
+        "instrument": "Opções sobre Futuro de Dólar B3 (DOL)",
+        "clearing": "Câmara B3",
+        "volatility_convention": "Black-76 Implied Volatility"
+      },
+      "slices": [
+        {
+          "slice_id": "SLICE-DOL-21DU",
+          "maturity_t": 0.08333333333333333,
+          "days_to_expiry": 21,
+          "forward": 5.475,
+          "risk_free_rate": 0.1075,
+          "model_type": "SABR",
+          "svi_params": null,
+          "sabr_params": {
+            "alpha": 0.135,
+            "beta": 1.0,
+            "rho": 0.15,
+            "nu": 0.38
+          },
+          "as_of_date": "2026-11-04",
+          "metadata": {
+            "commodity": "USDBRL",
+            "contract": "DOL",
+            "convention": "DU/252"
+          }
+        },
+        {
+          "slice_id": "SLICE-DOL-42DU",
+          "maturity_t": 0.16666666666666666,
+          "days_to_expiry": 42,
+          "forward": 5.5,
+          "risk_free_rate": 0.1085,
+          "model_type": "SABR",
+          "svi_params": null,
+          "sabr_params": {
+            "alpha": 0.14,
+            "beta": 1.0,
+            "rho": 0.16,
+            "nu": 0.36
+          },
+          "as_of_date": "2026-11-04",
+          "metadata": {
+            "commodity": "USDBRL",
+            "contract": "DOL",
+            "convention": "DU/252"
+          }
+        },
+        {
+          "slice_id": "SLICE-DOL-63DU",
+          "maturity_t": 0.25,
+          "days_to_expiry": 63,
+          "forward": 5.53,
+          "risk_free_rate": 0.1095,
+          "model_type": "SABR",
+          "svi_params": null,
+          "sabr_params": {
+            "alpha": 0.144,
+            "beta": 1.0,
+            "rho": 0.17,
+            "nu": 0.35
+          },
+          "as_of_date": "2026-11-04",
+          "metadata": {
+            "commodity": "USDBRL",
+            "contract": "DOL",
+            "convention": "DU/252"
+          }
+        },
+        {
+          "slice_id": "SLICE-DOL-126DU",
+          "maturity_t": 0.5,
+          "days_to_expiry": 126,
+          "forward": 5.615,
+          "risk_free_rate": 0.111,
+          "model_type": "SABR",
+          "svi_params": null,
+          "sabr_params": {
+            "alpha": 0.152,
+            "beta": 1.0,
+            "rho": 0.18,
+            "nu": 0.32
+          },
+          "as_of_date": "2026-11-04",
+          "metadata": {
+            "commodity": "USDBRL",
+            "contract": "DOL",
+            "convention": "DU/252"
+          }
+        },
+        {
+          "slice_id": "SLICE-DOL-252DU",
+          "maturity_t": 1.0,
+          "days_to_expiry": 252,
+          "forward": 5.79,
+          "risk_free_rate": 0.1125,
+          "model_type": "SABR",
+          "svi_params": null,
+          "sabr_params": {
+            "alpha": 0.16,
+            "beta": 1.0,
+            "rho": 0.2,
+            "nu": 0.3
+          },
+          "as_of_date": "2026-11-04",
+          "metadata": {
+            "commodity": "USDBRL",
+            "contract": "DOL",
+            "convention": "DU/252"
+          }
+        }
+      ]
+    },
+    "SURFACE-B3-IBOV-SVI": {
+      "surface_id": "SURFACE-B3-IBOV-PARAMETRIC",
+      "asset_type": "IBOV",
+      "model_type": "SVI",
+      "as_of_date": "2026-11-04",
+      "day_count": "BUS/252",
+      "spot": 130000.0,
+      "metadata": {
+        "instrument": "Opções sobre Ibovespa (IBOV/IND B3)",
+        "clearing": "Câmara B3",
+        "volatility_convention": "Black-76 Implied Volatility"
+      },
+      "slices": [
+        {
+          "slice_id": "SLICE-IBOV-21DU",
+          "maturity_t": 0.08333333333333333,
+          "days_to_expiry": 21,
+          "forward": 130500.0,
+          "risk_free_rate": 0.1075,
+          "model_type": "SVI",
+          "svi_params": {
+            "a": 0.0028,
+            "b": 0.055,
+            "rho": -0.65,
+            "m": 0.002,
+            "sigma": 0.06
+          },
+          "sabr_params": null,
+          "as_of_date": "2026-11-04",
+          "metadata": {
+            "index": "IBOV",
+            "contract": "IBOV/IND",
+            "convention": "DU/252"
+          }
+        },
+        {
+          "slice_id": "SLICE-IBOV-42DU",
+          "maturity_t": 0.16666666666666666,
+          "days_to_expiry": 42,
+          "forward": 131200.0,
+          "risk_free_rate": 0.1085,
+          "model_type": "SVI",
+          "svi_params": {
+            "a": 0.006,
+            "b": 0.075,
+            "rho": -0.63,
+            "m": 0.004,
+            "sigma": 0.08
+          },
+          "sabr_params": null,
+          "as_of_date": "2026-11-04",
+          "metadata": {
+            "index": "IBOV",
+            "contract": "IBOV/IND",
+            "convention": "DU/252"
+          }
+        },
+        {
+          "slice_id": "SLICE-IBOV-63DU",
+          "maturity_t": 0.25,
+          "days_to_expiry": 63,
+          "forward": 131900.0,
+          "risk_free_rate": 0.1095,
+          "model_type": "SVI",
+          "svi_params": {
+            "a": 0.0095,
+            "b": 0.092,
+            "rho": -0.62,
+            "m": 0.006,
+            "sigma": 0.095
+          },
+          "sabr_params": null,
+          "as_of_date": "2026-11-04",
+          "metadata": {
+            "index": "IBOV",
+            "contract": "IBOV/IND",
+            "convention": "DU/252"
+          }
+        },
+        {
+          "slice_id": "SLICE-IBOV-126DU",
+          "maturity_t": 0.5,
+          "days_to_expiry": 126,
+          "forward": 133800.0,
+          "risk_free_rate": 0.111,
+          "model_type": "SVI",
+          "svi_params": {
+            "a": 0.0195,
+            "b": 0.135,
+            "rho": -0.6,
+            "m": 0.01,
+            "sigma": 0.13
+          },
+          "sabr_params": null,
+          "as_of_date": "2026-11-04",
+          "metadata": {
+            "index": "IBOV",
+            "contract": "IBOV/IND",
+            "convention": "DU/252"
+          }
+        },
+        {
+          "slice_id": "SLICE-IBOV-252DU",
+          "maturity_t": 1.0,
+          "days_to_expiry": 252,
+          "forward": 138000.0,
+          "risk_free_rate": 0.1125,
+          "model_type": "SVI",
+          "svi_params": {
+            "a": 0.041,
+            "b": 0.19,
+            "rho": -0.58,
+            "m": 0.015,
+            "sigma": 0.17
+          },
+          "sabr_params": null,
+          "as_of_date": "2026-11-04",
+          "metadata": {
+            "index": "IBOV",
+            "contract": "IBOV/IND",
+            "convention": "DU/252"
+          }
+        }
+      ]
+    }
+  },
+  "smile_grids": {
+    "DOL_21DU": [
+      {
+        "moneyness_k": -0.3,
+        "strike": 4.056,
+        "total_variance": 0.00167183,
+        "implied_vol": 0.14164,
+        "call_price": 1.4064,
+        "put_price": 0.0,
+        "g_density": 0.754595
+      },
+      {
+        "moneyness_k": -0.2,
+        "strike": 4.4826,
+        "total_variance": 0.00155189,
+        "implied_vol": 0.136465,
+        "call_price": 0.9836,
+        "put_price": 0.0,
+        "g_density": 0.891239
+      },
+      {
+        "moneyness_k": -0.1,
+        "strike": 4.954,
+        "total_variance": 0.00149807,
+        "implied_vol": 0.134078,
+        "call_price": 0.5167,
+        "put_price": 0.0003,
+        "g_density": 0.993265
+      },
+      {
+        "moneyness_k": -0.05,
+        "strike": 5.208,
+        "total_variance": 0.00150005,
+        "implied_vol": 0.134166,
+        "call_price": 0.2741,
+        "put_price": 0.0095,
+        "g_density": 1.012091
+      },
+      {
+        "moneyness_k": 0.0,
+        "strike": 5.475,
+        "total_variance": 0.00152218,
+        "implied_vol": 0.135152,
+        "call_price": 0.0845,
+        "put_price": 0.0845,
+        "g_density": 1.003884
+      },
+      {
+        "moneyness_k": 0.05,
+        "strike": 5.7557,
+        "total_variance": 0.00156401,
+        "implied_vol": 0.136997,
+        "call_price": 0.0108,
+        "put_price": 0.289,
+        "g_density": 0.970991
+      },
+      {
+        "moneyness_k": 0.1,
+        "strike": 6.0508,
+        "total_variance": 0.00162426,
+        "implied_vol": 0.13961,
+        "call_price": 0.0005,
+        "put_price": 0.5712,
+        "g_density": 0.920012
+      },
+      {
+        "moneyness_k": 0.2,
+        "strike": 6.6872,
+        "total_variance": 0.00179275,
+        "implied_vol": 0.146673,
+        "call_price": 0.0,
+        "put_price": 1.2014,
+        "g_density": 0.794689
+      },
+      {
+        "moneyness_k": 0.3,
+        "strike": 7.3905,
+        "total_variance": 0.00201283,
+        "implied_vol": 0.155416,
+        "call_price": 0.0,
+        "put_price": 1.8984,
+        "g_density": 0.673688
+      }
+    ],
+    "DOL_63DU": [
+      {
+        "moneyness_k": -0.3,
+        "strike": 4.0967,
+        "total_variance": 0.00546389,
+        "implied_vol": 0.147836,
+        "call_price": 1.3946,
+        "put_price": 0.0,
+        "g_density": 0.82297
+      },
+      {
+        "moneyness_k": -0.2,
+        "strike": 4.5276,
+        "total_variance": 0.00519193,
+        "implied_vol": 0.14411,
+        "call_price": 0.9756,
+        "put_price": 0.0003,
+        "g_density": 0.938549
+      },
+      {
+        "moneyness_k": -0.1,
+        "strike": 5.0038,
+        "total_variance": 0.00510187,
+        "implied_vol": 0.142855,
+        "call_price": 0.5254,
+        "put_price": 0.0134,
+        "g_density": 1.012203
+      },
+      {
+        "moneyness_k": -0.05,
+        "strike": 5.2603,
+        "total_variance": 0.00513261,
+        "implied_vol": 0.143284,
+        "call_price": 0.3163,
+        "put_price": 0.0539,
+        "g_density": 1.021342
+      },
+      {
+        "moneyness_k": 0.0,
+        "strike": 5.53,
+        "total_variance": 0.00521491,
+        "implied_vol": 0.144429,
+        "call_price": 0.155,
+        "put_price": 0.155,
+        "g_density": 1.009823
+      },
+      {
+        "moneyness_k": 0.05,
+        "strike": 5.8135,
+        "total_variance": 0.00534732,
+        "implied_vol": 0.146251,
+        "call_price": 0.0592,
+        "put_price": 0.3351,
+        "g_density": 0.979921
+      },
+      {
+        "moneyness_k": 0.1,
+        "strike": 6.1116,
+        "total_variance": 0.00552689,
+        "implied_vol": 0.148686,
+        "call_price": 0.0174,
+        "put_price": 0.5833,
+        "g_density": 0.936193
+      },
+      {
+        "moneyness_k": 0.2,
+        "strike": 6.7544,
+        "total_variance": 0.00601151,
+        "implied_vol": 0.155068,
+        "call_price": 0.0007,
+        "put_price": 1.192,
+        "g_density": 0.828101
+      },
+      {
+        "moneyness_k": 0.3,
+        "strike": 7.4647,
+        "total_variance": 0.00663537,
+        "implied_vol": 0.162916,
+        "call_price": 0.0,
+        "put_price": 1.8825,
+        "g_density": 0.718693
+      }
+    ],
+    "IBOV_21DU": [
+      {
+        "moneyness_k": -0.3,
+        "strike": 96676.7778,
+        "total_variance": 0.03053114,
+        "implied_vol": 0.605288,
+        "call_price": 33861.9097,
+        "put_price": 340.334,
+        "g_density": 0.249854
+      },
+      {
+        "moneyness_k": -0.2,
+        "strike": 106844.3633,
+        "total_variance": 0.02161124,
+        "implied_vol": 0.509249,
+        "call_price": 24131.1713,
+        "put_price": 686.5033,
+        "g_density": 0.268367
+      },
+      {
+        "moneyness_k": -0.1,
+        "strike": 118081.2831,
+        "total_variance": 0.01295512,
+        "implied_vol": 0.394286,
+        "call_price": 13768.9551,
+        "put_price": 1460.9923,
+        "g_density": 0.386988
+      },
+      {
+        "moneyness_k": -0.05,
+        "strike": 124135.4399,
+        "total_variance": 0.00902588,
+        "implied_vol": 0.329106,
+        "call_price": 8581.1364,
+        "put_price": 2273.3375,
+        "g_density": 0.696728
+      },
+      {
+        "moneyness_k": 0.0,
+        "strike": 130500.0,
+        "total_variance": 0.00617333,
+        "implied_vol": 0.272176,
+        "call_price": 4053.0146,
+        "put_price": 4053.0146,
+        "g_density": 1.400283
+      },
+      {
+        "moneyness_k": 0.05,
+        "strike": 137190.8781,
+        "total_variance": 0.00531006,
+        "implied_vol": 0.25243,
+        "call_price": 1412.8346,
+        "put_price": 8044.0413,
+        "g_density": 1.231287
+      },
+      {
+        "moneyness_k": 0.1,
+        "strike": 144224.8048,
+        "total_variance": 0.00561648,
+        "implied_vol": 0.259611,
+        "call_price": 430.8487,
+        "put_price": 14033.2512,
+        "g_density": 0.870921
+      },
+      {
+        "moneyness_k": 0.2,
+        "strike": 159393.0599,
+        "total_variance": 0.00710052,
+        "implied_vol": 0.291901,
+        "call_price": 35.4567,
+        "put_price": 28670.8389,
+        "g_density": 0.582042
+      },
+      {
+        "moneyness_k": 0.3,
+        "strike": 176156.5744,
+        "total_variance": 0.00886541,
+        "implied_vol": 0.326167,
+        "call_price": 2.7558,
+        "put_price": 45252.15,
+        "g_density": 0.473896
+      }
+    ],
+    "IBOV_63DU": [
+      {
+        "moneyness_k": -0.3,
+        "strike": 97713.9233,
+        "total_variance": 0.05643173,
+        "implied_vol": 0.475107,
+        "call_price": 34548.8364,
+        "put_price": 1285.9103,
+        "g_density": 0.296313
+      },
+      {
+        "moneyness_k": -0.2,
+        "strike": 107990.5863,
+        "total_variance": 0.04212046,
+        "implied_vol": 0.410465,
+        "call_price": 25340.8068,
+        "put_price": 2077.0358,
+        "g_density": 0.360888
+      },
+      {
+        "moneyness_k": -0.1,
+        "strike": 119348.0554,
+        "total_variance": 0.02864162,
+        "implied_vol": 0.338477,
+        "call_price": 15743.0214,
+        "put_price": 3530.0258,
+        "g_density": 0.615061
+      },
+      {
+        "moneyness_k": -0.05,
+        "strike": 125467.1611,
+        "total_variance": 0.02283972,
+        "implied_vol": 0.302256,
+        "call_price": 11079.5421,
+        "put_price": 4820.4136,
+        "g_density": 0.976803
+      },
+      {
+        "moneyness_k": 0.0,
+        "strike": 131900.0,
+        "total_variance": 0.01859965,
+        "implied_vol": 0.272761,
+        "call_price": 6977.2136,
+        "put_price": 6977.2136,
+        "g_density": 1.428005
+      },
+      {
+        "moneyness_k": 0.05,
+        "strike": 138662.6576,
+        "total_variance": 0.01662216,
+        "implied_vol": 0.257854,
+        "call_price": 3977.1803,
+        "put_price": 10557.2211,
+        "g_density": 1.412705
+      },
+      {
+        "moneyness_k": 0.1,
+        "strike": 145772.0441,
+        "total_variance": 0.01643358,
+        "implied_vol": 0.256387,
+        "call_price": 2150.5014,
+        "put_price": 15647.949,
+        "g_density": 1.1269
+      },
+      {
+        "moneyness_k": 0.2,
+        "strike": 161103.0238,
+        "total_variance": 0.0183073,
+        "implied_vol": 0.270609,
+        "call_price": 590.0709,
+        "put_price": 29004.505,
+        "g_density": 0.772231
+      },
+      {
+        "moneyness_k": 0.3,
+        "strike": 178046.3767,
+        "total_variance": 0.02115526,
+        "implied_vol": 0.290897,
+        "call_price": 155.1368,
+        "put_price": 45055.3906,
+        "g_density": 0.617238
+      }
+    ]
+  },
+  "adversarial_test_cases": {
+    "calendar_arbitrage_violation": {
+      "description": "Fatia T2 mais longa com variância total menor que T1 (violando LAW-107A)",
+      "slice_t1": {
+        "maturity_t": 0.25,
+        "total_variance_atm": 0.0225,
+        "implied_vol_atm": 0.3
+      },
+      "slice_t2": {
+        "maturity_t": 0.5,
+        "total_variance_atm": 0.015,
+        "implied_vol_atm": 0.1732
+      },
+      "expected_law_violated": "LAW-107A",
+      "expected_deficit": -0.0075
+    },
+    "butterfly_arbitrage_violation": {
+      "description": "Parâmetro b excessivo violando o limite de Gatheral/Lee e gerando g(k) < 0 (violando LAW-107B)",
+      "svi_params": {
+        "a": -0.04,
+        "b": 0.85,
+        "rho": -0.7,
+        "m": 0.0,
+        "sigma": 0.02
+      },
+      "maturity_t": 0.25,
+      "expected_law_violated": "LAW-107B"
+    }
+  }
+}

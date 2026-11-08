@@ -1,0 +1,229 @@
+{
+  "contracts": [
+    {
+      "contract_id": "PMM-2026-PRIO3-BTG",
+      "participant_id": "016-BTG_PACTUAL",
+      "symbol": "PRIO3",
+      "asset_class": "EQUITY_CASH",
+      "liquidity_tier": "TIER_2_MEDIUM",
+      "min_presence_pct": "80.00",
+      "max_spread_pct": "1.50",
+      "min_bid_qty": "500",
+      "min_ask_qty": "500",
+      "max_regeneration_seconds": 60,
+      "max_daily_spread_violations": 5,
+      "base_discount_pct": "100.00",
+      "min_monthly_compliant_ratio": "80.00",
+      "deaccreditation_threshold_pct": "70.00",
+      "max_consecutive_non_compliant_sessions": 3
+    },
+    {
+      "contract_id": "PMM-2026-SMAL11-JPM",
+      "participant_id": "088-JP_MORGAN",
+      "symbol": "SMAL11",
+      "asset_class": "ETF",
+      "liquidity_tier": "TIER_1_HIGH",
+      "min_presence_pct": "85.00",
+      "max_spread_pct": "0.50",
+      "min_bid_qty": "200",
+      "min_ask_qty": "200",
+      "max_regeneration_seconds": 60,
+      "max_daily_spread_violations": 3,
+      "base_discount_pct": "100.00",
+      "min_monthly_compliant_ratio": "85.00",
+      "deaccreditation_threshold_pct": "70.00",
+      "max_consecutive_non_compliant_sessions": 3
+    },
+    {
+      "contract_id": "PMM-2026-CCMF26-XP",
+      "participant_id": "003-XP_INVESTIMENTOS",
+      "symbol": "CCMF26",
+      "asset_class": "COMMODITY_FUTURE",
+      "liquidity_tier": "TIER_2_MEDIUM",
+      "min_presence_pct": "80.00",
+      "max_spread_pct": "0.80",
+      "min_bid_qty": "10",
+      "min_ask_qty": "10",
+      "max_regeneration_seconds": 45,
+      "max_daily_spread_violations": 4,
+      "base_discount_pct": "100.00",
+      "min_monthly_compliant_ratio": "80.00",
+      "deaccreditation_threshold_pct": "70.00",
+      "max_consecutive_non_compliant_sessions": 3
+    }
+  ],
+  "sessions": [
+    {
+      "session_date": "2026-11-02",
+      "participant_id": "016-BTG_PACTUAL",
+      "symbol": "PRIO3",
+      "snapshots": [
+        {
+          "timestamp": "2026-11-02T13:00:00Z",
+          "phase": "OPENING_AUCTION",
+          "bid_price": "45.10",
+          "bid_qty": "1000",
+          "ask_price": "45.30",
+          "ask_qty": "1000",
+          "duration_seconds": "900.0"
+        },
+        {
+          "timestamp": "2026-11-02T13:15:00Z",
+          "phase": "CONTINUOUS",
+          "bid_price": "45.15",
+          "bid_qty": "800",
+          "ask_price": "45.35",
+          "ask_qty": "800",
+          "duration_seconds": "3600.0"
+        },
+        {
+          "timestamp": "2026-11-02T14:15:00Z",
+          "phase": "CONTINUOUS",
+          "bid_price": null,
+          "bid_qty": null,
+          "ask_price": "45.40",
+          "ask_qty": "800",
+          "last_trade_timestamp": "2026-11-02T14:14:40Z",
+          "duration_seconds": "40.0"
+        },
+        {
+          "timestamp": "2026-11-02T14:15:40Z",
+          "phase": "CONTINUOUS",
+          "bid_price": "45.20",
+          "bid_qty": "600",
+          "ask_price": "45.40",
+          "ask_qty": "600",
+          "duration_seconds": "7200.0"
+        },
+        {
+          "timestamp": "2026-11-02T16:15:40Z",
+          "phase": "CONTINUOUS",
+          "bid_price": "45.00",
+          "bid_qty": "1000",
+          "ask_price": "45.90",
+          "ask_qty": "1000",
+          "duration_seconds": "60.0"
+        },
+        {
+          "timestamp": "2026-11-02T16:16:40Z",
+          "phase": "CONTINUOUS",
+          "bid_price": "45.25",
+          "bid_qty": "700",
+          "ask_price": "45.45",
+          "ask_qty": "700",
+          "duration_seconds": "7200.0"
+        },
+        {
+          "timestamp": "2026-11-02T18:16:40Z",
+          "phase": "CLOSING_AUCTION",
+          "bid_price": "45.30",
+          "bid_qty": "1000",
+          "ask_price": "45.40",
+          "ask_qty": "1000",
+          "duration_seconds": "300.0"
+        }
+      ]
+    },
+    {
+      "session_date": "2026-11-03",
+      "participant_id": "016-BTG_PACTUAL",
+      "symbol": "PRIO3",
+      "snapshots": [
+        {
+          "timestamp": "2026-11-03T13:15:00Z",
+          "phase": "CONTINUOUS",
+          "bid_price": "45.50",
+          "bid_qty": "600",
+          "ask_price": "45.70",
+          "ask_qty": "600",
+          "duration_seconds": "18000.0"
+        }
+      ]
+    },
+    {
+      "session_date": "2026-11-02",
+      "participant_id": "088-JP_MORGAN",
+      "symbol": "SMAL11",
+      "snapshots": [
+        {
+          "timestamp": "2026-11-02T13:15:00Z",
+          "phase": "CONTINUOUS",
+          "bid_price": "105.00",
+          "bid_qty": "300",
+          "ask_price": "105.30",
+          "ask_qty": "300",
+          "duration_seconds": "17000.0"
+        },
+        {
+          "timestamp": "2026-11-02T17:58:20Z",
+          "phase": "CONTINUOUS",
+          "bid_price": "104.00",
+          "bid_qty": "300",
+          "ask_price": "105.80",
+          "ask_qty": "300",
+          "duration_seconds": "1000.0"
+        }
+      ]
+    },
+    {
+      "session_date": "2026-11-02",
+      "participant_id": "003-XP_INVESTIMENTOS",
+      "symbol": "CCMF26",
+      "snapshots": [
+        {
+          "timestamp": "2026-11-02T12:00:00Z",
+          "phase": "CONTINUOUS",
+          "bid_price": "68.00",
+          "bid_qty": "15",
+          "ask_price": "68.40",
+          "ask_qty": "15",
+          "duration_seconds": "5000.0"
+        },
+        {
+          "timestamp": "2026-11-02T13:23:20Z",
+          "phase": "CONTINUOUS",
+          "bid_price": null,
+          "bid_qty": null,
+          "ask_price": null,
+          "ask_qty": null,
+          "duration_seconds": "10000.0"
+        },
+        {
+          "timestamp": "2026-11-02T16:10:00Z",
+          "phase": "CONTINUOUS",
+          "bid_price": "67.00",
+          "bid_qty": "5",
+          "ask_price": "69.50",
+          "ask_qty": "5",
+          "duration_seconds": "5000.0"
+        }
+      ]
+    }
+  ],
+  "monthly_billings": [
+    {
+      "month_reference": "2026-11",
+      "participant_id": "016-BTG_PACTUAL",
+      "symbol": "PRIO3",
+      "gross_trading_fees": "154500.00",
+      "gross_clearing_fees": "98200.00",
+      "use_tiered_discount": true
+    },
+    {
+      "month_reference": "2026-11",
+      "participant_id": "088-JP_MORGAN",
+      "symbol": "SMAL11",
+      "gross_trading_fees": "85000.00",
+      "gross_clearing_fees": "52000.00",
+      "use_tiered_discount": false
+    },
+    {
+      "month_reference": "2026-11",
+      "participant_id": "003-XP_INVESTIMENTOS",
+      "symbol": "CCMF26",
+      "gross_trading_fees": "45000.00",
+      "gross_clearing_fees": "31000.00",
+      "use_tiered_discount": false
+    }
+  ]
+}

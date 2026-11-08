@@ -1910,6 +1910,97 @@ def verify_central_settlement_liquidity_bus_invariants(fixtures_dir: Path):
     print("      ✓ Equilíbrio contábil global, contenção de default e atomicidade inter-sistemas comprovadas.")
 
 
+def verify_volatility_surface_sabr_svi_invariants(fixtures_dir: Path):
+    """
+    Lei 85: Superfícies Paramétricas de Volatilidade SVI/SABR (FL-101).
+    1. Não-Arbitragem de Calendário: Variância total w(k, T) monotonicamente não-decrescente em T (LAW-107A).
+    2. Não-Arbitragem Butterfly: Densidade de risco g(k) >= 0 e convexidade de preços de call (LAW-107B).
+    """
+    print("[85/89] Verificando Invariante de Superfícies de Volatilidade SVI/SABR (FL-101)...")
+    from src.volatility_surface_sabr_svi import B3VolatilitySurface
+    fixture_path = fixtures_dir / "volatility_surface_sabr_svi.json"
+    with open(fixture_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+    for surface_id, surface_data in data["surfaces"].items():
+        surf = B3VolatilitySurface.from_dict(surface_data)
+        audit = surf.verify_invariants(raise_on_error=True)
+        check(audit["calendar_arbitrage_free_law_107a"], f"Violação de arbitragem de calendário na superfície {surface_id} (LAW-107A)")
+        check(audit["butterfly_arbitrage_free_law_107b"], f"Violação de arbitragem butterfly na superfície {surface_id} (LAW-107B)")
+    print("      ✓ Não-arbitragem de calendário (LAW-107A) e densidade butterfly (LAW-107B) comprovadas.")
+
+
+def verify_structured_operations_coe_invariants(fixtures_dir: Path):
+    """
+    Lei 86: Certificados de Operações Estruturadas (COE) com Capital Protegido (FL-102).
+    1. Inviolabilidade do Piso de Capital Protegido: Payoff >= Principal investido (LAW-108).
+    2. Decomposição Analítica de Renda Fixa + Opções e Tributação Regressiva de IRRF.
+    """
+    print("[86/89] Verificando Invariante de Certificados de Operações Estruturadas COE (FL-102)...")
+    from src.structured_operations_coe import StructuredOperationsCoeEngine
+    fixture_path = fixtures_dir / "structured_operations_coe.json"
+    engine = StructuredOperationsCoeEngine.load_from_json(fixture_path)
+    engine.verify_invariants()
+    print("      ✓ Inviolabilidade do piso de capital protegido e payoffs estruturados comprovados (LAW-108).")
+
+
+def verify_market_maker_pmm_engine_invariants(fixtures_dir: Path):
+    """
+    Lei 87: Motor Regulatório do Programa de Formador de Mercado PMM B3 (FL-103).
+    1. Presença Mínima Obrigatória em Tela (>= 80% do pregão ordinário) (LAW-109A).
+    2. Spread Máximo Contratual e Não-Negatividade (ask > bid > 0) (LAW-109B).
+    3. Profundidade Bilateral Mínima de Lotes Ofertados (LAW-109C).
+    4. Integridade de Descredenciamento e Concessão Tarifária (LAW-109D).
+    """
+    print("[87/89] Verificando Invariante do Formador de Mercado PMM B3 (FL-103)...")
+    from src.market_maker_pmm_engine import MarketMakerPmmEngine
+    fixture_path = fixtures_dir / "market_maker_pmm_engine.json"
+    engine = MarketMakerPmmEngine()
+    engine.load_from_fixture(fixture_path)
+    audit = engine.verify_invariants()
+    check(audit["LAW-109A"], "Violação da presença mínima de formador de mercado (LAW-109A)")
+    check(audit["LAW-109B"], "Violação do spread máximo de cotação PMM (LAW-109B)")
+    check(audit["LAW-109C"], "Violação do lote mínimo bilateral de compra/venda PMM (LAW-109C)")
+    check(audit["LAW-109D"], "Violação na elegibilidade de incentivos tarifários PMM (LAW-109D)")
+    print("      ✓ Presença mínima em tela, spread máximo e profundidade bilateral comprovadas (LAW-109).")
+
+
+def verify_algorithmic_sor_twap_vwap_invariants(fixtures_dir: Path):
+    """
+    Lei 88: Smart Order Router (SOR) e Fatiamento Algorítmico TWAP/VWAP/POV (FL-104).
+    1. Conservação Estrita de Quantidade Total SOMA(Child Orders) == Ordem Mãe (LAW-110).
+    2. Respeito ao Preço Limite da Ordem-Mãe e Não-Transgressão (LAW-110).
+    3. Discretização Estrita em Lotes Padrão B3 (LAW-110).
+    """
+    print("[88/89] Verificando Invariante de Algorithmic SOR TWAP/VWAP/POV (FL-104)...")
+    from src.algorithmic_sor_twap_vwap import AlgorithmicSOREngine
+    fixture_path = fixtures_dir / "algorithmic_sor_twap_vwap.json"
+    engine, parent, ref_price = AlgorithmicSOREngine.load_from_fixture(fixture_path)
+    plan = engine.generate_twap_slices(parent, ref_price)
+    audit = plan.verify_invariants(raise_on_error=True)
+    check(audit["law_110_quantity_conservation"], "Violação de conservação de quantidade no SOR (LAW-110)")
+    check(audit["law_110_price_limit_respected"], "Violação de preço limite no fatiamento SOR (LAW-110)")
+    check(audit["law_110_lot_size_conformance"], "Violação de lote padrão no fatiamento SOR (LAW-110)")
+    print("      ✓ Conservação de quantidade, conformidade de lote e limite de preço comprovadas (LAW-110).")
+
+
+def verify_drex_rwa_primary_issuance_invariants(fixtures_dir: Path):
+    """
+    Lei 89: Emissão Primária de Ativos Tokenizados (RWA) e Atomicidade DvP no Drex Fase 2 (FL-105).
+    1. Atomicidade DvP Quantitativa: Qtd alocada == Qtd entregue (tokens mintados) (LAW-111).
+    2. Paridade Financeira: Real Digital recebido == Valor nominal liquidado (LAW-111).
+    3. Conservação de Cupons e Proventos: Provisão on-chain == Distribuição aos detentores (LAW-111).
+    """
+    print("[89/89] Verificando Invariante de Emissão Primária RWA e DvP no Drex (FL-105)...")
+    from src.drex_rwa_primary_issuance import DrexRwaPrimaryIssuanceEngine
+    fixture_path = fixtures_dir / "drex_rwa_primary_issuance.json"
+    engine = DrexRwaPrimaryIssuanceEngine.load_from_fixture(fixture_path)
+    audit = engine.verify_invariants()
+    check(audit["LAW-111_primary_dvp_atomic_quantity"], "Violação da atomicidade quantitativa DvP RWA (LAW-111)")
+    check(audit["LAW-111_primary_dvp_financial_parity"], "Violação da paridade financeira DvP RWA (LAW-111)")
+    check(audit["LAW-111_coupon_conservation"], "Violação de conservação de cupons RWA (LAW-111)")
+    print("      ✓ Atomicidade DvP primária, paridade financeira e conservação de cupons comprovadas (LAW-111).")
+
+
 def main():
     print("=" * 70)
     print(" B3 INTEGRATION ATLAS — VERIFICAÇÃO FORMAL DE INVARIANTES")
@@ -2006,9 +2097,14 @@ def main():
         verify_puma_closing_cross_invariants(fixtures_dir)
         verify_triparty_international_collateral_invariants(fixtures_dir)
         verify_central_settlement_liquidity_bus_invariants(fixtures_dir)
+        verify_volatility_surface_sabr_svi_invariants(fixtures_dir)
+        verify_structured_operations_coe_invariants(fixtures_dir)
+        verify_market_maker_pmm_engine_invariants(fixtures_dir)
+        verify_algorithmic_sor_twap_vwap_invariants(fixtures_dir)
+        verify_drex_rwa_primary_issuance_invariants(fixtures_dir)
         
         print("\n" + "=" * 70)
-        print("✓ TODAS AS 84 LEIS DE CONSERVAÇÃO E INVARIANTES DA B3 FORAM PROVADAS!")
+        print("✓ TODAS AS 89 LEIS DE CONSERVAÇÃO E INVARIANTES DA B3 FORAM PROVADAS!")
         print("  Garantia matemática de consistência em todas as fixtures e módulos.")
         print("=" * 70)
         sys.exit(0)

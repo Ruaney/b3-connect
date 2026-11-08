@@ -4,5 +4,5 @@ from setuptools import setup
 
 setup(
     name="b3-integration-atlas",
-    version="2.2.0",
+    version="2.3.0",
 )

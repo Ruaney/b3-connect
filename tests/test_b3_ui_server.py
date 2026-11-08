@@ -49,9 +49,9 @@ class TestB3UiServer(unittest.TestCase):
         status, body, headers = self._get("/api/status")
         self.assertEqual(status, 200)
         data = json.loads(body.decode("utf-8"))
-        self.assertEqual(data["version"], "2.2.0")
-        self.assertEqual(data["homologated_flows"], 100)
-        self.assertEqual(data["formal_conservation_laws"], 84)
+        self.assertEqual(data["version"], "2.3.0")
+        self.assertEqual(data["homologated_flows"], 105)
+        self.assertEqual(data["formal_conservation_laws"], 89)
         self.assertEqual(data["architecture_modules"], 7)
 
     def test_api_modules(self) -> None:
@@ -70,7 +70,7 @@ class TestB3UiServer(unittest.TestCase):
         status, body, headers = self._get("/api/docs")
         self.assertEqual(status, 200)
         data = json.loads(body.decode("utf-8"))
-        self.assertEqual(len(data), 80)
+        self.assertEqual(len(data), 85)
 
         # Detalhes de um documento específico
         status, body, headers = self._get("/api/docs/SRC-006")

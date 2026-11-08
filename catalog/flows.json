@@ -2129,6 +2129,112 @@
         "implemented": "src/central_settlement_liquidity_bus.py",
         "tested_locally": "tests/test_central_settlement_liquidity_bus.py"
       }
+    },
+    {
+      "id": "FL-101",
+      "name": "Modelar Superfícies Paramétricas de Volatilidade SVI e SABR para Opções de Dólar e Ibovespa",
+      "system": "PUMA Trading System & Câmara B3",
+      "interface": "Motor de Superfícies de Volatilidade SVI/SABR e Restrições de Não-Arbitragem",
+      "sources": [
+        "SRC-081"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Superfícies paramétricas SVI (Gatheral) e SABR (Hagan et al.), interpolação e não-arbitragem de calendário (LAW-107A) e butterfly (LAW-107B) implementadas com sucesso. Pendente homologação B3.",
+      "evidence": {
+        "documented": "docs/layout-volatility-surface-sabr-svi.md",
+        "implemented": "src/volatility_surface_sabr_svi.py",
+        "tested_locally": "tests/test_volatility_surface_sabr_svi.py"
+      }
+    },
+    {
+      "id": "FL-102",
+      "name": "Emitir, Estruturar, Decompor e Liquidar Certificados de Operações Estruturadas (COE) com Capital Protegido",
+      "system": "Balcão NoMe & Central Depositária B3",
+      "interface": "Motor de Emissão, Precificação MtM e Liquidação de COE (Lei 12.249/10 e CVM 8)",
+      "sources": [
+        "SRC-082"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Decomposição em dívida de desconto e opções embutidas, barreiras knock-in/out, autocallable, liquidação física/financeira e piso inviolável de capital (LAW-108) implementados com sucesso.",
+      "evidence": {
+        "documented": "docs/layout-structured-operations-coe.md",
+        "implemented": "src/structured_operations_coe.py",
+        "tested_locally": "tests/test_structured_operations_coe.py"
+      }
+    },
+    {
+      "id": "FL-103",
+      "name": "Motor Regulatório do Programa de Metas de Formador de Mercado (PMM B3 / BSM): Monitoramento Contínuo de Obrigações de Liquidez, Spread Máximo, Presença e Auditoria de Descredenciamento",
+      "system": "PUMA Trading System & BSM Supervisão de Mercados",
+      "interface": "Motor Regulatório de Liquidez PMM, Apuração Contínua e Invariantes LAW-109",
+      "sources": [
+        "SRC-040",
+        "SRC-080"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Monitoramento de presença contínua (>=80%), spread máximo por classe de liquidez, profundidade bilateral e descredenciamento com perda de incentivos implementados (LAW-109).",
+      "evidence": {
+        "documented": "docs/layout-market-maker-pmm-engine.md",
+        "implemented": "src/market_maker_pmm_engine.py",
+        "tested_locally": "tests/test_market_maker_pmm_engine.py"
+      }
+    },
+    {
+      "id": "FL-104",
+      "name": "Roteamento Inteligente (SOR) e Fatiamento Algorítmico TWAP, VWAP e POV no PUMA Trading System",
+      "system": "PUMA Trading System",
+      "interface": "Smart Order Router e Motor Algorítmico de Execução Institucional",
+      "sources": [
+        "SRC-084"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Fatiamento algorítmico TWAP com jitter, VWAP proporcional ao perfil intradiário U-shape, POV com teto de participação e conservação estrita de quantidade (LAW-110) implementados com sucesso.",
+      "evidence": {
+        "documented": "docs/layout-algorithmic-sor-twap-vwap.md",
+        "implemented": "src/algorithmic_sor_twap_vwap.py",
+        "tested_locally": "tests/test_algorithmic_sor_twap_vwap.py"
+      }
+    },
+    {
+      "id": "FL-105",
+      "name": "Emissão Primária, Bookbuilding e Liquidação DvP Atômica de Títulos Privados Tokenizados (RWA) no Drex Fase 2",
+      "system": "Central Depositária B3 & Drex DLT Network",
+      "interface": "Motor de Emissão RWA e Contratos Inteligentes DvP Drex Fase 2 (Besu)",
+      "sources": [
+        "SRC-085"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Emissão primária de Debêntures/CRIs tokenizados (ERC-1155/3643), alocação de investidores e liquidação atômica bilateral DvP em Real Digital BACEN (LAW-111) implementados com sucesso.",
+      "evidence": {
+        "documented": "docs/layout-drex-rwa-primary-issuance.md",
+        "implemented": "src/drex_rwa_primary_issuance.py",
+        "tested_locally": "tests/test_drex_rwa_primary_issuance.py"
+      }
     }
   ]
 }

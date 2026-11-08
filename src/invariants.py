@@ -1334,5 +1334,425 @@ def assert_cross_system_atomic_settlement(
         )
 
 
+def law_110_algorithmic_order_slicing_conservation(
+    parent_quantity: Union[int, Decimal],
+    child_quantities: Sequence[Union[int, Decimal]],
+    residual_quantity: Union[int, Decimal] = 0,
+    parent_side: str = "BUY",
+    parent_limit_price: Optional[Union[Decimal, str, float]] = None,
+    child_prices: Optional[Sequence[Union[Decimal, str, float]]] = None,
+    parent_order_id: str = "N/A",
+    lot_size: Optional[int] = None,
+) -> None:
+    """Lei 83 / LAW-110: Conservação Estrita de Quantidade e Não-Transgressão de Preço no Fatiamento Algorítmico (FL-104).
+
+    Garante integridade matemática estrita e proteção contra manipulação de mercado para motores
+    de Smart Order Router (SOR) e fatiamento algorítmico (TWAP, VWAP, POV) no PUMA Trading System da B3:
+
+    1. Conservação Estrita de Quantidade:
+       Soma(child_quantities) + residual_quantity == parent_quantity.
+       Nenhum lote pode ser espuriamente criado ou destruído pelo fatiamento.
+    2. Quantidades Estritamente Positivas e Não-Nulas:
+       child_quantity > 0 para cada ordem filha gerada.
+    3. Conformidade com Lote Padrão de Negociação (Round Lot):
+       Se especificado lot_size, child_quantity % lot_size == 0.
+    4. Não-Transgressão de Preço Limite (Price Limit Guardrail):
+       Para ordens BUY:  child_price <= parent_limit_price.
+       Para ordens SELL: child_price >= parent_limit_price.
+
+    Args:
+        parent_quantity: Quantidade total de ações ou contratos da ordem-mãe institucional.
+        child_quantities: Lista de quantidades das fatias filhas (child orders).
+        residual_quantity: Quantidade não alocada remanescente (caso haja).
+        parent_side: Sentido da ordem ('BUY' / 'SELL').
+        parent_limit_price: Preço limite da ordem-mãe (se aplicável).
+        child_prices: Lista dos preços limites/alvos das ordens filhas correspondentes.
+        parent_order_id: Identificador único da ordem-mãe para auditoria.
+        lot_size: Tamanho do lote padrão B3 (ex: 100 para ações no mercado à vista).
+    """
+    total_child = sum(child_quantities)
+    total_accounted = total_child + residual_quantity
+
+    # 1. Conservação Estrita da Quantidade
+    check(
+        total_accounted == parent_quantity,
+        f"Violação da Conservação Estrita de Quantidade (LAW-110) na ordem '{parent_order_id}': "
+        f"Soma das fatias ({total_child}) + residual ({residual_quantity}) = {total_accounted} != "
+        f"Quantidade da ordem-mãe ({parent_quantity}).",
+        law_code="LAW-110",
+        details={
+            "parent_order_id": parent_order_id,
+            "parent_quantity": str(parent_quantity),
+            "total_child": str(total_child),
+            "residual_quantity": str(residual_quantity),
+            "total_accounted": str(total_accounted),
+        },
+    )
+
+    # 2. Quantidades Estritamente Positivas
+    for idx, qty in enumerate(child_quantities):
+        check(
+            qty > 0,
+            f"Violação de Não-Negatividade (LAW-110) na ordem '{parent_order_id}', fatia {idx}: "
+            f"Quantidade da ordem filha ({qty}) deve ser estritamente positiva.",
+            law_code="LAW-110",
+            details={"parent_order_id": parent_order_id, "slice_index": idx, "child_qty": str(qty)},
+        )
+
+        # 3. Lote padrão
+        if lot_size is not None and lot_size > 0:
+            check(
+                int(qty) % lot_size == 0,
+                f"Violação de Discretização de Lote (LAW-110) na ordem '{parent_order_id}', fatia {idx}: "
+                f"Quantidade {qty} não é múltiplo do lote padrão {lot_size}.",
+                law_code="LAW-110",
+                details={"parent_order_id": parent_order_id, "slice_index": idx, "child_qty": str(qty), "lot_size": lot_size},
+            )
+
+    # 4. Não-Transgressão de Preço Limite
+    if parent_limit_price is not None and child_prices is not None:
+        p_limit = Decimal(str(parent_limit_price))
+        side_upper = str(parent_side).strip().upper()
+
+        for idx, p in enumerate(child_prices):
+            child_p = Decimal(str(p))
+            if side_upper in ("BUY", "C", "COMPRA", "1"):
+                check(
+                    child_p <= p_limit,
+                    f"Violação de Preço Limite de Compra (LAW-110) na ordem '{parent_order_id}', fatia {idx}: "
+                    f"Preço da fatia ({child_p}) excede o preço limite da ordem-mãe ({p_limit}).",
+                    law_code="LAW-110",
+                    details={
+                        "parent_order_id": parent_order_id,
+                        "slice_index": idx,
+                        "child_price": str(child_p),
+                        "limit_price": str(p_limit),
+                        "side": side_upper,
+                    },
+                )
+            elif side_upper in ("SELL", "V", "VENDA", "2"):
+                check(
+                    child_p >= p_limit,
+                    f"Violação de Preço Limite de Venda (LAW-110) na ordem '{parent_order_id}', fatia {idx}: "
+                    f"Preço da fatia ({child_p}) está abaixo do preço limite da ordem-mãe ({p_limit}).",
+                    law_code="LAW-110",
+                    details={
+                        "parent_order_id": parent_order_id,
+                        "slice_index": idx,
+                        "child_price": str(child_p),
+                        "limit_price": str(p_limit),
+                        "side": side_upper,
+                    },
+                )
+
+
+
+def assert_coe_protected_capital_floor(
+    gross_settlement: Decimal,
+    guaranteed_principal: Decimal,
+    contract_id: str = "",
+    protection_floor_pct: Decimal = Decimal("100.00"),
+) -> None:
+    """Lei 83 / LAW-108: Inviolabilidade do Piso de Capital Protegido em COE (FL-102).
+
+    Nos termos da Lei nº 12.249/2010 (arts. 39 a 44) e da Resolução CVM nº 8/2020, em Certificados
+    de Operações Estruturadas (COE) na modalidade 'Valor Nominal Protegido', o valor de
+    liquidação bruto pago ao investidor na data de vencimento ou de resgate antecipado
+    deve ser rigorosamente maior ou igual ao montante do capital inicial protegido pactuado
+    (geralmente 100% do principal investido). Nenhuma oscilação de mercado adversa nos ativos
+    subjacentes ou perdas nas opções embutidas pode corroer o valor nominal protegido.
+
+    Args:
+        gross_settlement: Montante bruto apurado para liquidação do COE.
+        guaranteed_principal: Valor nominal mínimo garantido por contrato (VNU * Qtd * Piso%).
+        contract_id: Identificador único do COE no registro B3.
+        protection_floor_pct: Percentual contratual de piso garantido (mínimo 100% em capital protegido).
+    """
+    check(
+        gross_settlement >= guaranteed_principal,
+        f"Violação da Inviolabilidade do Piso de Capital Protegido (LAW-108) no contrato '{contract_id}': "
+        f"Payoff de liquidação bruto ({gross_settlement}) < Principal garantido ({guaranteed_principal}) "
+        f"com piso de proteção de {protection_floor_pct}%.",
+        law_code="LAW-108",
+        details={
+            "contract_id": contract_id,
+            "gross_settlement": str(gross_settlement),
+            "guaranteed_principal": str(guaranteed_principal),
+            "protection_floor_pct": str(protection_floor_pct),
+        },
+    )
+
+
+def assert_calendar_arbitrage_free(
+    w_t1: Union[Decimal, float],
+    w_t2: Union[Decimal, float],
+    t1: Union[Decimal, float],
+    t2: Union[Decimal, float],
+    moneyness_k: Union[Decimal, float] = 0.0,
+    surface_id: str = "",
+    tolerance: float = 1e-9,
+) -> None:
+    """Lei 85 / LAW-107A: Invariante de Não-Arbitragem de Calendário em Superfícies de Volatilidade (FL-101).
+
+    Para qualquer moneyness k = ln(K/F) fixo, a variância total w(k, T) deve ser uma função
+    monotonicamente não-decrescente do prazo até o vencimento T:
+        T1 < T2 ==> w(k, T1) <= w(k, T2).
+    A violação desta lei implica variância forward local negativa e existência de oportunidade
+    de arbitragem de calendário (calendar spread arbitrage) livre de risco.
+
+    Args:
+        w_t1: Variância total w(k, T1) na maturidade mais curta T1.
+        w_t2: Variância total w(k, T2) na maturidade mais longa T2.
+        t1: Prazo até o vencimento T1 (T1 < T2).
+        t2: Prazo até o vencimento T2 (T2 > T1).
+        moneyness_k: Log-moneyness k = ln(K/F).
+        surface_id: Identificador da superfície de volatilidade auditada.
+        tolerance: Margem de tolerância numérica para precisão de ponto flutuante.
+    """
+    diff = float(w_t2) - float(w_t1)
+    check(
+        diff >= -tolerance,
+        f"Violação da Não-Arbitragem de Calendário (LAW-107A) na superfície '{surface_id}': "
+        f"Variância total decrescente w(k={float(moneyness_k):.4f}, T2={float(t2):.4f}) = {float(w_t2):.6f} < "
+        f"w(k={float(moneyness_k):.4f}, T1={float(t1):.4f}) = {float(w_t1):.6f} (déficit={-diff:.8f}).",
+        law_code="LAW-107A",
+        details={
+            "surface_id": surface_id,
+            "moneyness_k": str(moneyness_k),
+            "t1": str(t1),
+            "t2": str(t2),
+            "w_t1": str(w_t1),
+            "w_t2": str(w_t2),
+            "diff": str(diff),
+        },
+    )
+
+
+def assert_butterfly_arbitrage_free(
+    g_k: Union[Decimal, float],
+    moneyness_k: Union[Decimal, float] = 0.0,
+    maturity_t: Union[Decimal, float] = 0.0,
+    surface_id: str = "",
+    call_k1: Optional[Union[Decimal, float]] = None,
+    call_k2: Optional[Union[Decimal, float]] = None,
+    call_k3: Optional[Union[Decimal, float]] = None,
+    tolerance: float = 1e-7,
+) -> None:
+    """Lei 86 / LAW-107B: Invariante de Não-Arbitragem Butterfly e Convexidade em Superfícies de Volatilidade (FL-101).
+
+    Conforme o teorema de Gatheral (2004) e Breeden-Litzenberger (1978):
+    1. A função de densidade de probabilidade neutra ao risco g(k) derivada da variância total SVI/SABR
+       deve ser estritamente não-negativa para qualquer moneyness k:
+           g(k) = (1 - k*w'/(2w))^2 - (w'^2 / 4)*(1/w + 1/4) + w''/2 >= 0.
+    2. Se preços discretos de opções call para 3 strikes equidistantes K1 < K2 < K3 (com K2 - K1 = K3 - K2)
+       forem fornecidos, a estrutura de preços de call deve ser estritamente convexa:
+           C(K1) - 2*C(K2) + C(K3) >= 0.
+    A violação desta lei permite a construção de uma borboleta de custo negativo com payoff não-negativo
+    (butterfly spread arbitrage).
+
+    Args:
+        g_k: Valor da função de densidade de risco g(k) de Gatheral.
+        moneyness_k: Log-moneyness k = ln(K/F).
+        maturity_t: Prazo até o vencimento T da fatia de volatilidade.
+        surface_id: Identificador da superfície ou fatia auditada.
+        call_k1: Preço da call de menor strike K1 (opcional).
+        call_k2: Preço da call de strike intermediário K2 (opcional).
+        call_k3: Preço da call de maior strike K3 (opcional).
+        tolerance: Margem de tolerância numérica para precisão de ponto flutuante.
+    """
+    g_val = float(g_k)
+    check(
+        g_val >= -tolerance,
+        f"Violação da Não-Arbitragem Butterfly (LAW-107B) na superfície '{surface_id}': "
+        f"Densidade de risco negativa g(k={float(moneyness_k):.4f}, T={float(maturity_t):.4f}) = {g_val:.8f} < 0.",
+        law_code="LAW-107B",
+        details={
+            "surface_id": surface_id,
+            "moneyness_k": str(moneyness_k),
+            "maturity_t": str(maturity_t),
+            "g_k": str(g_k),
+        },
+    )
+
+    if call_k1 is not None and call_k2 is not None and call_k3 is not None:
+        c1 = float(call_k1)
+        c2 = float(call_k2)
+        c3 = float(call_k3)
+        butterfly_price = c1 - 2.0 * c2 + c3
+        check(
+            butterfly_price >= -tolerance,
+            f"Violação de Convexidade de Preço de Call (LAW-107B) na superfície '{surface_id}': "
+            f"Preço de Borboleta Simétrica C(K1) - 2*C(K2) + C(K3) = {butterfly_price:.8f} < 0 "
+            f"(C1={c1:.4f}, C2={c2:.4f}, C3={c3:.4f}).",
+            law_code="LAW-107B",
+            details={
+                "surface_id": surface_id,
+                "call_k1": str(call_k1),
+                "call_k2": str(call_k2),
+                "call_k3": str(call_k3),
+                "butterfly_price": str(butterfly_price),
+            },
+        )
+
+
+
+def assert_drex_rwa_primary_issuance_invariants(
+    allocated_units: int,
+    delivered_units: int,
+    received_financial: Decimal,
+    expected_financial: Decimal,
+    operation_id: str = "",
+    funded_coupon_amount: Optional[Decimal] = None,
+    distributed_coupon_amount: Optional[Decimal] = None,
+) -> None:
+    """Lei 84 / LAW-111: Atomicidade da Liquidação Primária DvP e Conservação de Cupons RWA no Drex (FL-105).
+
+    Emissão Primária de Ativos de Renda Fixa Privada Tokenizados (Debêntures, CRIs, CRAs) no Drex:
+    1. Atomicidade DvP Estrita: Quantidade de tokens RWA alocada no bookbuilding deve ser rigorosamente
+       igual à quantidade entregue (tokens mintados/creditados na carteira do investidor).
+    2. Paridade Financeira: Valor financeiro recebido pelo emissor em Real Digital deve ser exatamente
+       igual ao valor nominal liquidado (allocated_units * unit_price).
+    3. Conservação de Saldo de Cupons/Amortizações: O montante de Real Digital provisionado pelo emissor
+       para honrar proventos deve cobrir rigorosamente os montantes distribuídos aos detentores
+       elegíveis, garantindo ausência de vazamento financeiro (zero-leakage).
+    """
+    check(
+        allocated_units == delivered_units,
+        f"Violação da Atomicidade DvP Quantitativa RWA (LAW-111) na operação '{operation_id}': "
+        f"Quantidade alocada ({allocated_units}) != Quantidade entregue ({delivered_units})",
+        law_code="LAW-111",
+        details={
+            "operation_id": operation_id,
+            "allocated_units": allocated_units,
+            "delivered_units": delivered_units,
+        },
+    )
+    check(
+        received_financial == expected_financial,
+        f"Violação da Paridade Financeira DvP RWA (LAW-111) na operação '{operation_id}': "
+        f"Valor recebido ({received_financial}) != Valor financeiro esperado ({expected_financial})",
+        law_code="LAW-111",
+        details={
+            "operation_id": operation_id,
+            "received_financial": str(received_financial),
+            "expected_financial": str(expected_financial),
+        },
+    )
+    if funded_coupon_amount is not None and distributed_coupon_amount is not None:
+        check(
+            funded_coupon_amount == distributed_coupon_amount,
+            f"Violação da Conservação de Saldo de Cupons RWA (LAW-111) na operação '{operation_id}': "
+            f"Montante provisionado ({funded_coupon_amount}) != Montante distribuído ({distributed_coupon_amount})",
+            law_code="LAW-111",
+            details={
+                "operation_id": operation_id,
+                "funded_coupon_amount": str(funded_coupon_amount),
+                "distributed_coupon_amount": str(distributed_coupon_amount),
+            },
+        )
+
+
+def assert_market_maker_pmm_liquidity_law_109(
+    presence_pct: Decimal,
+    min_presence_pct: Decimal,
+    is_compliant: bool,
+    spread_pct: Optional[Decimal] = None,
+    max_spread_pct: Optional[Decimal] = None,
+    bid_qty: Optional[Decimal] = None,
+    min_bid_qty: Optional[Decimal] = None,
+    ask_qty: Optional[Decimal] = None,
+    min_ask_qty: Optional[Decimal] = None,
+    discount_amount: Optional[Decimal] = None,
+    is_incentive_eligible: Optional[bool] = None,
+    session_id: str = "",
+    participant_id: str = "",
+    symbol: str = "",
+) -> None:
+    """Lei 82 / LAW-109: Cumprimento Estrito das Regras de Presença, Spread Máximo e Continuidade de Ofertas Bilaterais (FL-103).
+
+    Garante as obrigações contratuais do Formador de Mercado (PMM B3 / BSM):
+    1. Presença Mínima Obrigatória: Toda sessão ordinária conforme (is_compliant == True)
+       deve registrar presença efetiva >= min_presence_pct (mínimo regulatório oficial de 80.00%).
+    2. Spread Máximo e Não-Negatividade: Preço de venda estritamente superior ao de compra
+       (ask > bid > 0) e spread percentual bid-ask <= max_spread_pct contratual da classe.
+    3. Profundidade Bilateral: Lotes simultâneos de compra e venda devem satisfazer
+       bid_qty >= min_bid_qty e ask_qty >= min_ask_qty em todo snapshot de conformidade.
+    4. Integridade de Incentivos e Descredenciamento: Descontos tarifários/emolumentares
+       (discount_amount > 0) somente podem ser concedidos se o participante for elegível.
+    """
+    if is_compliant:
+        check(
+            presence_pct >= min_presence_pct,
+            f"Violação da Presença Mínima de Formador de Mercado (LAW-109) na sessão '{session_id}' "
+            f"para {participant_id}/{symbol}: Presença apurada ({presence_pct}%) < Mínimo requerido ({min_presence_pct}%)",
+            law_code="LAW-109",
+            details={
+                "session_id": session_id,
+                "participant_id": participant_id,
+                "symbol": symbol,
+                "presence_pct": str(presence_pct),
+                "min_presence_pct": str(min_presence_pct),
+            },
+        )
+
+    if spread_pct is not None and max_spread_pct is not None:
+        check(
+            spread_pct <= max_spread_pct,
+            f"Violação de Spread Máximo de Cotação PMM (LAW-109) para {participant_id}/{symbol}: "
+            f"Spread ofertado ({spread_pct}%) > Teto contratual da classe ({max_spread_pct}%)",
+            law_code="LAW-109",
+            details={
+                "participant_id": participant_id,
+                "symbol": symbol,
+                "spread_pct": str(spread_pct),
+                "max_spread_pct": str(max_spread_pct),
+            },
+        )
+
+    if bid_qty is not None and min_bid_qty is not None:
+        check(
+            bid_qty >= min_bid_qty,
+            f"Violação de Lote Mínimo de Compra PMM (LAW-109) para {participant_id}/{symbol}: "
+            f"Lote de compra ({bid_qty}) < Mínimo regulatório ({min_bid_qty})",
+            law_code="LAW-109",
+            details={
+                "participant_id": participant_id,
+                "symbol": symbol,
+                "bid_qty": str(bid_qty),
+                "min_bid_qty": str(min_bid_qty),
+            },
+        )
+
+    if ask_qty is not None and min_ask_qty is not None:
+        check(
+            ask_qty >= min_ask_qty,
+            f"Violação de Lote Mínimo de Venda PMM (LAW-109) para {participant_id}/{symbol}: "
+            f"Lote de venda ({ask_qty}) < Mínimo regulatório ({min_ask_qty})",
+            law_code="LAW-109",
+            details={
+                "participant_id": participant_id,
+                "symbol": symbol,
+                "ask_qty": str(ask_qty),
+                "min_ask_qty": str(min_ask_qty),
+            },
+        )
+
+    if is_incentive_eligible is False and discount_amount is not None:
+        check(
+            discount_amount <= Decimal("0.00"),
+            f"Violação de Integridade de Incentivo Tarifário PMM (LAW-109) para {participant_id}/{symbol}: "
+            f"Concessão indevida de desconto (R$ {discount_amount}) a participante inelegível/sancionado.",
+            law_code="LAW-109",
+            details={
+                "participant_id": participant_id,
+                "symbol": symbol,
+                "discount_amount": str(discount_amount),
+            },
+        )
+
+
+
+
+
 
 

@@ -41,7 +41,7 @@ class TestAtlasCLI(unittest.TestCase):
 
     def test_version_constant(self):
         """Verifica a versão 2.2.0 celebrando o marco de 100 fluxos B3."""
-        self.assertEqual(VERSION, "2.2.0")
+        self.assertEqual(VERSION, "2.3.0")
 
     def test_resolve_catalog_dir(self):
         """Verifica se resolve_catalog_dir encontra a pasta catalog válida."""
@@ -60,7 +60,7 @@ class TestAtlasCLI(unittest.TestCase):
         flows_data, sources_data = load_catalog(self.catalog_dir)
         self.assertIn("flows", flows_data)
         self.assertIn("sources", sources_data)
-        self.assertEqual(len(flows_data["flows"]), 100)
+        self.assertEqual(len(flows_data["flows"]), 105)
         self.assertGreaterEqual(len(sources_data["sources"]), 30)
 
         flow_ids = {f["id"] for f in flows_data["flows"]}
@@ -78,7 +78,7 @@ class TestAtlasCLI(unittest.TestCase):
             self.assertEqual(code, 0)
             self.assertIn("FL-001", output)
             self.assertIn("FL-100", output)
-            self.assertIn("100 fluxos encontrados", output)
+            self.assertIn("105 fluxos encontrados", output)
 
     def test_cmd_list_flows_filter_system(self):
         """Testa list-flows com filtro por sistema."""
@@ -100,7 +100,7 @@ class TestAtlasCLI(unittest.TestCase):
             self.assertEqual(code, 0)
             parsed = json.loads(output)
             self.assertIsInstance(parsed, list)
-            self.assertEqual(len(parsed), 100)
+            self.assertEqual(len(parsed), 105)
             self.assertIn("id", parsed[0])
 
     def test_cmd_flow_info_found(self):
@@ -155,7 +155,7 @@ class TestAtlasCLI(unittest.TestCase):
             output = fake_out.getvalue()
             self.assertEqual(code, 0)
             self.assertIn("ESTATÍSTICAS E MÉTRICAS", output)
-            self.assertIn("Total de Fluxos Mapeados: 100", output)
+            self.assertIn("Total de Fluxos Mapeados: 105", output)
 
     def test_cmd_stats_json(self):
         """Testa exibição de estatísticas em JSON."""
@@ -166,7 +166,7 @@ class TestAtlasCLI(unittest.TestCase):
             output = fake_out.getvalue()
             self.assertEqual(code, 0)
             parsed = json.loads(output)
-            self.assertEqual(parsed.get("total_flows"), 100)
+            self.assertEqual(parsed.get("total_flows"), 105)
             self.assertIn("total_sources", parsed)
             self.assertIn("stages", parsed)
 
@@ -337,6 +337,15 @@ class TestAtlasCLI(unittest.TestCase):
             self.assertEqual(code, 0)
             data = json.loads(fake_out.getvalue())
             self.assertEqual(data["flow"], "FL-100")
+
+        # FL-101 a FL-105 (Novos fluxos institucionais Fase 7)
+        for fid in ("FL-101", "FL-102", "FL-103", "FL-104", "FL-105"):
+            args_f = parser.parse_args(["simulate-flow", fid, "--json"])
+            with patch("sys.stdout", new=StringIO()) as fake_out:
+                code = cmd_simulate_flow(args_f)
+                self.assertEqual(code, 0)
+                data = json.loads(fake_out.getvalue())
+                self.assertEqual(data["flow"], fid)
 
         # FL-001 (Fluxo genérico dos 100)
         args_fl01 = parser.parse_args(["simulate-flow", "FL-001", "--json"])

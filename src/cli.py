@@ -22,7 +22,7 @@ _PKG_ROOT = str(Path(__file__).resolve().parent.parent)
 if _PKG_ROOT not in sys.path:
     sys.path.insert(0, _PKG_ROOT)
 
-VERSION = "2.2.0"
+VERSION = "2.3.0"
 
 # Constantes do Catálogo
 VALID_STATES = [
@@ -664,8 +664,235 @@ def cmd_simulate_central_bus(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_simulate_volatility_surface(args: argparse.Namespace) -> int:
+    """Simula Superfícies de Volatilidade Paramétricas SVI/SABR (FL-101)."""
+    fixtures_dir = resolve_fixtures_dir(getattr(args, "fixtures_dir", None))
+    fixture_path = fixtures_dir / "volatility_surface_sabr_svi.json"
+    repo_root = fixtures_dir.parent
+    if str(repo_root) not in sys.path:
+        sys.path.insert(0, str(repo_root))
+
+    from src.volatility_surface_sabr_svi import B3VolatilitySurface
+    with open(fixture_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    surfaces_summary = []
+    for sid, sdata in data["surfaces"].items():
+        surf = B3VolatilitySurface.from_dict(sdata)
+        audit = surf.verify_invariants(raise_on_error=True)
+        surfaces_summary.append({
+            "surface_id": surf.surface_id,
+            "underlying": surf.asset_type.value,
+            "model": surf.model_type.value,
+            "slices_count": len(surf.slices),
+            "calendar_arbitrage_free": audit["calendar_arbitrage_free_law_107a"],
+            "butterfly_arbitrage_free": audit["butterfly_arbitrage_free_law_107b"],
+        })
+
+    result_data = {
+        "flow": "FL-101",
+        "surfaces_evaluated": len(surfaces_summary),
+        "details": surfaces_summary,
+        "invariants_verified": ["LAW-107A", "LAW-107B"],
+        "status": "SUCCESS",
+    }
+
+    if getattr(args, "json", False):
+        print(json.dumps(result_data, indent=2, ensure_ascii=False))
+        return 0
+
+    print("\n" + "=" * 80)
+    print(" SIMULAÇÃO: SUPERFÍCIES DE VOLATILIDADE SVI/SABR — B3 DERIVATIVOS (FL-101)")
+    print("=" * 80)
+    for s in surfaces_summary:
+        print(f"  Superfície:               {s['surface_id']} ({s['underlying']} - {s['model']})")
+        print(f"  Fatias Temporais:         {s['slices_count']} vencimentos")
+        print(f"  Não-Arbitragem Calendário: {'✓ Válida' if s['calendar_arbitrage_free'] else '✗'} (LAW-107A)")
+        print(f"  Não-Arbitragem Butterfly:  {'✓ Válida' if s['butterfly_arbitrage_free'] else '✗'} (LAW-107B)")
+        print("  " + "-" * 50)
+    print(f"  Status:                   100% Conforme sem arbitragem estática")
+    print("=" * 80 + "\n")
+    return 0
+
+
+def cmd_simulate_coe(args: argparse.Namespace) -> int:
+    """Simula Certificados de Operações Estruturadas COE com Capital Protegido (FL-102)."""
+    fixtures_dir = resolve_fixtures_dir(getattr(args, "fixtures_dir", None))
+    fixture_path = fixtures_dir / "structured_operations_coe.json"
+    repo_root = fixtures_dir.parent
+    if str(repo_root) not in sys.path:
+        sys.path.insert(0, str(repo_root))
+
+    from decimal import Decimal
+    from src.structured_operations_coe import StructuredOperationsCoeEngine
+
+    engine = StructuredOperationsCoeEngine.load_from_json(fixture_path)
+    engine.verify_invariants()
+
+    receipt = engine.settle_at_maturity("COE-BULL-IBOV-001", Decimal("145000.00"), "2026-11-06", 756)
+    contract = engine.get_contract("COE-BULL-IBOV-001")
+
+    result_data = {
+        "flow": "FL-102",
+        "contracts_count": len(engine.contracts),
+        "sample_contract": receipt.contract_id,
+        "protection_type": contract.protection_type.value,
+        "invested_principal": str(receipt.total_principal_invested),
+        "gross_settlement": str(receipt.total_gross_settlement),
+        "net_settlement": str(receipt.total_net_settlement),
+        "capital_protection_held": receipt.invariant_capital_protection_held,
+        "invariants_verified": ["LAW-108"],
+        "status": "SUCCESS",
+    }
+
+    if getattr(args, "json", False):
+        print(json.dumps(result_data, indent=2, ensure_ascii=False))
+        return 0
+
+    print("\n" + "=" * 80)
+    print(" SIMULAÇÃO: CERTIFICADOS DE OPERAÇÕES ESTRUTURADAS (COE) B3 (FL-102)")
+    print("=" * 80)
+    print(f"  Contratos Registrados:    {len(engine.contracts)}")
+    print(f"  Contrato Demonstrativo:   {receipt.contract_id} ({contract.underlying_asset})")
+    print(f"  Modalidade:               {contract.protection_type.value}")
+    print(f"  Principal Garantido:      R$ {receipt.total_principal_invested:,.2f}")
+    print(f"  Liquidação Bruta:         R$ {receipt.total_gross_settlement:,.2f}")
+    print(f"  Liquidação Líquida IRRF:  R$ {receipt.total_net_settlement:,.2f}")
+    print(f"  Piso de Capital Protegido: {'✓ Cumprido' if receipt.invariant_capital_protection_held else '✗'} (LAW-108)")
+    print("=" * 80 + "\n")
+    return 0
+
+
+def cmd_simulate_market_maker(args: argparse.Namespace) -> int:
+    """Simula Programa de Metas de Formador de Mercado PMM B3 (FL-103)."""
+    fixtures_dir = resolve_fixtures_dir(getattr(args, "fixtures_dir", None))
+    fixture_path = fixtures_dir / "market_maker_pmm_engine.json"
+    repo_root = fixtures_dir.parent
+    if str(repo_root) not in sys.path:
+        sys.path.insert(0, str(repo_root))
+
+    from src.market_maker_pmm_engine import MarketMakerPmmEngine
+
+    engine = MarketMakerPmmEngine()
+    engine.load_from_fixture(fixture_path)
+    audit = engine.verify_invariants()
+
+    result_data = {
+        "flow": "FL-103",
+        "contracts_count": len(engine.contracts),
+        "sessions_audited": len(engine.session_audits),
+        "presence_law_109a": audit["LAW-109A"],
+        "spread_law_109b": audit["LAW-109B"],
+        "depth_law_109c": audit["LAW-109C"],
+        "billing_law_109d": audit["LAW-109D"],
+        "invariants_verified": ["LAW-109A", "LAW-109B", "LAW-109C", "LAW-109D"],
+        "status": "SUCCESS",
+    }
+
+    if getattr(args, "json", False):
+        print(json.dumps(result_data, indent=2, ensure_ascii=False))
+        return 0
+
+    print("\n" + "=" * 80)
+    print(" SIMULAÇÃO: PROGRAMA DE FORMADOR DE MERCADO (PMM B3 / BSM) (FL-103)")
+    print("=" * 80)
+    print(f"  Contratos PMM Ativos:     {len(engine.contracts)}")
+    print(f"  Sessões Monitoradas:      {len(engine.session_audits)}")
+    print(f"  Presença Mínima (>=80%):  {'✓ Aprovada' if audit['LAW-109A'] else '✗'} (LAW-109A)")
+    print(f"  Spread Máximo Tolerado:   {'✓ Aprovado' if audit['LAW-109B'] else '✗'} (LAW-109B)")
+    print(f"  Profundidade Bilateral:   {'✓ Aprovada' if audit['LAW-109C'] else '✗'} (LAW-109C)")
+    print(f"  Incentivo Tarifário B3:   {'✓ Regular' if audit['LAW-109D'] else '✗'} (LAW-109D)")
+    print("=" * 80 + "\n")
+    return 0
+
+
+def cmd_simulate_sor(args: argparse.Namespace) -> int:
+    """Simula Algorithmic Smart Order Router SOR TWAP/VWAP/POV (FL-104)."""
+    fixtures_dir = resolve_fixtures_dir(getattr(args, "fixtures_dir", None))
+    fixture_path = fixtures_dir / "algorithmic_sor_twap_vwap.json"
+    repo_root = fixtures_dir.parent
+    if str(repo_root) not in sys.path:
+        sys.path.insert(0, str(repo_root))
+
+    from src.algorithmic_sor_twap_vwap import AlgorithmicSOREngine
+
+    engine, parent, ref_price = AlgorithmicSOREngine.load_from_fixture(fixture_path)
+    plan = engine.generate_twap_slices(parent, ref_price)
+    audit = plan.verify_invariants(raise_on_error=True)
+
+    result_data = {
+        "flow": "FL-104",
+        "parent_id": parent.parent_id,
+        "symbol": parent.symbol,
+        "strategy": parent.strategy.value,
+        "parent_quantity": parent.quantity,
+        "total_sliced": plan.total_sliced_quantity,
+        "slices_count": len(plan.child_orders),
+        "quantity_conservation": audit["law_110_quantity_conservation"],
+        "price_limit_respected": audit["law_110_price_limit_respected"],
+        "invariants_verified": ["LAW-110"],
+        "status": "SUCCESS",
+    }
+
+    if getattr(args, "json", False):
+        print(json.dumps(result_data, indent=2, ensure_ascii=False))
+        return 0
+
+    print("\n" + "=" * 80)
+    print(f" SIMULAÇÃO: SMART ORDER ROUTER ALGORÍTMICO (SOR) — {parent.symbol} (FL-104)")
+    print("=" * 80)
+    print(f"  Ordem Mãe:                {parent.parent_id} ({parent.side.value} {parent.quantity:,} @ R$ {parent.limit_price})")
+    print(f"  Estratégia de Fatiamento: {parent.strategy.value} com Jitter Anti-Predatório")
+    print(f"  Total de Fatias Geradas:  {len(plan.child_orders)} ordens-filhas")
+    print(f"  Quantidade Fatiada Total: {plan.total_sliced_quantity:,} lotes")
+    print(f"  Conservação de Quantidade: {'✓ 100% Exata' if audit['law_110_quantity_conservation'] else '✗'} (LAW-110)")
+    print(f"  Teto de Preço Limite:     {'✓ Respeitado' if audit['law_110_price_limit_respected'] else '✗'} (LAW-110)")
+    print("=" * 80 + "\n")
+    return 0
+
+
+def cmd_simulate_drex_rwa(args: argparse.Namespace) -> int:
+    """Simula Emissão Primária de Ativos Tokenizados (RWA) e DvP no Drex Fase 2 (FL-105)."""
+    fixtures_dir = resolve_fixtures_dir(getattr(args, "fixtures_dir", None))
+    fixture_path = fixtures_dir / "drex_rwa_primary_issuance.json"
+    repo_root = fixtures_dir.parent
+    if str(repo_root) not in sys.path:
+        sys.path.insert(0, str(repo_root))
+
+    from src.drex_rwa_primary_issuance import DrexRwaPrimaryIssuanceEngine
+
+    engine = DrexRwaPrimaryIssuanceEngine.load_from_fixture(fixture_path)
+    audit = engine.verify_invariants()
+
+    result_data = {
+        "flow": "FL-105",
+        "offerings_count": len(engine.offerings),
+        "dvp_receipts_count": len(engine.dvp_receipts),
+        "atomic_dvp_quantity": audit["LAW-111_primary_dvp_atomic_quantity"],
+        "financial_parity": audit["LAW-111_primary_dvp_financial_parity"],
+        "coupon_conservation": audit["LAW-111_coupon_conservation"],
+        "invariants_verified": ["LAW-111"],
+        "status": "SUCCESS",
+    }
+
+    if getattr(args, "json", False):
+        print(json.dumps(result_data, indent=2, ensure_ascii=False))
+        return 0
+
+    print("\n" + "=" * 80)
+    print(" SIMULAÇÃO: EMISSÃO PRIMÁRIA RWA & DVP ATÔMICO NO DREX FASE 2 (FL-105)")
+    print("=" * 80)
+    print(f"  Ofertas RWA Registradas:  {len(engine.offerings)}")
+    print(f"  Liquidações DvP Atômicas: {len(engine.dvp_receipts)}")
+    print(f"  Atomicidade DvP (Tokens): {'✓ Cumprida' if audit['LAW-111_primary_dvp_atomic_quantity'] else '✗'} (LAW-111)")
+    print(f"  Paridade Financeira CBDC: {'✓ Cumprida' if audit['LAW-111_primary_dvp_financial_parity'] else '✗'} (LAW-111)")
+    print(f"  Conservação de Cupons:    {'✓ Cumprida' if audit['LAW-111_coupon_conservation'] else '✗'} (LAW-111)")
+    print("=" * 80 + "\n")
+    return 0
+
+
 def cmd_simulate_flow(args: argparse.Namespace) -> int:
-    """Executa a simulação institucional de qualquer um dos 100 fluxos B3 do catálogo."""
+    """Executa a simulação institucional de qualquer um dos 105 fluxos B3 do catálogo."""
     catalog_dir = resolve_catalog_dir(getattr(args, "catalog_dir", None))
     flows_data, _ = load_catalog(catalog_dir)
     flows = flows_data.get("flows", [])
@@ -673,7 +900,7 @@ def cmd_simulate_flow(args: argparse.Namespace) -> int:
 
     flow_entry = next((f for f in flows if f.get("id", "").upper() == target_id), None)
     if not flow_entry:
-        sys.stderr.write(f"Erro: Fluxo '{target_id}' não encontrado no catálogo dos 100 fluxos B3.\n")
+        sys.stderr.write(f"Erro: Fluxo '{target_id}' não encontrado no catálogo dos 105 fluxos B3.\n")
         return 1
 
     # Despachos especializados para fluxos com motores de simulação avançada
@@ -683,6 +910,16 @@ def cmd_simulate_flow(args: argparse.Namespace) -> int:
         return cmd_simulate_triparty(args)
     elif target_id in ("FL-100", "FL-020"):
         return cmd_simulate_central_bus(args)
+    elif target_id == "FL-101":
+        return cmd_simulate_volatility_surface(args)
+    elif target_id == "FL-102":
+        return cmd_simulate_coe(args)
+    elif target_id == "FL-103":
+        return cmd_simulate_market_maker(args)
+    elif target_id == "FL-104":
+        return cmd_simulate_sor(args)
+    elif target_id == "FL-105":
+        return cmd_simulate_drex_rwa(args)
 
     evidence = flow_entry.get("evidence", {})
     sim_result = {
@@ -737,7 +974,7 @@ def cmd_explain(args: argparse.Namespace) -> int:
                 ),
                 (
                     "Leis de Conservação",
-                    "84 Leis Formais comprovam matematicamente a consistência contábil, financeira e física.",
+                    "89 Leis Formais comprovam matematicamente a consistência contábil, financeira e física.",
                 ),
             ],
         },
@@ -1365,12 +1602,12 @@ def build_atlas_parser() -> argparse.ArgumentParser:
     """Constrói o analisador de argumentos da CLI b3-atlas."""
     parser = argparse.ArgumentParser(
         prog="b3-atlas",
-        description="B3 Integration Atlas — CLI Interativa de Catálogo e Fontes B3 (Marco de 100 Fluxos)",
+        description="B3 Integration Atlas — CLI Interativa de Catálogo e Fontes B3 (Marco de 105 Fluxos)",
     )
     parser.add_argument(
         "-v", "--version",
         action="version",
-        version=f"%(prog)s {VERSION} (Marco dos 100 Fluxos Institucionais B3)",
+        version=f"%(prog)s {VERSION} (Marco dos 105 Fluxos Institucionais B3)",
     )
     parser.add_argument(
         "--catalog-dir",
@@ -1388,7 +1625,7 @@ def build_atlas_parser() -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(dest="subcommand", help="Comandos disponíveis")
 
     # b3-atlas list-flows
-    p_flows = subparsers.add_parser("list-flows", help="Lista fluxos da plataforma B3 (100 fluxos)")
+    p_flows = subparsers.add_parser("list-flows", help="Lista fluxos da plataforma B3 (105 fluxos)")
     p_flows.add_argument("-s", "--system", help="Filtrar por sistema (ex: PUMA, NoMe, RTC, IMBARQ)")
     p_flows.add_argument("-q", "--query", help="Buscar termo em ID ou Nome do fluxo")
     p_flows.add_argument(
@@ -1406,7 +1643,7 @@ def build_atlas_parser() -> argparse.ArgumentParser:
     p_info.set_defaults(func=cmd_flow_info)
 
     # b3-atlas stats
-    p_stats = subparsers.add_parser("stats", help="Exibe métricas e cobertura do atlas (100 fluxos)")
+    p_stats = subparsers.add_parser("stats", help="Exibe métricas e cobertura do atlas (105 fluxos)")
     p_stats.add_argument("--json", action="store_true", help="Saída em formato JSON")
     p_stats.set_defaults(func=cmd_stats)
 
@@ -1472,11 +1709,56 @@ def build_atlas_parser() -> argparse.ArgumentParser:
     p_bus.add_argument("--json", action="store_true", help="Saída em formato JSON")
     p_bus.set_defaults(func=cmd_simulate_central_bus)
 
+    # b3-atlas simulate-volatility-surface / vol-surface
+    p_vsurf = subparsers.add_parser(
+        "simulate-volatility-surface",
+        aliases=["vol-surface", "simulate-sabr-svi"],
+        help="Simula Superfícies de Volatilidade Paramétricas SVI/SABR (FL-101)",
+    )
+    p_vsurf.add_argument("--json", action="store_true", help="Saída em formato JSON")
+    p_vsurf.set_defaults(func=cmd_simulate_volatility_surface)
+
+    # b3-atlas simulate-coe / coe
+    p_coe = subparsers.add_parser(
+        "simulate-coe",
+        aliases=["coe", "simulate-structured-notes"],
+        help="Simula Certificados de Operações Estruturadas COE com Capital Protegido (FL-102)",
+    )
+    p_coe.add_argument("--json", action="store_true", help="Saída em formato JSON")
+    p_coe.set_defaults(func=cmd_simulate_coe)
+
+    # b3-atlas simulate-pmm / pmm / market-maker
+    p_pmm = subparsers.add_parser(
+        "simulate-pmm",
+        aliases=["pmm", "market-maker", "simulate-market-maker"],
+        help="Simula Programa de Metas de Formador de Mercado PMM B3 (FL-103)",
+    )
+    p_pmm.add_argument("--json", action="store_true", help="Saída em formato JSON")
+    p_pmm.set_defaults(func=cmd_simulate_market_maker)
+
+    # b3-atlas simulate-sor / sor
+    p_sor = subparsers.add_parser(
+        "simulate-sor",
+        aliases=["sor", "simulate-twap-vwap"],
+        help="Simula Algorithmic Smart Order Router SOR TWAP/VWAP/POV (FL-104)",
+    )
+    p_sor.add_argument("--json", action="store_true", help="Saída em formato JSON")
+    p_sor.set_defaults(func=cmd_simulate_sor)
+
+    # b3-atlas simulate-drex-rwa / drex-rwa
+    p_rwa = subparsers.add_parser(
+        "simulate-drex-rwa",
+        aliases=["drex-rwa", "simulate-rwa-issuance"],
+        help="Simula Emissão Primária de Ativos Tokenizados (RWA) e DvP no Drex Fase 2 (FL-105)",
+    )
+    p_rwa.add_argument("--json", action="store_true", help="Saída em formato JSON")
+    p_rwa.set_defaults(func=cmd_simulate_drex_rwa)
+
     # b3-atlas simulate-flow <flow_id> / run-flow <flow_id>
     p_sflow = subparsers.add_parser(
         "simulate-flow",
         aliases=["run-flow"],
-        help="Executa a simulação institucional de qualquer um dos 100 fluxos B3",
+        help="Executa a simulação institucional de qualquer um dos 105 fluxos B3",
     )
     p_sflow.add_argument("flow_id", help="Identificador do fluxo a simular (ex: FL-001 a FL-100)")
     p_sflow.add_argument("--test-freeze", action="store_true", help="Parâmetro para fluxo MOC/LOC")
@@ -1612,12 +1894,12 @@ def build_verify_parser() -> argparse.ArgumentParser:
     """Constrói o analisador para o executável direto b3-verify."""
     parser = argparse.ArgumentParser(
         prog="b3-verify",
-        description="B3 Verification Suite — Execução Formal de Invariantes e Leis de Conservação (Marco 100 Fluxos)",
+        description="B3 Verification Suite — Execução Formal de Invariantes e Leis de Conservação (Marco 105 Fluxos)",
     )
     parser.add_argument(
         "-v", "--version",
         action="version",
-        version=f"%(prog)s {VERSION} (Marco dos 100 Fluxos Institucionais B3)",
+        version=f"%(prog)s {VERSION} (Marco dos 105 Fluxos Institucionais B3)",
     )
     parser.add_argument(
         "--fixtures-dir",
