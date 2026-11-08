@@ -73,6 +73,15 @@ class TestB3ConceptsCatalog(unittest.TestCase):
         self.assertIn("leilao-moc-freeze", ids)
         self.assertIn("tuneis-circuit-breaker", ids)
 
+    def test_simulate_all_concepts(self) -> None:
+        """Valida que todos os 10 conceitos possuem simuladores operacionais executáveis."""
+        for c in CONCEPTS:
+            res = self.catalog.simulate(c.id)
+            self.assertNotIn("error", res, f"Falha na simulação de {c.id}")
+            self.assertEqual(res["concept_id"], c.id)
+            self.assertIn("law_verified", res)
+            self.assertIn("title", res)
+
 
 if __name__ == "__main__":
     unittest.main()

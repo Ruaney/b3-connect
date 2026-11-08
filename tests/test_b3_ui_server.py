@@ -141,6 +141,14 @@ class TestB3UiServer(unittest.TestCase):
         self.assertIn("how_it_works", c_data)
         self.assertIn("diagram_ascii", c_data)
 
+        # Simulação de conceito via API /simulate
+        status, body, headers = self._get("/api/concepts/default-waterfall/simulate?default_amount=40000000")
+        self.assertEqual(status, 200)
+        sim_data = json.loads(body.decode("utf-8"))
+        self.assertEqual(sim_data["concept_id"], "default-waterfall")
+        self.assertEqual(sim_data["law_verified"], "LAW-106B")
+        self.assertIn("waterfall_execution", sim_data)
+
         # Conceito inexistente retorna 404
         try:
             self._get("/api/concepts/nao-existe")

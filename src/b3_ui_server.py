@@ -62,6 +62,9 @@ class B3DashboardHandler(BaseHTTPRequestHandler):
             self._serve_api_tla_check()
         elif path == "/api/concepts":
             self._serve_api_concepts()
+        elif path.startswith("/api/concepts/") and path.endswith("/simulate"):
+            concept_id = path.replace("/api/concepts/", "").replace("/simulate", "").strip()
+            self._serve_api_simulate_concept(concept_id, query)
         elif path.startswith("/api/concepts/"):
             concept_id = path.replace("/api/concepts/", "").strip()
             self._serve_api_single_concept(concept_id)
@@ -300,6 +303,15 @@ class B3DashboardHandler(BaseHTTPRequestHandler):
             self.send_error(404, f"Conceito '{concept_id}' não encontrado")
             return
         self._send_json(c.to_dict())
+
+    def _serve_api_simulate_concept(self, concept_id: str, query: Dict[str, List[str]]) -> None:
+        catalog = B3ConceptsCatalog()
+        params = {k: v[0] for k, v in query.items()}
+        res = catalog.simulate(concept_id, params)
+        if "error" in res:
+            self.send_error(404, res["error"])
+            return
+        self._send_json(res)
 
     def _serve_html_dashboard(self) -> None:
         html = """<!DOCTYPE html>
@@ -855,8 +867,40 @@ class B3DashboardHandler(BaseHTTPRequestHandler):
           <h4 style="font-size: 0.85rem; color: var(--accent-green); text-transform: uppercase; font-weight: 700; margin-bottom: 0.35rem;">💼 Exemplo Prático de Mercado:</h4>
           <p style="font-size: 0.85rem; color: #f3f4f6; line-height: 1.5;">${c.practical_example}</p>
         </div>
+
+        <div style="background: #0d1527; border: 1px solid var(--accent-blue); border-radius: 8px; padding: 1.25rem; margin-top: 1.5rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+            <div>
+              <h4 style="font-size: 0.9rem; color: #38bdf8; text-transform: uppercase; font-weight: 700;">🧪 Laboratório Prático Interativo (Sandbox Live):</h4>
+              <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.2rem;">
+                Dispare o motor oficial em Python para testar este mecanismo com dados dinâmicos e validar o fechamento da invariante formal.
+              </p>
+            </div>
+            <button class="btn" style="background: #0284c7; color: #fff; font-weight: 600; padding: 0.5rem 1.25rem; font-size: 0.85rem; cursor: pointer; border-radius: 6px;" onclick="runConceptSimulation('${c.id}')">▶️ Executar Simulação deste Mecanismo</button>
+          </div>
+          <div id="concept-sim-result-${c.id}" style="display: none; background: #080c14; border: 1px solid var(--border); border-radius: 6px; padding: 1rem; margin-top: 0.75rem;"></div>
+        </div>
       `;
       modal.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    async function runConceptSimulation(conceptId) {
+      const box = document.getElementById('concept-sim-result-' + conceptId);
+      box.style.display = 'block';
+      box.innerHTML = '<span style="color: var(--accent-blue);">⚡ Executando motor analítico oficial do conceito...</span>';
+      try {
+        const res = await fetch('/api/concepts/' + conceptId + '/simulate');
+        const data = await res.json();
+        box.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1f2937; padding-bottom: 0.5rem; margin-bottom: 0.75rem;">
+            <span style="color: #10b981; font-weight: bold; font-size: 0.9rem;">✔ ${data.title || 'Simulação Concluída'}</span>
+            <span class="tag law" style="font-size: 0.75rem; background: rgba(16, 185, 129, 0.15); color: #10b981;">${data.law_verified || 'INVARIANTE ATIVA'}</span>
+          </div>
+          <pre style="color: #67e8f9; white-space: pre-wrap; font-size: 0.82rem; line-height: 1.4; font-family: monospace;">${JSON.stringify(data, null, 2)}</pre>
+        `;
+      } catch (err) {
+        box.innerHTML = `<span style="color: var(--accent-red);">Erro ao executar simulação: ${err.message}</span>`;
+      }
     }
 
     loadModules();
