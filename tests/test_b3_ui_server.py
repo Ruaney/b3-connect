@@ -120,5 +120,34 @@ class TestB3UiServer(unittest.TestCase):
         self.assertGreater(tla_data["distinct_states_explored"], 100)
 
 
+    def test_api_concepts_list_and_single(self) -> None:
+        """Verifica /api/concepts e /api/concepts/<concept_id>."""
+        status, body, headers = self._get("/api/concepts")
+        self.assertEqual(status, 200)
+        data = json.loads(body.decode("utf-8"))
+        self.assertEqual(len(data), 10)
+        ids = [c["id"] for c in data]
+        self.assertIn("novacao-ccp", ids)
+        self.assertIn("default-waterfall", ids)
+        self.assertIn("leilao-moc-freeze", ids)
+
+        # Busca um conceito específico
+        status, body, headers = self._get("/api/concepts/novacao-ccp")
+        self.assertEqual(status, 200)
+        c_data = json.loads(body.decode("utf-8"))
+        self.assertEqual(c_data["id"], "novacao-ccp")
+        self.assertIn("LAW-004", c_data["related_laws"])
+        self.assertIn("10.214", c_data["title"])
+        self.assertIn("how_it_works", c_data)
+        self.assertIn("diagram_ascii", c_data)
+
+        # Conceito inexistente retorna 404
+        try:
+            self._get("/api/concepts/nao-existe")
+            self.fail("Expected HTTPError 404")
+        except urllib.error.HTTPError as e:
+            self.assertEqual(e.code, 404)
+
+
 if __name__ == "__main__":
     unittest.main()

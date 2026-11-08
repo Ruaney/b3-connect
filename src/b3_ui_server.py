@@ -21,6 +21,7 @@ import time
 from typing import Any, Dict, List, Optional
 import urllib.parse
 
+from src.b3_concepts_catalog import B3ConceptsCatalog
 from src.b3_chaos_simulator import B3ChaosSimulator, ChaosScenarioType
 from src.b3_doc_harvester import B3DocHarvester, DOCUMENT_CATEGORIES
 from src.b3_market_simulator import B3MarketSimulator
@@ -59,6 +60,11 @@ class B3DashboardHandler(BaseHTTPRequestHandler):
             self._serve_api_phase7(flow_id)
         elif path == "/api/tla-check":
             self._serve_api_tla_check()
+        elif path == "/api/concepts":
+            self._serve_api_concepts()
+        elif path.startswith("/api/concepts/"):
+            concept_id = path.replace("/api/concepts/", "").strip()
+            self._serve_api_single_concept(concept_id)
         elif path == "/api/health":
             self._send_json({"status": "UP", "version": "2.3.0", "offline": True})
         else:
@@ -283,6 +289,18 @@ class B3DashboardHandler(BaseHTTPRequestHandler):
             },
         })
 
+    def _serve_api_concepts(self) -> None:
+        catalog = B3ConceptsCatalog()
+        self._send_json(catalog.list_all())
+
+    def _serve_api_single_concept(self, concept_id: str) -> None:
+        catalog = B3ConceptsCatalog()
+        c = catalog.get_by_id(concept_id)
+        if not c:
+            self.send_error(404, f"Conceito '{concept_id}' não encontrado")
+            return
+        self._send_json(c.to_dict())
+
     def _serve_html_dashboard(self) -> None:
         html = """<!DOCTYPE html>
 <html lang="pt-BR">
@@ -381,6 +399,7 @@ class B3DashboardHandler(BaseHTTPRequestHandler):
       <li><a href="#" onclick="switchTab('simulator')">⚡ Simulador do Pregão</a></li>
       <li><a href="#" onclick="switchTab('chaos')">🔥 Laboratório de Caos</a></li>
       <li><a href="#" onclick="switchTab('phase7')">🧮 Fase 7 Quant & TLA+</a></li>
+      <li><a href="#" onclick="switchTab('concepts')">🧠 Conceitos Complexos B3</a></li>
       <li><a href="#" onclick="switchTab('docs')">📚 Acervo Documental (85)</a></li>
     </ul>
     <div class="system-status">
@@ -485,6 +504,33 @@ class B3DashboardHandler(BaseHTTPRequestHandler):
         </div>
       </div>
 
+      <!-- Tab Concepts (Conceitos Complexos) -->
+      <div id="tab-concepts" style="display: none;">
+        <div class="panel">
+          <div class="panel-header" style="flex-direction: column; align-items: flex-start; gap: 1rem;">
+            <div>
+              <h3 style="font-size: 1.25rem; color: #fff;">🧠 Guia Pedagógico de Conceitos Complexos da B3</h3>
+              <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">
+                Mecanismos matemáticos, regulatórios e operacionais estruturantes: Novação Legal, Default Waterfall, Netting Multilateral, Leilões MOC/LOC, Drex DvP e Superfícies SVI/SABR.
+              </p>
+            </div>
+            <div style="display: flex; gap: 0.75rem; width: 100%; flex-wrap: wrap; align-items: center;">
+              <input type="text" id="concept-search" placeholder="Buscar por conceito, lei (ex: LAW-104A) ou palavra-chave..." oninput="filterConcepts()" style="background: #0c1220; border: 1px solid var(--border); color: #fff; padding: 0.6rem 1rem; border-radius: 6px; font-size: 0.85rem; flex: 1; min-width: 280px;">
+              <div id="category-chips" style="display: flex; gap: 0.4rem; flex-wrap: wrap;"></div>
+            </div>
+          </div>
+
+          <div class="modules-grid" id="concepts-grid" style="margin-top: 1rem;">
+            <!-- Injetado via JS -->
+          </div>
+
+          <!-- Reader View de Detalhes -->
+          <div id="concept-detail-modal" class="panel" style="display: none; margin-top: 2rem; background: #0c1220; border: 1px solid var(--accent-blue); box-shadow: 0 0 20px rgba(2, 132, 199, 0.2);">
+            <div id="concept-detail-content"></div>
+          </div>
+        </div>
+      </div>
+
       <!-- Tab 4: Local Docs -->
       <div id="tab-docs" style="display: none;">
         <div class="panel">
@@ -522,7 +568,7 @@ class B3DashboardHandler(BaseHTTPRequestHandler):
     function switchTab(tabId) {
       document.querySelectorAll('.nav li a').forEach(el => el.classList.remove('active'));
       event.target.classList.add('active');
-      ['overview', 'simulator', 'chaos', 'phase7', 'docs'].forEach(t => {
+      ['overview', 'simulator', 'chaos', 'phase7', 'concepts', 'docs'].forEach(t => {
         document.getElementById('tab-' + t).style.display = (t === tabId) ? 'block' : 'none';
       });
       const titles = {
@@ -530,10 +576,12 @@ class B3DashboardHandler(BaseHTTPRequestHandler):
         'simulator': 'Simulador Diário E2E: Todos os Módulos em Execução',
         'chaos': 'Laboratório de Caos e Testes de Estresse Financeiro',
         'phase7': 'Fase 7 Quantitativa (FL-101 a FL-105) & Model Checking TLA+',
+        'concepts': '🧠 Guia Pedagógico de Conceitos Complexos da B3',
         'docs': 'Acervo Documental Oficial B3 (100% Baixado Localmente)'
       };
       document.getElementById('view-title').innerText = titles[tabId];
       if (tabId === 'docs' && allDocs.length === 0) loadDocs();
+      if (tabId === 'concepts' && allConcepts.length === 0) loadConcepts();
     }
 
     async function loadModules() {
@@ -681,6 +729,133 @@ class B3DashboardHandler(BaseHTTPRequestHandler):
       
       let clean = data.raw_content.replace(/<style[\\s\\S]*?<\\/style>/g, '').replace(/<[^>]+>/g, ' ').replace(/\\n\\s*\\n+/g, '\\n\\n');
       modal.innerText = `[${data.doc.doc_id}] ${data.doc.title}\nCategoria: ${data.doc.category} | Hash: ${data.doc.sha256}\n` + '='.repeat(80) + `\n\n` + clean;
+      modal.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    let allConcepts = [];
+    let selectedCategory = 'TODOS';
+
+    async function loadConcepts() {
+      const res = await fetch('/api/concepts');
+      allConcepts = await res.json();
+      renderCategoryChips();
+      renderConcepts(allConcepts);
+    }
+
+    function renderCategoryChips() {
+      const cats = ['TODOS', ...new Set(allConcepts.map(c => c.category))];
+      const container = document.getElementById('category-chips');
+      container.innerHTML = cats.map(c => `
+        <button class="btn" style="padding: 0.35rem 0.75rem; font-size: 0.75rem; background: ${selectedCategory === c ? 'var(--accent-blue)' : '#1f2937'}; color: #fff;" onclick="selectConceptCategory('${c}')">
+          ${c}
+        </button>
+      `).join('');
+    }
+
+    function selectConceptCategory(cat) {
+      selectedCategory = cat;
+      renderCategoryChips();
+      filterConcepts();
+    }
+
+    function filterConcepts() {
+      const q = document.getElementById('concept-search').value.toLowerCase().trim();
+      const filtered = allConcepts.filter(c => {
+        const matchesCat = (selectedCategory === 'TODOS' || c.category === selectedCategory);
+        const matchesQuery = !q || (
+          c.title.toLowerCase().includes(q) ||
+          c.summary.toLowerCase().includes(q) ||
+          c.badge.toLowerCase().includes(q) ||
+          c.related_laws.some(l => l.toLowerCase().includes(q)) ||
+          c.related_flows.some(f => f.toLowerCase().includes(q))
+        );
+        return matchesCat && matchesQuery;
+      });
+      renderConcepts(filtered);
+    }
+
+    function renderConcepts(list) {
+      const grid = document.getElementById('concepts-grid');
+      if (list.length === 0) {
+        grid.innerHTML = '<p style="color: var(--text-muted); padding: 1rem;">Nenhum conceito encontrado para os critérios de busca.</p>';
+        return;
+      }
+      grid.innerHTML = list.map(c => `
+        <div class="module-card" style="border-top: 4px solid var(--accent-gold); display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div class="module-header">
+              <span class="tag" style="background: rgba(195, 158, 92, 0.15); color: var(--accent-gold); font-weight: 700;">${c.category}</span>
+              <span class="tag law">${c.badge}</span>
+            </div>
+            <h4 style="font-size: 1.05rem; font-weight: 600; color: #fff; margin-bottom: 0.5rem;">${c.title}</h4>
+            <p class="module-desc" style="font-size: 0.85rem; color: #d1d5db;">${c.summary}</p>
+          </div>
+          <div>
+            <div class="tag-list" style="margin-bottom: 1rem;">
+              ${c.related_flows.map(f => `<span class="tag" style="font-family: monospace;">${f}</span>`).join('')}
+              ${c.related_laws.map(l => `<span class="tag law">${l}</span>`).join('')}
+            </div>
+            <button class="btn" style="width: 100%; justify-content: center; font-size: 0.8rem;" onclick="viewConceptDetail('${c.id}')">
+              📖 Ler Explicação Detalhada
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function viewConceptDetail(conceptId) {
+      const res = await fetch('/api/concepts/' + conceptId);
+      const c = await res.json();
+      const modal = document.getElementById('concept-detail-modal');
+      const content = document.getElementById('concept-detail-content');
+      modal.style.display = 'block';
+
+      content.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 1.5rem;">
+          <div>
+            <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+              <span class="tag" style="background: rgba(195, 158, 92, 0.15); color: var(--accent-gold); font-weight: 700;">${c.category}</span>
+              <span class="tag law">${c.badge}</span>
+            </div>
+            <h2 style="font-size: 1.4rem; color: #fff;">${c.title}</h2>
+            <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 0.25rem;">${c.summary}</p>
+          </div>
+          <button class="btn" style="background: #374151; font-size: 0.75rem;" onclick="document.getElementById('concept-detail-modal').style.display='none'">✕ Fechar</button>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
+          <div style="background: #111827; border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem;">
+            <h4 style="font-size: 0.85rem; color: #38bdf8; text-transform: uppercase; font-weight: 700; margin-bottom: 0.5rem;">📌 O que é?</h4>
+            <p style="font-size: 0.85rem; color: #e5e7eb; line-height: 1.5;">${c.what_is}</p>
+          </div>
+          <div style="background: #111827; border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem;">
+            <h4 style="font-size: 0.85rem; color: #f59e0b; text-transform: uppercase; font-weight: 700; margin-bottom: 0.5rem;">⚠️ Por que existe? (Risco Eliminado)</h4>
+            <p style="font-size: 0.85rem; color: #e5e7eb; line-height: 1.5;">${c.why_exists}</p>
+          </div>
+        </div>
+
+        <div style="background: #111827; border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem; margin-bottom: 1.5rem;">
+          <h4 style="font-size: 0.85rem; color: #10b981; text-transform: uppercase; font-weight: 700; margin-bottom: 0.75rem;">⚙️ Como Funciona Passo a Passo:</h4>
+          <ol style="padding-left: 1.5rem; font-size: 0.85rem; color: #e5e7eb; line-height: 1.6;">
+            ${c.how_it_works.map(step => `<li style="margin-bottom: 0.35rem;">${step}</li>`).join('')}
+          </ol>
+        </div>
+
+        <div style="background: #090d16; border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem; margin-bottom: 1.5rem;">
+          <h4 style="font-size: 0.85rem; color: var(--accent-gold); text-transform: uppercase; font-weight: 700; margin-bottom: 0.5rem;">📐 Regra Matemática / Lei de Conservação:</h4>
+          <pre style="font-family: monospace; font-size: 0.82rem; color: #67e8f9; white-space: pre-wrap; line-height: 1.4;">${c.math_rule}</pre>
+        </div>
+
+        <div style="background: #090d16; border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem; margin-bottom: 1.5rem;">
+          <h4 style="font-size: 0.85rem; color: #a78bfa; text-transform: uppercase; font-weight: 700; margin-bottom: 0.5rem;">📊 Diagrama Arquitetural:</h4>
+          <pre style="font-family: monospace; font-size: 0.8rem; color: #e5e7eb; white-space: pre-wrap; line-height: 1.3;">${c.diagram_ascii}</pre>
+        </div>
+
+        <div style="background: #111827; border-left: 4px solid var(--accent-green); border-radius: 4px; padding: 1.25rem;">
+          <h4 style="font-size: 0.85rem; color: var(--accent-green); text-transform: uppercase; font-weight: 700; margin-bottom: 0.35rem;">💼 Exemplo Prático de Mercado:</h4>
+          <p style="font-size: 0.85rem; color: #f3f4f6; line-height: 1.5;">${c.practical_example}</p>
+        </div>
+      `;
       modal.scrollIntoView({ behavior: 'smooth' });
     }
 
