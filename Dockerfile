@@ -29,7 +29,7 @@ FROM python:3.12-slim AS runtime
 
 LABEL org.opencontainers.image.title="B3 Integration Atlas Dashboard" \
       org.opencontainers.image.description="Dashboard visual interativo off-line, simulador de mercado e acervo documental B3" \
-      org.opencontainers.image.version="2.2.0"
+      org.opencontainers.image.version="2.3.0"
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
