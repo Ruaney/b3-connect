@@ -728,3 +728,39 @@ def batch_decode_sbe_stream(
 
         yield (template_id, msg)
         offset += msg_size
+
+
+def load_native_c_abi_library(lib_path: Optional[str] = None) -> Optional[ctypes.CDLL]:
+    """Carrega a biblioteca nativa compartilhada C11 (`ffi/libb3_atlas_c_abi.so`) via ctypes.CDLL."""
+    from pathlib import Path
+    if lib_path is None:
+        default_so = Path(__file__).resolve().parent.parent / "ffi" / "libb3_atlas_c_abi.so"
+        if not default_so.is_file():
+            return None
+        target = str(default_so)
+    else:
+        target = lib_path
+
+    lib = ctypes.CDLL(target)
+    lib.b3_sbe_encode_new_order.argtypes = [
+        ctypes.POINTER(NewOrderSingleStruct),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    lib.b3_sbe_encode_new_order.restype = ctypes.c_int
+
+    lib.b3_sbe_decode_new_order.argtypes = [
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+        ctypes.POINTER(NewOrderSingleStruct),
+    ]
+    lib.b3_sbe_decode_new_order.restype = ctypes.c_int
+
+    lib.b3_custody_position_is_consistent.argtypes = [ctypes.POINTER(CustodyPositionStruct)]
+    lib.b3_custody_position_is_consistent.restype = ctypes.c_bool
+
+    lib.b3_multilateral_compute_net.argtypes = [ctypes.c_int64, ctypes.c_int64]
+    lib.b3_multilateral_compute_net.restype = ctypes.c_int64
+
+    return lib
+

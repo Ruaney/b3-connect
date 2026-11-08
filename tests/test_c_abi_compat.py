@@ -482,6 +482,71 @@ class TestCustodyAndClearingStructures(unittest.TestCase):
         self.assertTrue(net_pos.is_net_balanced())
         self.assertEqual(net_pos.net_balance, 150_000.0)
 
+    def test_native_c11_shared_library_execution(self):
+        """Executa funções nativas C11 compiladas em ffi/libb3_atlas_c_abi.so via ctypes.CDLL."""
+        from src.c_abi_compat import load_native_c_abi_library
+        lib = load_native_c_abi_library()
+        if lib is None:
+            self.skipTest("Shared library libb3_atlas_c_abi.so not present on this platform")
+
+        order = NewOrderSingleStruct()
+        order.populate(cl_ord_id=777888, security_id=1001, side=Side.BUY, order_qty=500, price=38.75, account=42)
+        raw_buf = ctypes.create_string_buffer(42)
+        written = lib.b3_sbe_encode_new_order(ctypes.byref(order), raw_buf, 42)
+        self.assertEqual(written, 42)
+
+        decoded = NewOrderSingleStruct()
+        rc = lib.b3_sbe_decode_new_order(raw_buf, 42, ctypes.byref(decoded))
+        self.assertEqual(rc, 0)
+        self.assertEqual(decoded.cl_ord_id, 777888)
+        self.assertAlmostEqual(decoded.price, 38.75, places=6)
+
+        pos = CustodyPositionStruct()
+        pos.available_qty = 1000
+        pos.blocked_margin_qty = 500
+        pos.blocked_loan_qty = 200
+        pos.blocked_judicial_qty = 0
+        pos.recalculate_total()
+        self.assertTrue(lib.b3_custody_position_is_consistent(ctypes.byref(pos)))
+
+        net = lib.b3_multilateral_compute_net(900_000_00, 400_000_00)
+        self.assertEqual(net, 500_000_00)
+
+    def test_wasm_binary_compilation_and_execution(self):
+        """Valida o módulo binário WebAssembly ffi/b3_atlas_c_abi.wasm."""
+        from pathlib import Path
+        import shutil
+        import subprocess
+
+        wasm_path = Path(__file__).resolve().parent.parent / "ffi" / "b3_atlas_c_abi.wasm"
+        self.assertTrue(wasm_path.is_file(), "ffi/b3_atlas_c_abi.wasm deve existir")
+        raw = wasm_path.read_bytes()
+        self.assertEqual(raw[:8], b"\x00asm\x01\x00\x00\x00", "Cabeçalho W3C WASM v1 inválido")
+
+        if shutil.which("node"):
+            res = subprocess.run(
+                [
+                    "node",
+                    "-e",
+                    (
+                        'const fs = require("fs");'
+                        'const bytes = fs.readFileSync("ffi/b3_atlas_c_abi.wasm");'
+                        'WebAssembly.instantiate(bytes).then(({ instance }) => {'
+                        '  const e = instance.exports;'
+                        '  if (e.b3_multilateral_compute_net(900n, 400n) !== 500n) process.exit(1);'
+                        '  const v = new DataView(e.memory.buffer);'
+                        '  v.setUint16(0, 34, true); v.setUint16(2, 101, true);'
+                        '  if (e.b3_sbe_validate_new_order(0, 42) !== 1) process.exit(2);'
+                        '});'
+                    ),
+                ],
+                cwd=str(wasm_path.parent.parent),
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            self.assertEqual(res.returncode, 0, f"Falha na execução WASM: {res.stderr}")
+
 
 if __name__ == "__main__":
     unittest.main()
