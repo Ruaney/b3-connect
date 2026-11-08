@@ -1,0 +1,12 @@
+apiVersion: v2
+name: b3-integration-atlas
+description: Helm Chart local para o B3 Integration Atlas (105 Fluxos Homologados & 89 Leis Formais de Conservação)
+type: application
+version: 2.3.0
+appVersion: "2.3.0"
+keywords:
+  - b3
+  - puma
+  - clearing
+  - drex
+  - formal-verification

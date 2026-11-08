@@ -1,0 +1,25 @@
+replicaCount: 2
+
+image:
+  repository: b3-integration-atlas
+  pullPolicy: IfNotPresent
+  tag: "2.3.0"
+
+service:
+  type: NodePort
+  port: 8080
+  nodePort: 30080
+
+features:
+  homologatedFlows: 105
+  formalConservationLaws: 89
+  officialManuals: 85
+  offlineMode: true
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi

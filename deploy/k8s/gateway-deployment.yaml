@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: b3-atlas-dashboard-gateway
+  namespace: b3-atlas-local
+  labels:
+    app: b3-atlas-gateway
+    version: "2.3.0"
+    tier: institutional-core
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: b3-atlas-gateway
+  template:
+    metadata:
+      labels:
+        app: b3-atlas-gateway
+        version: "2.3.0"
+    spec:
+      containers:
+        - name: b3-atlas-ui
+          image: b3-integration-atlas:2.3.0
+          imagePullPolicy: IfNotPresent
+          command: ["python3", "-m", "src.cli", "ui", "--host", "0.0.0.0", "--port", "8080", "--no-browser"]
+          ports:
+            - containerPort: 8080
+              name: http-dashboard
+              protocol: TCP
+          env:
+            - name: PYTHONUNBUFFERED
+              value: "1"
+            - name: B3_ATLAS_OFFLINE_MODE
+              value: "true"
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+            limits:
+              cpu: "1000m"
+              memory: "512Mi"
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /api/status
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 5
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: b3-atlas-gateway-hpa
+  namespace: b3-atlas-local
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: b3-atlas-dashboard-gateway
+  minReplicas: 2
+  maxReplicas: 8
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70

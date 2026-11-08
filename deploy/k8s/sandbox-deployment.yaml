@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: b3-atlas-sandbox-verifier
+  namespace: b3-atlas-local
+  labels:
+    app: b3-atlas-sandbox
+    version: "2.3.0"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: b3-atlas-sandbox
+  template:
+    metadata:
+      labels:
+        app: b3-atlas-sandbox
+        version: "2.3.0"
+    spec:
+      containers:
+        - name: invariant-prover
+          image: b3-integration-atlas:2.3.0
+          imagePullPolicy: IfNotPresent
+          command: ["python3", "scripts/verify_invariants.py"]
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"

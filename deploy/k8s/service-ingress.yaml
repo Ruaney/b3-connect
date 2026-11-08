@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: b3-atlas-local
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: b3-atlas-gateway-svc
+  namespace: b3-atlas-local
+  labels:
+    app: b3-atlas-gateway
+spec:
+  type: NodePort
+  selector:
+    app: b3-atlas-gateway
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+      nodePort: 30080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: b3-atlas-local-ingress
+  namespace: b3-atlas-local
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - host: b3-atlas.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: b3-atlas-gateway-svc
+                port:
+                  number: 8080
