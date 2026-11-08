@@ -1,0 +1,62 @@
+{
+  "system": "SNG_B3_FINANCIAMENTOS",
+  "version": "1.0.0",
+  "regulatory_framework": ["Resolucao_CONTRAN_807_2020", "Lei_13111_2015", "Art_1361_Codigo_Civil"],
+  "law": "LAW-112",
+  "gravames": [
+    {
+      "gravame_id": "SNG-SP-0000001",
+      "contrato_numero": "CTR-BV-2026-8812",
+      "modalidade": "ALIENACAO_FIDUCIARIA",
+      "credor_cnpj": "01444506000183",
+      "credor_nome": "Banco Votorantim S/A (BV Financiamentos)",
+      "devedor_documento": "12345678909",
+      "devedor_nome": "Carlos Eduardo Silva",
+      "veiculo": {
+        "chassi": "9BWCA41V01P123456",
+        "renavam": "12345678901",
+        "placa": "BRA2E19",
+        "uf_emplacamento": "SP",
+        "marca_modelo": "TOYOTA COROLLA CROSS XRE 2.0",
+        "ano_fabricacao": 2025,
+        "ano_modelo": 2026
+      },
+      "valor_financiamento": "120000.00",
+      "quantidade_parcelas": 48,
+      "taxa_juros_anual_pct": "17.9",
+      "data_inclusao": "2026-11-01T10:30:00Z",
+      "status": "ATIVO",
+      "data_baixa": null,
+      "motivo_baixa": null,
+      "detran_protocolo": "DETRAN-SP-GRAV9812A",
+      "hash_seguranca": "8f4a7c1b5e2d3f9a6b8c7d4e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a"
+    },
+    {
+      "gravame_id": "SNG-RJ-0000002",
+      "contrato_numero": "CTR-ITAU-2026-3391",
+      "modalidade": "ARRENDAMENTO_MERCANTIL",
+      "credor_cnpj": "60701190000104",
+      "credor_nome": "Itaú Unibanco Veículos S/A",
+      "devedor_documento": "98765432100",
+      "devedor_nome": "Mariana Santos",
+      "veiculo": {
+        "chassi": "9BD158220G0456789",
+        "renavam": "98765432109",
+        "placa": "RIO2A26",
+        "uf_emplacamento": "RJ",
+        "marca_modelo": "JEEP COMPASS LONGITUDE 1.3 T270",
+        "ano_fabricacao": 2024,
+        "ano_modelo": 2025
+      },
+      "valor_financiamento": "95000.00",
+      "quantidade_parcelas": 36,
+      "taxa_juros_anual_pct": "16.8",
+      "data_inclusao": "2026-10-15T14:20:00Z",
+      "status": "ATIVO",
+      "data_baixa": null,
+      "motivo_baixa": null,
+      "detran_protocolo": "DETRAN-RJ-GRAV4421B",
+      "hash_seguranca": "1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b"
+    }
+  ]
+}

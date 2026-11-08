@@ -1,0 +1,68 @@
+{
+  "system": "SRO_B3_SEGUROS_SUSEP",
+  "version": "3.0.0",
+  "regulatory_framework": ["Resolucao_CNSP_382_2020", "Resolucao_CNSP_399_2020", "Circular_SUSEP_642_2021"],
+  "law": "LAW-113",
+  "apolices": [
+    {
+      "apolice_id": "SRO-B3-AUTO-0000001",
+      "numero_proposta": "PROP-PORTO-2026-9011",
+      "ramo": "0531_AUTOMOVEL",
+      "seguradora_lider_cnpj": "33000111000100",
+      "seguradora_lider_nome": "Porto Seguro Cia de Seguros Gerais",
+      "segurado_documento": "12345678909",
+      "segurado_nome": "Ana Carolina Pereira",
+      "data_emissao": "2026-11-01",
+      "inicio_vigencia": "2026-11-01T00:00:00Z",
+      "fim_vigencia": "2027-11-01T23:59:59Z",
+      "limite_maximo_garantia": "150000.00",
+      "premio_liquido": "4200.00",
+      "premio_total_com_iof": "4509.96",
+      "cosseguradores": [
+        {
+          "cnpj": "33000111000100",
+          "razao_social": "Porto Seguro Cia de Seguros Gerais",
+          "percentual_quota": "100.00",
+          "is_lider": true
+        }
+      ],
+      "status": "VIGENTE",
+      "sinistros_count": 0,
+      "sinistros_liquidados_total": "0.00",
+      "susep_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "apolice_id": "SRO-B3-PATR-0000002",
+      "numero_proposta": "PROP-BRAD-2026-4402",
+      "ramo": "0118_PATRIMONIAL_EMPRESARIAL",
+      "seguradora_lider_cnpj": "61550141000172",
+      "seguradora_lider_nome": "Bradesco Seguros S/A",
+      "segurado_documento": "05888999000123",
+      "segurado_nome": "Complexo Logístico Barueri Ltda",
+      "data_emissao": "2026-10-20",
+      "inicio_vigencia": "2026-10-20T00:00:00Z",
+      "fim_vigencia": "2027-10-20T23:59:59Z",
+      "limite_maximo_garantia": "5000000.00",
+      "premio_liquido": "85000.00",
+      "premio_total_com_iof": "91273.00",
+      "cosseguradores": [
+        {
+          "cnpj": "61550141000172",
+          "razao_social": "Bradesco Seguros S/A",
+          "percentual_quota": "70.00",
+          "is_lider": true
+        },
+        {
+          "cnpj": "33041260000140",
+          "razao_social": "SulAmérica Companhia de Seguros Gerais",
+          "percentual_quota": "30.00",
+          "is_lider": false
+        }
+      ],
+      "status": "VIGENTE",
+      "sinistros_count": 1,
+      "sinistros_liquidados_total": "320000.00",
+      "susep_hash": "c4ca4238a0b923820dcc509a6f75849b"
+    }
+  ]
+}

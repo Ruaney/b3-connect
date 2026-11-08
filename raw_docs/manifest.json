@@ -1,12 +1,12 @@
 {
   "version": "1.0.0",
-  "last_updated": "2026-11-08T02:25:05Z",
-  "total_documents": 85,
+  "last_updated": "2026-11-08T02:42:46Z",
+  "total_documents": 87,
   "documents_by_category": {
     "CSD_DEPOSITARY": 5,
-    "REGULATORY_CIRCULARS": 13,
+    "REGULATORY_CIRCULARS": 14,
     "PUMA_TRADING": 26,
-    "NOME_BALCAO": 21,
+    "NOME_BALCAO": 22,
     "CLEARING_RISK": 11,
     "TARIFF_CATALOG": 3,
     "SPB_SETTLEMENT": 4,
@@ -25,7 +25,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-002",
@@ -39,7 +39,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-003",
@@ -53,7 +53,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-004",
@@ -67,7 +67,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-005",
@@ -81,7 +81,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-006",
@@ -95,7 +95,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-007",
@@ -109,7 +109,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-008",
@@ -123,7 +123,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-009",
@@ -137,7 +137,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-010",
@@ -151,7 +151,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-011",
@@ -165,7 +165,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-012",
@@ -179,7 +179,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-013",
@@ -193,7 +193,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-014",
@@ -207,7 +207,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-015",
@@ -221,7 +221,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-016",
@@ -235,7 +235,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-017",
@@ -249,7 +249,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-018",
@@ -263,7 +263,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-019",
@@ -277,7 +277,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-020",
@@ -291,7 +291,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-021",
@@ -305,7 +305,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-022",
@@ -319,7 +319,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-023",
@@ -333,7 +333,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-024",
@@ -347,7 +347,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-025",
@@ -361,7 +361,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-026",
@@ -375,7 +375,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-027",
@@ -389,7 +389,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-028",
@@ -403,7 +403,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-029",
@@ -417,7 +417,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-030",
@@ -431,7 +431,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-031",
@@ -445,7 +445,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-032",
@@ -459,7 +459,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-033",
@@ -473,7 +473,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-034",
@@ -487,7 +487,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-035",
@@ -501,7 +501,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-036",
@@ -515,7 +515,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-037",
@@ -529,7 +529,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-038",
@@ -543,7 +543,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-039",
@@ -557,7 +557,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-040",
@@ -571,7 +571,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-041",
@@ -585,7 +585,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-042",
@@ -599,7 +599,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-043",
@@ -613,7 +613,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-044",
@@ -627,7 +627,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-045",
@@ -641,7 +641,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-046",
@@ -655,7 +655,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-047",
@@ -669,7 +669,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-048",
@@ -683,7 +683,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-049",
@@ -697,7 +697,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-050",
@@ -711,7 +711,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-051",
@@ -725,7 +725,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-052",
@@ -739,7 +739,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-053",
@@ -753,7 +753,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-054",
@@ -767,7 +767,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-055",
@@ -781,7 +781,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-056",
@@ -795,7 +795,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-057",
@@ -809,7 +809,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-058",
@@ -823,7 +823,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-059",
@@ -837,7 +837,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-060",
@@ -851,7 +851,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-061",
@@ -865,7 +865,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-062",
@@ -879,7 +879,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-063",
@@ -893,7 +893,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-064",
@@ -907,7 +907,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-065",
@@ -921,7 +921,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-066",
@@ -935,7 +935,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-067",
@@ -949,7 +949,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-068",
@@ -963,7 +963,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-069",
@@ -977,7 +977,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-070",
@@ -991,7 +991,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-071",
@@ -1005,7 +1005,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-072",
@@ -1019,7 +1019,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-073",
@@ -1033,7 +1033,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-074",
@@ -1047,7 +1047,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-075",
@@ -1061,7 +1061,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-076",
@@ -1075,7 +1075,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-077",
@@ -1089,7 +1089,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-078",
@@ -1103,7 +1103,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-079",
@@ -1117,7 +1117,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-080",
@@ -1131,7 +1131,7 @@
       "last_discovered": "2026-11-07T21:54:30Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-081",
@@ -1145,7 +1145,7 @@
       "last_discovered": "2026-11-08T00:07:42Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-082",
@@ -1159,7 +1159,7 @@
       "last_discovered": "2026-11-08T00:07:42Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-083",
@@ -1173,7 +1173,7 @@
       "last_discovered": "2026-11-08T00:07:42Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-084",
@@ -1187,7 +1187,7 @@
       "last_discovered": "2026-11-08T00:07:42Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
     },
     {
       "doc_id": "SRC-085",
@@ -1201,7 +1201,35 @@
       "last_discovered": "2026-11-08T00:07:42Z",
       "download_status": "DOWNLOADED",
       "error_message": null,
-      "downloaded_at": "2026-11-08T00:21:05Z"
+      "downloaded_at": "2026-11-08T02:42:46Z"
+    },
+    {
+      "doc_id": "SRC-086",
+      "title": "B3 Financiamentos — Manual do Sistema Nacional de Gravames (SNG) e Integração com Detrans",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/financiamentos/sistema-nacional-de-gravames-sng.htm",
+      "category": "NOME_BALCAO",
+      "file_type": "html",
+      "local_path": "raw_docs/nome_balcao/src-086.html",
+      "size_bytes": 10243,
+      "sha256": "bb0f04889516eeff8c630459e69e81b3bd51e16eafddc0e4758d0232af0cd01e",
+      "last_discovered": "2026-11-08T02:42:37Z",
+      "download_status": "DOWNLOADED",
+      "error_message": null,
+      "downloaded_at": "2026-11-08T02:42:46Z"
+    },
+    {
+      "doc_id": "SRC-087",
+      "title": "B3 Seguros — Manual do Sistema de Registro de Operações (SRO V3) e Diretrizes SUSEP",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/seguros/sistema-de-registro-de-operacoes-sro.htm",
+      "category": "REGULATORY_CIRCULARS",
+      "file_type": "html",
+      "local_path": "raw_docs/regulatory_circulars/src-087.html",
+      "size_bytes": 10249,
+      "sha256": "2053aa06789d0544743ccfc16def41ec4bc0f06274ea878cef2a71446a5462f6",
+      "last_discovered": "2026-11-08T02:42:37Z",
+      "download_status": "DOWNLOADED",
+      "error_message": null,
+      "downloaded_at": "2026-11-08T02:42:46Z"
     }
   ]
 }

@@ -50,8 +50,8 @@ class TestB3UiServer(unittest.TestCase):
         self.assertEqual(status, 200)
         data = json.loads(body.decode("utf-8"))
         self.assertEqual(data["version"], "2.3.0")
-        self.assertEqual(data["homologated_flows"], 105)
-        self.assertEqual(data["formal_conservation_laws"], 89)
+        self.assertEqual(data["homologated_flows"], 107)
+        self.assertEqual(data["formal_conservation_laws"], 91)
         self.assertEqual(data["architecture_modules"], 7)
 
     def test_api_modules(self) -> None:
@@ -70,7 +70,7 @@ class TestB3UiServer(unittest.TestCase):
         status, body, headers = self._get("/api/docs")
         self.assertEqual(status, 200)
         data = json.loads(body.decode("utf-8"))
-        self.assertEqual(len(data), 85)
+        self.assertEqual(len(data), 87)
 
         # Detalhes de um documento específico
         status, body, headers = self._get("/api/docs/SRC-006")
@@ -125,11 +125,13 @@ class TestB3UiServer(unittest.TestCase):
         status, body, headers = self._get("/api/concepts")
         self.assertEqual(status, 200)
         data = json.loads(body.decode("utf-8"))
-        self.assertEqual(len(data), 10)
+        self.assertEqual(len(data), 12)
         ids = [c["id"] for c in data]
         self.assertIn("novacao-ccp", ids)
         self.assertIn("default-waterfall", ids)
         self.assertIn("leilao-moc-freeze", ids)
+        self.assertIn("sng-gravames-veiculares", ids)
+        self.assertIn("sro-seguros-susep", ids)
 
         # Busca um conceito específico
         status, body, headers = self._get("/api/concepts/novacao-ccp")

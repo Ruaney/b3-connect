@@ -87,8 +87,8 @@ class B3DashboardHandler(BaseHTTPRequestHandler):
         summary = harvester.get_summary()
         self._send_json({
             "version": "2.3.0",
-            "homologated_flows": 105,
-            "formal_conservation_laws": 89,
+            "homologated_flows": 107,
+            "formal_conservation_laws": 91,
             "architecture_modules": 7,
             "documents_summary": summary,
             "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
@@ -548,7 +548,7 @@ class B3DashboardHandler(BaseHTTPRequestHandler):
         <div class="panel">
           <div class="panel-header">
             <div>
-              <h3 style="font-size: 1.1rem; color: #fff;">Acervo Documental Oficial (85 Documentos Locais)</h3>
+              <h3 style="font-size: 1.1rem; color: #fff;">Acervo Documental Oficial (87 Documentos Locais)</h3>
               <p style="font-size: 0.85rem; color: var(--text-muted);">Manuais oficiais B3, layouts IMBARQ, dicionários XML e regulamentos salvos em raw_docs/.</p>
             </div>
             <input type="text" id="doc-search" placeholder="Filtrar manuais por ID ou título..." oninput="filterDocs()" style="background: #0c1220; border: 1px solid var(--border); color: #fff; padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.85rem; width: 300px;">

@@ -2235,6 +2235,48 @@
         "implemented": "src/drex_rwa_primary_issuance.py",
         "tested_locally": "tests/test_drex_rwa_primary_issuance.py"
       }
+    },
+    {
+      "id": "FL-106",
+      "name": "Registro, Consulta, Baixa e Cancelamento de Gravames Veiculares (Alienação Fiduciária e Leasing) no Sistema Nacional de Gravames (SNG B3 Financiamentos / Detrans)",
+      "system": "B3 Financiamentos & Detrans Estaduais",
+      "interface": "API / Mensageria SNG CONTRAN (Resolução 807/2020)",
+      "sources": [
+        "SRC-086"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Registro de contratos de financiamento, unicidade de gravame ativo de 1º grau por chassi/renavam (LAW-112), baixa tempestiva e desalienação junto aos Detrans implementados com sucesso.",
+      "evidence": {
+        "documented": "docs/layout-sng-b3-financiamentos.md",
+        "implemented": "src/sng_gravames_engine.py",
+        "tested_locally": "tests/test_sng_gravames_engine.py"
+      }
+    },
+    {
+      "id": "FL-107",
+      "name": "Registro de Apólices, Partição de Cosseguro, Endossos e Liquidação de Sinistros no Sistema de Registro de Operações (SRO B3 Seguros / SUSEP)",
+      "system": "B3 Seguros & SUSEP",
+      "interface": "API REST JSON SRO V3 (Circular SUSEP 642/2021)",
+      "sources": [
+        "SRC-087"
+      ],
+      "confidence": "confirmado_em_documentacao_oficial",
+      "mapped": true,
+      "documented": true,
+      "implemented": true,
+      "tested_locally": true,
+      "validated_b3": false,
+      "pending": "Registro de apólices em múltiplos ramos, conservação de cosseguro em 100% e respeito estrito ao Limite Máximo de Garantia em sinistros (LAW-113) implementados com sucesso.",
+      "evidence": {
+        "documented": "docs/layout-sro-b3-seguros-susep.md",
+        "implemented": "src/sro_seguros_engine.py",
+        "tested_locally": "tests/test_sro_seguros_engine.py"
+      }
     }
   ]
 }

@@ -681,6 +681,22 @@
       "status": "localizada",
       "kind": "manual_tecnico",
       "limitation": "Emissão primária de títulos de crédito privado tokenizados (ERC-1155/ERC-3643), alocação de investidores e liquidação atômica bilateral DvP em Real Digital BACEN."
+    },
+    {
+      "id": "SRC-086",
+      "title": "B3 Financiamentos — Manual do Sistema Nacional de Gravames (SNG) e Integração com Detrans",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/financiamentos/sistema-nacional-de-gravames-sng.htm",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Registro, consulta, baixa e cancelamento de alienação fiduciária e leasing veicular perante Detrans de todo o Brasil (Resolução CONTRAN 807/2020)."
+    },
+    {
+      "id": "SRC-087",
+      "title": "B3 Seguros — Manual do Sistema de Registro de Operações (SRO V3) e Diretrizes SUSEP",
+      "url": "https://www.b3.com.br/pt_br/produtos-e-servicos/seguros/sistema-de-registro-de-operacoes-sro.htm",
+      "status": "localizada",
+      "kind": "manual_tecnico",
+      "limitation": "Registro granular de apólices de seguro, partição de cosseguro, endossos e regulação de sinistros homologado perante a SUSEP (Circular SUSEP 642/2021)."
     }
   ]
 }

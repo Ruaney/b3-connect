@@ -12,9 +12,9 @@ class TestB3ConceptsCatalog(unittest.TestCase):
         self.catalog = B3ConceptsCatalog()
 
     def test_catalog_has_all_key_concepts(self) -> None:
-        """Verifica que o catálogo possui os 10 conceitos estruturantes mapeados."""
+        """Verifica que o catálogo possui os 12 conceitos estruturantes mapeados."""
         all_concepts = self.catalog.list_all()
-        self.assertEqual(len(all_concepts), 10)
+        self.assertEqual(len(all_concepts), 12)
 
         expected_ids = {
             "novacao-ccp",
@@ -27,6 +27,8 @@ class TestB3ConceptsCatalog(unittest.TestCase):
             "superficies-volatilidade",
             "algorithmic-sor",
             "bsm-surveillance",
+            "sng-gravames-veiculares",
+            "sro-seguros-susep",
         }
         actual_ids = {c["id"] for c in all_concepts}
         self.assertEqual(actual_ids, expected_ids)

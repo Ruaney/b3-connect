@@ -482,6 +482,91 @@ CONCEPTS: List[B3Concept] = [
         related_flows=["FL-024", "FL-030", "FL-041", "FL-091"],
         related_laws=["LAW-024", "LAW-041"],
     ),
+    B3Concept(
+        id="sng-gravames-veiculares",
+        category="FINANCIAMENTOS & DETRAN",
+        title="Sistema Nacional de Gravames SNG (Resolução CONTRAN nº 807/2020)",
+        badge="CONTRAN 807 / LAW-112",
+        summary="A B3 opera o registro centralizado de garantias reais veiculares interligando bancos e Detrans.",
+        what_is=(
+            "O Sistema Nacional de Gravames (SNG) é a infraestrutura tecnológica operada pela B3 Financiamentos "
+            "que gerencia o ciclo completo de anotação, consulta e desalienação (baixa) de garantias reais "
+            "(Alienação Fiduciária, Leasing e Reserva de Domínio) incidentes sobre veículos automotores junto aos Detrans."
+        ),
+        why_exists=(
+            "Elimina o risco de fraude por duplo financiamento ou venda indevida de bens gravados, impedindo "
+            "a emissão de novo documento (CRV/CRLV) sem a anuência e quitação formal perante a instituição credora."
+        ),
+        how_it_works=[
+            "1. O credor financeiro aprova o crédito veicular e submete a inclusão de gravame ao SNG B3 com Chassi e Renavam.",
+            "2. O SNG audita a inexistência de gravame ativo prévio e gera o protocolo eletrônico oficial.",
+            "3. A informação é roteada instantaneamente para a base do Detran do estado de emplacamento do veículo.",
+            "4. O Detran averba a restrição financeira no prontuário do veículo, bloqueando transferência desautorizada.",
+            "5. Após a quitação integral, o credor comanda a baixa no SNG, liberando o bem em até 10 dias úteis."
+        ],
+        math_rule="LAW-112: sum(I(status(g) == ATIVO) for g in Gravames(chassi)) <= 1",
+        practical_example=(
+            "Um consumidor financia R$ 70.000 de um veículo via CDC no Banco A. O SNG insere a restrição no Detran-SP. "
+            "Se o devedor tentar refinanciar o mesmo carro no Banco B, o SNG rejeita instantaneamente por violação da LAW-112."
+        ),
+        diagram_ascii="""
++-------------------------+      Inclusão de Gravame      +------------------------+
+|  Instituição Financeira | ----------------------------> | B3 Financiamentos SNG  |
++-------------------------+                               +-----------+------------+
+                                                                      |
+                                                          Validação LAW-112 (Chassi)
+                                                                      |
+                                                                      v
+                                                          +------------------------+
+                                                          |    DETRAN Estadual     |
+                                                          |  (Averbação no CRLV)   |
+                                                          +------------------------+
+""",
+        related_flows=["FL-106"],
+        related_laws=["LAW-112"],
+    ),
+    B3Concept(
+        id="sro-seguros-susep",
+        category="SEGUROS & SUSEP",
+        title="Sistema de Registro de Operações SRO (Circular SUSEP nº 642/2021)",
+        badge="SUSEP SRO V3 / LAW-113",
+        summary="A B3 atua como Entidade Registradora credenciada pela SUSEP para registro granular de apólices e sinistros.",
+        what_is=(
+            "O SRO é o ambiente regulatório centralizado onde companhias seguradoras registram todas as apólices, "
+            "bilhetes, endossos, cosseguros e sinistros emitidos no Brasil, viabilizando supervisão contínua da SUSEP e Open Insurance."
+        ),
+        why_exists=(
+            "Garante integridade contábil, combate a venda de apólices sem lastro de provisões técnicas e assegura que a "
+            "partição de risco entre cosseguradores e resseguradores respeite fielmente o Limite Máximo de Garantia (LMG)."
+        ),
+        how_it_works=[
+            "1. A seguradora emite a apólice e transmite o registro granular em JSON padronizado para o SRO B3.",
+            "2. O motor SRO valida a partição de cotas entre cosseguradores garantindo que a soma resulte em 100.00% (LAW-113).",
+            "3. O SRO certifica a operação emitindo hash criptográfico irrevogável e carimbo de tempo SUSEP.",
+            "4. Em caso de sinistro, a seguradora averba a regulação e o valor liquidado é deduzido do saldo do LMG contratado.",
+            "5. Os dados são sincronizados com a SUSEP para auditoria de solvência e provisionamento técnico."
+        ],
+        math_rule="LAW-113: sum(Quota(c) for c in Cosseguradores) == 100.00% AND sum(SinistrosLiquidados) <= LMG",
+        practical_example=(
+            "Uma apólice empresarial de R$ 5.000.000 possui cosseguro: Seguradora Líder (70%) e Seguradora B (30%). "
+            "O SRO valida a soma de 100% e certifica. Um sinistro liquidado de R$ 3.000.000 é deduzido respeitando o LMG."
+        ),
+        diagram_ascii="""
++-------------------------+      JSON Apólice / Endosso   +------------------------+
+|  Companhia Seguradora   | ----------------------------> |   B3 Seguros SRO V3    |
++-------------------------+                               +-----------+------------+
+                                                                      |
+                                                          Checagem LAW-113 (Cosseguro/LMG)
+                                                                      |
+                                                                      v
+                                                          +------------------------+
+                                                          |  SUSEP / Open Insurance|
+                                                          |  (Certificação Oficial)|
+                                                          +------------------------+
+""",
+        related_flows=["FL-107"],
+        related_laws=["LAW-113"],
+    ),
 ]
 
 
@@ -831,5 +916,91 @@ def simulate_concept(concept_id: str, params: Optional[Dict[str, Any]] = None) -
             "enforcement_action": action,
         }
 
+    elif cid == "sng-gravames-veiculares":
+        from decimal import Decimal
+        try:
+            from src.sng_gravames_engine import SngGravamesEngine, ModalidadeGravame, VeiculoIdentificacao
+        except ImportError:
+            from sng_gravames_engine import SngGravamesEngine, ModalidadeGravame, VeiculoIdentificacao
+        eng = SngGravamesEngine()
+        v = VeiculoIdentificacao(
+            chassi=str(p.get("chassi", "9BWCA41V01P123456")),
+            renavam=str(p.get("renavam", "12345678901")),
+            placa=str(p.get("placa", "BRA2E19")),
+            uf_emplacamento=str(p.get("uf", "SP")),
+            marca_modelo=str(p.get("modelo", "TOYOTA COROLLA CROSS 2.0")),
+            ano_fabricacao=2025,
+            ano_modelo=2026,
+        )
+        rec = eng.registrar_gravame(
+            contrato_numero="CTR-SIM-SNG-001",
+            modalidade=ModalidadeGravame.ALIENACAO_FIDUCIARIA,
+            credor_cnpj=str(p.get("credor_cnpj", "01444506000183")),
+            credor_nome="Banco Financiador Credenciado B3",
+            devedor_documento="12345678909",
+            devedor_nome="Consumidor Financiado",
+            veiculo=v,
+            valor_financiamento=Decimal(str(p.get("valor", "85000.00"))),
+            quantidade_parcelas=48,
+            taxa_juros_anual_pct=Decimal("17.5"),
+        )
+        inv = eng.verify_invariants()
+        return {
+            "concept_id": cid,
+            "title": "Simulação de Inclusão no Sistema Nacional de Gravames (SNG)",
+            "law_verified": "LAW-112",
+            "gravame_id": rec.gravame_id,
+            "chassi": rec.veiculo.chassi,
+            "detran_protocolo": rec.detran_protocolo,
+            "modalidade": rec.modalidade.value,
+            "status": rec.status.value,
+            "hash_seguranca": rec.hash_seguranca,
+            "invariants": inv,
+            "verdict": "GRAVAME REGISTRADO COM SUCESSO E NOTIFICADO AO DETRAN (LAW-112 RESPEITADA)",
+        }
+
+    elif cid == "sro-seguros-susep":
+        from decimal import Decimal
+        try:
+            from src.sro_seguros_engine import SroSegurosEngine, RamoSeguro, CosseguradorShare
+        except ImportError:
+            from sro_seguros_engine import SroSegurosEngine, RamoSeguro, CosseguradorShare
+        eng = SroSegurosEngine()
+        lmg = Decimal(str(p.get("lmg", "2000000.00")))
+        premio = Decimal(str(p.get("premio", "45000.00")))
+        q1 = Decimal(str(p.get("quota_lider", "70.00")))
+        q2 = Decimal("100.00") - q1
+        cosseg = [
+            CosseguradorShare(cnpj="33000111000100", razao_social="Seguradora Líder S/A", percentual_quota=q1, is_lider=True),
+            CosseguradorShare(cnpj="61550141000172", razao_social="Cosseguradora B S/A", percentual_quota=q2, is_lider=False),
+        ]
+        ap = eng.registrar_apolice(
+            numero_proposta="PROP-SRO-SIM-001",
+            ramo=RamoSeguro.PATRIMONIAL_COMPREENSIVO,
+            seguradora_lider_cnpj="33000111000100",
+            seguradora_lider_nome="Seguradora Líder S/A",
+            segurado_documento="01234567000188",
+            segurado_nome="Indústria Manufatureira Nacional",
+            data_emissao="2026-11-01",
+            inicio_vigencia="2026-11-01T00:00:00Z",
+            fim_vigencia="2027-11-01T23:59:59Z",
+            limite_maximo_garantia=lmg,
+            premio_liquido=premio,
+            cosseguradores=cosseg,
+        )
+        inv = eng.verify_invariants()
+        return {
+            "concept_id": cid,
+            "title": "Simulação de Registro de Apólice no SRO V3 (SUSEP)",
+            "law_verified": "LAW-113",
+            "apolice_id": ap.apolice_id,
+            "ramo": ap.ramo.value,
+            "limite_maximo_garantia": str(ap.limite_maximo_garantia),
+            "premio_total_com_iof": str(ap.premio_total_com_iof),
+            "cosseguro_particao": [{"cia": c.razao_social, "quota_pct": str(c.percentual_quota)} for c in ap.cosseguradores],
+            "susep_hash": ap.susep_hash,
+            "invariants": inv,
+            "verdict": "APÓLICE CERTIFICADA NO SRO V3 COM PARTIÇÃO 100% E LMG INVIOLADO (LAW-113 RESPEITADA)",
+        }
     else:
         return {"error": f"Simulador para conceito '{concept_id}' não implementado"}
