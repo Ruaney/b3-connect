@@ -1,0 +1,321 @@
+{
+  "schema_version": "1.0.0",
+  "framework": "RESOLUCAO_CVM_175",
+  "master_fund": {
+    "fund_id": "FUNDO-MASTER-ALPHA-CVM175",
+    "name": "Alpha Macro Multimercado Fundo de Investimento Multiclasses CVM 175",
+    "cnpj": "12.345.678/0001-90",
+    "category": "FIF",
+    "administrator": {
+      "provider_id": "ADM-001",
+      "name": "B3 Banco Fiduciário S.A.",
+      "cnpj": "00.111.222/0001-33",
+      "role": "ADMINISTRATOR",
+      "cvm_code": "CVM-ADM-9021"
+    },
+    "manager": {
+      "provider_id": "MGR-001",
+      "name": "Alpha Gestão de Recursos Ltda.",
+      "cnpj": "33.444.555/0001-66",
+      "role": "ASSET_MANAGER",
+      "cvm_code": "CVM-MGR-4512"
+    },
+    "custodian": {
+      "provider_id": "CUST-001",
+      "name": "B3 Central Depositária de Ativos S.A.",
+      "cnpj": "00.111.222/0002-14",
+      "role": "CUSTODIAN",
+      "cvm_code": "CVM-CUST-1001"
+    },
+    "bookkeeper": null,
+    "auditor": null,
+    "total_net_asset_value": "8193000.00",
+    "classes": {
+      "CLASS-MACRO-01": {
+        "class_id": "CLASS-MACRO-01",
+        "fund_id": "FUNDO-MASTER-ALPHA-CVM175",
+        "name": "Classe Alpha Macro Multimercado",
+        "cnpj": "12.345.678/0002-71",
+        "class_type": "MULTIMERCADO",
+        "liability_regime": "LIMITED",
+        "condominium_type": "OPEN_END",
+        "status": "ACTIVE",
+        "cash_balance": "200000.00",
+        "total_assets_value": "6200000.00",
+        "total_liabilities_value": "2000.00",
+        "net_asset_value": "6198000.00",
+        "is_insolvent": false,
+        "assets": {
+          "AST-NTNB-2030": {
+            "asset_id": "AST-NTNB-2030",
+            "ticker": "NTNB-2030",
+            "description": "Tesouro IPCA+ com Juros Semestrais 2030",
+            "quantity": "1000.00000000",
+            "unit_price": "4200.00",
+            "accrued_interest": "0.00",
+            "market_value": "4200000.00"
+          },
+          "AST-VALE3": {
+            "asset_id": "AST-VALE3",
+            "ticker": "VALE3",
+            "description": "Ações Ordinárias Vale S.A.",
+            "quantity": "30000.00000000",
+            "unit_price": "60.00",
+            "accrued_interest": "0.00",
+            "market_value": "1800000.00"
+          }
+        },
+        "liabilities": {
+          "LIAB-CUST-01": {
+            "liability_id": "LIAB-CUST-01",
+            "description": "Taxa de Custódia Provisão B3 CSD",
+            "amount": "2000.00",
+            "creditor": "B3 Central Depositária S.A.",
+            "due_date": null
+          }
+        },
+        "subclasses": {
+          "SUB-MACRO-VAREJO": {
+            "subclass_id": "SUB-MACRO-VAREJO",
+            "class_id": "CLASS-MACRO-01",
+            "name": "Subclasse Alpha Macro Varejo",
+            "target_audience": "RETAIL",
+            "admin_fee_annual_rate": "0.02000000",
+            "performance_fee_rate": "0.20000000",
+            "benchmark_name": "CDI",
+            "high_water_mark": "100.00000000",
+            "benchmark_base_index": "100.00000000",
+            "min_initial_investment": "100.00",
+            "min_subsequent_investment": "100.00",
+            "min_balance_permanence": "100.00",
+            "concentration_limit_pct": "0.25000000",
+            "redemption_quotation_days": 0,
+            "redemption_payment_days": 1,
+            "total_quotas": "10000.00000000",
+            "quota_value": "100.00000000",
+            "net_asset_value": "1000000.00",
+            "provisioned_admin_fee": "0.00",
+            "provisioned_performance_fee": "0.00",
+            "holdings": {
+              "INV-RET-01": {
+                "investor_id": "INV-RET-01",
+                "subclass_id": "SUB-MACRO-VAREJO",
+                "quotas": "2000.00000000",
+                "acquisition_cost": "200000.00",
+                "entry_date": "2024-01-15"
+              },
+              "INV-RET-02": {
+                "investor_id": "INV-RET-02",
+                "subclass_id": "SUB-MACRO-VAREJO",
+                "quotas": "1000.00000000",
+                "acquisition_cost": "100000.00",
+                "entry_date": "2024-02-01"
+              },
+              "INV-QUA-01": {
+                "investor_id": "INV-QUA-01",
+                "subclass_id": "SUB-MACRO-VAREJO",
+                "quotas": "2000.00000000",
+                "acquisition_cost": "200000.00",
+                "entry_date": "2024-02-15"
+              },
+              "INV-PRO-01": {
+                "investor_id": "INV-PRO-01",
+                "subclass_id": "SUB-MACRO-VAREJO",
+                "quotas": "5000.00000000",
+                "acquisition_cost": "500000.00",
+                "entry_date": "2024-03-01"
+              }
+            }
+          },
+          "SUB-MACRO-QUALIF": {
+            "subclass_id": "SUB-MACRO-QUALIF",
+            "class_id": "CLASS-MACRO-01",
+            "name": "Subclasse Alpha Macro Qualificado",
+            "target_audience": "QUALIFIED",
+            "admin_fee_annual_rate": "0.01500000",
+            "performance_fee_rate": "0.20000000",
+            "benchmark_name": "CDI",
+            "high_water_mark": "100.00000000",
+            "benchmark_base_index": "100.00000000",
+            "min_initial_investment": "25000.00",
+            "min_subsequent_investment": "5000.00",
+            "min_balance_permanence": "10000.00",
+            "concentration_limit_pct": "0.60000000",
+            "redemption_quotation_days": 0,
+            "redemption_payment_days": 1,
+            "total_quotas": "21980.00000000",
+            "quota_value": "100.00000000",
+            "net_asset_value": "2198000.00",
+            "provisioned_admin_fee": "0.00",
+            "provisioned_performance_fee": "0.00",
+            "holdings": {
+              "INV-QUA-01": {
+                "investor_id": "INV-QUA-01",
+                "subclass_id": "SUB-MACRO-QUALIF",
+                "quotas": "11980.00000000",
+                "acquisition_cost": "1198000.00",
+                "entry_date": "2024-02-01"
+              },
+              "INV-PRO-01": {
+                "investor_id": "INV-PRO-01",
+                "subclass_id": "SUB-MACRO-QUALIF",
+                "quotas": "10000.00000000",
+                "acquisition_cost": "1000000.00",
+                "entry_date": "2024-02-10"
+              }
+            }
+          },
+          "SUB-MACRO-PROF": {
+            "subclass_id": "SUB-MACRO-PROF",
+            "class_id": "CLASS-MACRO-01",
+            "name": "Subclasse Alpha Macro Profissional",
+            "target_audience": "PROFESSIONAL",
+            "admin_fee_annual_rate": "0.00800000",
+            "performance_fee_rate": "0.15000000",
+            "benchmark_name": "CDI",
+            "high_water_mark": "100.00000000",
+            "benchmark_base_index": "100.00000000",
+            "min_initial_investment": "1000000.00",
+            "min_subsequent_investment": "100000.00",
+            "min_balance_permanence": "500000.00",
+            "concentration_limit_pct": null,
+            "redemption_quotation_days": 0,
+            "redemption_payment_days": 1,
+            "total_quotas": "30000.00000000",
+            "quota_value": "100.00000000",
+            "net_asset_value": "3000000.00",
+            "provisioned_admin_fee": "0.00",
+            "provisioned_performance_fee": "0.00",
+            "holdings": {
+              "INV-PRO-01": {
+                "investor_id": "INV-PRO-01",
+                "subclass_id": "SUB-MACRO-PROF",
+                "quotas": "30000.00000000",
+                "acquisition_cost": "3000000.00",
+                "entry_date": "2024-01-10"
+              }
+            }
+          }
+        }
+      },
+      "CLASS-CREDITO-02": {
+        "class_id": "CLASS-CREDITO-02",
+        "fund_id": "FUNDO-MASTER-ALPHA-CVM175",
+        "name": "Classe Alpha Crédito Privado High Yield",
+        "cnpj": "12.345.678/0003-52",
+        "class_type": "CREDITO_PRIVADO",
+        "liability_regime": "LIMITED",
+        "condominium_type": "OPEN_END",
+        "status": "ACTIVE",
+        "cash_balance": "50000.00",
+        "total_assets_value": "2000000.00",
+        "total_liabilities_value": "5000.00",
+        "net_asset_value": "1995000.00",
+        "is_insolvent": false,
+        "assets": {
+          "AST-DEB-ECO-01": {
+            "asset_id": "AST-DEB-ECO-01",
+            "ticker": "ECOV11",
+            "description": "Debênture Infraestrutura Ecorodovias S.A.",
+            "quantity": "1000.00000000",
+            "unit_price": "1050.00",
+            "accrued_interest": "0.00",
+            "market_value": "1050000.00"
+          },
+          "AST-CRA-JBS-01": {
+            "asset_id": "AST-CRA-JBS-01",
+            "ticker": "CRA022001",
+            "description": "CRA JBS Alimentos 2028",
+            "quantity": "800.00000000",
+            "unit_price": "1125.00",
+            "accrued_interest": "0.00",
+            "market_value": "900000.00"
+          }
+        },
+        "liabilities": {
+          "LIAB-AUD-02": {
+            "liability_id": "LIAB-AUD-02",
+            "description": "Honorários Auditoria Independente",
+            "amount": "5000.00",
+            "creditor": "KPMG Auditores",
+            "due_date": null
+          }
+        },
+        "subclasses": {
+          "SUB-CRED-QUALIF": {
+            "subclass_id": "SUB-CRED-QUALIF",
+            "class_id": "CLASS-CREDITO-02",
+            "name": "Subclasse Alpha Crédito Privado Qualificado",
+            "target_audience": "QUALIFIED",
+            "admin_fee_annual_rate": "0.01200000",
+            "performance_fee_rate": "0.20000000",
+            "benchmark_name": "CDI",
+            "high_water_mark": "100.00000000",
+            "benchmark_base_index": "100.00000000",
+            "min_initial_investment": "10000.00",
+            "min_subsequent_investment": "2000.00",
+            "min_balance_permanence": "5000.00",
+            "concentration_limit_pct": "0.80000000",
+            "redemption_quotation_days": 0,
+            "redemption_payment_days": 1,
+            "total_quotas": "19950.00000000",
+            "quota_value": "100.00000000",
+            "net_asset_value": "1995000.00",
+            "provisioned_admin_fee": "0.00",
+            "provisioned_performance_fee": "0.00",
+            "holdings": {
+              "INV-QUA-01": {
+                "investor_id": "INV-QUA-01",
+                "subclass_id": "SUB-CRED-QUALIF",
+                "quotas": "9950.00000000",
+                "acquisition_cost": "995000.00",
+                "entry_date": "2024-02-20"
+              },
+              "INV-PRO-01": {
+                "investor_id": "INV-PRO-01",
+                "subclass_id": "SUB-CRED-QUALIF",
+                "quotas": "10000.00000000",
+                "acquisition_cost": "1000000.00",
+                "entry_date": "2024-02-25"
+              }
+            }
+          }
+        }
+      }
+    },
+    "investors": {
+      "INV-RET-01": {
+        "investor_id": "INV-RET-01",
+        "name": "Carlos Silva Varejo",
+        "document": "123.456.789-00",
+        "category": "RETAIL",
+        "net_worth": "150000.00",
+        "is_related_party": false
+      },
+      "INV-RET-02": {
+        "investor_id": "INV-RET-02",
+        "name": "Mariana Costa Varejo",
+        "document": "234.567.890-11",
+        "category": "RETAIL",
+        "net_worth": "80000.00",
+        "is_related_party": false
+      },
+      "INV-QUA-01": {
+        "investor_id": "INV-QUA-01",
+        "name": "Roberto Albuquerque Family Office",
+        "document": "34.567.890/0001-22",
+        "category": "QUALIFIED",
+        "net_worth": "3500000.00",
+        "is_related_party": false
+      },
+      "INV-PRO-01": {
+        "investor_id": "INV-PRO-01",
+        "name": "PrevFundo Fundo de Pensão",
+        "document": "45.678.901/0001-33",
+        "category": "PROFESSIONAL",
+        "net_worth": "500000000.00",
+        "is_related_party": false
+      }
+    }
+  }
+}

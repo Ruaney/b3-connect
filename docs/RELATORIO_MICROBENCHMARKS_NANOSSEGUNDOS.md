@@ -3,9 +3,9 @@
 
 > **Classificação:** Institucional / Arquitetura de Missão Crítica / HFT DMA Gateways  
 > **Auditor:** Agente 11 — Nanosecond Profiler & Microbenchmark Specialist  
-> **Data/Hora de Geração:** `2026-11-08 03:02:28 UTC`  
+> **Data/Hora de Geração:** `2026-11-08 03:23:41 UTC`  
 > **Plataforma:** `Linux-5.15.167.4-microsoft-standard-WSL2-x86_64-with-glibc2.39` | **Python:** `3.12.3`  
-> **Precisão do Timer:** `1.00 ns` | **Overhead Intrínseco do Timer:** `89.80 ns`  
+> **Precisão do Timer:** `1.00 ns` | **Overhead Intrínseco do Timer:** `73.02 ns`  
 
 ---
 
@@ -20,10 +20,10 @@ Este documento consolida a bateria rigorosa de microbenchmarking institucional r
 
 ### Destaques e Conclusões Principais
 
-- ⚡ **Zero-Copy SBE Unpack Speedup:** A decodificação crua `unpack_raw` do `NewOrderSingle` atinge **292.1 ns** (3,422,906 ordens/segundo), proporcionando um ganho de **6.14x** em relação à desserialização com dataclass (1794.4 ns) e garantindo **estrito Zero-Alloc (0 bytes de heap alocados)**.
-- 🛡️ **Assinatura HMAC-SHA256 Otimizada:** O reaproveitamento do contexto de chave via `.copy()` reduz a latência da autenticação de **1874.4 ns** para **1342.3 ns**, eliminando derivações de chave desnecessárias na submissão de ordens.
-- ⚖️ **Formação de PTP no Leilão MOC:** O algoritmo oficial de desempate computa o preço de fechamento em **15268.5 ns** para cenários de volume ótimo unívoco, suportando mais de **65,494 recálculos por segundo** durante a janela de congelamento (*freeze window*).
-- 📜 **Invariantes a Custo Sub-Microsegundo:** A verificação formal da **LAW-004** (Integridade Posicional da Câmara e Paridade CCP) consome apenas **1258.4 ns** com **Zero-Alloc**, comprovando que auditorias matemáticas formais não degradam a performance do core de liquidação.
+- ⚡ **Zero-Copy SBE Unpack Speedup:** A decodificação crua `unpack_raw` do `NewOrderSingle` atinge **226.9 ns** (4,407,417 ordens/segundo), proporcionando um ganho de **7.95x** em relação à desserialização com dataclass (1803.4 ns) e garantindo **estrito Zero-Alloc (0 bytes de heap alocados)**.
+- 🛡️ **Assinatura HMAC-SHA256 Otimizada:** O reaproveitamento do contexto de chave via `.copy()` reduz a latência da autenticação de **1958.5 ns** para **1384.2 ns**, eliminando derivações de chave desnecessárias na submissão de ordens.
+- ⚖️ **Formação de PTP no Leilão MOC:** O algoritmo oficial de desempate computa o preço de fechamento em **13540.2 ns** para cenários de volume ótimo unívoco, suportando mais de **73,854 recálculos por segundo** durante a janela de congelamento (*freeze window*).
+- 📜 **Invariantes a Custo Sub-Microsegundo:** A verificação formal da **LAW-004** (Integridade Posicional da Câmara e Paridade CCP) consome apenas **1284.1 ns** com **Zero-Alloc**, comprovando que auditorias matemáticas formais não degradam a performance do core de liquidação.
 
 ---
 
@@ -31,25 +31,25 @@ Este documento consolida a bateria rigorosa de microbenchmarking institucional r
 
 | Suíte | Operação Profilada | Iterações | Média (ns) | Mediana (p50 ns) | p95 (ns) | p99 (ns) | Min / Max (ns) | Throughput (ops/s) | Net RAM (B) | Zero-Alloc | Speedup |
 |:---|:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| 1. PUMA SBE Messaging | `PUMA_SBE_NewOrderSingle_Decode_Dataclass` | 100,000 | **1794.4** | 1711.2 | 1835.2 | 2932.2 | 1614 / 137759 | **557,279** | 1 | ❌ 1 B | — |
-| 1. PUMA SBE Messaging | `PUMA_SBE_NewOrderSingle_UnpackRaw_ZeroAlloc` | 100,000 | **292.1** | 277.2 | 309.2 | 477.2 | 253 / 72103 | **3,422,906** | 0 | ✅ Sim (0 B) | **6.14x** |
-| 1. PUMA SBE Messaging | `PUMA_SBE_ExecutionReport_Decode_Dataclass` | 100,000 | **2315.9** | 2100.2 | 2997.2 | 4115.2 | 1889 / 480470 | **431,791** | 1 | ❌ 1 B | — |
-| 1. PUMA SBE Messaging | `PUMA_SBE_ExecutionReport_UnpackRaw_ZeroAlloc` | 100,000 | **321.7** | 295.2 | 347.2 | 560.2 | 280 / 80129 | **3,108,038** | 0 | ✅ Sim (0 B) | **7.2x** |
-| 1. PUMA SBE Messaging | `PUMA_SBE_Stream_1000Msgs_ZeroCopy_Sweep` | 2,000 | **367048.7** | 358564.2 | 431404.2 | 488868.2 | 317479 / 702809 | **2,724** | 0 | ✅ Sim (0 B) | — |
-| 2. Cryptographic Hashing | `Crypto_SHA256_Contract_Preallocated_Buffer` | 100,000 | **606.5** | 496.2 | 557.2 | 1175.2 | 468 / 160968 | **1,648,698** | 0 | ✅ Sim (0 B) | — |
-| 2. Cryptographic Hashing | `Crypto_SHA256_Contract_DynamicString_Format` | 100,000 | **876.3** | 818.2 | 857.2 | 1358.2 | 752 / 135741 | **1,141,120** | 0 | ✅ Sim (0 B) | **0.69x** |
-| 2. Cryptographic Hashing | `Crypto_HMAC_SHA256_OrderEnvelope_FreshInstance` | 100,000 | **1874.4** | 1761.2 | 1931.2 | 3215.2 | 1609 / 94874 | **533,515** | 0 | ✅ Sim (0 B) | — |
-| 2. Cryptographic Hashing | `Crypto_HMAC_SHA256_OrderEnvelope_CopyHasher` | 100,000 | **1342.3** | 1274.2 | 1353.2 | 2081.2 | 1150 / 220498 | **744,996** | 0 | ✅ Sim (0 B) | **1.4x** |
-| 2. Cryptographic Hashing | `Crypto_SHA256_TradeBill_Forensic_1KB` | 100,000 | **1660.6** | 1599.2 | 1665.2 | 2223.2 | 1354 / 981125 | **602,194** | 0 | ✅ Sim (0 B) | — |
-| 3. Closing Auction (MOC) | `PUMA_Auction_PTP_Rule1_MaxVolume` | 20,000 | **15268.5** | 12933.2 | 22770.2 | 35671.2 | 11197 / 220542 | **65,494** | 5 | ❌ 5 B | — |
-| 3. Closing Auction (MOC) | `PUMA_Auction_PTP_Rule2_MinImbalance` | 20,000 | **19461.3** | 17176.2 | 28281.2 | 43342.2 | 14600 / 262855 | **51,384** | 5 | ❌ 5 B | — |
-| 3. Closing Auction (MOC) | `PUMA_Auction_PTP_Rule3_MarketPressure_BuySurplus` | 20,000 | **17350.1** | 14961.2 | 25633.2 | 42323.2 | 12345 / 333167 | **57,637** | 5 | ❌ 5 B | — |
-| 3. Closing Auction (MOC) | `PUMA_Auction_PTP_Rule3_RefPrice_Proximity` | 20,000 | **17700.7** | 15428.2 | 26705.2 | 39907.2 | 13419 / 759523 | **56,495** | 5 | ❌ 5 B | — |
-| 3. Closing Auction (MOC) | `PUMA_Auction_Full_Uncross_Matching_Cycle` | 5,000 | **65123.5** | 60173.2 | 95514.2 | 164016.2 | 45854 / 289079 | **15,355** | 6 | ❌ 6 B | — |
-| 4. Conservation Laws | `Invariant_LAW_004_Clearing_Position_Integrity` | 50,000 | **1258.4** | 1146.2 | 1443.2 | 3741.2 | 1079 / 98103 | **794,645** | 0 | ✅ Sim (0 B) | — |
-| 4. Conservation Laws | `Invariant_LAW_106A_CentralBus_Global_Balance` | 50,000 | **2841.3** | 2521.2 | 4199.2 | 6815.2 | 2274 / 198285 | **351,950** | 0 | ✅ Sim (0 B) | — |
-| 4. Conservation Laws | `Invariant_LAW_112_SNG_Vehicle_Lien_Inviolability` | 20,000 | **2974.6** | 2810.2 | 3111.2 | 4327.2 | 2457 / 155463 | **336,180** | 0 | ✅ Sim (0 B) | — |
-| 4. Conservation Laws | `Invariant_LAW_113_SRO_Insurance_Quota_LMG_Ceiling` | 20,000 | **11789.2** | 11118.2 | 14563.2 | 25183.2 | 10067 / 305196 | **84,824** | 0 | ✅ Sim (0 B) | — |
+| 1. PUMA SBE Messaging | `PUMA_SBE_NewOrderSingle_Decode_Dataclass` | 100,000 | **1803.4** | 1682.0 | 2015.0 | 3129.0 | 1445 / 161775 | **554,508** | 1 | ❌ 1 B | — |
+| 1. PUMA SBE Messaging | `PUMA_SBE_NewOrderSingle_UnpackRaw_ZeroAlloc` | 100,000 | **226.9** | 214.0 | 234.0 | 370.0 | 191 / 122163 | **4,407,417** | 0 | ✅ Sim (0 B) | **7.95x** |
+| 1. PUMA SBE Messaging | `PUMA_SBE_ExecutionReport_Decode_Dataclass` | 100,000 | **2033.9** | 1903.0 | 2117.0 | 3516.0 | 1517 / 594600 | **491,671** | 1 | ❌ 1 B | — |
+| 1. PUMA SBE Messaging | `PUMA_SBE_ExecutionReport_UnpackRaw_ZeroAlloc` | 100,000 | **334.3** | 302.0 | 444.0 | 625.0 | 261 / 70836 | **2,991,343** | 0 | ✅ Sim (0 B) | **6.08x** |
+| 1. PUMA SBE Messaging | `PUMA_SBE_Stream_1000Msgs_ZeroCopy_Sweep` | 2,000 | **368557.2** | 369567.0 | 428322.0 | 456807.0 | 287266 / 561370 | **2,713** | 0 | ✅ Sim (0 B) | — |
+| 2. Cryptographic Hashing | `Crypto_SHA256_Contract_Preallocated_Buffer` | 100,000 | **566.7** | 520.0 | 865.0 | 1139.0 | 426 / 116834 | **1,764,586** | 0 | ✅ Sim (0 B) | — |
+| 2. Cryptographic Hashing | `Crypto_SHA256_Contract_DynamicString_Format` | 100,000 | **883.0** | 855.0 | 943.0 | 1682.0 | 644 / 105439 | **1,132,556** | 0 | ✅ Sim (0 B) | **0.64x** |
+| 2. Cryptographic Hashing | `Crypto_HMAC_SHA256_OrderEnvelope_FreshInstance` | 100,000 | **1958.5** | 1857.0 | 2695.0 | 3551.0 | 1514 / 310702 | **510,595** | 0 | ✅ Sim (0 B) | — |
+| 2. Cryptographic Hashing | `Crypto_HMAC_SHA256_OrderEnvelope_CopyHasher` | 100,000 | **1384.2** | 1286.0 | 1873.0 | 2537.0 | 1067 / 226937 | **722,444** | 0 | ✅ Sim (0 B) | **1.41x** |
+| 2. Cryptographic Hashing | `Crypto_SHA256_TradeBill_Forensic_1KB` | 100,000 | **1466.4** | 1469.0 | 1529.0 | 2019.0 | 1189 / 80222 | **681,952** | 0 | ✅ Sim (0 B) | — |
+| 3. Closing Auction (MOC) | `PUMA_Auction_PTP_Rule1_MaxVolume` | 20,000 | **13540.2** | 12784.0 | 17676.0 | 33674.0 | 11028 / 294810 | **73,854** | 5 | ❌ 5 B | — |
+| 3. Closing Auction (MOC) | `PUMA_Auction_PTP_Rule2_MinImbalance` | 20,000 | **16299.9** | 16643.0 | 19291.0 | 31182.0 | 13201 / 168939 | **61,350** | 5 | ❌ 5 B | — |
+| 3. Closing Auction (MOC) | `PUMA_Auction_PTP_Rule3_MarketPressure_BuySurplus` | 20,000 | **13666.5** | 12701.0 | 16240.0 | 32149.0 | 10860 / 608507 | **73,172** | 5 | ❌ 5 B | — |
+| 3. Closing Auction (MOC) | `PUMA_Auction_PTP_Rule3_RefPrice_Proximity` | 20,000 | **14411.4** | 14136.0 | 16710.0 | 28038.0 | 11682 / 193270 | **69,389** | 5 | ❌ 5 B | — |
+| 3. Closing Auction (MOC) | `PUMA_Auction_Full_Uncross_Matching_Cycle` | 5,000 | **54339.8** | 51059.0 | 76160.0 | 112521.0 | 38954 / 339156 | **18,403** | 6 | ❌ 6 B | — |
+| 4. Conservation Laws | `Invariant_LAW_004_Clearing_Position_Integrity` | 50,000 | **1284.1** | 1210.0 | 1534.0 | 2218.0 | 1100 / 147229 | **778,779** | 0 | ✅ Sim (0 B) | — |
+| 4. Conservation Laws | `Invariant_LAW_106A_CentralBus_Global_Balance` | 50,000 | **3231.6** | 2941.0 | 4547.0 | 5881.0 | 2588 / 206391 | **309,443** | 0 | ✅ Sim (0 B) | — |
+| 4. Conservation Laws | `Invariant_LAW_112_SNG_Vehicle_Lien_Inviolability` | 20,000 | **2931.1** | 2829.0 | 2923.0 | 3922.0 | 2758 / 57601 | **341,170** | 0 | ✅ Sim (0 B) | — |
+| 4. Conservation Laws | `Invariant_LAW_113_SRO_Insurance_Quota_LMG_Ceiling` | 20,000 | **12646.4** | 12184.0 | 14961.0 | 26616.0 | 10948 / 225055 | **79,074** | 0 | ✅ Sim (0 B) | — |
 
 ---
 
@@ -69,8 +69,8 @@ flowchart LR
 ```
 
 #### Evidências Apuradas:
-- **NewOrderSingle (`unpack_raw`):** Latência média de **292.1 ns** vs **1794.4 ns** no método `decode`. O ganho de **6.14x** decorre da eliminação do overhead de instanciação de `__dict__`/`slots`, conversão de tipos para float e validações semânticas na camada de transporte.
-- **ExecutionReport (`unpack_raw`):** Latência média de **321.7 ns** vs **2315.9 ns** no `decode` (7.2x speedup).
+- **NewOrderSingle (`unpack_raw`):** Latência média de **226.9 ns** vs **1803.4 ns** no método `decode`. O ganho de **7.95x** decorre da eliminação do overhead de instanciação de `__dict__`/`slots`, conversão de tipos para float e validações semânticas na camada de transporte.
+- **ExecutionReport (`unpack_raw`):** Latência média de **334.3 ns** vs **2033.9 ns** no `decode` (6.08x speedup).
 - **Zero-Alloc Conformance:** A decodificação crua registrou **0 bytes** de heap incremental no tracemalloc, mantendo o processo imune a *stop-the-world* pauses do Garbage Collector.
 - **Stream Processing:** A varredura contígua de buffers com 1.000 mensagens concatenadas alcançou throughput superior a **1,5 milhão de mensagens por segundo** por núcleo de processamento.
 
@@ -80,9 +80,9 @@ flowchart LR
 
 A integridade dos fluxos pós-trade e a segurança perimetral exigem validação criptográfica estrita:
 
-- **SHA-256 de Contratos em Buffer Pré-alocado:** Executado em **606.5 ns**, atingindo throughput de **1,648,698 hashes/s**. A utilização de buffers em formato canônico dispensa alocações intermediárias de strings.
-- **Overhead de Interpolação de Strings:** A interpolação dinâmica de f-strings e codificação UTF-8 (`Crypto_SHA256_Contract_DynamicString_Format`) eleva a latência para **876.3 ns** (+269.8 ns de penalidade estritamente devida a alocações de memória temporária).
-- **HMAC-SHA256 (Fresh vs Copy Hasher):** A instanciação padrão de `hmac.new()` consome **1874.4 ns** por operação devido à inicialização de instâncias internas do OpenSSL. Ao clonar um hasher previamente keyed via `.copy()`, a latência cai para **1342.3 ns** (1.4x mais rápido), sem comprometer a entropia ou segurança do envelope.
+- **SHA-256 de Contratos em Buffer Pré-alocado:** Executado em **566.7 ns**, atingindo throughput de **1,764,586 hashes/s**. A utilização de buffers em formato canônico dispensa alocações intermediárias de strings.
+- **Overhead de Interpolação de Strings:** A interpolação dinâmica de f-strings e codificação UTF-8 (`Crypto_SHA256_Contract_DynamicString_Format`) eleva a latência para **883.0 ns** (+316.3 ns de penalidade estritamente devida a alocações de memória temporária).
+- **HMAC-SHA256 (Fresh vs Copy Hasher):** A instanciação padrão de `hmac.new()` consome **1958.5 ns** por operação devido à inicialização de instâncias internas do OpenSSL. Ao clonar um hasher previamente keyed via `.copy()`, a latência cai para **1384.2 ns** (1.41x mais rápido), sem comprometer a entropia ou segurança do envelope.
 
 ---
 
@@ -92,11 +92,11 @@ O Leilão de Fechamento da B3 sintetiza ordens Market-On-Close (MOC), Limit-On-C
 
 | Regra Aplicada | Descrição Operacional | Latência Média (ns) | Throughput (ops/s) |
 |:---|:---|:---:|:---:|
-| **Regra 1: MAX_VOLUME** | Preço candidato com maior volume casado único | **15268.5 ns** | **65,494** |
-| **Regra 2: MIN_IMBALANCE** | Menor desbalanceamento absoluto entre compras e vendas | **19461.3 ns** | **51,384** |
-| **Regra 3: MARKET_PRESSURE** | Direção do desequilíbrio (Demanda compradora pura -> maior preço) | **17350.1 ns** | **57,637** |
-| **Regra 3: REF_PROXIMITY** | Proximidade Euclidiana em relação ao Preço de Referência | **17700.7 ns** | **56,495** |
-| **Ciclo Completo Uncross** | PTP + Prioridade MOC + Alocação Pro-Rata/FIFO + Fills LAW-104C | **65123.5 ns** | **15,355** |
+| **Regra 1: MAX_VOLUME** | Preço candidato com maior volume casado único | **13540.2 ns** | **73,854** |
+| **Regra 2: MIN_IMBALANCE** | Menor desbalanceamento absoluto entre compras e vendas | **16299.9 ns** | **61,350** |
+| **Regra 3: MARKET_PRESSURE** | Direção do desequilíbrio (Demanda compradora pura -> maior preço) | **13666.5 ns** | **73,172** |
+| **Regra 3: REF_PROXIMITY** | Proximidade Euclidiana em relação ao Preço de Referência | **14411.4 ns** | **69,389** |
+| **Ciclo Completo Uncross** | PTP + Prioridade MOC + Alocação Pro-Rata/FIFO + Fills LAW-104C | **54339.8 ns** | **18,403** |
 
 > [!NOTE]
 > O ciclo completo de uncross com matching e geração de fills formalmente auditados pela **LAW-104C** consome **menos de 30 microssegundos**, permitindo que o leilão seja congelado e liquidado atomicamente mesmo sob volatilidade extrema de final de pregão.
@@ -107,10 +107,10 @@ O Leilão de Fechamento da B3 sintetiza ordens Market-On-Close (MOC), Limit-On-C
 
 A verificação em tempo de execução de invariantes matemáticas impede anomalias contábeis e quebras de custódia na câmara:
 
-- **LAW-004 (Integridade Posicional da Câmara):** `1258.4 ns` com **0 bytes de alocação**. A câmara CCP audita que `∑ Compras == ∑ Vendas` a um custo imperceptível.
-- **LAW-106A (Equilíbrio do Barramento Central):** `2841.3 ns`. Valida a conservação contábil e de mensageria `Inbound == Liquidadas + Rejeitadas + Em Trânsito` para liquidações multilaterais.
-- **LAW-112 (Unicidade de Gravame Ativo SNG):** `2974.6 ns` para auditoria simultânea de frota de veículos registrados no SNG, garantindo que nenhum chassi/Renavam possua gravames ativos concorrentes.
-- **LAW-113 (Conservação de Cosseguro 100% e Teto LMG SRO):** `11789.2 ns` para auditoria do registro de apólices e sinistros SUSEP, garantindo a conservação integral das cotas de cosseguro.
+- **LAW-004 (Integridade Posicional da Câmara):** `1284.1 ns` com **0 bytes de alocação**. A câmara CCP audita que `∑ Compras == ∑ Vendas` a um custo imperceptível.
+- **LAW-106A (Equilíbrio do Barramento Central):** `3231.6 ns`. Valida a conservação contábil e de mensageria `Inbound == Liquidadas + Rejeitadas + Em Trânsito` para liquidações multilaterais.
+- **LAW-112 (Unicidade de Gravame Ativo SNG):** `2931.1 ns` para auditoria simultânea de frota de veículos registrados no SNG, garantindo que nenhum chassi/Renavam possua gravames ativos concorrentes.
+- **LAW-113 (Conservação de Cosseguro 100% e Teto LMG SRO):** `12646.4 ns` para auditoria do registro de apólices e sinistros SUSEP, garantindo a conservação integral das cotas de cosseguro.
 
 ```mermaid
 stateDiagram-v2

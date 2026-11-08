@@ -1,0 +1,17 @@
+[package]
+name = "b3_atlas_ffi"
+version = "0.1.0"
+edition = "2021"
+authors = ["B3 Integration Atlas Contributors"]
+description = "High-Performance Multi-Language C-ABI & Rust Interop FFI Layer for B3 PUMA SBE v2 & Clearing Bus"
+license = "MIT"
+
+[lib]
+name = "b3_atlas_ffi"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+
+[features]
+default = []
+std = []

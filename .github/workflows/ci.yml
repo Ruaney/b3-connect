@@ -1,0 +1,92 @@
+name: CI - Institutional Quality Gate & Formal Verification
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality-gate:
+    name: Institutional Quality Gate & Formal Prover
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Python 3.12 (Ambiente Oficial de Verificação)
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 1. Auditoria de Zero-Pip Dependencies (Sem Dependências Terceiras)
+        run: |
+          python scripts/verify_zero_pip.py
+
+      - name: 2. Auditoria Estática de Tipagem via AST e Conformidade PEP 561
+        run: |
+          python scripts/verify_type_annotations.py
+
+      - name: 3. Verificação de Tipagem Estrita via MyPy
+        run: |
+          pip install mypy
+          mypy --config-file pyproject.toml
+
+      - name: 4. Verificação Formal das 91 Leis de Conservação (Invariantes da B3)
+        run: |
+          python scripts/verify_invariants.py
+          python src/formal_invariant_prover.py
+
+      - name: 5. Geração e Validação Estrita OpenAPI 3.1 e Postman v2.1
+        run: |
+          python scripts/generate_openapi_spec.py
+          python scripts/generate_postman_collection.py
+          python -m unittest tests/test_openapi_spec.py tests/test_postman_collection.py
+
+      - name: 6. Auditoria de Checksums Criptográficos SHA-256 (Release v2.3.0)
+        run: |
+          python scripts/verify_checksums.py
+
+  test-matrix:
+    name: Test Matrix (${{ matrix.os }} - Python ${{ matrix.python-version }})
+    needs: quality-gate
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
+
+    steps:
+      - name: Checkout repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Verificação Zero-Pip Dependencies
+        run: |
+          python scripts/verify_zero_pip.py
+
+      - name: Verificação das 91 Leis de Conservação da B3
+        run: |
+          python scripts/verify_invariants.py
+          python src/formal_invariant_prover.py
+
+      - name: Execução da Suíte de Testes Core & Invariantes
+        run: |
+          python -m unittest tests/test_invariants_laws_104_106.py tests/test_openapi_spec.py tests/test_postman_collection.py tests/test_benchmark_zero_alloc.py tests/test_ci_workflows.py

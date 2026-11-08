@@ -1,0 +1,58 @@
+# ==============================================================================
+# B3 Integration Atlas — Prometheus Observability Configuration
+# Production Metrics Scraper: PUMA, IMBARQ, Waterfall, SNG, SRO & Central Bus
+# ==============================================================================
+
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+  external_labels:
+    monitor: 'b3-enterprise-monitor'
+    environment: 'prd'
+
+# Alertas e regras de gravação (opcional)
+rule_files: []
+
+scrape_configs:
+  # ============================================================================
+  # 1. B3 Integration Atlas Core (PUMA, IMBARQ, Waterfall, SNG, SRO, Bus)
+  # ============================================================================
+  - job_name: 'b3-atlas'
+    scrape_interval: 5s
+    scrape_timeout: 4s
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['b3-atlas:8080']
+        labels:
+          env: 'prd'
+          service: 'b3-integration-atlas'
+          system: 'b3-core'
+          subsystems: 'puma,imbarq,waterfall,sng,sro,central-bus'
+          datacenter: 'sp-santana'
+
+  # ============================================================================
+  # 2. Mock Gateways Externos (DETRAN SNG & SUSEP SRO)
+  # ============================================================================
+  - job_name: 'mock-detran-susep'
+    scrape_interval: 5s
+    scrape_timeout: 4s
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['mock-detran-susep:8089']
+        labels:
+          env: 'prd'
+          service: 'mock-detran-susep'
+          system: 'external-gateways'
+          gateways: 'detran,susep'
+          datacenter: 'sp-santana'
+
+  # ============================================================================
+  # 3. Auto-monitoramento Prometheus
+  # ============================================================================
+  - job_name: 'prometheus'
+    scrape_interval: 10s
+    static_configs:
+      - targets: ['localhost:9090']
+        labels:
+          env: 'prd'
+          service: 'prometheus-internal'

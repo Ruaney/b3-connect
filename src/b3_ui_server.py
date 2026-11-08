@@ -23,6 +23,7 @@ import urllib.parse
 
 from src.b3_concepts_catalog import B3ConceptsCatalog
 from src.b3_chaos_simulator import B3ChaosSimulator, ChaosScenarioType
+from src.b3_developer_portal import render_developer_portal_html, get_openapi_spec, get_guides_catalog
 from src.b3_doc_harvester import B3DocHarvester, DOCUMENT_CATEGORIES
 from src.b3_market_simulator import B3MarketSimulator
 
@@ -34,6 +35,15 @@ class B3DashboardHandler(BaseHTTPRequestHandler):
 
     server_version = "B3AtlasDashboard/2.3.0"
 
+    def do_OPTIONS(self) -> None:
+        """Trata requisições CORS preflight para chamadas interativas."""
+        self.send_response(204)
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, X-Idempotency-Key")
+        self.send_header("Content-Length", "0")
+        self.end_headers()
+
     def do_GET(self) -> None:
         parsed_url = urllib.parse.urlparse(self.path)
         path = parsed_url.path
@@ -41,6 +51,32 @@ class B3DashboardHandler(BaseHTTPRequestHandler):
 
         if path in ("/", "/index.html"):
             self._serve_html_dashboard()
+        elif path in ("/docs/api", "/docs/interactive"):
+            self._serve_html_developer_portal(path)
+        elif path in ("/docs/openapi.json", "/api/openapi.json"):
+            self._serve_openapi_spec()
+        elif path == "/api/guides":
+            self._serve_api_guides()
+        elif path.startswith("/api/guides/"):
+            guide_name = path.replace("/api/guides/", "").strip()
+            self._serve_api_single_guide(guide_name)
+        elif path == "/api/v1/orders":
+            self._serve_api_v1_orders_list(query)
+        elif path.startswith("/api/v1/orders/"):
+            order_id = path.replace("/api/v1/orders/", "").strip()
+            self._serve_api_v1_single_order(order_id)
+        elif path == "/api/v1/auction/theoretical-price":
+            self._serve_api_v1_auction_theoretical_price(query)
+        elif path == "/api/v1/sng/gravames":
+            self._serve_api_v1_sng_gravames_list(query)
+        elif path.startswith("/api/v1/sng/gravames/"):
+            gravame_id = path.replace("/api/v1/sng/gravames/", "").strip()
+            self._serve_api_v1_single_gravame(gravame_id)
+        elif path == "/api/v1/sro/apolices":
+            self._serve_api_v1_sro_apolices_list(query)
+        elif path.startswith("/api/v1/sro/apolices/"):
+            apolice_id = path.replace("/api/v1/sro/apolices/", "").strip()
+            self._serve_api_v1_single_apolice(apolice_id)
         elif path == "/api/status":
             self._serve_api_status()
         elif path == "/api/modules":
@@ -72,8 +108,258 @@ class B3DashboardHandler(BaseHTTPRequestHandler):
             self._serve_api_single_concept(concept_id)
         elif path == "/api/health":
             self._send_json({"status": "UP", "version": "2.3.0", "offline": True})
+        elif path in ("/metrics", "/api/metrics"):
+            self._serve_prometheus_metrics()
         else:
             self.send_error(404, "Rota não encontrada")
+
+    def do_POST(self) -> None:
+        """Trata requisições POST para o Console Interativo e APIs de Negociação/Garantias/Seguros."""
+        parsed_url = urllib.parse.urlparse(self.path)
+        path = parsed_url.path
+
+        content_length = int(self.headers.get("Content-Length", 0))
+        body_bytes = self.rfile.read(content_length) if content_length > 0 else b"{}"
+        try:
+            body_json = json.loads(body_bytes.decode("utf-8")) if body_bytes else {}
+        except Exception:
+            body_json = {}
+
+        if path == "/api/v1/orders":
+            self._handle_api_v1_post_order(body_json)
+        elif path == "/api/v1/auction/moc":
+            self._handle_api_v1_post_moc_order(body_json)
+        elif path == "/api/v1/auction/uncross":
+            self._handle_api_v1_post_auction_uncross(body_json)
+        elif path == "/api/v1/sng/gravames":
+            self._handle_api_v1_post_sng_gravame(body_json)
+        elif path.startswith("/api/v1/sng/gravames/") and path.endswith("/baixa"):
+            gravame_id = path.replace("/api/v1/sng/gravames/", "").replace("/baixa", "").strip()
+            self._handle_api_v1_post_sng_baixa(gravame_id, body_json)
+        elif path.startswith("/api/v1/sng/gravames/") and path.endswith("/cancelamento"):
+            gravame_id = path.replace("/api/v1/sng/gravames/", "").replace("/cancelamento", "").strip()
+            self._handle_api_v1_post_sng_cancelamento(gravame_id, body_json)
+        elif path == "/api/v1/sro/apolices":
+            self._handle_api_v1_post_sro_apolice(body_json)
+        elif path.startswith("/api/v1/sro/apolices/") and path.endswith("/endosso"):
+            apolice_id = path.replace("/api/v1/sro/apolices/", "").replace("/endosso", "").strip()
+            self._handle_api_v1_post_sro_endosso(apolice_id, body_json)
+        elif path.startswith("/api/v1/sro/apolices/") and path.endswith("/sinistros"):
+            apolice_id = path.replace("/api/v1/sro/apolices/", "").replace("/sinistros", "").strip()
+            self._handle_api_v1_post_sro_sinistro(apolice_id, body_json)
+        elif "/sinistros/" in path and path.endswith("/liquidar"):
+            parts = [p for p in path.split("/") if p]
+            apolice_id = parts[parts.index("apolices") + 1] if "apolices" in parts else ""
+            sinistro_id = parts[parts.index("sinistros") + 1] if "sinistros" in parts else ""
+            self._handle_api_v1_post_sro_liquidar_sinistro(apolice_id, sinistro_id, body_json)
+        elif path.startswith("/api/"):
+            self._send_json({
+                "status": "SUCCESS",
+                "endpoint": path,
+                "message": "Operação processada com sucesso no ambiente Sandbox B3 Local.",
+                "request_payload": body_json,
+                "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            }, status_code=200)
+        else:
+            self.send_error(404, f"Endpoint POST '{path}' não encontrado")
+
+    def _serve_prometheus_metrics(self) -> None:
+        lines = [
+            "# HELP b3_puma_messages_total Total de mensagens trafegadas no PUMA Trading System",
+            "# TYPE b3_puma_messages_total counter",
+            'b3_puma_messages_total{env="prd",venue="EQUITIES"} 15420000',
+            'b3_puma_messages_total{env="prd",venue="FUTURES"} 9850000',
+            'b3_puma_messages_total{env="prd",venue="OPTIONS"} 4120000',
+            "",
+            "# HELP b3_puma_orders_matched_total Total de ordens casadas no matching engine",
+            "# TYPE b3_puma_orders_matched_total counter",
+            'b3_puma_orders_matched_total{env="prd"} 8350000',
+            "",
+            "# HELP b3_puma_circuit_breaker_active Estado do circuit breaker no PUMA (0=Normal, 1=Ativo)",
+            "# TYPE b3_puma_circuit_breaker_active gauge",
+            'b3_puma_circuit_breaker_active{env="prd"} 0',
+            "",
+            "# HELP b3_puma_price_tunnel_violations_total Total de rejeicoes por violacao de tunel de preco",
+            "# TYPE b3_puma_price_tunnel_violations_total counter",
+            'b3_puma_price_tunnel_violations_total{env="prd",tunnel_type="REJEICAO"} 14',
+            'b3_puma_price_tunnel_violations_total{env="prd",tunnel_type="LEILAO"} 42',
+            "",
+            "# HELP b3_puma_matching_latency_microseconds_bucket Histograma de latencia de matching em microssegundos",
+            "# TYPE b3_puma_matching_latency_microseconds_bucket histogram",
+            'b3_puma_matching_latency_microseconds_bucket{env="prd",le="0.5"} 150000',
+            'b3_puma_matching_latency_microseconds_bucket{env="prd",le="0.95"} 650000',
+            'b3_puma_matching_latency_microseconds_bucket{env="prd",le="0.99"} 850000',
+            'b3_puma_matching_latency_microseconds_bucket{env="prd",le="1.0"} 890000',
+            'b3_puma_matching_latency_microseconds_bucket{env="prd",le="2.0"} 940000',
+            'b3_puma_matching_latency_microseconds_bucket{env="prd",le="5.0"} 985000',
+            'b3_puma_matching_latency_microseconds_bucket{env="prd",le="10.0"} 996000',
+            'b3_puma_matching_latency_microseconds_bucket{env="prd",le="50.0"} 999700',
+            'b3_puma_matching_latency_microseconds_bucket{env="prd",le="+Inf"} 1000000',
+            'b3_puma_matching_latency_microseconds_count{env="prd"} 1000000',
+            'b3_puma_matching_latency_microseconds_sum{env="prd"} 1202000',
+            "",
+            "# HELP b3_imbarq_custody_reconciliation_breaks_total Total de quebras de conciliacao de custodia IMBARQ",
+            "# TYPE b3_imbarq_custody_reconciliation_breaks_total gauge",
+            'b3_imbarq_custody_reconciliation_breaks_total{env="prd",break_type="QUANTITY_MISMATCH"} 0',
+            'b3_imbarq_custody_reconciliation_breaks_total{env="prd",break_type="MISSING_ISIN"} 0',
+            'b3_imbarq_custody_reconciliation_breaks_total{env="prd",break_type="ACCOUNT_INCONSISTENCY"} 0',
+            "",
+            "# HELP b3_imbarq_custody_positions_total Total de posicoes sob custodia verificadas",
+            "# TYPE b3_imbarq_custody_positions_total gauge",
+            'b3_imbarq_custody_positions_total{env="prd"} 4500000',
+            "",
+            "# HELP b3_csd_unallocated_positions_gauge Posicoes de custodia nao alocadas",
+            "# TYPE b3_csd_unallocated_positions_gauge gauge",
+            'b3_csd_unallocated_positions_gauge{env="prd"} 0',
+            "",
+            "# HELP b3_imbarq_file_records_processed_total Registros IMBARQ processados por tipo de arquivo",
+            "# TYPE b3_imbarq_file_records_processed_total counter",
+            'b3_imbarq_file_records_processed_total{env="prd",file_code="IMBARQ006"} 3800000',
+            'b3_imbarq_file_records_processed_total{env="prd",file_code="IMBARQ008"} 1250000',
+            'b3_imbarq_file_records_processed_total{env="prd",file_code="IMBARQ014"} 940000',
+            "",
+            "# HELP b3_clearing_default_events_total Eventos de inadimplencia registrados na CCP",
+            "# TYPE b3_clearing_default_events_total counter",
+            'b3_clearing_default_events_total{env="prd"} 0',
+            "",
+            "# HELP b3_clearing_default_waterfall_active_tier_level Tier ativo no Default Waterfall (0=Normal, 1-5=Default)",
+            "# TYPE b3_clearing_default_waterfall_active_tier_level gauge",
+            'b3_clearing_default_waterfall_active_tier_level{env="prd"} 0',
+            "",
+            "# HELP b3_clearing_default_waterfall_tier_consumption_ratio Taxa de consumo por tier da cascata",
+            "# TYPE b3_clearing_default_waterfall_tier_consumption_ratio gauge",
+            'b3_clearing_default_waterfall_tier_consumption_ratio{env="prd",tier="TIER1_MARGINS"} 0.0',
+            'b3_clearing_default_waterfall_tier_consumption_ratio{env="prd",tier="TIER2_SETTLEMENT_FUND"} 0.0',
+            'b3_clearing_default_waterfall_tier_consumption_ratio{env="prd",tier="TIER3_SITG"} 0.0',
+            'b3_clearing_default_waterfall_tier_consumption_ratio{env="prd",tier="TIER4_MUTUALIZED_FUND"} 0.0',
+            'b3_clearing_default_waterfall_tier_consumption_ratio{env="prd",tier="TIER5_B3_EQUITY"} 0.0',
+            "",
+            "# HELP b3_clearing_safeguards_available_capital_brl Capital disponivel por tier de salvaguarda (BRL)",
+            "# TYPE b3_clearing_safeguards_available_capital_brl gauge",
+            'b3_clearing_safeguards_available_capital_brl{env="prd",tier="TIER1_MARGINS"} 38500000000',
+            'b3_clearing_safeguards_available_capital_brl{env="prd",tier="TIER2_DEF_PN"} 2500000000',
+            'b3_clearing_safeguards_available_capital_brl{env="prd",tier="TIER3_SITG"} 1200000000',
+            'b3_clearing_safeguards_available_capital_brl{env="prd",tier="TIER4_MUTUALIZED_PN"} 8000000000',
+            'b3_clearing_safeguards_available_capital_brl{env="prd",tier="TIER5_B3_CAPITAL"} 15000000000',
+            "",
+            "# HELP b3_clearing_safeguards_absorbed_losses_brl_total Perdas absorvidas por tier de salvaguarda (BRL)",
+            "# TYPE b3_clearing_safeguards_absorbed_losses_brl_total counter",
+            'b3_clearing_safeguards_absorbed_losses_brl_total{env="prd",tier="TIER1_MARGINS"} 0',
+            'b3_clearing_safeguards_absorbed_losses_brl_total{env="prd",tier="TIER2_DEF_PN"} 0',
+            'b3_clearing_safeguards_absorbed_losses_brl_total{env="prd",tier="TIER3_SITG"} 0',
+            'b3_clearing_safeguards_absorbed_losses_brl_total{env="prd",tier="TIER4_MUTUALIZED_PN"} 0',
+            'b3_clearing_safeguards_absorbed_losses_brl_total{env="prd",tier="TIER5_B3_CAPITAL"} 0',
+            "",
+            "# HELP b3_clearing_sitg_capital_intact_ratio Razao de integridade do capital Skin-in-the-Game (1.0 = 100%)",
+            "# TYPE b3_clearing_sitg_capital_intact_ratio gauge",
+            'b3_clearing_sitg_capital_intact_ratio{env="prd"} 1.0',
+            "",
+            "# HELP b3_pix_margin_calls_issued_total Total de chamadas de margem intradiaria emitidas via Pix/SPI",
+            "# TYPE b3_pix_margin_calls_issued_total counter",
+            'b3_pix_margin_calls_issued_total{env="prd"} 1420',
+            "",
+            "# HELP b3_pix_margin_calls_settled_total Total de chamadas de margem intradiaria liquidadas via Pix/SPI",
+            "# TYPE b3_pix_margin_calls_settled_total counter",
+            'b3_pix_margin_calls_settled_total{env="prd"} 1420',
+            "",
+            "# HELP b3_sng_active_liens_gauge Total de gravames veiculares ativos no SNG",
+            "# TYPE b3_sng_active_liens_gauge gauge",
+            'b3_sng_active_liens_gauge{env="prd",uf="SP"} 4820000',
+            'b3_sng_active_liens_gauge{env="prd",uf="RJ"} 1950000',
+            'b3_sng_active_liens_gauge{env="prd",uf="MG"} 2310000',
+            'b3_sng_active_liens_gauge{env="prd",uf="PR"} 1420000',
+            'b3_sng_active_liens_gauge{env="prd",uf="RS"} 1280000',
+            'b3_sng_active_liens_gauge{env="prd",uf="SC"} 920000',
+            'b3_sng_active_liens_gauge{env="prd",uf="BA"} 870000',
+            "",
+            "# HELP b3_sng_gravames_inclusions_total Total de inclusoes de gravames registradas no SNG",
+            "# TYPE b3_sng_gravames_inclusions_total counter",
+            'b3_sng_gravames_inclusions_total{env="prd",uf="SP"} 52400',
+            'b3_sng_gravames_inclusions_total{env="prd",uf="RJ"} 21300',
+            'b3_sng_gravames_inclusions_total{env="prd",uf="MG"} 25100',
+            'b3_sng_gravames_inclusions_total{env="prd",uf="PR"} 15400',
+            'b3_sng_gravames_inclusions_total{env="prd",uf="RS"} 13800',
+            'b3_sng_gravames_inclusions_total{env="prd",uf="SC"} 9900',
+            'b3_sng_gravames_inclusions_total{env="prd",uf="BA"} 9100',
+            "",
+            "# HELP b3_sng_gravames_discharges_total Total de baixas/desalienacoes de gravames registradas no SNG",
+            "# TYPE b3_sng_gravames_discharges_total counter",
+            'b3_sng_gravames_discharges_total{env="prd",uf="SP"} 49100',
+            'b3_sng_gravames_discharges_total{env="prd",uf="RJ"} 19800',
+            'b3_sng_gravames_discharges_total{env="prd",uf="MG"} 23400',
+            'b3_sng_gravames_discharges_total{env="prd",uf="PR"} 14500',
+            'b3_sng_gravames_discharges_total{env="prd",uf="RS"} 12900',
+            'b3_sng_gravames_discharges_total{env="prd",uf="SC"} 9300',
+            'b3_sng_gravames_discharges_total{env="prd",uf="BA"} 8600',
+            "",
+            "# HELP b3_sng_law112_duplicate_lien_rejections_total Rejeicoes por tentativa de duplo gravame (LAW-112)",
+            "# TYPE b3_sng_law112_duplicate_lien_rejections_total counter",
+            'b3_sng_law112_duplicate_lien_rejections_total{env="prd"} 18',
+            "",
+            "# HELP b3_sro_policy_registrations_total Total de registros de apolices no SRO por ramo SUSEP",
+            "# TYPE b3_sro_policy_registrations_total counter",
+            'b3_sro_policy_registrations_total{env="prd",ramo="AUTO"} 820000',
+            'b3_sro_policy_registrations_total{env="prd",ramo="VIDA"} 1450000',
+            'b3_sro_policy_registrations_total{env="prd",ramo="PATRIMONIAL"} 530000',
+            'b3_sro_policy_registrations_total{env="prd",ramo="RURAL"} 210000',
+            'b3_sro_policy_registrations_total{env="prd",ramo="GARANTIA"} 95000',
+            "",
+            "# HELP b3_sro_earned_premiums_brl Volume de premios de seguro arrecadados no SRO (BRL)",
+            "# TYPE b3_sro_earned_premiums_brl gauge",
+            'b3_sro_earned_premiums_brl{env="prd"} 4850000000',
+            "",
+            "# HELP b3_sro_incurred_claims_brl Volume de sinistros ocorridos no SRO (BRL)",
+            "# TYPE b3_sro_incurred_claims_brl gauge",
+            'b3_sro_incurred_claims_brl{env="prd"} 2182500000',
+            "",
+            "# HELP b3_central_bus_invariants_status Status de conformidade dos invariantes formais do Barramento Central",
+            "# TYPE b3_central_bus_invariants_status gauge",
+            'b3_central_bus_invariants_status{env="prd",law="LAW-106_ALL"} 1',
+            'b3_central_bus_invariants_status{env="prd",law="LAW-106A"} 1',
+            'b3_central_bus_invariants_status{env="prd",law="LAW-106B"} 1',
+            'b3_central_bus_invariants_status{env="prd",law="LAW-106C"} 1',
+            "",
+            "# HELP b3_central_bus_accounting_imbalance_brl Desbalanceamento contabil no barramento central (LAW-106A = 0)",
+            "# TYPE b3_central_bus_accounting_imbalance_brl gauge",
+            'b3_central_bus_accounting_imbalance_brl{env="prd"} 0',
+            "",
+            "# HELP b3_central_bus_unabsorbed_deficit_brl Deficit nao absorvido entre subsistemas (LAW-106B = 0)",
+            "# TYPE b3_central_bus_unabsorbed_deficit_brl gauge",
+            'b3_central_bus_unabsorbed_deficit_brl{env="prd"} 0',
+            "",
+            "# HELP b3_central_bus_atomic_settlement_success_ratio Taxa de sucesso de liquidacoes atomicas DVP (LAW-106C)",
+            "# TYPE b3_central_bus_atomic_settlement_success_ratio gauge",
+            'b3_central_bus_atomic_settlement_success_ratio{env="prd"} 1.0',
+            "",
+            "# HELP b3_central_bus_subsystem_volume_brl Volume liquidado por subsistema no barramento central (BRL)",
+            "# TYPE b3_central_bus_subsystem_volume_brl gauge",
+            'b3_central_bus_subsystem_volume_brl{env="prd",subsystem="PUMA"} 28500000000',
+            'b3_central_bus_subsystem_volume_brl{env="prd",subsystem="IMBARQ"} 19800000000',
+            'b3_central_bus_subsystem_volume_brl{env="prd",subsystem="CLEARING"} 34200000000',
+            'b3_central_bus_subsystem_volume_brl{env="prd",subsystem="BALCAO"} 14500000000',
+            'b3_central_bus_subsystem_volume_brl{env="prd",subsystem="SNG"} 2100000000',
+            'b3_central_bus_subsystem_volume_brl{env="prd",subsystem="SRO"} 1800000000',
+            'b3_central_bus_subsystem_volume_brl{env="prd",subsystem="SELIC"} 51000000000',
+            'b3_central_bus_subsystem_volume_brl{env="prd",subsystem="SPB"} 48000000000',
+            'b3_central_bus_subsystem_volume_brl{env="prd",subsystem="DREX"} 3200000000',
+            'b3_central_bus_subsystem_volume_brl{env="prd",subsystem="AGRO"} 1500000000',
+            "",
+            "# HELP b3_central_bus_gross_liquidity_settled_brl Volume bruto liquidado no SPB/STR (BRL)",
+            "# TYPE b3_central_bus_gross_liquidity_settled_brl gauge",
+            'b3_central_bus_gross_liquidity_settled_brl{env="prd"} 124500000000',
+            "",
+            "# HELP b3_central_bus_net_liquidity_settled_brl Volume liquido apos compensacao multilateral (BRL)",
+            "# TYPE b3_central_bus_net_liquidity_settled_brl gauge",
+            'b3_central_bus_net_liquidity_settled_brl{env="prd"} 28635000000',
+            "",
+        ]
+        body = "\n".join(lines).encode("utf-8")
+        self.send_response(200)
+        self.send_header("Content-Type", "text/plain; version=0.0.4; charset=utf-8")
+        self.send_header("Content-Length", str(len(body)))
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.end_headers()
+        self.wfile.write(body)
 
     def _send_json(self, data: Any, status_code: int = 200) -> None:
         body = json.dumps(data, indent=2, ensure_ascii=False).encode("utf-8")
@@ -83,6 +369,375 @@ class B3DashboardHandler(BaseHTTPRequestHandler):
         self.send_header("Access-Control-Allow-Origin", "*")
         self.end_headers()
         self.wfile.write(body)
+
+    def _serve_html_developer_portal(self, current_path: str = "/docs/api") -> None:
+        """Serve o portal interativo OpenAPI 3.1 e os guias práticos."""
+        html = render_developer_portal_html(current_path=current_path)
+        body = html.encode("utf-8")
+        self.send_response(200)
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Content-Length", str(len(body)))
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.end_headers()
+        self.wfile.write(body)
+
+    def _serve_openapi_spec(self) -> None:
+        """Serve a especificação canônica OpenAPI 3.1 em formato JSON."""
+        spec = get_openapi_spec()
+        self._send_json(spec)
+
+    def _serve_api_guides(self) -> None:
+        """Serve o catálogo de guias práticos de integração."""
+        catalog = get_guides_catalog()
+        summary = [
+            {
+                "id": g["id"],
+                "filename": g["filename"],
+                "title": g["title"],
+                "category": g["category"],
+                "badge": g["badge"],
+                "laws": g["laws"],
+                "summary": g["summary"],
+                "url": f"/api/guides/{g['filename']}",
+            }
+            for g in catalog
+        ]
+        self._send_json(summary)
+
+    def _serve_api_single_guide(self, guide_name: str) -> None:
+        """Serve o conteúdo em Markdown de um guia de integração específico."""
+        if not guide_name.endswith(".md"):
+            guide_name += ".md"
+        guide_path = (_REPO_ROOT / "docs" / "guides" / guide_name).resolve()
+        try:
+            guide_path.relative_to(_REPO_ROOT / "docs" / "guides")
+        except ValueError:
+            self.send_error(403, "Acesso negado: violação de path traversal")
+            return
+        if not guide_path.is_file():
+            self.send_error(404, f"Guia '{guide_name}' não encontrado")
+            return
+        with open(guide_path, "r", encoding="utf-8") as f:
+            content = f.read()
+        self._send_json({
+            "guide_file": guide_name,
+            "content": content,
+            "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        })
+
+    def _serve_api_v1_orders_list(self, query: Dict[str, List[str]]) -> None:
+        """Consulta ordens institucionais simuladas no PUMA Trading System."""
+        symbol_filter = query.get("symbol", [None])[0]
+        sample_orders = [
+            {
+                "order_id": "ORD-PUMA-1731024000-PETR4",
+                "client_order_id": "CLORD-2026-PETR4-001",
+                "symbol": "PETR4",
+                "side": "BUY",
+                "order_type": "LIMIT",
+                "quantity": 1000,
+                "price": 38.50,
+                "account": "ACC-8819203",
+                "status": "FILLED",
+                "timestamp": "2026-11-08T13:30:00Z",
+            },
+            {
+                "order_id": "ORD-PUMA-1731024100-VALE3",
+                "client_order_id": "CLORD-2026-VALE3-002",
+                "symbol": "VALE3",
+                "side": "SELL",
+                "order_type": "LIMIT",
+                "quantity": 500,
+                "price": 64.20,
+                "account": "ACC-8819203",
+                "status": "NEW",
+                "timestamp": "2026-11-08T13:35:00Z",
+            },
+        ]
+        if symbol_filter:
+            sample_orders = [o for o in sample_orders if o["symbol"].upper() == symbol_filter.upper()]
+        self._send_json(sample_orders)
+
+    def _serve_api_v1_single_order(self, order_id: str) -> None:
+        """Retorna detalhes de uma ordem específica pelo ID."""
+        self._send_json({
+            "order_id": order_id,
+            "symbol": "PETR4",
+            "side": "BUY",
+            "quantity": 1000,
+            "price": 38.50,
+            "status": "NEW",
+            "pre_trade_risk_checks": {
+                "price_tunnel": "PASSED",
+                "fat_finger": "PASSED",
+                "gross_credit_limit": "PASSED",
+            },
+            "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        })
+
+    def _serve_api_v1_auction_theoretical_price(self, query: Dict[str, List[str]]) -> None:
+        """Calcula o Preço Teórico de Fechamento (PTP) no Leilão MOC (FL-098)."""
+        symbol = query.get("symbol", ["PETR4"])[0]
+        self._send_json({
+            "symbol": symbol,
+            "theoretical_price": 38.65,
+            "executable_volume": 1250000,
+            "imbalance_side": "BUY",
+            "imbalance_quantity": 150000,
+            "auction_phase": "FREEZE_WINDOW",
+            "freeze_window_active": True,
+            "laws_applied": ["LAW-104A", "LAW-104B"],
+            "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        })
+
+    def _serve_api_v1_sng_gravames_list(self, query: Dict[str, List[str]]) -> None:
+        """Lista gravames registrados na base SNG B3 Financiamentos."""
+        fixtures_file = _REPO_ROOT / "fixtures" / "sng_gravames_engine.json"
+        if fixtures_file.is_file():
+            with open(fixtures_file, "r", encoding="utf-8") as f:
+                d = json.load(f)
+            gravames = d.get("gravames", [])
+        else:
+            gravames = []
+        self._send_json(gravames)
+
+    def _serve_api_v1_single_gravame(self, gravame_id: str) -> None:
+        """Consulta um gravame específico na base SNG."""
+        fixtures_file = _REPO_ROOT / "fixtures" / "sng_gravames_engine.json"
+        if fixtures_file.is_file():
+            with open(fixtures_file, "r", encoding="utf-8") as f:
+                d = json.load(f)
+            for g in d.get("gravames", []):
+                if g.get("gravame_id") == gravame_id:
+                    self._send_json(g)
+                    return
+        self._send_json({
+            "gravame_id": gravame_id,
+            "status": "ATIVO",
+            "modalidade": "ALIENACAO_FIDUCIARIA",
+            "contrato_numero": "CTR-BV-2026-8812",
+            "chassi": "9BWAA05U1HP001234",
+            "renavam": "11984726351",
+            "detran_status": "NOTIFICADO",
+            "law_verified": "LAW-112",
+        })
+
+    def _serve_api_v1_sro_apolices_list(self, query: Dict[str, List[str]]) -> None:
+        """Lista apólices registradas no padrão SUSEP V3 no SRO B3 Seguros."""
+        fixtures_file = _REPO_ROOT / "fixtures" / "sro_seguros_engine.json"
+        if fixtures_file.is_file():
+            with open(fixtures_file, "r", encoding="utf-8") as f:
+                d = json.load(f)
+            apolices = d.get("apolices", [])
+        else:
+            apolices = []
+        self._send_json(apolices)
+
+    def _serve_api_v1_single_apolice(self, apolice_id: str) -> None:
+        """Consulta uma apólice específica no SRO."""
+        fixtures_file = _REPO_ROOT / "fixtures" / "sro_seguros_engine.json"
+        if fixtures_file.is_file():
+            with open(fixtures_file, "r", encoding="utf-8") as f:
+                d = json.load(f)
+            for a in d.get("apolices", []):
+                if a.get("apolice_id") == apolice_id:
+                    self._send_json(a)
+                    return
+        self._send_json({
+            "apolice_id": apolice_id,
+            "status": "REGISTRADA",
+            "ramo": "RAMO_0531",
+            "limite_maximo_garantia": 150000.00,
+            "premio_liquido": 3200.00,
+            "hash_susep_sha256": "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92",
+            "law_verified": "LAW-113",
+        })
+
+    def _handle_api_v1_post_order(self, body: Dict[str, Any]) -> None:
+        """Submete uma nova ordem de negociação no PUMA Trading System."""
+        symbol = body.get("symbol", "PETR4")
+        side = body.get("side", "BUY")
+        qty = int(body.get("quantity", 100))
+        price = float(body.get("price", 38.50)) if body.get("price") is not None else 38.50
+        account = body.get("account", "ACC-8819203")
+        order_id = f"ORD-PUMA-{int(time.time() * 1000)}-{symbol}"
+
+        resp = {
+            "order_id": order_id,
+            "client_order_id": body.get("client_order_id", f"CLORD-{order_id}"),
+            "symbol": symbol,
+            "side": side,
+            "order_type": body.get("order_type", "LIMIT"),
+            "quantity": qty,
+            "price": price,
+            "account": account,
+            "status": "NEW",
+            "pre_trade_risk_checks": {
+                "passed": True,
+                "price_tunnel_check": "PASSED",
+                "fat_finger_check": "PASSED",
+                "gross_credit_limit_check": "PASSED",
+                "law_applied": "LAW-001",
+            },
+            "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            "message": "Ordem institucional aceita no PUMA Trading System com validação Pre-Trade Risk.",
+        }
+        self._send_json(resp, status_code=201)
+
+    def _handle_api_v1_post_moc_order(self, body: Dict[str, Any]) -> None:
+        """Submete uma ordem Market-On-Close (MOC) para o Leilão de Fechamento B3."""
+        symbol = body.get("symbol", "PETR4")
+        side = body.get("side", "BUY")
+        qty = int(body.get("quantity", 50000))
+        order_id = f"MOC-{int(time.time() * 1000)}-{symbol}"
+
+        resp = {
+            "order_id": order_id,
+            "client_order_id": body.get("client_order_id", f"CLMOC-{order_id}"),
+            "symbol": symbol,
+            "side": side,
+            "order_type": "MARKET_ON_CLOSE",
+            "time_in_force": "AT_THE_CLOSE",
+            "quantity": qty,
+            "status": "ACCEPTED_FOR_AUCTION",
+            "closing_phase": "CALL_PHASE",
+            "freeze_window_protected": True,
+            "laws_applied": ["LAW-104A", "LAW-104B"],
+            "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            "message": "Ordem MOC registrada com prioridade absoluta no Leilão de Fechamento B3.",
+        }
+        self._send_json(resp, status_code=201)
+
+    def _handle_api_v1_post_auction_uncross(self, body: Dict[str, Any]) -> None:
+        """Executa a apuração e cruzamento do Leilão de Fechamento."""
+        symbol = body.get("symbol", "PETR4")
+        resp = {
+            "symbol": symbol,
+            "status": "UNCROSSED",
+            "closing_price": 38.65,
+            "matched_volume": 1250000,
+            "financial_volume_brl": 48312500.00,
+            "laws_verified": ["LAW-104A", "LAW-104B"],
+            "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        }
+        self._send_json(resp, status_code=200)
+
+    def _handle_api_v1_post_sng_gravame(self, body: Dict[str, Any]) -> None:
+        """Registra um novo gravame veicular no SNG B3 Financiamentos."""
+        v = body.get("veiculo", {})
+        chassi = v.get("chassi", "9BWAA05U1HP001234") if isinstance(v, dict) else body.get("chassi", "9BWAA05U1HP001234")
+        gravame_id = f"SNG-SP-{int(time.time() * 1000) % 1000000:06d}"
+        protocolo = f"B3-SNG-{time.strftime('%Y%m%d')}-{int(time.time() * 1000) % 1000000:06d}"
+
+        resp = {
+            "gravame_id": gravame_id,
+            "protocolo_b3": protocolo,
+            "status": "ATIVO",
+            "modalidade": body.get("modalidade", "ALIENACAO_FIDUCIARIA"),
+            "contrato_numero": body.get("contrato_numero", "CTR-2026-001"),
+            "credor_cnpj": body.get("credor_cnpj", "60701190000104"),
+            "credor_nome": body.get("credor_nome", "BANCO B3 S.A."),
+            "devedor_documento": body.get("devedor_documento", "12345678909"),
+            "devedor_nome": body.get("devedor_nome", "DEVEDOR HOMOLOGADO"),
+            "chassi": chassi,
+            "detran_status": "NOTIFICADO",
+            "law_verified": "LAW-112",
+            "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            "mensagem": "Gravame veicular anotado no SNG e comunicado ao DETRAN estadual competente.",
+        }
+        self._send_json(resp, status_code=201)
+
+    def _handle_api_v1_post_sng_baixa(self, gravame_id: str, body: Dict[str, Any]) -> None:
+        """Efetua a baixa e desalienação do gravame veicular."""
+        resp = {
+            "gravame_id": gravame_id,
+            "status": "BAIXADO",
+            "motivo_baixa": body.get("motivo_baixa", "QUITACAO_INTEGRAL"),
+            "detran_comunicado": True,
+            "law_verified": "LAW-112",
+            "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            "mensagem": "Gravame desalienado e baixado com sucesso no SNG B3 Financiamentos.",
+        }
+        self._send_json(resp, status_code=200)
+
+    def _handle_api_v1_post_sng_cancelamento(self, gravame_id: str, body: Dict[str, Any]) -> None:
+        """Efetua o cancelamento do gravame por vício de origem."""
+        resp = {
+            "gravame_id": gravame_id,
+            "status": "CANCELADO",
+            "motivo_cancelamento": body.get("motivo_cancelamento", "ERRO_FORMAL"),
+            "detran_comunicado": True,
+            "law_verified": "LAW-112",
+            "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            "mensagem": "Gravame cancelado e removido do sistema nacional.",
+        }
+        self._send_json(resp, status_code=200)
+
+    def _handle_api_v1_post_sro_apolice(self, body: Dict[str, Any]) -> None:
+        """Registra e certifica uma apólice no SRO B3 Seguros & SUSEP V3."""
+        import hashlib
+        proposta = body.get("numero_proposta", f"PROP-{int(time.time())}")
+        ramo = body.get("ramo", "RAMO_1101")
+        apolice_id = f"SRO-B3-{ramo}-{int(time.time() * 1000) % 1000000:06d}"
+        hash_susep = hashlib.sha256(f"{apolice_id}:{proposta}".encode("utf-8")).hexdigest()
+
+        resp = {
+            "apolice_id": apolice_id,
+            "numero_proposta": proposta,
+            "numero_registro_susep": f"SUSEP-REG-{time.strftime('%Y%m%d')}-{int(time.time() * 1000) % 1000000:06d}",
+            "hash_susep_sha256": hash_susep,
+            "status": "REGISTRADA",
+            "ramo": ramo,
+            "limite_maximo_garantia": float(body.get("limite_maximo_garantia", 5000000.00)),
+            "premio_liquido": float(body.get("premio_liquido", 120000.00)),
+            "law_verified": "LAW-113",
+            "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            "mensagem": "Apólice registrada e certificada no SRO B3 Seguros perante a SUSEP.",
+        }
+        self._send_json(resp, status_code=201)
+
+    def _handle_api_v1_post_sro_endosso(self, apolice_id: str, body: Dict[str, Any]) -> None:
+        """Registra endosso em apólice cadastrada."""
+        resp = {
+            "endosso_id": f"END-{int(time.time() * 1000) % 1000000:06d}",
+            "apolice_id": apolice_id,
+            "tipo_endosso": body.get("tipo_endosso", "ALTERACAO_CADASTRO"),
+            "status": "REGISTRADO",
+            "law_verified": "LAW-113",
+            "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            "mensagem": "Endosso averbado no SRO perante a SUSEP.",
+        }
+        self._send_json(resp, status_code=200)
+
+    def _handle_api_v1_post_sro_sinistro(self, apolice_id: str, body: Dict[str, Any]) -> None:
+        """Registra aviso de sinistro com bloqueio de saldo LMG."""
+        sinistro_id = f"SIN-{int(time.time() * 1000) % 1000000:06d}"
+        resp = {
+            "sinistro_id": sinistro_id,
+            "apolice_id": apolice_id,
+            "numero_sinistro": body.get("numero_sinistro", sinistro_id),
+            "status": "AVISADO",
+            "valor_estimado": float(body.get("valor_estimado", 500000.00)),
+            "causa_evento": body.get("causa_evento", "EVENTO_COBERTO"),
+            "law_verified": "LAW-113",
+            "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            "mensagem": "Aviso de sinistro registrado com bloqueio de saldo LMG no SRO.",
+        }
+        self._send_json(resp, status_code=201)
+
+    def _handle_api_v1_post_sro_liquidar_sinistro(self, apolice_id: str, sinistro_id: str, body: Dict[str, Any]) -> None:
+        """Efetua a liquidação de indenização de sinistro averbada no SPB."""
+        resp = {
+            "sinistro_id": sinistro_id,
+            "apolice_id": apolice_id,
+            "status": "LIQUIDADO",
+            "valor_indenizado": float(body.get("valor_indenizado", 480000.00)),
+            "comprovante_spb": body.get("comprovante_spb", f"STR-{int(time.time())}"),
+            "law_verified": "LAW-113",
+            "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            "mensagem": "Sinistro liquidado e comprovante SPB averbado no SRO.",
+        }
+        self._send_json(resp, status_code=200)
 
     def _serve_api_status(self) -> None:
         harvester = B3DocHarvester(target_dir=_REPO_ROOT / "raw_docs")

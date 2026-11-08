@@ -19,7 +19,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  deploy:
+  build-and-deploy:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -28,29 +28,51 @@ jobs:
       - name: Checkout repositório
         uses: actions/checkout@v4
 
-      - name: Sincronizar catálogo para publicação
+      - name: Configurar Python 3.12 (Build Offline)
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 1. Compilar Bundle Standalone Offline (dist/dashboard_standalone.html)
         run: |
-          mkdir -p docs/catalog
+          python scripts/export_static_dashboard.py
+
+      - name: 2. Validar Integridade e Tamanho do Bundle Standalone
+        run: |
+          test -s dist/dashboard_standalone.html
+          python - << 'EOF'
+          import os
+          size = os.path.getsize('dist/dashboard_standalone.html')
+          print(f'Bundle standalone verificado com sucesso: {size:,} bytes')
+          assert size > 1_000_000, f'Bundle incompleto ou menor que 1MB: {size} bytes'
+          EOF
+
+      - name: 3. Sincronizar Artefatos e Catálogo para Publicação
+        run: |
+          mkdir -p docs/catalog docs/dist
+          cp -f dist/dashboard_standalone.html docs/index.html
+          cp -f dist/dashboard_standalone.html docs/dashboard_standalone.html
+          cp -f dist/* docs/dist/
           cp -f catalog/*.json docs/catalog/
 
-      - name: Configurar GitHub Pages (Actions runtime)
+      - name: 4. Configurar GitHub Pages (Actions runtime)
         id: pages_config
         continue-on-error: true
         uses: actions/configure-pages@v5
 
-      - name: Fazer upload do artefato Pages (diretório docs/)
+      - name: 5. Fazer upload do artefato Pages (diretório docs/)
         id: upload_artifact
         continue-on-error: true
         uses: actions/upload-pages-artifact@v3
         with:
           path: docs/
 
-      - name: Publicar no GitHub Pages (Actions)
+      - name: 6. Publicar no GitHub Pages (Actions)
         id: deployment
         continue-on-error: true
         uses: actions/deploy-pages@v4
 
-      - name: Publicar na branch gh-pages (Fallback automático garantido)
+      - name: 7. Publicar na branch gh-pages (Fallback automático garantido)
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}

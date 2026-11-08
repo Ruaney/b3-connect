@@ -1,0 +1,18 @@
+# ==============================================================================
+# B3 Integration Atlas — Grafana Automatic Dashboard Provisioning
+# Zero Manual Setup: Provedor Oficial de Dashboards Turnkey Stack
+# ==============================================================================
+
+apiVersion: 1
+
+providers:
+  - name: 'B3 Enterprise Overview'
+    orgId: 1
+    folder: 'B3 Observability'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 10
+    allowUiUpdates: true
+    options:
+      path: /var/lib/grafana/dashboards
+      foldersFromFilesStructure: false

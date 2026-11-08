@@ -187,11 +187,15 @@ class B3DocHarvester:
         """Salva manifesto atualizado em disco com mesclagem atômica para permitir execução concorrente."""
         self.target_dir.mkdir(parents=True, exist_ok=True)
         disk_docs: Dict[str, B3DocMetadata] = {}
+        existing_last_updated: Optional[str] = None
+        existing_docs_raw: List[Dict[str, Any]] = []
         if self.manifest_path.is_file():
             try:
                 with open(self.manifest_path, "r", encoding="utf-8") as f:
                     data = json.load(f)
-                    for item in data.get("documents", []):
+                    existing_last_updated = data.get("last_updated")
+                    existing_docs_raw = data.get("documents", [])
+                    for item in existing_docs_raw:
                         doc = B3DocMetadata.from_dict(item)
                         disk_docs[doc.doc_id] = doc
             except Exception:
@@ -202,14 +206,20 @@ class B3DocHarvester:
             disk_docs[k] = v
         self.documents = disk_docs
 
+        new_docs_raw = [doc.to_dict() for doc in self.documents.values()]
+        if existing_last_updated and new_docs_raw == existing_docs_raw:
+            last_updated = existing_last_updated
+        else:
+            last_updated = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+
         manifest_data = {
             "version": "1.0.0",
-            "last_updated": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            "last_updated": last_updated,
             "total_documents": len(self.documents),
             "documents_by_category": self._count_by_category(),
-            "documents": [doc.to_dict() for doc in self.documents.values()],
+            "documents": new_docs_raw,
         }
-        with open(self.manifest_path, "w", encoding="utf-8") as f:
+        with open(self.manifest_path, "w", encoding="utf-8", newline="\n") as f:
             json.dump(manifest_data, f, indent=2, ensure_ascii=False)
 
     def _count_by_category(self) -> Dict[str, int]:

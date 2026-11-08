@@ -68,7 +68,6 @@ def validate_spec(spec: Dict[str, Any]) -> None:
     if missing_refs:
         raise ValueError(f"Erros de resolução de referências $ref: {missing_refs}")
 
-    import jsonschema
     json.loads(spec_str)
 
 def main() -> None:

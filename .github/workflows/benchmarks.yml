@@ -1,0 +1,87 @@
+name: Performance Benchmarks & Zero-Alloc Regression
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+  schedule:
+    # Execução semanal de benchmark institucional (Segunda-feira às 02:00 UTC)
+    - cron: "0 2 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: benchmarks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  benchmark-regression:
+    name: Microbenchmark Suite (Sub-microsecond & Zero-Alloc)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 1. Executar Bateria de Microbenchmarks de Alta Performance
+        run: |
+          python scripts/benchmark_zero_alloc.py
+
+      - name: 2. Validar Testes de Unidade de Performance e Regressão
+        run: |
+          python -m unittest tests/test_benchmark_zero_alloc.py
+
+      - name: 3. Asserção Estrita de Latências Sub-Microssegundo e Zero Alocações
+        run: |
+          python - << 'EOF'
+          import json
+          import sys
+          from pathlib import Path
+
+          results_file = Path("fixtures/benchmark_zero_alloc_results.json")
+          if not results_file.is_file():
+              print("❌ Arquivo de resultados não encontrado!", file=sys.stderr)
+              sys.exit(1)
+
+          data = json.loads(results_file.read_text(encoding="utf-8"))
+          metrics = {m["name"]: m for m in data.get("metrics", [])}
+
+          # 1. Validação PUMA SBE NewOrderSingle Unpack Raw (Sub-microsecond < 1000ns)
+          nos = metrics.get("PUMA_SBE_NewOrderSingle_UnpackRaw_ZeroAlloc")
+          assert nos is not None, "Métrica PUMA_SBE_NewOrderSingle_UnpackRaw_ZeroAlloc não encontrada"
+          assert nos["is_zero_alloc"] is True, f"Esperado is_zero_alloc=True, obtido {nos['is_zero_alloc']}"
+          assert nos["mean_ns"] < 1000.0, f"Latência esperada < 1000ns, obtido {nos['mean_ns']}ns"
+
+          # 2. Validação PUMA SBE ExecutionReport Unpack Raw (Sub-microsecond < 1000ns)
+          er = metrics.get("PUMA_SBE_ExecutionReport_UnpackRaw_ZeroAlloc")
+          assert er is not None, "Métrica PUMA_SBE_ExecutionReport_UnpackRaw_ZeroAlloc não encontrada"
+          assert er["is_zero_alloc"] is True, f"Esperado is_zero_alloc=True, obtido {er['is_zero_alloc']}"
+          assert er["mean_ns"] < 1000.0, f"Latência esperada < 1000ns, obtido {er['mean_ns']}ns"
+
+          # 3. Validação Crypto SHA-256 Buffer Pré-alocado (< 1000ns)
+          sha = metrics.get("Crypto_SHA256_Contract_Preallocated_Buffer")
+          assert sha is not None, "Métrica Crypto_SHA256_Contract_Preallocated_Buffer não encontrada"
+          assert sha["mean_ns"] < 1000.0, f"Latência esperada < 1000ns, obtido {sha['mean_ns']}ns"
+
+          print("✓ Gate de Performance APROVADO: Latências sub-microssegundo e zero-alloc comprovadas!")
+          EOF
+
+      - name: 4. Upload de Artefatos de Performance (JSON e Relatório Markdown)
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-performance-metrics
+          path: |
+            fixtures/benchmark_zero_alloc_results.json
+            docs/RELATORIO_MICROBENCHMARKS_NANOSSEGUNDOS.md
+          retention-days: 30

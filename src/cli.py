@@ -1600,6 +1600,24 @@ def cmd_ui(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_tui(args: argparse.Namespace) -> int:
+    """Inicia a Interface Terminal de Alta Fidelidade (TUI) do B3 Integration Atlas."""
+    try:
+        from src.tui import run_tui
+    except ImportError:
+        from tui import run_tui
+    return run_tui(args)
+
+
+def cmd_monitor(args: argparse.Namespace) -> int:
+    """Inicia o Monitor de Negociação PUMA em Tempo Real (mini-livro, spread e MOC)."""
+    try:
+        from src.tui import run_monitor
+    except ImportError:
+        from tui import run_monitor
+    return run_monitor(args)
+
+
 # ==============================================================================
 # Comandos Institucionais dos 12 Conceitos Estruturantes, SNG e SRO
 # ==============================================================================
@@ -2302,6 +2320,32 @@ def build_atlas_parser() -> argparse.ArgumentParser:
     )
     p_export.add_argument("--output", default="dist/dashboard_standalone.html", help="Caminho do arquivo HTML de saída")
     p_export.set_defaults(func=lambda args: cmd_ui(argparse.Namespace(export_static=True, output=args.output)))
+
+    # b3 tui
+    p_tui = subparsers.add_parser(
+        "tui",
+        aliases=["terminal", "console"],
+        help="Interface de terminal institucional (TUI) interativa e monitor em tempo real",
+    )
+    p_tui.add_argument("--screen", choices=["overview", "puma", "bus", "sng_sro", "concepts"], default="overview", help="Tela inicial da TUI")
+    p_tui.add_argument("--symbol", default="PETR4", help="Código do ativo para monitoramento no PUMA")
+    p_tui.add_argument("--concept", default=None, help="ID do conceito para visualização")
+    p_tui.add_argument("--headless", action="store_true", help="Executa sem loop interativo (renderiza 1 frame e encerra)")
+    p_tui.add_argument("--ticks", type=int, default=1, help="Número de ticks em modo headless")
+    p_tui.add_argument("--no-color", action="store_true", help="Desativa cores ANSI")
+    p_tui.set_defaults(func=lambda args: __import__("src.tui", fromlist=["run_tui"]).run_tui(args))
+
+    # b3 monitor
+    p_monitor = subparsers.add_parser(
+        "monitor",
+        aliases=["watch"],
+        help="Monitor de negociação PUMA em tempo real na TUI",
+    )
+    p_monitor.add_argument("--symbol", default="PETR4", help="Código do ativo para monitoramento no PUMA")
+    p_monitor.add_argument("--headless", action="store_true", help="Executa sem loop interativo")
+    p_monitor.add_argument("--ticks", type=int, default=1, help="Número de ticks em modo headless")
+    p_monitor.add_argument("--no-color", action="store_true", help="Desativa cores ANSI")
+    p_monitor.set_defaults(func=lambda args: __import__("src.tui", fromlist=["run_monitor"]).run_monitor(args))
 
     # b3 concepts list / simulate
     p_concepts = subparsers.add_parser(

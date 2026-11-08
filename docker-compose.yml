@@ -1,19 +1,109 @@
+# ==============================================================================
+# B3 Integration Atlas — Turnkey Production Stack Compose
+# Services: b3-atlas, prometheus, grafana, mock-detran-susep
+# Zero-Configuration Enterprise Observability & Gateway Simulation
+# ==============================================================================
+
 services:
-  dashboard:
+  # ----------------------------------------------------------------------------
+  # B3 Integration Atlas Core (UI Server & Full REST API)
+  # ----------------------------------------------------------------------------
+  b3-atlas:
     build:
       context: .
       dockerfile: Dockerfile
     image: b3-integration-atlas:latest
-    container_name: b3-atlas-dashboard
+    container_name: b3-atlas
     restart: unless-stopped
     ports:
       - "8080:8080"
     environment:
       - PORT=8080
       - HOST=0.0.0.0
+      - MOCK_GATEWAY_URL=http://mock-detran-susep:8089
     healthcheck:
       test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/api/health', timeout=2)"]
       interval: 10s
       timeout: 3s
       retries: 3
       start_period: 3s
+    networks:
+      - b3-network
+
+  # ----------------------------------------------------------------------------
+  # Mock Detran & SRO/SUSEP External Gateways Simulator
+  # ----------------------------------------------------------------------------
+  mock-detran-susep:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: b3-integration-atlas:latest
+    container_name: b3-mock-detran-susep
+    restart: unless-stopped
+    command: ["python3", "scripts/mock_detran_susep.py", "--host", "0.0.0.0", "--port", "8089"]
+    ports:
+      - "8089:8089"
+    environment:
+      - PORT=8089
+      - HOST=0.0.0.0
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8089/health', timeout=2)"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 3s
+    networks:
+      - b3-network
+
+  # ----------------------------------------------------------------------------
+  # Prometheus Time-Series Metrics Scraper
+  # ----------------------------------------------------------------------------
+  prometheus:
+    image: prom/prometheus:v2.51.0
+    container_name: b3-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./observability/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.console.libraries=/usr/share/prometheus/console_libraries"
+      - "--web.console.templates=/usr/share/prometheus/consoles"
+      - "--web.enable-lifecycle"
+    depends_on:
+      b3-atlas:
+        condition: service_started
+      mock-detran-susep:
+        condition: service_started
+    networks:
+      - b3-network
+
+  # ----------------------------------------------------------------------------
+  # Grafana Turnkey Dashboard & Visualization
+  # ----------------------------------------------------------------------------
+  grafana:
+    image: grafana/grafana:10.4.0
+    container_name: b3-grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+    volumes:
+      - ./observability/grafana_datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml:ro
+      - ./observability/grafana_dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml:ro
+      - ./observability/grafana_b3_enterprise_overview.json:/var/lib/grafana/dashboards/grafana_b3_enterprise_overview.json:ro
+    depends_on:
+      - prometheus
+    networks:
+      - b3-network
+
+networks:
+  b3-network:
+    driver: bridge

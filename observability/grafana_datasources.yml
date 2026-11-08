@@ -1,0 +1,17 @@
+# ==============================================================================
+# B3 Integration Atlas — Grafana Automatic Datasource Provisioning
+# Zero Manual Setup: Provedor Oficial Prometheus Turnkey Stack
+# ==============================================================================
+
+apiVersion: 1
+
+datasources:
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+    editable: false
+    jsonData:
+      timeInterval: 5s
+      httpMethod: POST
