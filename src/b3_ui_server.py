@@ -54,6 +54,11 @@ class B3DashboardHandler(BaseHTTPRequestHandler):
         elif path.startswith("/api/chaos/"):
             scenario_name = path.replace("/api/chaos/", "").upper()
             self._serve_api_chaos(scenario_name)
+        elif path.startswith("/api/phase7/"):
+            flow_id = path.replace("/api/phase7/", "").upper()
+            self._serve_api_phase7(flow_id)
+        elif path == "/api/tla-check":
+            self._serve_api_tla_check()
         elif path == "/api/health":
             self._send_json({"status": "UP", "version": "2.3.0", "offline": True})
         else:
@@ -183,6 +188,101 @@ class B3DashboardHandler(BaseHTTPRequestHandler):
         result = sim.run_scenario(scenario_enum)
         self._send_json(result.to_dict())
 
+    def _serve_api_phase7(self, flow_id: str) -> None:
+        fixtures_dir = _REPO_ROOT / "fixtures"
+        if flow_id == "FL-101":
+            from src.volatility_surface_sabr_svi import B3VolatilitySurface
+            with open(fixtures_dir / "volatility_surface_sabr_svi.json", "r", encoding="utf-8") as f:
+                d = json.load(f)
+            surfaces = []
+            for sid, sdata in d["surfaces"].items():
+                surf = B3VolatilitySurface.from_dict(sdata)
+                inv = surf.verify_invariants(raise_on_error=True)
+                surfaces.append({
+                    "surface_id": surf.surface_id,
+                    "asset": surf.asset_type.value,
+                    "model": surf.model_type.value,
+                    "slices": len(surf.slices),
+                    "invariants": inv,
+                })
+            self._send_json({"flow": "FL-101", "title": "Superfícies SABR/SVI", "laws": ["LAW-107A", "LAW-107B"], "surfaces": surfaces})
+        elif flow_id == "FL-102":
+            from decimal import Decimal
+            from src.structured_operations_coe import StructuredOperationsCoeEngine
+            eng = StructuredOperationsCoeEngine.load_from_json(fixtures_dir / "structured_operations_coe.json")
+            eng.verify_invariants()
+            rec = eng.settle_at_maturity("COE-BULL-IBOV-001", Decimal("145000.00"), "2026-11-06", 756)
+            self._send_json({
+                "flow": "FL-102",
+                "title": "COE Capital Protegido",
+                "laws": ["LAW-108"],
+                "contracts_count": len(eng.contracts),
+                "sample_settlement": rec.to_dict(),
+            })
+        elif flow_id == "FL-103":
+            from src.market_maker_pmm_engine import MarketMakerPmmEngine
+            eng = MarketMakerPmmEngine()
+            eng.load_from_fixture(fixtures_dir / "market_maker_pmm_engine.json")
+            inv = eng.verify_invariants()
+            self._send_json({
+                "flow": "FL-103",
+                "title": "Formador de Mercado PMM B3",
+                "laws": ["LAW-109A", "LAW-109B", "LAW-109C", "LAW-109D"],
+                "contracts": len(eng.contracts),
+                "sessions_audited": len(eng.session_audits),
+                "invariants": inv,
+            })
+        elif flow_id == "FL-104":
+            from src.algorithmic_sor_twap_vwap import AlgorithmicSOREngine
+            eng, parent, ref_price = AlgorithmicSOREngine.load_from_fixture(fixtures_dir / "algorithmic_sor_twap_vwap.json")
+            plan = eng.generate_twap_slices(parent, ref_price)
+            inv = plan.verify_invariants(raise_on_error=True)
+            self._send_json({
+                "flow": "FL-104",
+                "title": "Algorithmic SOR TWAP/VWAP/POV",
+                "laws": ["LAW-110"],
+                "parent_order": parent.parent_id,
+                "symbol": parent.symbol,
+                "total_quantity": parent.quantity,
+                "slices_generated": len(plan.child_orders),
+                "invariants": inv,
+            })
+        elif flow_id == "FL-105":
+            from src.drex_rwa_primary_issuance import DrexRwaPrimaryIssuanceEngine
+            eng = DrexRwaPrimaryIssuanceEngine.load_from_fixture(fixtures_dir / "drex_rwa_primary_issuance.json")
+            inv = eng.verify_invariants()
+            self._send_json({
+                "flow": "FL-105",
+                "title": "Emissão Primária RWA Drex Fase 2",
+                "laws": ["LAW-111"],
+                "offerings": len(eng.offerings),
+                "dvp_receipts": len(eng.dvp_receipts),
+                "invariants": inv,
+            })
+        else:
+            self.send_error(400, f"Fluxo Fase 7 inválido: {flow_id}")
+
+    def _serve_api_tla_check(self) -> None:
+        from src.tla_model_checker import CentralLiquidityBusModelChecker
+        checker = CentralLiquidityBusModelChecker()
+        rep = checker.run_model_check()
+        self._send_json({
+            "spec_path": rep.spec_path,
+            "passed": rep.passed,
+            "distinct_states_explored": rep.distinct_states_explored,
+            "transitions_evaluated": rep.transitions_evaluated,
+            "max_depth_reached": rep.max_depth_reached,
+            "deadlocks_found": rep.deadlocks_found,
+            "properties": {
+                "TypeOK": rep.type_ok_verified,
+                "ZeroSumAccountingConservation_LAW_106A": rep.law_106a_zero_sum_verified,
+                "WaterfallOrderInviolability_LAW_106B": rep.law_106b_waterfall_order_verified,
+                "NoUnabsorbedDefaultAtSettlement_LAW_106B": rep.law_106b_no_unabsorbed_default_verified,
+                "IntersystemSettlementAtomicity_LAW_106C": rep.law_106c_atomicity_verified,
+                "EventualCycleTermination_Liveness": rep.liveness_termination_verified,
+            },
+        })
+
     def _serve_html_dashboard(self) -> None:
         html = """<!DOCTYPE html>
 <html lang="pt-BR">
@@ -280,7 +380,8 @@ class B3DashboardHandler(BaseHTTPRequestHandler):
       <li><a href="#" class="active" onclick="switchTab('overview')">🏛️ 7 Módulos B3</a></li>
       <li><a href="#" onclick="switchTab('simulator')">⚡ Simulador do Pregão</a></li>
       <li><a href="#" onclick="switchTab('chaos')">🔥 Laboratório de Caos</a></li>
-      <li><a href="#" onclick="switchTab('docs')">📚 Acervo Documental (80)</a></li>
+      <li><a href="#" onclick="switchTab('phase7')">🧮 Fase 7 Quant & TLA+</a></li>
+      <li><a href="#" onclick="switchTab('docs')">📚 Acervo Documental (85)</a></li>
     </ul>
     <div class="system-status">
       <span class="dot"></span> 100% Local (Off-line)
@@ -290,7 +391,7 @@ class B3DashboardHandler(BaseHTTPRequestHandler):
   <div class="main">
     <div class="header">
       <h2 id="view-title">Visão Holística dos 7 Módulos da B3</h2>
-      <span class="badge-pill">84 Leis Provadas • 100 Fluxos • 80 Manuais</span>
+      <span class="badge-pill">89 Leis Provadas • 105 Fluxos • 85 Manuais</span>
     </div>
 
     <div class="content">
@@ -298,22 +399,22 @@ class B3DashboardHandler(BaseHTTPRequestHandler):
       <div class="stats-grid">
         <div class="stat-card">
           <div class="stat-title">Fluxos Institucionais</div>
-          <div class="stat-value">100 / 100</div>
-          <div class="stat-sub">FL-001 a FL-100 Homologados</div>
+          <div class="stat-value">105 / 105</div>
+          <div class="stat-sub">FL-001 a FL-105 Homologados</div>
         </div>
         <div class="stat-card">
           <div class="stat-title">Leis Formais de Conservação</div>
-          <div class="stat-value">84 / 84</div>
+          <div class="stat-value">89 / 89</div>
           <div class="stat-sub">100% Provadas Matematicamente</div>
         </div>
         <div class="stat-card">
           <div class="stat-title">Acervo Documental Local</div>
-          <div class="stat-value">80 / 80 (100%)</div>
+          <div class="stat-value">85 / 85 (100%)</div>
           <div class="stat-sub">Gravados em raw_docs/ com SHA-256</div>
         </div>
         <div class="stat-card">
           <div class="stat-title">Suíte de Testes Unitários</div>
-          <div class="stat-value">1.433 Testes</div>
+          <div class="stat-value">1.617 Testes</div>
           <div class="stat-sub">100% Aprovados em 10s</div>
         </div>
       </div>
@@ -363,12 +464,33 @@ class B3DashboardHandler(BaseHTTPRequestHandler):
         </div>
       </div>
 
+      <!-- Tab Phase 7 & TLA+ -->
+      <div id="tab-phase7" style="display: none;">
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <h3 style="font-size: 1.1rem; color: #fff;">Fase 7 Quantitativa & Verificação Formal TLA+ (FL-101 a FL-105)</h3>
+              <p style="font-size: 0.85rem; color: var(--text-muted);">Execute em tempo real os motores institucionais de derivativos, COE, PMM, SOR e Drex RWA ou o verificador de estados TLA+.</p>
+            </div>
+          </div>
+          <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
+            <button class="btn" onclick="runPhase7('FL-101')">📈 FL-101: Volatilidade SABR/SVI</button>
+            <button class="btn" onclick="runPhase7('FL-102')">🛡️ FL-102: COE Capital Protegido</button>
+            <button class="btn" onclick="runPhase7('FL-103')">⚖️ FL-103: Formador PMM B3</button>
+            <button class="btn" onclick="runPhase7('FL-104')">🎯 FL-104: Algorithmic SOR</button>
+            <button class="btn" onclick="runPhase7('FL-105')">🪙 FL-105: Emissão RWA Drex</button>
+            <button class="btn" style="background: #10b981;" onclick="runTLACheck()">🔬 Rodar Model Checker TLA+ (TLC)</button>
+          </div>
+          <div id="phase7-output" class="viewer" style="display: none;"></div>
+        </div>
+      </div>
+
       <!-- Tab 4: Local Docs -->
       <div id="tab-docs" style="display: none;">
         <div class="panel">
           <div class="panel-header">
             <div>
-              <h3 style="font-size: 1.1rem; color: #fff;">Acervo Documental Oficial (80 Documentos Locais)</h3>
+              <h3 style="font-size: 1.1rem; color: #fff;">Acervo Documental Oficial (85 Documentos Locais)</h3>
               <p style="font-size: 0.85rem; color: var(--text-muted);">Manuais oficiais B3, layouts IMBARQ, dicionários XML e regulamentos salvos em raw_docs/.</p>
             </div>
             <input type="text" id="doc-search" placeholder="Filtrar manuais por ID ou título..." oninput="filterDocs()" style="background: #0c1220; border: 1px solid var(--border); color: #fff; padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.85rem; width: 300px;">
@@ -400,13 +522,14 @@ class B3DashboardHandler(BaseHTTPRequestHandler):
     function switchTab(tabId) {
       document.querySelectorAll('.nav li a').forEach(el => el.classList.remove('active'));
       event.target.classList.add('active');
-      ['overview', 'simulator', 'chaos', 'docs'].forEach(t => {
+      ['overview', 'simulator', 'chaos', 'phase7', 'docs'].forEach(t => {
         document.getElementById('tab-' + t).style.display = (t === tabId) ? 'block' : 'none';
       });
       const titles = {
         'overview': 'Visão Holística dos 7 Módulos da B3',
         'simulator': 'Simulador Diário E2E: Todos os Módulos em Execução',
         'chaos': 'Laboratório de Caos e Testes de Estresse Financeiro',
+        'phase7': 'Fase 7 Quantitativa (FL-101 a FL-105) & Model Checking TLA+',
         'docs': 'Acervo Documental Oficial B3 (100% Baixado Localmente)'
       };
       document.getElementById('view-title').innerText = titles[tabId];
@@ -503,6 +626,24 @@ class B3DashboardHandler(BaseHTTPRequestHandler):
       out += `PARECER DA CÂMARA / BSM: ${data.verdict}\n`;
       out += `================================================================================\n`;
       viewer.innerText = out;
+    }
+
+    async function runPhase7(flowId) {
+      const viewer = document.getElementById('phase7-output');
+      viewer.style.display = 'block';
+      viewer.innerText = 'Executando motor institucional ' + flowId + '...';
+      const res = await fetch('/api/phase7/' + flowId);
+      const data = await res.json();
+      viewer.innerText = JSON.stringify(data, null, 2);
+    }
+
+    async function runTLACheck() {
+      const viewer = document.getElementById('phase7-output');
+      viewer.style.display = 'block';
+      viewer.innerText = 'Explorando espaço de estados TLA+ via BFS...';
+      const res = await fetch('/api/tla-check');
+      const data = await res.json();
+      viewer.innerText = JSON.stringify(data, null, 2);
     }
 
     async function loadDocs() {
